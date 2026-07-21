@@ -529,6 +529,8 @@ export default function App() {
   const [bookingHoarding, setBookingHoarding] = useState(null);
   const [sitePickerProject, setSitePickerProject] = useState(null);
   const [printDoc, setPrintDoc] = useState(null);
+  const [clientStatementClient, setClientStatementClient] = useState(null);
+  const [projectStatementId, setProjectStatementId] = useState(null);
   const [oohFilters, setOohFilters] = useState({ area: "All", size: "All", status: "All", maxPrice: "" });
 
   const [employees, setEmployees] = useState(seedData.employees);
@@ -1223,7 +1225,10 @@ export default function App() {
                               <button className="btn" style={{ padding: "4px 8px", fontSize: 12.5 }} onClick={() => setSelectedProjectId(p.id)}>
                                 Manage <ChevronRight size={12} />
                               </button>
-                              <button className="btn" style={{ padding: "4px 6px", fontSize: 12.5 }} onClick={() => setEditingProject(p)}>
+                              <button className="btn" style={{ padding: "4px 6px", fontSize: 12.5 }} onClick={() => setProjectStatementId(p.id)} title="Print Statement">
+                                <Printer size={13} />
+                              </button>
+                              <button className="btn" style={{ padding: "4px 6px", fontSize: 12.5 }} onClick={() => setEditingProject(p)} title="Edit Project">
                                 <Edit size={13} />
                               </button>
                             </td>
@@ -1244,6 +1249,18 @@ export default function App() {
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
                 <div className="section-title" style={{ margin: 0 }}>Client Invoices</div>
                 <button className="btn btn-primary" onClick={() => setShowInvoiceForm(true)}><Plus size={14} /> New Invoice</button>
+              </div>
+
+              <div className="card" style={{ padding: "12px 16px", marginBottom: 16, display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
+                <div className="field" style={{ margin: 0, flex: 1, minWidth: 200 }}>
+                  <label>Select Client to Print Statement</label>
+                  <select value="" onChange={e => {
+                    if (e.target.value) setClientStatementClient(e.target.value);
+                  }}>
+                    <option value="" disabled>-- Select Client --</option>
+                    {[...new Set(invoices.map(i => i.client))].map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                </div>
               </div>
 
               <div className="card">
@@ -1847,6 +1864,22 @@ export default function App() {
         />
       )}
       {printDoc && <PrintPreviewModal doc={printDoc} onClose={() => setPrintDoc(null)} />}
+      {clientStatementClient && (
+        <ClientStatementPrintModal
+          clientName={clientStatementClient}
+          invoices={invoices}
+          projects={projects}
+          onClose={() => setClientStatementClient(null)}
+        />
+      )}
+      {projectStatementId && (
+        <ProjectStatementPrintModal
+          project={projects.find(p => p.id === projectStatementId)}
+          invoices={invoices}
+          expenses={expenses}
+          onClose={() => setProjectStatementId(null)}
+        />
+      )}
       {showProjectForm && <ProjectModal onClose={() => setShowProjectForm(false)} onSubmit={createProject} />}
       {editingProject && <ProjectModal initialData={editingProject} onClose={() => setEditingProject(null)} onSubmit={updateProject} />}
 
@@ -1869,6 +1902,7 @@ export default function App() {
             onReleaseSite={releaseHoarding}
             onMarkPaid={inv => markPaid(inv, "Bank")}
             onPrint={doc => setPrintDoc(doc)}
+            onPrintProject={() => setProjectStatementId(project.id)}
           />
         );
       })()}
@@ -2626,7 +2660,7 @@ function ProjectCostModal({ project, onClose, onSubmit }) {
   );
 }
 
-function ProjectDetailModal({ project, invoices, expenses, sites, onClose, onStatusChange, onAddBilling, onAddCost, onAddSite, onReleaseSite, onMarkPaid, onPrint }) {
+function ProjectDetailModal({ project, invoices, expenses, sites, onClose, onStatusChange, onAddBilling, onAddCost, onAddSite, onReleaseSite, onMarkPaid, onPrint, onPrintProject }) {
   const invoicesWithStatus = invoices.map(inv => ({
     ...inv, status: inv.paid ? "Paid" : (new Date(inv.dueDate) < TODAY ? "Overdue" : "Unpaid"),
   }));
@@ -2639,7 +2673,10 @@ function ProjectDetailModal({ project, invoices, expenses, sites, onClose, onSta
             <div className="section-title" style={{ margin: 0, fontSize: 18 }}>{project.name}</div>
             <div style={{ fontSize: 13, color: "var(--ink-muted)", marginTop: 2 }}>Client: {project.client} &middot; {fmtDate(project.startDate)} – {fmtDate(project.endDate)}</div>
           </div>
-          <button className="btn" style={{ padding: 5 }} onClick={onClose}><X size={15} /></button>
+          <div style={{ display: "flex", gap: 8 }}>
+            <button className="btn" style={{ padding: "5px 10px", fontSize: 12.5 }} onClick={onPrintProject}><Printer size={14} /> Print Statement</button>
+            <button className="btn" style={{ padding: 5 }} onClick={onClose}><X size={15} /></button>
+          </div>
         </div>
 
         <div style={{ display: "flex", gap: 10, alignItems: "center", margin: "10px 0 14px" }}>
@@ -2961,6 +2998,199 @@ function PrintPreviewModal({ doc, onClose }) {
           <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#475569", paddingTop: 12 }}>
             <div>Prepared by: ______________</div>
             <div>Checked by: ______________</div>
+            <div>Approved by: ______________</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ClientStatementPrintModal({ clientName, invoices, projects, onClose }) {
+  const [pageSize, setPageSize] = useState("A4");
+  const clientInvoices = invoices.filter(i => i.client.toLowerCase() === clientName.toLowerCase());
+  const clientProjects = projects.filter(p => p.client.toLowerCase() === clientName.toLowerCase());
+  const totalBilled = clientInvoices.reduce((s, i) => s + i.amount, 0);
+  const totalPaid = clientInvoices.filter(i => i.paid).reduce((s, i) => s + i.amount, 0);
+  const totalOutstanding = totalBilled - totalPaid;
+
+  return (
+    <div className="modal-backdrop" onClick={onClose}>
+      <style>{`@page { size: ${PAGE_SIZES[pageSize]}; margin: 14mm; }`}</style>
+      <div className="modal" style={{ width: 720 }} onClick={e => e.stopPropagation()}>
+        <div className="no-print-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+          <div className="section-title" style={{ margin: 0 }}>Client Statement Preview</div>
+          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            <select value={pageSize} onChange={e => setPageSize(e.target.value)} style={{ background: "#FFFFFF", border: "1px solid #CBD5E1", borderRadius: 8, color: "#0F172A", fontSize: 13, padding: "6px 10px" }}>
+              {Object.keys(PAGE_SIZES).map(p => <option key={p}>{p}</option>)}
+            </select>
+            <button className="btn btn-primary" style={{ padding: "6px 12px", fontSize: 13 }} onClick={() => window.print()}><Printer size={14} /> Print Statement</button>
+            <button className="btn" style={{ padding: 5 }} onClick={onClose}><X size={15} /></button>
+          </div>
+        </div>
+
+        <div className="print-area" style={{ background: "#ffffff", color: "#0F172A", borderRadius: 10, padding: 28, fontFamily: "Georgia, serif" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "2px solid #0F172A", paddingBottom: 14, marginBottom: 18 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+              <img src="./logo.png" alt="AdPulse Logo" style={{ maxHeight: 52, width: "auto" }} onError={(e) => { e.target.style.display = 'none'; }} />
+              <div>
+                <div style={{ fontSize: 22, fontWeight: 800, color: "#0F172A", letterSpacing: "-0.3px" }}>AdPulse IMC PVT LTD</div>
+                <div style={{ fontSize: 12, color: "#475569", fontWeight: "sans-serif" }}>Integrated Media &amp; Creative Services &middot; Karachi, Pakistan</div>
+              </div>
+            </div>
+            <div style={{ textAlign: "right" }}>
+              <div style={{ fontSize: 15, fontWeight: 800, color: "#B8860B", textTransform: "uppercase" }}>CLIENT STATEMENT</div>
+              <div className="mono" style={{ fontSize: 13, fontWeight: 700, color: "#0F172A" }}>STMT-{clientName.replace(/\s+/g, "").toUpperCase().slice(0, 6)}</div>
+            </div>
+          </div>
+
+          <table style={{ width: "100%", fontSize: 13.5, marginBottom: 18, minWidth: 0 }}>
+            <tbody>
+              <tr><td style={{ padding: "4px 0", color: "#475569", width: 140 }}>Client Account</td><td style={{ fontWeight: 800, fontSize: 15 }}>{clientName}</td></tr>
+              <tr><td style={{ padding: "4px 0", color: "#475569" }}>Statement Date</td><td className="mono">{fmtDate(TODAY)}</td></tr>
+              <tr><td style={{ padding: "4px 0", color: "#475569" }}>Active Campaigns</td><td>{clientProjects.map(p => p.name).join(", ") || "General Account"}</td></tr>
+            </tbody>
+          </table>
+
+          <div style={{ fontSize: 13.5, fontWeight: 700, marginBottom: 8, color: "#0F172A" }}>Individual Invoice Ledger &amp; Billings</div>
+          <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 18, minWidth: 0 }}>
+            <thead>
+              <tr>
+                <th style={{ textAlign: "left", borderBottom: "1.5px solid #0F172A", padding: "7px 0", fontSize: 12.5, color: "#475569" }}>Issue Date</th>
+                <th style={{ textAlign: "left", borderBottom: "1.5px solid #0F172A", padding: "7px 0", fontSize: 12.5, color: "#475569" }}>Description / Scope</th>
+                <th style={{ textAlign: "left", borderBottom: "1.5px solid #0F172A", padding: "7px 0", fontSize: 12.5, color: "#475569" }}>Status</th>
+                <th style={{ textAlign: "right", borderBottom: "1.5px solid #0F172A", padding: "7px 0", fontSize: 12.5, color: "#475569" }}>Billed Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              {clientInvoices.map(inv => (
+                <tr key={inv.id}>
+                  <td className="mono" style={{ padding: "9px 0", fontSize: 13 }}>{fmtDate(inv.issueDate)}</td>
+                  <td style={{ padding: "9px 0", fontSize: 13.5 }}>{inv.description}</td>
+                  <td style={{ padding: "9px 0", fontSize: 13 }}>
+                    <span style={{ color: inv.paid ? "#059669" : "#D97706", fontWeight: 700 }}>{inv.paid ? "PAID" : "UNPAID"}</span>
+                  </td>
+                  <td className="mono" style={{ textAlign: "right", padding: "9px 0", fontWeight: 700, fontSize: 14 }}>{pkr(inv.amount)}</td>
+                </tr>
+              ))}
+              {clientInvoices.length === 0 && (
+                <tr><td colSpan={4} style={{ textAlign: "center", padding: 16, color: "#64748B" }}>No billings found for this client.</td></tr>
+              )}
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colSpan={3} style={{ borderTop: "1.5px solid #0F172A", padding: "8px 0", fontWeight: 700, fontSize: 13.5 }}>Total Billed</td>
+                <td className="mono" style={{ borderTop: "1.5px solid #0F172A", textAlign: "right", padding: "8px 0", fontWeight: 700, fontSize: 14 }}>{pkr(totalBilled)}</td>
+              </tr>
+              <tr>
+                <td colSpan={3} style={{ padding: "4px 0", fontWeight: 700, fontSize: 13.5, color: "#059669" }}>Total Payments Received</td>
+                <td className="mono" style={{ textAlign: "right", padding: "4px 0", fontWeight: 700, fontSize: 14, color: "#059669" }}>({pkr(totalPaid)})</td>
+              </tr>
+              <tr>
+                <td colSpan={3} style={{ borderTop: "2px solid #0F172A", padding: "10px 0", fontWeight: 800, fontSize: 15 }}>Net Balance Payable</td>
+                <td className="mono" style={{ borderTop: "2px solid #0F172A", textAlign: "right", padding: "10px 0", fontWeight: 800, fontSize: 16.5, color: "#B8860B" }}>{pkr(totalOutstanding)}</td>
+              </tr>
+            </tfoot>
+          </table>
+
+          <div style={{ fontSize: 12.5, fontStyle: "italic", color: "#334155", marginBottom: 34, background: "#F1F5F9", padding: "10px 14px", borderRadius: 7, border: "1px solid #E2E8F0" }}>
+            Outstanding Balance in words: <b style={{ color: "#0F172A" }}>{amountInWords(totalOutstanding)}</b>
+          </div>
+
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#475569", paddingTop: 12 }}>
+            <div>Prepared by: ______________</div>
+            <div>Accounts Manager: ______________</div>
+            <div>Authorized Signatory: ______________</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ProjectStatementPrintModal({ project, invoices, expenses, onClose }) {
+  const [pageSize, setPageSize] = useState("A4");
+  const projInvoices = invoices.filter(i => i.projectId === project.id);
+  const projExpenses = expenses.filter(e => e.projectId === project.id);
+  const totalBilled = projInvoices.reduce((s, i) => s + i.amount, 0);
+  const totalCost = projExpenses.reduce((s, e) => s + e.amount, 0);
+  const netMargin = totalBilled - totalCost;
+
+  return (
+    <div className="modal-backdrop" onClick={onClose}>
+      <style>{`@page { size: ${PAGE_SIZES[pageSize]}; margin: 14mm; }`}</style>
+      <div className="modal" style={{ width: 720 }} onClick={e => e.stopPropagation()}>
+        <div className="no-print-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+          <div className="section-title" style={{ margin: 0 }}>Project Statement Preview</div>
+          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            <select value={pageSize} onChange={e => setPageSize(e.target.value)} style={{ background: "#FFFFFF", border: "1px solid #CBD5E1", borderRadius: 8, color: "#0F172A", fontSize: 13, padding: "6px 10px" }}>
+              {Object.keys(PAGE_SIZES).map(p => <option key={p}>{p}</option>)}
+            </select>
+            <button className="btn btn-primary" style={{ padding: "6px 12px", fontSize: 13 }} onClick={() => window.print()}><Printer size={14} /> Print Project Invoice</button>
+            <button className="btn" style={{ padding: 5 }} onClick={onClose}><X size={15} /></button>
+          </div>
+        </div>
+
+        <div className="print-area" style={{ background: "#ffffff", color: "#0F172A", borderRadius: 10, padding: 28, fontFamily: "Georgia, serif" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "2px solid #0F172A", paddingBottom: 14, marginBottom: 18 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+              <img src="./logo.png" alt="AdPulse Logo" style={{ maxHeight: 52, width: "auto" }} onError={(e) => { e.target.style.display = 'none'; }} />
+              <div>
+                <div style={{ fontSize: 22, fontWeight: 800, color: "#0F172A", letterSpacing: "-0.3px" }}>AdPulse IMC PVT LTD</div>
+                <div style={{ fontSize: 12, color: "#475569", fontWeight: "sans-serif" }}>Integrated Media &amp; Creative Services &middot; Karachi, Pakistan</div>
+              </div>
+            </div>
+            <div style={{ textAlign: "right" }}>
+              <div style={{ fontSize: 15, fontWeight: 800, color: "#B8860B", textTransform: "uppercase" }}>PROJECT STATEMENT</div>
+              <div className="mono" style={{ fontSize: 13, fontWeight: 700, color: "#0F172A" }}>PROJ-{project.name.replace(/\s+/g, "").toUpperCase().slice(0, 6)}</div>
+            </div>
+          </div>
+
+          <table style={{ width: "100%", fontSize: 13.5, marginBottom: 18, minWidth: 0 }}>
+            <tbody>
+              <tr><td style={{ padding: "4px 0", color: "#475569", width: 140 }}>Project Title</td><td style={{ fontWeight: 800, fontSize: 15 }}>{project.name}</td></tr>
+              <tr><td style={{ padding: "4px 0", color: "#475569" }}>Client Account</td><td style={{ fontWeight: 700 }}>{project.client}</td></tr>
+              <tr><td style={{ padding: "4px 0", color: "#475569" }}>Service Line</td><td>{project.type}</td></tr>
+              <tr><td style={{ padding: "4px 0", color: "#475569" }}>Project Timeline</td><td className="mono">{fmtDate(project.startDate)} – {fmtDate(project.endDate)}</td></tr>
+            </tbody>
+          </table>
+
+          <div style={{ fontSize: 13.5, fontWeight: 700, marginBottom: 8, color: "#0F172A" }}>Project Billing Milestones &amp; Deliverables</div>
+          <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 18, minWidth: 0 }}>
+            <thead>
+              <tr>
+                <th style={{ textAlign: "left", borderBottom: "1.5px solid #0F172A", padding: "7px 0", fontSize: 12.5, color: "#475569" }}>Date</th>
+                <th style={{ textAlign: "left", borderBottom: "1.5px solid #0F172A", padding: "7px 0", fontSize: 12.5, color: "#475569" }}>Milestone Description</th>
+                <th style={{ textAlign: "right", borderBottom: "1.5px solid #0F172A", padding: "7px 0", fontSize: 12.5, color: "#475569" }}>Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              {projInvoices.map(inv => (
+                <tr key={inv.id}>
+                  <td className="mono" style={{ padding: "9px 0", fontSize: 13 }}>{fmtDate(inv.issueDate)}</td>
+                  <td style={{ padding: "9px 0", fontSize: 13.5 }}>{inv.description}</td>
+                  <td className="mono" style={{ textAlign: "right", padding: "9px 0", fontWeight: 700, fontSize: 14 }}>{pkr(inv.amount)}</td>
+                </tr>
+              ))}
+              {projInvoices.length === 0 && (
+                <tr><td colSpan={3} style={{ textAlign: "center", padding: 14, color: "#64748B" }}>No billings logged for this project.</td></tr>
+              )}
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colSpan={2} style={{ borderTop: "2px solid #0F172A", padding: "10px 0", fontWeight: 800, fontSize: 15 }}>Total Billed Project Net</td>
+                <td className="mono" style={{ borderTop: "2px solid #0F172A", textAlign: "right", padding: "10px 0", fontWeight: 800, fontSize: 16.5, color: "#B8860B" }}>{pkr(totalBilled)}</td>
+              </tr>
+            </tfoot>
+          </table>
+
+          <div style={{ fontSize: 12.5, fontStyle: "italic", color: "#334155", marginBottom: 34, background: "#F1F5F9", padding: "10px 14px", borderRadius: 7, border: "1px solid #E2E8F0" }}>
+            Project Amount in words: <b style={{ color: "#0F172A" }}>{amountInWords(totalBilled)}</b>
+          </div>
+
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#475569", paddingTop: 12 }}>
+            <div>Project Lead: ______________</div>
+            <div>Finance Manager: ______________</div>
             <div>Approved by: ______________</div>
           </div>
         </div>

@@ -133,7 +133,7 @@ html, body, #root {
 .gateway-tab-btn {
   flex: 1;
   padding: 10px;
-  border-radius: 9px;
+  border-radius: 99px;
   border: none;
   font-size: 14.5px;
   font-weight: 600;
@@ -705,7 +705,7 @@ tr:last-child td {
 }
 
 /* ========================================================
-   PRINT ENGINE STYLES (Clean Document & Voucher Printing)
+   PRINT ENGINE STYLES (Individual Client / Project Statements)
    ======================================================== */
 
 @media print {
@@ -716,12 +716,12 @@ tr:last-child td {
     overflow: visible !important;
   }
 
-  /* Hide app navigation UI during print */
-  .sidebar, .topbar, .mobile-toggle, .btn, .no-print, .no-print-header {
+  /* Hide main application background during print */
+  .sidebar, .topbar, .mobile-toggle, .btn, .no-print, .no-print-header, .content {
     display: none !important;
   }
 
-  .erp-root, .main, .content {
+  .erp-root, .main {
     display: block !important;
     height: auto !important;
     overflow: visible !important;
