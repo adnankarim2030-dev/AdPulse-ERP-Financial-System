@@ -704,26 +704,64 @@ tr:last-child td {
   }
 }
 
-/* Print CSS */
+/* ========================================================
+   PRINT ENGINE STYLES (Clean Document & Voucher Printing)
+   ======================================================== */
+
 @media print {
-  body * {
-    visibility: hidden;
+  body, html, #root {
+    background: #ffffff !important;
+    color: #000000 !important;
+    height: auto !important;
+    overflow: visible !important;
   }
-  .print-area, .print-area * {
-    visibility: visible;
+
+  /* Hide app navigation UI during print */
+  .sidebar, .topbar, .mobile-toggle, .btn, .no-print, .no-print-header {
+    display: none !important;
   }
+
+  .erp-root, .main, .content {
+    display: block !important;
+    height: auto !important;
+    overflow: visible !important;
+    background: #ffffff !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .modal-backdrop {
+    position: static !important;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    padding: 0 !important;
+    display: block !important;
+    animation: none !important;
+  }
+
+  .modal {
+    position: static !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: transparent !important;
+    display: block !important;
+    animation: none !important;
+  }
+
   .print-area {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    padding: 24px;
+    display: block !important;
+    visibility: visible !important;
+    position: static !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
     background: #ffffff !important;
     color: #0F172A !important;
-  }
-  .no-print {
-    display: none !important;
   }
 }

@@ -2900,10 +2900,10 @@ function PayrollConfirmModal({ activeCount, totalCost, onClose, onConfirm }) {
 function PrintPreviewModal({ doc, onClose }) {
   const [pageSize, setPageSize] = useState("A4");
   return (
-    <div className="modal-backdrop no-print" onClick={onClose}>
+    <div className="modal-backdrop" onClick={onClose}>
       <style>{`@page { size: ${PAGE_SIZES[pageSize]}; margin: 14mm; }`}</style>
       <div className="modal" style={{ width: 640 }} onClick={e => e.stopPropagation()}>
-        <div className="no-print" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+        <div className="no-print-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
           <div className="section-title" style={{ margin: 0 }}>Print Preview</div>
           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
             <select value={pageSize} onChange={e => setPageSize(e.target.value)} style={{ background: "#FFFFFF", border: "1px solid #CBD5E1", borderRadius: 8, color: "#0F172A", fontSize: 13, padding: "6px 10px" }}>
