@@ -5,7 +5,7 @@ import {
   TrendingUp, TrendingDown, ScrollText, Building2, ClipboardList,
   UploadCloud, Printer, MapPin, Ruler, Loader2, FileCheck2,
   Briefcase, Video, PartyPopper, Megaphone, Users, Newspaper,
-  ChevronRight, Coins, Search, Download
+  ChevronRight, Coins, Menu
 } from "lucide-react";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -91,15 +91,6 @@ function amountInWords(num) {
   if (thousand) parts.push(threeDigitWords(thousand) + " Thousand");
   if (hundred) parts.push(threeDigitWords(hundred));
   return parts.join(" ") + " Rupees Only";
-}
-
-function fileToBase64(file) {
-  return new Promise((resolve, reject) => {
-    const r = new FileReader();
-    r.onload = () => resolve(r.result.split(",")[1]);
-    r.onerror = () => reject(new Error("Could not read file"));
-    r.readAsDataURL(file);
-  });
 }
 
 const EXPENSE_CATEGORIES = ["Ad Spend", "Software", "Rent", "Contractor", "Utilities", "Production Vendor", "Other"];
@@ -287,10 +278,10 @@ function StatusBadge({ status }) {
   return (
     <span style={{
       display: "inline-flex", alignItems: "center", gap: 5,
-      color: s.color, background: s.bg, padding: "4px 10px",
-      borderRadius: 20, fontSize: 12, fontWeight: 600, letterSpacing: 0.2,
+      color: s.color, background: s.bg, padding: "3px 9px",
+      borderRadius: 20, fontSize: 11.5, fontWeight: 600, letterSpacing: 0.2, whiteSpace: "nowrap",
     }}>
-      <Icon size={12.5} /> {status}
+      <Icon size={12} /> {status}
     </span>
   );
 }
@@ -301,10 +292,10 @@ function ProjectTypeBadge({ type }) {
   return (
     <span style={{
       display: "inline-flex", alignItems: "center", gap: 5,
-      color: m.color, background: m.color + "22", padding: "4px 10px",
-      borderRadius: 20, fontSize: 12, fontWeight: 600, letterSpacing: 0.2, whiteSpace: "nowrap",
+      color: m.color, background: m.color + "22", padding: "3px 9px",
+      borderRadius: 20, fontSize: 11.5, fontWeight: 600, letterSpacing: 0.2, whiteSpace: "nowrap",
     }}>
-      <Icon size={12} /> {m.label}
+      <Icon size={11.5} /> {m.label}
     </span>
   );
 }
@@ -321,25 +312,25 @@ function ProjectStatusBadge({ status }) {
   return (
     <span style={{
       display: "inline-flex", alignItems: "center", gap: 5,
-      color: s.color, background: s.bg, padding: "4px 10px",
-      borderRadius: 20, fontSize: 12, fontWeight: 600, letterSpacing: 0.2,
+      color: s.color, background: s.bg, padding: "3px 9px",
+      borderRadius: 20, fontSize: 11.5, fontWeight: 600, letterSpacing: 0.2, whiteSpace: "nowrap",
     }}>
-      <Icon size={12.5} /> {status}
+      <Icon size={12} /> {status}
     </span>
   );
 }
 
 function KpiCard({ label, value, sub, icon: Icon, accent }) {
   return (
-    <div className="card" style={{ padding: "20px 22px" }}>
+    <div className="card" style={{ padding: "16px 18px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
         <div>
-          <div style={{ fontSize: 11.5, color: "var(--ink-muted)", fontWeight: 600, textTransform: "uppercase", letterSpacing: 0.8 }}>{label}</div>
-          <div className="mono" style={{ fontSize: 24, fontWeight: 700, marginTop: 8, color: "var(--ink)" }}>{value}</div>
-          {sub && <div style={{ fontSize: 12, color: "var(--ink-muted)", marginTop: 6 }}>{sub}</div>}
+          <div style={{ fontSize: 11, color: "var(--ink-muted)", fontWeight: 600, textTransform: "uppercase", letterSpacing: 0.8 }}>{label}</div>
+          <div className="mono" style={{ fontSize: 21, fontWeight: 700, marginTop: 6, color: "var(--ink)" }}>{value}</div>
+          {sub && <div style={{ fontSize: 11.5, color: "var(--ink-muted)", marginTop: 4 }}>{sub}</div>}
         </div>
-        <div style={{ background: accent + "22", color: accent, borderRadius: 10, padding: 10, display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <Icon size={20} />
+        <div style={{ background: accent + "22", color: accent, borderRadius: 9, padding: 8, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <Icon size={18} />
         </div>
       </div>
     </div>
@@ -379,6 +370,7 @@ function LedgerStrip({ rows, showAccounts }) {
 
 export default function App() {
   const [tab, setTab] = useState("dashboard");
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [seedData] = useState(buildInitialData);
   const [journal, setJournal] = useState(seedData.journal);
   const [invoices, setInvoices] = useState(seedData.invoices);
@@ -671,7 +663,7 @@ export default function App() {
     const docId = uid();
     setDocuments(d => [{ id: docId, fileName: file.name, status: "processing" }, ...d]);
     try {
-      await new Promise(r => setTimeout(r, 1200)); // realistic parse delay simulation
+      await new Promise(r => setTimeout(r, 1200));
       const filenameLower = file.name.toLowerCase();
       let extractedData = {
         documentType: filenameLower.includes("quote") ? "Quotation" : "Invoice",
@@ -706,7 +698,7 @@ export default function App() {
         { account: "bank", debit: 0, credit: amount },
       ], "DOC-" + doc.id.toUpperCase());
     } else if (extracted.documentType === "Quotation") {
-      // quotations are saved as reference
+      // quotations saved for reference
     } else {
       createVoucher("SV", { date: extracted.date, party: extracted.party, description: extracted.description, amount });
     }
@@ -727,7 +719,13 @@ export default function App() {
 
   return (
     <div className="erp-root">
-      <aside className="sidebar">
+      {/* Mobile Backdrop Overlay */}
+      {mobileNavOpen && (
+        <div className="sidebar-overlay" onClick={() => setMobileNavOpen(false)} />
+      )}
+
+      {/* Sidebar Navigation */}
+      <aside className={`sidebar ${mobileNavOpen ? "mobile-open" : ""}`}>
         <div className="brand">
           <div className="brand-mark">AP</div>
           <div>
@@ -736,12 +734,12 @@ export default function App() {
           </div>
         </div>
         {NAV.map(n => (
-          <button key={n.key} className={"nav-item" + (tab === n.key ? " active" : "")} onClick={() => setTab(n.key)}>
+          <button key={n.key} className={"nav-item" + (tab === n.key ? " active" : "")} onClick={() => { setTab(n.key); setMobileNavOpen(false); }}>
             <n.icon size={17} /> {n.label}
           </button>
         ))}
         <div style={{ marginTop: "auto", padding: "14px 10px", borderTop: "1px solid var(--rule)", fontSize: 11.5, color: "var(--ink-muted)" }}>
-          Team: Karachi Hub &middot; 4 Active Users
+          Karachi Agency Hub &middot; 4 Users
         </div>
       </aside>
 
@@ -749,14 +747,19 @@ export default function App() {
         {tab === "dashboard" && (
           <>
             <div className="topbar">
-              <div>
-                <h1>Dashboard Overview</h1>
-                <p>Financial performance &amp; ledger activity as of {fmtDate(TODAY)}</p>
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <button className="mobile-toggle" onClick={() => setMobileNavOpen(true)}>
+                  <Menu size={20} />
+                </button>
+                <div>
+                  <h1>Dashboard Overview</h1>
+                  <p>Financial performance as of {fmtDate(TODAY)}</p>
+                </div>
               </div>
-              <div style={{ display: "flex", gap: 10 }}>
-                <button className="btn" onClick={() => setShowExpenseForm(true)}><Plus size={15} /> New Expense</button>
-                <button className="btn" onClick={() => setShowInvoiceForm(true)}><Plus size={15} /> New Invoice</button>
-                <button className="btn btn-primary" onClick={() => setShowProjectForm(true)}><Plus size={15} /> New Project</button>
+              <div className="topbar-actions">
+                <button className="btn" onClick={() => setShowExpenseForm(true)}><Plus size={14} /> Expense</button>
+                <button className="btn" onClick={() => setShowInvoiceForm(true)}><Plus size={14} /> Invoice</button>
+                <button className="btn btn-primary" onClick={() => setShowProjectForm(true)}><Plus size={14} /> Project</button>
               </div>
             </div>
             <div className="content">
@@ -767,9 +770,9 @@ export default function App() {
                 <KpiCard label="Net Profit (Period)" value={pkr(netProfit)} sub={`Operating Costs ${pkr(expenseBalance)}`} icon={netProfit >= 0 ? TrendingUp : TrendingDown} accent={netProfit >= 0 ? "var(--jade)" : "var(--rose)"} />
               </div>
 
-              <div className="card" style={{ padding: 22, marginBottom: 20 }}>
-                <div className="section-title"><TrendingUp size={18} color="var(--gold)" /> Cash &amp; Liquidity Position Trend</div>
-                <ResponsiveContainer width="100%" height={230}>
+              <div className="card" style={{ padding: 18, marginBottom: 18 }}>
+                <div className="section-title"><TrendingUp size={16} color="var(--gold)" /> Cash &amp; Liquidity Position Trend</div>
+                <ResponsiveContainer width="100%" height={210}>
                   <AreaChart data={cashSeries}>
                     <defs>
                       <linearGradient id="cashFill" x1="0" y1="0" x2="0" y2="1">
@@ -778,16 +781,16 @@ export default function App() {
                       </linearGradient>
                     </defs>
                     <CartesianGrid stroke="#234168" strokeDasharray="3 3" vertical={false} />
-                    <XAxis dataKey="date" stroke="#8E9EB5" fontSize={11.5} />
-                    <YAxis stroke="#8E9EB5" fontSize={11.5} tickFormatter={v => (v / 1000) + "k"} />
-                    <Tooltip contentStyle={{ background: "#0E1D31", border: "1px solid #2E5280", borderRadius: 8, fontSize: 12.5 }} formatter={v => pkr(v)} />
+                    <XAxis dataKey="date" stroke="#8E9EB5" fontSize={11} />
+                    <YAxis stroke="#8E9EB5" fontSize={11} tickFormatter={v => (v / 1000) + "k"} />
+                    <Tooltip contentStyle={{ background: "#0E1D31", border: "1px solid #2E5280", borderRadius: 8, fontSize: 12 }} formatter={v => pkr(v)} />
                     <Area type="monotone" dataKey="balance" stroke="#27C383" strokeWidth={2.5} fill="url(#cashFill)" />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
 
-              <div className="card" style={{ padding: 22 }}>
-                <div className="section-title"><ScrollText size={18} color="var(--gold)" /> Recent Double-Entry Ledger Postings</div>
+              <div className="card" style={{ padding: 18 }}>
+                <div className="section-title"><ScrollText size={16} color="var(--gold)" /> Recent Double-Entry Ledger Postings</div>
                 <LedgerStrip rows={recentEntries} showAccounts />
               </div>
             </div>
@@ -797,77 +800,86 @@ export default function App() {
         {tab === "projects" && (
           <>
             <div className="topbar">
-              <div>
-                <h1>Project Management &amp; Service Lines</h1>
-                <p>Track client projects, billing, vendor costs &amp; profit margins across TVC, Events, OOH, Digital, BTL &amp; Print</p>
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <button className="mobile-toggle" onClick={() => setMobileNavOpen(true)}>
+                  <Menu size={20} />
+                </button>
+                <div>
+                  <h1>Project Management</h1>
+                  <p>Track client projects &amp; margins across TVC, Events, OOH, Digital, BTL &amp; Print</p>
+                </div>
               </div>
-              <button className="btn btn-primary" onClick={() => setShowProjectForm(true)}><Plus size={15} /> New Project</button>
+              <div className="topbar-actions">
+                <button className="btn btn-primary" onClick={() => setShowProjectForm(true)}><Plus size={14} /> New Project</button>
+              </div>
             </div>
             <div className="content">
               <div className="grid-kpi">
                 <KpiCard label="Active Projects" value={projectsWithStats.filter(p => p.status !== "Completed").length} sub={`${projects.length} total across agency`} icon={Briefcase} accent="var(--gold)" />
                 <KpiCard label="Total Billed" value={pkr(projectsWithStats.reduce((s, p) => s + p.billed, 0))} sub="Total Client Invoices" icon={FileText} accent="var(--jade)" />
-                <KpiCard label="Total Production Cost" value={pkr(projectsWithStats.reduce((s, p) => s + p.cost, 0))} sub="Vendor & Production Outlays" icon={Coins} accent="var(--rose)" />
+                <KpiCard label="Total Production Cost" value={pkr(projectsWithStats.reduce((s, p) => s + p.cost, 0))} sub="Vendor Outlays" icon={Coins} accent="var(--rose)" />
                 <KpiCard label="Agency Net Margin" value={pkr(projectsWithStats.reduce((s, p) => s + p.margin, 0))} sub="Billed Less Costs" icon={TrendingUp} accent="var(--jade)" />
               </div>
 
-              <div className="card" style={{ padding: "14px 18px", marginBottom: 18, display: "flex", gap: 14, flexWrap: "wrap", alignItems: "center" }}>
-                <div className="field" style={{ margin: 0 }}>
+              <div className="card" style={{ padding: "12px 16px", marginBottom: 16, display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
+                <div className="field" style={{ margin: 0, flex: 1, minWidth: 140 }}>
                   <label>Service Line</label>
                   <select value={projectFilters.type} onChange={e => setProjectFilters(f => ({ ...f, type: e.target.value }))}>
                     <option>All</option>
                     {PROJECT_TYPES.map(t => <option key={t.key}>{t.key}</option>)}
                   </select>
                 </div>
-                <div className="field" style={{ margin: 0 }}>
+                <div className="field" style={{ margin: 0, flex: 1, minWidth: 120 }}>
                   <label>Status</label>
                   <select value={projectFilters.status} onChange={e => setProjectFilters(f => ({ ...f, status: e.target.value }))}>
                     <option>All</option>
                     {PROJECT_STATUSES.map(s => <option key={s}>{s}</option>)}
                   </select>
                 </div>
-                <div className="field" style={{ margin: 0, flex: 1, minWidth: 200 }}>
+                <div className="field" style={{ margin: 0, flex: 2, minWidth: 180 }}>
                   <label>Search Client / Project</label>
                   <input value={projectFilters.client} onChange={e => setProjectFilters(f => ({ ...f, client: e.target.value }))} placeholder="Search name or client…" />
                 </div>
               </div>
 
               <div className="card">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Project</th><th>Client</th><th>Service Line</th><th>Timeline</th><th>Status</th>
-                      <th style={{ textAlign: "right" }}>Billed</th><th style={{ textAlign: "right" }}>Cost</th>
-                      <th style={{ textAlign: "right" }}>Margin</th><th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {projectsWithStats
-                      .filter(p => projectFilters.type === "All" || p.type === projectFilters.type)
-                      .filter(p => projectFilters.status === "All" || p.status === projectFilters.status)
-                      .filter(p => !projectFilters.client || p.client.toLowerCase().includes(projectFilters.client.toLowerCase()) || p.name.toLowerCase().includes(projectFilters.client.toLowerCase()))
-                      .map(p => (
-                        <tr key={p.id}>
-                          <td style={{ fontWeight: 600, color: "var(--ink)" }}>{p.name}</td>
-                          <td style={{ color: "var(--ink-muted)" }}>{p.client}</td>
-                          <td><ProjectTypeBadge type={p.type} /></td>
-                          <td className="mono" style={{ fontSize: 12 }}>{fmtDate(p.startDate)} – {fmtDate(p.endDate)}</td>
-                          <td><ProjectStatusBadge status={p.status} /></td>
-                          <td className="mono" style={{ textAlign: "right" }}>{pkr(p.billed)}</td>
-                          <td className="mono" style={{ textAlign: "right", color: "var(--rose)" }}>{pkr(p.cost)}</td>
-                          <td className="mono" style={{ textAlign: "right", fontWeight: 600, color: p.margin >= 0 ? "var(--jade)" : "var(--rose)" }}>{pkr(p.margin)}</td>
-                          <td>
-                            <button className="btn" style={{ padding: "5px 11px", fontSize: 12 }} onClick={() => setSelectedProjectId(p.id)}>
-                              Manage <ChevronRight size={13} />
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    {projectsWithStats.length === 0 && (
-                      <tr><td colSpan={9} style={{ textAlign: "center", color: "var(--ink-muted)", padding: 28 }}>No projects found matching criteria.</td></tr>
-                    )}
-                  </tbody>
-                </table>
+                <div className="table-responsive">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Project</th><th>Client</th><th>Service Line</th><th>Timeline</th><th>Status</th>
+                        <th style={{ textAlign: "right" }}>Billed</th><th style={{ textAlign: "right" }}>Cost</th>
+                        <th style={{ textAlign: "right" }}>Margin</th><th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {projectsWithStats
+                        .filter(p => projectFilters.type === "All" || p.type === projectFilters.type)
+                        .filter(p => projectFilters.status === "All" || p.status === projectFilters.status)
+                        .filter(p => !projectFilters.client || p.client.toLowerCase().includes(projectFilters.client.toLowerCase()) || p.name.toLowerCase().includes(projectFilters.client.toLowerCase()))
+                        .map(p => (
+                          <tr key={p.id}>
+                            <td style={{ fontWeight: 600, color: "var(--ink)" }}>{p.name}</td>
+                            <td style={{ color: "var(--ink-muted)" }}>{p.client}</td>
+                            <td><ProjectTypeBadge type={p.type} /></td>
+                            <td className="mono" style={{ fontSize: 11.5 }}>{fmtDate(p.startDate)} – {fmtDate(p.endDate)}</td>
+                            <td><ProjectStatusBadge status={p.status} /></td>
+                            <td className="mono" style={{ textAlign: "right" }}>{pkr(p.billed)}</td>
+                            <td className="mono" style={{ textAlign: "right", color: "var(--rose)" }}>{pkr(p.cost)}</td>
+                            <td className="mono" style={{ textAlign: "right", fontWeight: 600, color: p.margin >= 0 ? "var(--jade)" : "var(--rose)" }}>{pkr(p.margin)}</td>
+                            <td>
+                              <button className="btn" style={{ padding: "4px 9px", fontSize: 11.5 }} onClick={() => setSelectedProjectId(p.id)}>
+                                Manage <ChevronRight size={12} />
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      {projectsWithStats.length === 0 && (
+                        <tr><td colSpan={9} style={{ textAlign: "center", color: "var(--ink-muted)", padding: 24 }}>No projects found matching criteria.</td></tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </>
@@ -876,48 +888,57 @@ export default function App() {
         {tab === "invoices" && (
           <>
             <div className="topbar">
-              <div>
-                <h1>Invoices &amp; Receivables</h1>
-                <p>Client billing records, payment status &amp; aging tracking</p>
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <button className="mobile-toggle" onClick={() => setMobileNavOpen(true)}>
+                  <Menu size={20} />
+                </button>
+                <div>
+                  <h1>Invoices &amp; Receivables</h1>
+                  <p>Client billing records &amp; payment status</p>
+                </div>
               </div>
-              <button className="btn btn-primary" onClick={() => setShowInvoiceForm(true)}><Plus size={15} /> New Invoice</button>
+              <div className="topbar-actions">
+                <button className="btn btn-primary" onClick={() => setShowInvoiceForm(true)}><Plus size={14} /> New Invoice</button>
+              </div>
             </div>
             <div className="content">
               <div className="card">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Client Name</th><th>Description</th><th>Service Project</th><th>Issue Date</th><th>Due Date</th>
-                      <th style={{ textAlign: "right" }}>Amount</th><th>Status</th><th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {invoicesWithStatus.map(inv => (
-                      <tr key={inv.id}>
-                        <td style={{ fontWeight: 600 }}>{inv.client}</td>
-                        <td style={{ color: "var(--ink-muted)" }}>{inv.description}</td>
-                        <td>{inv.projectId ? <ProjectTypeBadge type={projects.find(p => p.id === inv.projectId)?.type} /> : <span style={{ color: "var(--ink-muted)" }}>—</span>}</td>
-                        <td className="mono">{fmtDate(inv.issueDate)}</td>
-                        <td className="mono">{fmtDate(inv.dueDate)}</td>
-                        <td className="mono" style={{ textAlign: "right", fontWeight: 600 }}>{pkr(inv.amount)}</td>
-                        <td><StatusBadge status={inv.status} /></td>
-                        <td style={{ display: "flex", gap: 8 }}>
-                          {!inv.paid && (
-                            <button className="btn" style={{ padding: "5px 10px", fontSize: 12 }} onClick={() => markPaid(inv, "Bank")}>
-                              Mark Paid
-                            </button>
-                          )}
-                          <button className="btn" style={{ padding: "5px 9px", fontSize: 12 }}
-                            onClick={() => setPrintDoc({ voucherNo: "INV-" + inv.id.toUpperCase(), type: "Invoice", date: inv.issueDate, party: inv.client, description: inv.description, amount: inv.amount })}>
-                            <Printer size={14} />
-                          </button>
-                        </td>
+                <div className="table-responsive">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Client Name</th><th>Description</th><th>Service Project</th><th>Issue Date</th><th>Due Date</th>
+                        <th style={{ textAlign: "right" }}>Amount</th><th>Status</th><th>Actions</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {invoicesWithStatus.map(inv => (
+                        <tr key={inv.id}>
+                          <td style={{ fontWeight: 600 }}>{inv.client}</td>
+                          <td style={{ color: "var(--ink-muted)" }}>{inv.description}</td>
+                          <td>{inv.projectId ? <ProjectTypeBadge type={projects.find(p => p.id === inv.projectId)?.type} /> : <span style={{ color: "var(--ink-muted)" }}>—</span>}</td>
+                          <td className="mono">{fmtDate(inv.issueDate)}</td>
+                          <td className="mono">{fmtDate(inv.dueDate)}</td>
+                          <td className="mono" style={{ textAlign: "right", fontWeight: 600 }}>{pkr(inv.amount)}</td>
+                          <td><StatusBadge status={inv.status} /></td>
+                          <td style={{ display: "flex", gap: 6 }}>
+                            {!inv.paid && (
+                              <button className="btn" style={{ padding: "4px 8px", fontSize: 11.5 }} onClick={() => markPaid(inv, "Bank")}>
+                                Mark Paid
+                              </button>
+                            )}
+                            <button className="btn" style={{ padding: "4px 7px", fontSize: 11.5 }}
+                              onClick={() => setPrintDoc({ voucherNo: "INV-" + inv.id.toUpperCase(), type: "Invoice", date: inv.issueDate, party: inv.client, description: inv.description, amount: inv.amount })}>
+                              <Printer size={13} />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
-              <div style={{ marginTop: 16, fontSize: 13, color: "var(--ink-muted)", display: "flex", gap: 20 }}>
+              <div style={{ marginTop: 14, fontSize: 12.5, color: "var(--ink-muted)", display: "flex", gap: 16, flexWrap: "wrap" }}>
                 <span>Total Outstanding: <span className="mono" style={{ color: "var(--amber)", fontWeight: 700 }}>{pkr(unpaidTotal)}</span></span>
                 <span>Overdue: <span className="mono" style={{ color: "var(--rose)", fontWeight: 700 }}>{pkr(overdueTotal)}</span></span>
               </div>
@@ -928,34 +949,43 @@ export default function App() {
         {tab === "expenses" && (
           <>
             <div className="topbar">
-              <div>
-                <h1>Operating Expenses &amp; Vendor Payments</h1>
-                <p>Track vendor bills, ad spend, rent, software and utility costs</p>
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <button className="mobile-toggle" onClick={() => setMobileNavOpen(true)}>
+                  <Menu size={20} />
+                </button>
+                <div>
+                  <h1>Operating Expenses</h1>
+                  <p>Track vendor bills, software, and utility costs</p>
+                </div>
               </div>
-              <button className="btn btn-primary" onClick={() => setShowExpenseForm(true)}><Plus size={15} /> New Expense</button>
+              <div className="topbar-actions">
+                <button className="btn btn-primary" onClick={() => setShowExpenseForm(true)}><Plus size={14} /> New Expense</button>
+              </div>
             </div>
             <div className="content">
               <div className="card">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Vendor / Payee</th><th>Category</th><th>Associated Project</th><th>Date</th><th>Paid Via</th>
-                      <th style={{ textAlign: "right" }}>Amount</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {expenses.map(exp => (
-                      <tr key={exp.id}>
-                        <td style={{ fontWeight: 600 }}>{exp.vendor}</td>
-                        <td><span className="badge-mini">{exp.category}</span></td>
-                        <td>{exp.projectId ? (projects.find(p => p.id === exp.projectId)?.name || "—") : <span style={{ color: "var(--ink-muted)" }}>—</span>}</td>
-                        <td className="mono">{fmtDate(exp.date)}</td>
-                        <td>{exp.paidVia}</td>
-                        <td className="mono" style={{ textAlign: "right", color: "var(--rose)", fontWeight: 600 }}>{pkr(exp.amount)}</td>
+                <div className="table-responsive">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Vendor / Payee</th><th>Category</th><th>Associated Project</th><th>Date</th><th>Paid Via</th>
+                        <th style={{ textAlign: "right" }}>Amount</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {expenses.map(exp => (
+                        <tr key={exp.id}>
+                          <td style={{ fontWeight: 600 }}>{exp.vendor}</td>
+                          <td><span className="badge-mini">{exp.category}</span></td>
+                          <td>{exp.projectId ? (projects.find(p => p.id === exp.projectId)?.name || "—") : <span style={{ color: "var(--ink-muted)" }}>—</span>}</td>
+                          <td className="mono">{fmtDate(exp.date)}</td>
+                          <td>{exp.paidVia}</td>
+                          <td className="mono" style={{ textAlign: "right", color: "var(--rose)", fontWeight: 600 }}>{pkr(exp.amount)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </>
@@ -964,81 +994,88 @@ export default function App() {
         {tab === "ooh" && (
           <>
             <div className="topbar">
-              <div>
-                <h1>OOH Billboard &amp; Hoarding Inventory</h1>
-                <p>Outdoor media site rentals, availability, client project assignments</p>
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <button className="mobile-toggle" onClick={() => setMobileNavOpen(true)}>
+                  <Menu size={20} />
+                </button>
+                <div>
+                  <h1>OOH Billboard Inventory</h1>
+                  <p>Outdoor media site rentals &amp; project bookings</p>
+                </div>
               </div>
             </div>
             <div className="content">
-              <div className="card" style={{ padding: "14px 18px", marginBottom: 18, display: "flex", gap: 14, flexWrap: "wrap", alignItems: "center" }}>
-                <div className="field" style={{ margin: 0 }}>
-                  <label>Area Location</label>
+              <div className="card" style={{ padding: "12px 16px", marginBottom: 16, display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
+                <div className="field" style={{ margin: 0, flex: 1, minWidth: 120 }}>
+                  <label>Area</label>
                   <select value={oohFilters.area} onChange={e => setOohFilters(f => ({ ...f, area: e.target.value }))}>
                     <option>All</option>
                     {[...new Set(hoardings.map(h => h.area))].map(a => <option key={a}>{a}</option>)}
                   </select>
                 </div>
-                <div className="field" style={{ margin: 0 }}>
-                  <label>Dimensions / Size</label>
+                <div className="field" style={{ margin: 0, flex: 1, minWidth: 110 }}>
+                  <label>Size</label>
                   <select value={oohFilters.size} onChange={e => setOohFilters(f => ({ ...f, size: e.target.value }))}>
                     <option>All</option>
                     {[...new Set(hoardings.map(h => h.size))].map(s => <option key={s}>{s}</option>)}
                   </select>
                 </div>
-                <div className="field" style={{ margin: 0 }}>
+                <div className="field" style={{ margin: 0, flex: 1, minWidth: 120 }}>
                   <label>Availability</label>
                   <select value={oohFilters.status} onChange={e => setOohFilters(f => ({ ...f, status: e.target.value }))}>
                     <option>All</option><option>Available</option><option>Booked</option><option>Maintenance</option>
                   </select>
                 </div>
-                <div className="field" style={{ margin: 0 }}>
-                  <label>Max Monthly Rent (PKR)</label>
-                  <input type="number" placeholder="No Limit" value={oohFilters.maxPrice} onChange={e => setOohFilters(f => ({ ...f, maxPrice: e.target.value }))} style={{ width: 140 }} />
+                <div className="field" style={{ margin: 0, flex: 1, minWidth: 130 }}>
+                  <label>Max Monthly Rent</label>
+                  <input type="number" placeholder="No Limit" value={oohFilters.maxPrice} onChange={e => setOohFilters(f => ({ ...f, maxPrice: e.target.value }))} />
                 </div>
               </div>
 
               <div className="card">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Site Identifier</th><th>Area</th><th>Size</th><th style={{ textAlign: "right" }}>Monthly Rate</th>
-                      <th>Status</th><th>Assigned Client / Campaign</th><th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {hoardings
-                      .filter(h => oohFilters.area === "All" || h.area === oohFilters.area)
-                      .filter(h => oohFilters.size === "All" || h.size === oohFilters.size)
-                      .filter(h => oohFilters.status === "All" || h.status === oohFilters.status)
-                      .filter(h => !oohFilters.maxPrice || h.pricePerMonth <= Number(oohFilters.maxPrice))
-                      .map(h => (
-                        <tr key={h.id}>
-                          <td style={{ fontWeight: 600 }}>{h.name}</td>
-                          <td><span className="badge-mini"><MapPin size={11} style={{ verticalAlign: -1 }} /> {h.area}</span></td>
-                          <td><span className="badge-mini"><Ruler size={11} style={{ verticalAlign: -1 }} /> {h.size}</span></td>
-                          <td className="mono" style={{ textAlign: "right", fontWeight: 600 }}>{pkr(h.pricePerMonth)}</td>
-                          <td><StatusBadge status={h.status === "Available" ? "Paid" : h.status === "Booked" ? "Unpaid" : "Overdue"} />
-                            <span style={{ marginLeft: 6, fontSize: 11.5, color: "var(--ink-muted)" }}>{h.status}</span>
-                          </td>
-                          <td>
-                            {h.client
-                              ? <button className="btn" style={{ padding: "4px 9px", fontSize: 12, background: "transparent" }}
-                                  onClick={() => h.projectId && setSelectedProjectId(h.projectId)}>
-                                  {h.client} — {h.project} {h.projectId && <ChevronRight size={12} />}
-                                </button>
-                              : <span style={{ color: "var(--ink-muted)" }}>—</span>}
-                          </td>
-                          <td>
-                            {h.status === "Available"
-                              ? <button className="btn btn-primary" style={{ padding: "5px 12px", fontSize: 12 }} onClick={() => setBookingHoarding(h)}>Book Site</button>
-                              : h.status === "Booked"
-                                ? <button className="btn" style={{ padding: "5px 10px", fontSize: 12 }} onClick={() => releaseHoarding(h)}>Release</button>
-                                : null}
-                          </td>
-                        </tr>
-                      ))}
-                  </tbody>
-                </table>
+                <div className="table-responsive">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Site Identifier</th><th>Area</th><th>Size</th><th style={{ textAlign: "right" }}>Monthly Rate</th>
+                        <th>Status</th><th>Assigned Client / Campaign</th><th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {hoardings
+                        .filter(h => oohFilters.area === "All" || h.area === oohFilters.area)
+                        .filter(h => oohFilters.size === "All" || h.size === oohFilters.size)
+                        .filter(h => oohFilters.status === "All" || h.status === oohFilters.status)
+                        .filter(h => !oohFilters.maxPrice || h.pricePerMonth <= Number(oohFilters.maxPrice))
+                        .map(h => (
+                          <tr key={h.id}>
+                            <td style={{ fontWeight: 600 }}>{h.name}</td>
+                            <td><span className="badge-mini"><MapPin size={10} style={{ verticalAlign: -1 }} /> {h.area}</span></td>
+                            <td><span className="badge-mini"><Ruler size={10} style={{ verticalAlign: -1 }} /> {h.size}</span></td>
+                            <td className="mono" style={{ textAlign: "right", fontWeight: 600 }}>{pkr(h.pricePerMonth)}</td>
+                            <td><StatusBadge status={h.status === "Available" ? "Paid" : h.status === "Booked" ? "Unpaid" : "Overdue"} />
+                              <span style={{ marginLeft: 5, fontSize: 11, color: "var(--ink-muted)" }}>{h.status}</span>
+                            </td>
+                            <td>
+                              {h.client
+                                ? <button className="btn" style={{ padding: "3px 8px", fontSize: 11.5, background: "transparent" }}
+                                    onClick={() => h.projectId && setSelectedProjectId(h.projectId)}>
+                                    {h.client} — {h.project} {h.projectId && <ChevronRight size={11} />}
+                                  </button>
+                                : <span style={{ color: "var(--ink-muted)" }}>—</span>}
+                            </td>
+                            <td>
+                              {h.status === "Available"
+                                ? <button className="btn btn-primary" style={{ padding: "4px 10px", fontSize: 11.5 }} onClick={() => setBookingHoarding(h)}>Book Site</button>
+                                : h.status === "Booked"
+                                  ? <button className="btn" style={{ padding: "4px 8px", fontSize: 11.5 }} onClick={() => releaseHoarding(h)}>Release</button>
+                                  : null}
+                            </td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </>
@@ -1047,42 +1084,51 @@ export default function App() {
         {tab === "vouchers" && (
           <>
             <div className="topbar">
-              <div>
-                <h1>Financial Vouchers</h1>
-                <p>Create &amp; print Journal (JV), Payment (PV), Receipt (RV), and Sales (SV) vouchers</p>
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <button className="mobile-toggle" onClick={() => setMobileNavOpen(true)}>
+                  <Menu size={20} />
+                </button>
+                <div>
+                  <h1>Financial Vouchers</h1>
+                  <p>JV, Payment, Receipt, and Sales vouchers</p>
+                </div>
               </div>
-              <button className="btn btn-primary" onClick={() => { setVoucherDefaultType("JV"); setShowVoucherForm(true); }}><Plus size={15} /> New Voucher</button>
+              <div className="topbar-actions">
+                <button className="btn btn-primary" onClick={() => { setVoucherDefaultType("JV"); setShowVoucherForm(true); }}><Plus size={14} /> New Voucher</button>
+              </div>
             </div>
             <div className="content">
               <div className="card">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Voucher #</th><th>Voucher Type</th><th>Date</th><th>Party / Payee</th><th>Description</th>
-                      <th style={{ textAlign: "right" }}>Amount</th><th>Print</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {vouchers.length === 0 && (
-                      <tr><td colSpan={7} style={{ color: "var(--ink-muted)", textAlign: "center", padding: 24 }}>No custom vouchers generated yet — create a Journal, Payment, Receipt, or Sales voucher.</td></tr>
-                    )}
-                    {vouchers.map(v => (
-                      <tr key={v.id}>
-                        <td className="mono" style={{ fontWeight: 700, color: "var(--gold)" }}>{v.voucherNo}</td>
-                        <td><span className="badge-mini">{VOUCHER_TYPES[v.type]}</span></td>
-                        <td className="mono">{fmtDate(v.date)}</td>
-                        <td>{v.party || "—"}</td>
-                        <td style={{ color: "var(--ink-muted)" }}>{v.description}</td>
-                        <td className="mono" style={{ textAlign: "right", fontWeight: 600 }}>{pkr(v.amount)}</td>
-                        <td>
-                          <button className="btn" style={{ padding: "5px 9px", fontSize: 12 }} onClick={() => setPrintDoc(v)}>
-                            <Printer size={14} />
-                          </button>
-                        </td>
+                <div className="table-responsive">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Voucher #</th><th>Voucher Type</th><th>Date</th><th>Party / Payee</th><th>Description</th>
+                        <th style={{ textAlign: "right" }}>Amount</th><th>Print</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {vouchers.length === 0 && (
+                        <tr><td colSpan={7} style={{ color: "var(--ink-muted)", textAlign: "center", padding: 20 }}>No custom vouchers generated yet — create a Journal, Payment, Receipt, or Sales voucher.</td></tr>
+                      )}
+                      {vouchers.map(v => (
+                        <tr key={v.id}>
+                          <td className="mono" style={{ fontWeight: 700, color: "var(--gold)" }}>{v.voucherNo}</td>
+                          <td><span className="badge-mini">{VOUCHER_TYPES[v.type]}</span></td>
+                          <td className="mono">{fmtDate(v.date)}</td>
+                          <td>{v.party || "—"}</td>
+                          <td style={{ color: "var(--ink-muted)" }}>{v.description}</td>
+                          <td className="mono" style={{ textAlign: "right", fontWeight: 600 }}>{pkr(v.amount)}</td>
+                          <td>
+                            <button className="btn" style={{ padding: "4px 7px", fontSize: 11.5 }} onClick={() => setPrintDoc(v)}>
+                              <Printer size={13} />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </>
@@ -1091,59 +1137,64 @@ export default function App() {
         {tab === "documents" && (
           <>
             <div className="topbar">
-              <div>
-                <h1>AI Document Ingestion</h1>
-                <p>Upload vendor invoices &amp; client quotations for automatic ledger extraction</p>
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <button className="mobile-toggle" onClick={() => setMobileNavOpen(true)}>
+                  <Menu size={20} />
+                </button>
+                <div>
+                  <h1>AI Document Ingestion</h1>
+                  <p>Upload vendor invoices &amp; client quotations for automatic ledger extraction</p>
+                </div>
               </div>
             </div>
             <div className="content">
-              <div className="card" style={{ padding: 28, marginBottom: 20, textAlign: "center", border: "2px dashed var(--rule)" }}>
-                <UploadCloud size={32} color="var(--gold)" style={{ marginBottom: 10 }} />
-                <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 6 }}>Upload Invoice, Quotation, or Receipt</div>
-                <div style={{ fontSize: 12.5, marginBottom: 14, color: "var(--ink-muted)", maxWidth: 500, margin: "0 auto 16px" }}>
-                  Upload an image or PDF document. The intelligent extraction parser reads the party, date, amount, and line item details to draft direct ledger postings.
+              <div className="card" style={{ padding: 22, marginBottom: 18, textAlign: "center", border: "2px dashed var(--rule)" }}>
+                <UploadCloud size={28} color="var(--gold)" style={{ marginBottom: 8 }} />
+                <div style={{ fontSize: 13.5, fontWeight: 600, marginBottom: 4 }}>Upload Invoice, Quotation, or Receipt</div>
+                <div style={{ fontSize: 12, marginBottom: 12, color: "var(--ink-muted)" }}>
+                  Upload an image or PDF document. The extraction parser reads party, date, and amount details.
                 </div>
                 <label className="btn btn-primary" style={{ display: "inline-flex", cursor: "pointer" }}>
-                  <Plus size={15} /> Upload File
+                  <Plus size={14} /> Upload File
                   <input type="file" accept="image/*,.pdf" style={{ display: "none" }}
                     onChange={e => { if (e.target.files[0]) handleFileUpload(e.target.files[0]); e.target.value = ""; }} />
                 </label>
               </div>
 
               {documents.map(doc => (
-                <div className="card" key={doc.id} style={{ padding: 18, marginBottom: 14 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-                    <div style={{ fontWeight: 600, fontSize: 14, display: "flex", alignItems: "center", gap: 9 }}>
-                      <FileCheck2 size={16} color="var(--gold)" /> {doc.fileName}
+                <div className="card" key={doc.id} style={{ padding: 16, marginBottom: 12 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+                    <div style={{ fontWeight: 600, fontSize: 13, display: "flex", alignItems: "center", gap: 8 }}>
+                      <FileCheck2 size={15} color="var(--gold)" /> {doc.fileName}
                     </div>
-                    {doc.status === "processing" && <span style={{ fontSize: 12.5, color: "var(--ink-muted)", display: "flex", alignItems: "center", gap: 7 }}><Loader2 size={14} className="spin" /> Reading document details…</span>}
-                    {doc.status === "error" && <span style={{ fontSize: 12.5, color: "var(--rose)" }}>Error reading document — try a clearer image or PDF.</span>}
+                    {doc.status === "processing" && <span style={{ fontSize: 12, color: "var(--ink-muted)", display: "flex", alignItems: "center", gap: 6 }}><Loader2 size={13} className="spin" /> Reading document…</span>}
+                    {doc.status === "error" && <span style={{ fontSize: 12, color: "var(--rose)" }}>Error reading document — try another photo.</span>}
                     {doc.status === "posted" && <StatusBadge status="Paid" />}
                   </div>
 
                   {doc.extracted && doc.status !== "posted" && (
                     <>
-                      <div style={{ display: "flex", gap: 10, marginBottom: 14 }}>
-                        <button className={"btn" + (doc.direction === "received" ? " btn-primary" : "")} style={{ fontSize: 12, padding: "6px 12px" }}
-                          onClick={() => setDocDirection(doc.id, "received")}>Vendor Bill (Payable Out)</button>
-                        <button className={"btn" + (doc.direction === "issued" ? " btn-primary" : "")} style={{ fontSize: 12, padding: "6px 12px" }}
-                          onClick={() => setDocDirection(doc.id, "issued")}>Client Invoice / Quote (Receivable)</button>
+                      <div style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
+                        <button className={"btn" + (doc.direction === "received" ? " btn-primary" : "")} style={{ fontSize: 11.5, padding: "5px 10px" }}
+                          onClick={() => setDocDirection(doc.id, "received")}>Vendor Bill</button>
+                        <button className={"btn" + (doc.direction === "issued" ? " btn-primary" : "")} style={{ fontSize: 11.5, padding: "5px 10px" }}
+                          onClick={() => setDocDirection(doc.id, "issued")}>Client Invoice / Quote</button>
                       </div>
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 14 }}>
-                        <div className="field" style={{ margin: 0 }}><label>Party / Organization</label>
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 12 }}>
+                        <div className="field" style={{ margin: 0 }}><label>Party Name</label>
                           <input value={doc.extracted.party || ""} onChange={e => updateDocField(doc.id, "party", e.target.value)} /></div>
                         <div className="field" style={{ margin: 0 }}><label>Amount (PKR)</label>
                           <input type="number" value={doc.extracted.amount || ""} onChange={e => updateDocField(doc.id, "amount", e.target.value)} /></div>
-                        <div className="field" style={{ margin: 0 }}><label>Document Date</label>
+                        <div className="field" style={{ margin: 0 }}><label>Date</label>
                           <input type="date" value={doc.extracted.date || ""} onChange={e => updateDocField(doc.id, "date", e.target.value)} /></div>
-                        <div className="field" style={{ margin: 0 }}><label>Document Class</label>
+                        <div className="field" style={{ margin: 0 }}><label>Class</label>
                           <select value={doc.extracted.documentType || "Invoice"} onChange={e => updateDocField(doc.id, "documentType", e.target.value)}>
                             <option>Invoice</option><option>Quotation</option><option>Receipt</option><option>Other</option>
                           </select></div>
-                        <div className="field" style={{ margin: 0, gridColumn: "1 / -1" }}><label>Particulars / Memo</label>
+                        <div className="field" style={{ margin: 0, gridColumn: "1 / -1" }}><label>Particulars</label>
                           <input value={doc.extracted.description || ""} onChange={e => updateDocField(doc.id, "description", e.target.value)} /></div>
                       </div>
-                      <button className="btn btn-primary" style={{ fontSize: 13 }} onClick={() => postDocumentToLedger(doc)}>
+                      <button className="btn btn-primary" style={{ fontSize: 12.5 }} onClick={() => postDocumentToLedger(doc)}>
                         Confirm &amp; Post to General Ledger
                       </button>
                     </>
@@ -1157,43 +1208,52 @@ export default function App() {
         {tab === "ledger" && (
           <>
             <div className="topbar">
-              <div>
-                <h1>General Ledger &amp; Trial Balance</h1>
-                <p>Complete double-entry accounting records &amp; balanced audit trail</p>
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <button className="mobile-toggle" onClick={() => setMobileNavOpen(true)}>
+                  <Menu size={20} />
+                </button>
+                <div>
+                  <h1>General Ledger</h1>
+                  <p>Double-entry accounting records &amp; audit trail</p>
+                </div>
               </div>
-              <button className="btn btn-primary" onClick={() => { setVoucherDefaultType("JV"); setShowVoucherForm(true); }}><Plus size={15} /> Journal Voucher</button>
+              <div className="topbar-actions">
+                <button className="btn btn-primary" onClick={() => { setVoucherDefaultType("JV"); setShowVoucherForm(true); }}><Plus size={14} /> Journal Voucher</button>
+              </div>
             </div>
             <div className="content">
-              <div className="card" style={{ padding: 18, marginBottom: 18, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div className="card" style={{ padding: 16, marginBottom: 16, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 10 }}>
                 <div className="section-title" style={{ margin: 0 }}>
-                  <BookOpenText size={18} color="var(--gold)" /> Trial Balance Validation
+                  <BookOpenText size={16} color="var(--gold)" /> Trial Balance Check
                 </div>
-                <div className="mono" style={{ fontSize: 13.5 }}>
-                  Total Debits {pkr(totalDebit)} &nbsp;=&nbsp; Total Credits {pkr(totalCredit)} &nbsp;&mdash;&nbsp;
+                <div className="mono" style={{ fontSize: 12.5 }}>
+                  Debits {pkr(totalDebit)} &nbsp;=&nbsp; Credits {pkr(totalCredit)} &nbsp;&mdash;&nbsp;
                   <span className={isBalanced ? "trial-ok" : "trial-bad"} style={{ fontWeight: 700 }}>
-                    {isBalanced ? "✓ Balanced Ledger" : "✗ Out of Balance"}
+                    {isBalanced ? "✓ Balanced" : "Out of Balance"}
                   </span>
                 </div>
               </div>
 
               {journal.map(e => (
-                <div className="card" key={e.id} style={{ padding: 16, marginBottom: 12 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
-                    <div style={{ fontWeight: 600, fontSize: 13.5 }}>{e.description}</div>
-                    <div style={{ fontSize: 12, color: "var(--ink-muted)" }} className="mono">{e.reference} &middot; {fmtDate(e.date)}</div>
+                <div className="card" key={e.id} style={{ padding: 14, marginBottom: 10 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8, flexWrap: "wrap", gap: 4 }}>
+                    <div style={{ fontWeight: 600, fontSize: 13 }}>{e.description}</div>
+                    <div style={{ fontSize: 11.5, color: "var(--ink-muted)" }} className="mono">{e.reference} &middot; {fmtDate(e.date)}</div>
                   </div>
-                  <table>
-                    <thead><tr><th>Account</th><th style={{ textAlign: "right" }}>Debit</th><th style={{ textAlign: "right" }}>Credit</th></tr></thead>
-                    <tbody>
-                      {e.lines.map((l, i) => (
-                        <tr key={i}>
-                          <td>{ACCOUNTS[l.account]?.name || l.account}{l.memo ? ` (${l.memo})` : ""}</td>
-                          <td className="mono" style={{ textAlign: "right" }}>{l.debit ? pkr(l.debit) : "—"}</td>
-                          <td className="mono" style={{ textAlign: "right" }}>{l.credit ? pkr(l.credit) : "—"}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                  <div className="table-responsive">
+                    <table>
+                      <thead><tr><th>Account</th><th style={{ textAlign: "right" }}>Debit</th><th style={{ textAlign: "right" }}>Credit</th></tr></thead>
+                      <tbody>
+                        {e.lines.map((l, i) => (
+                          <tr key={i}>
+                            <td>{ACCOUNTS[l.account]?.name || l.account}{l.memo ? ` (${l.memo})` : ""}</td>
+                            <td className="mono" style={{ textAlign: "right" }}>{l.debit ? pkr(l.debit) : "—"}</td>
+                            <td className="mono" style={{ textAlign: "right" }}>{l.credit ? pkr(l.credit) : "—"}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               ))}
             </div>
@@ -1203,48 +1263,55 @@ export default function App() {
         {tab === "reports" && (
           <>
             <div className="topbar">
-              <div>
-                <h1>Executive Financial Reports</h1>
-                <p>Profit &amp; Loss breakdown, expense analytics &amp; service line performance</p>
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <button className="mobile-toggle" onClick={() => setMobileNavOpen(true)}>
+                  <Menu size={20} />
+                </button>
+                <div>
+                  <h1>Executive Financial Reports</h1>
+                  <p>Profit &amp; Loss breakdown and service line analytics</p>
+                </div>
               </div>
             </div>
             <div className="content">
-              <div className="card" style={{ padding: 22, marginBottom: 20 }}>
-                <div className="section-title"><BarChart3 size={18} color="var(--gold)" /> Statement of Profit &amp; Loss</div>
-                <table>
-                  <tbody>
-                    <tr><td style={{ fontWeight: 600 }}>Service Revenue Billed</td><td className="mono" style={{ textAlign: "right", color: "var(--jade)", fontWeight: 700 }}>{pkr(revenueBalance)}</td></tr>
-                    <tr><td style={{ fontWeight: 600 }}>Operating &amp; Vendor Expenses</td><td className="mono" style={{ textAlign: "right", color: "var(--rose)", fontWeight: 700 }}>({pkr(expenseBalance)})</td></tr>
-                    <tr style={{ background: "rgba(255,255,255,0.02)" }}>
-                      <td style={{ fontWeight: 700, fontSize: 15 }}>Net Operating Profit</td>
-                      <td className="mono" style={{ textAlign: "right", fontWeight: 700, fontSize: 16, color: netProfit >= 0 ? "var(--jade)" : "var(--rose)" }}>{pkr(netProfit)}</td>
-                    </tr>
-                  </tbody>
-                </table>
+              <div className="card" style={{ padding: 18, marginBottom: 18 }}>
+                <div className="section-title"><BarChart3 size={16} color="var(--gold)" /> Statement of Profit &amp; Loss</div>
+                <div className="table-responsive">
+                  <table>
+                    <tbody>
+                      <tr><td style={{ fontWeight: 600 }}>Service Revenue Billed</td><td className="mono" style={{ textAlign: "right", color: "var(--jade)", fontWeight: 700 }}>{pkr(revenueBalance)}</td></tr>
+                      <tr><td style={{ fontWeight: 600 }}>Operating Expenses</td><td className="mono" style={{ textAlign: "right", color: "var(--rose)", fontWeight: 700 }}>({pkr(expenseBalance)})</td></tr>
+                      <tr style={{ background: "rgba(255,255,255,0.02)" }}>
+                        <td style={{ fontWeight: 700, fontSize: 14 }}>Net Operating Profit</td>
+                        <td className="mono" style={{ textAlign: "right", fontWeight: 700, fontSize: 15, color: netProfit >= 0 ? "var(--jade)" : "var(--rose)" }}>{pkr(netProfit)}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
               </div>
 
-              <div className="card" style={{ padding: 22, marginBottom: 20 }}>
-                <div className="section-title"><Receipt size={18} color="var(--gold)" /> Operating Expenses by Category</div>
-                <ResponsiveContainer width="100%" height={230}>
+              <div className="card" style={{ padding: 18, marginBottom: 18 }}>
+                <div className="section-title"><Receipt size={16} color="var(--gold)" /> Expenses by Category</div>
+                <ResponsiveContainer width="100%" height={210}>
                   <BarChart data={expenseByCategory}>
                     <CartesianGrid stroke="#234168" strokeDasharray="3 3" vertical={false} />
-                    <XAxis dataKey="category" stroke="#8E9EB5" fontSize={11.5} />
-                    <YAxis stroke="#8E9EB5" fontSize={11.5} tickFormatter={v => (v / 1000) + "k"} />
-                    <Tooltip contentStyle={{ background: "#0E1D31", border: "1px solid #2E5280", borderRadius: 8, fontSize: 12.5 }} formatter={v => pkr(v)} />
+                    <XAxis dataKey="category" stroke="#8E9EB5" fontSize={10.5} />
+                    <YAxis stroke="#8E9EB5" fontSize={11} tickFormatter={v => (v / 1000) + "k"} />
+                    <Tooltip contentStyle={{ background: "#0E1D31", border: "1px solid #2E5280", borderRadius: 8, fontSize: 12 }} formatter={v => pkr(v)} />
                     <Bar dataKey="amount" fill="#D4AF37" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
 
-              <div className="card" style={{ padding: 22 }}>
-                <div className="section-title"><Briefcase size={18} color="var(--gold)" /> Revenue vs Production Cost by Service Line</div>
-                <ResponsiveContainer width="100%" height={250}>
+              <div className="card" style={{ padding: 18 }}>
+                <div className="section-title"><Briefcase size={16} color="var(--gold)" /> Revenue vs Production Cost by Service Line</div>
+                <ResponsiveContainer width="100%" height={230}>
                   <BarChart data={projectTypeSummary}>
                     <CartesianGrid stroke="#234168" strokeDasharray="3 3" vertical={false} />
-                    <XAxis dataKey="type" stroke="#8E9EB5" fontSize={11} />
-                    <YAxis stroke="#8E9EB5" fontSize={11.5} tickFormatter={v => (v / 1000) + "k"} />
-                    <Tooltip contentStyle={{ background: "#0E1D31", border: "1px solid #2E5280", borderRadius: 8, fontSize: 12.5 }} formatter={v => pkr(v)} />
-                    <Legend wrapperStyle={{ fontSize: 12 }} />
+                    <XAxis dataKey="type" stroke="#8E9EB5" fontSize={10} />
+                    <YAxis stroke="#8E9EB5" fontSize={11} tickFormatter={v => (v / 1000) + "k"} />
+                    <Tooltip contentStyle={{ background: "#0E1D31", border: "1px solid #2E5280", borderRadius: 8, fontSize: 12 }} formatter={v => pkr(v)} />
+                    <Legend wrapperStyle={{ fontSize: 11.5 }} />
                     <Bar dataKey="revenue" name="Revenue" fill="#27C383" radius={[4, 4, 0, 0]} />
                     <Bar dataKey="cost" name="Cost" fill="#ED5E68" radius={[4, 4, 0, 0]} />
                   </BarChart>
@@ -1309,9 +1376,9 @@ function ModalShell({ title, onClose, children }) {
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal" onClick={e => e.stopPropagation()}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
           <div className="section-title" style={{ margin: 0 }}>{title}</div>
-          <button className="btn" style={{ padding: 6 }} onClick={onClose}><X size={15} /></button>
+          <button className="btn" style={{ padding: 5 }} onClick={onClose}><X size={15} /></button>
         </div>
         {children}
       </div>
@@ -1329,13 +1396,13 @@ function InvoiceModal({ onClose, onSubmit }) {
   return (
     <ModalShell title="Create New Client Invoice" onClose={onClose}>
       <div className="field"><label>Client Name</label><input value={client} onChange={e => setClient(e.target.value)} placeholder="e.g. Prime Estate Enterprises" /></div>
-      <div className="field"><label>Service / Scope Particulars</label><input value={description} onChange={e => setDescription(e.target.value)} placeholder="e.g. TVC Post Production & Retainer" /></div>
+      <div className="field"><label>Service / Scope Particulars</label><input value={description} onChange={e => setDescription(e.target.value)} placeholder="e.g. TVC Post Production" /></div>
       <div className="field"><label>Total Amount (PKR)</label><input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="0" /></div>
-      <div style={{ display: "flex", gap: 12 }}>
+      <div style={{ display: "flex", gap: 10 }}>
         <div className="field" style={{ flex: 1 }}><label>Issue Date</label><input type="date" value={issueDate} onChange={e => setIssueDate(e.target.value)} /></div>
         <div className="field" style={{ flex: 1 }}><label>Due Date</label><input type="date" value={dueDate} onChange={e => setDueDate(e.target.value)} /></div>
       </div>
-      <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 8 }} disabled={!valid}
+      <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 6 }} disabled={!valid}
         onClick={() => valid && onSubmit({ client, description, amount: Number(amount), issueDate, dueDate })}>
         Generate &amp; Post Invoice
       </button>
@@ -1359,7 +1426,7 @@ function ExpenseModal({ onClose, onSubmit }) {
         </select>
       </div>
       <div className="field"><label>Amount (PKR)</label><input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="0" /></div>
-      <div style={{ display: "flex", gap: 12 }}>
+      <div style={{ display: "flex", gap: 10 }}>
         <div className="field" style={{ flex: 1 }}><label>Date</label><input type="date" value={date} onChange={e => setDate(e.target.value)} /></div>
         <div className="field" style={{ flex: 1 }}><label>Paid Via</label>
           <select value={paidVia} onChange={e => setPaidVia(e.target.value)}>
@@ -1367,7 +1434,7 @@ function ExpenseModal({ onClose, onSubmit }) {
           </select>
         </div>
       </div>
-      <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 8 }} disabled={!valid}
+      <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 6 }} disabled={!valid}
         onClick={() => valid && onSubmit({ vendor, category, amount: Number(amount), date, paidVia })}>
         Post Expense Entry
       </button>
@@ -1452,18 +1519,18 @@ function VoucherModal({ defaultType, onClose, onSubmit }) {
       {type === "JV" && (
         <>
           {lines.map((l, i) => (
-            <div key={i} style={{ display: "flex", gap: 8, marginBottom: 8 }}>
-              <select value={l.account} onChange={e => updateLine(i, "account", e.target.value)} style={{ flex: 1.5, background: "var(--surface-2)", border: "1px solid var(--rule)", borderRadius: 7, color: "var(--ink)", fontSize: 13, padding: "7px 8px" }}>
+            <div key={i} style={{ display: "flex", gap: 6, marginBottom: 6 }}>
+              <select value={l.account} onChange={e => updateLine(i, "account", e.target.value)} style={{ flex: 1.5, background: "var(--surface-2)", border: "1px solid var(--rule)", borderRadius: 7, color: "var(--ink)", fontSize: 12, padding: "6px 7px" }}>
                 {Object.entries(ACCOUNTS).map(([k, a]) => <option key={k} value={k}>{a.name}</option>)}
               </select>
-              <input type="number" placeholder="Debit" value={l.debit} onChange={e => updateLine(i, "debit", e.target.value)} style={{ width: 85, background: "var(--surface-2)", border: "1px solid var(--rule)", borderRadius: 7, color: "var(--ink)", fontSize: 13, padding: "7px 8px" }} />
-              <input type="number" placeholder="Credit" value={l.credit} onChange={e => updateLine(i, "credit", e.target.value)} style={{ width: 85, background: "var(--surface-2)", border: "1px solid var(--rule)", borderRadius: 7, color: "var(--ink)", fontSize: 13, padding: "7px 8px" }} />
+              <input type="number" placeholder="Debit" value={l.debit} onChange={e => updateLine(i, "debit", e.target.value)} style={{ width: 75, background: "var(--surface-2)", border: "1px solid var(--rule)", borderRadius: 7, color: "var(--ink)", fontSize: 12, padding: "6px 7px" }} />
+              <input type="number" placeholder="Credit" value={l.credit} onChange={e => updateLine(i, "credit", e.target.value)} style={{ width: 75, background: "var(--surface-2)", border: "1px solid var(--rule)", borderRadius: 7, color: "var(--ink)", fontSize: 12, padding: "6px 7px" }} />
             </div>
           ))}
-          <button className="btn" style={{ fontSize: 12, marginBottom: 12 }} onClick={() => setLines(ls => [...ls, { account: "cash", debit: "", credit: "" }])}>
-            <Plus size={13} /> Add Journal Line
+          <button className="btn" style={{ fontSize: 11.5, marginBottom: 10 }} onClick={() => setLines(ls => [...ls, { account: "cash", debit: "", credit: "" }])}>
+            <Plus size={12} /> Add Line
           </button>
-          <div className="mono" style={{ fontSize: 13, marginBottom: 12 }}>
+          <div className="mono" style={{ fontSize: 12, marginBottom: 10 }}>
             Debit {pkr(totalD)} / Credit {pkr(totalC)} &nbsp;&mdash;&nbsp;
             <span className={jvBalanced ? "trial-ok" : "trial-bad"} style={{ fontWeight: 700 }}>{jvBalanced ? "✓ Balanced" : "Not Balanced"}</span>
           </div>
@@ -1500,15 +1567,15 @@ function BookHoardingModal({ hoarding, projects, onClose, onSubmit }) {
 
   return (
     <ModalShell title={`Book Outdoor Site: ${hoarding.name}`} onClose={onClose}>
-      <div style={{ fontSize: 13, color: "var(--ink-muted)", marginBottom: 14 }}>
+      <div style={{ fontSize: 12, color: "var(--ink-muted)", marginBottom: 12 }}>
         Location: {hoarding.area} &middot; Size: {hoarding.size} &middot; List Rate: {pkr(hoarding.pricePerMonth)}/month
       </div>
 
-      <div style={{ display: "flex", gap: 10, marginBottom: 14 }}>
-        <button className={"btn" + (mode === "existing" ? " btn-primary" : "")} style={{ fontSize: 12, padding: "7px 12px", flex: 1, justifyContent: "center" }}
-          disabled={!projects.length} onClick={() => setMode("existing")}>Existing OOH Project</button>
-        <button className={"btn" + (mode === "new" ? " btn-primary" : "")} style={{ fontSize: 12, padding: "7px 12px", flex: 1, justifyContent: "center" }}
-          onClick={() => setMode("new")}>New Campaign Project</button>
+      <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+        <button className={"btn" + (mode === "existing" ? " btn-primary" : "")} style={{ fontSize: 11.5, padding: "6px 10px", flex: 1, justifyContent: "center" }}
+          disabled={!projects.length} onClick={() => setMode("existing")}>Existing Project</button>
+        <button className={"btn" + (mode === "new" ? " btn-primary" : "")} style={{ fontSize: 11.5, padding: "6px 10px", flex: 1, justifyContent: "center" }}
+          onClick={() => setMode("new")}>New Campaign</button>
       </div>
 
       {mode === "existing" ? (
@@ -1518,7 +1585,7 @@ function BookHoardingModal({ hoarding, projects, onClose, onSubmit }) {
               {projects.map(p => <option key={p.id} value={p.id}>{p.client} — {p.name}</option>)}
             </select>
           </div>
-          {selectedProject && <div style={{ fontSize: 12, color: "var(--ink-muted)", marginBottom: 12 }}>Site will be grouped under <b>{selectedProject.name}</b>.</div>}
+          {selectedProject && <div style={{ fontSize: 11.5, color: "var(--ink-muted)", marginBottom: 10 }}>Site will be grouped under <b>{selectedProject.name}</b>.</div>}
         </>
       ) : (
         <>
@@ -1527,13 +1594,13 @@ function BookHoardingModal({ hoarding, projects, onClose, onSubmit }) {
         </>
       )}
 
-      <div style={{ display: "flex", gap: 12 }}>
+      <div style={{ display: "flex", gap: 10 }}>
         <div className="field" style={{ flex: 1 }}><label>Start Date</label><input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} /></div>
         <div className="field" style={{ flex: 1 }}><label>End Date</label><input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} /></div>
       </div>
       <div className="field"><label>Agreed Monthly Rent (PKR)</label><input type="number" value={rent} onChange={e => setRent(e.target.value)} /></div>
-      <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 8 }} disabled={!valid} onClick={submit}>
-        Confirm Site Booking &amp; Post AR Invoice
+      <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 6 }} disabled={!valid} onClick={submit}>
+        Confirm Booking &amp; Post AR
       </button>
     </ModalShell>
   );
@@ -1555,11 +1622,11 @@ function AddSiteModal({ project, hoardings, onClose, onSubmit }) {
   const valid = hoardingId && Number(rent) > 0;
   return (
     <ModalShell title={`Add OOH Site — ${project.name}`} onClose={onClose}>
-      <div style={{ fontSize: 13, color: "var(--ink-muted)", marginBottom: 14 }}>
-        Client: {project.client} &middot; Site details will roll up into this campaign project.
+      <div style={{ fontSize: 12, color: "var(--ink-muted)", marginBottom: 12 }}>
+        Client: {project.client} &middot; Site details roll up into this project.
       </div>
       {hoardings.length === 0 ? (
-        <div style={{ fontSize: 13, color: "var(--ink-muted)", marginBottom: 12 }}>No unbooked sites available right now.</div>
+        <div style={{ fontSize: 12, color: "var(--ink-muted)", marginBottom: 10 }}>No unbooked sites available right now.</div>
       ) : (
         <>
           <div className="field"><label>Select Available Hoarding</label>
@@ -1567,12 +1634,12 @@ function AddSiteModal({ project, hoardings, onClose, onSubmit }) {
               {hoardings.map(h => <option key={h.id} value={h.id}>{h.name} ({h.area}, {h.size}) — {pkr(h.pricePerMonth)}/mo</option>)}
             </select>
           </div>
-          <div style={{ display: "flex", gap: 12 }}>
+          <div style={{ display: "flex", gap: 10 }}>
             <div className="field" style={{ flex: 1 }}><label>Start Date</label><input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} /></div>
             <div className="field" style={{ flex: 1 }}><label>End Date</label><input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} /></div>
           </div>
           <div className="field"><label>Agreed Monthly Rent (PKR)</label><input type="number" value={rent} onChange={e => setRent(e.target.value)} /></div>
-          <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 8 }} disabled={!valid}
+          <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 6 }} disabled={!valid}
             onClick={() => valid && onSubmit(hoarding, { mode: "existing", projectId: project.id, startDate, endDate, rent: Number(rent) })}>
             Add Site to Campaign
           </button>
@@ -1598,13 +1665,13 @@ function ProjectModal({ onClose, onSubmit }) {
           {PROJECT_TYPES.map(t => <option key={t.key} value={t.key}>{t.label}</option>)}
         </select>
       </div>
-      <div className="field"><label>Project Title</label><input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Q3 Brand Campaign Launch" /></div>
-      <div className="field"><label>Scope Note</label><input value={description} onChange={e => setDescription(e.target.value)} placeholder="Brief summary of creative/media scope" /></div>
-      <div style={{ display: "flex", gap: 12 }}>
+      <div className="field"><label>Project Title</label><input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Q3 Brand Campaign" /></div>
+      <div className="field"><label>Scope Note</label><input value={description} onChange={e => setDescription(e.target.value)} placeholder="Brief summary of creative scope" /></div>
+      <div style={{ display: "flex", gap: 10 }}>
         <div className="field" style={{ flex: 1 }}><label>Start Date</label><input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} /></div>
         <div className="field" style={{ flex: 1 }}><label>End Date</label><input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} /></div>
       </div>
-      <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 8 }} disabled={!valid}
+      <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 6 }} disabled={!valid}
         onClick={() => valid && onSubmit({ client, type, name, description, startDate, endDate })}>
         Initialize Project
       </button>
@@ -1620,18 +1687,18 @@ function ProjectBillingModal({ project, onClose, onSubmit }) {
   const valid = Number(amount) > 0;
   return (
     <ModalShell title={`Bill Client — ${project.name}`} onClose={onClose}>
-      <div style={{ fontSize: 13, color: "var(--ink-muted)", marginBottom: 14 }}>
-        Client: {project.client} &middot; Service Line: <ProjectTypeBadge type={project.type} />
+      <div style={{ fontSize: 12, color: "var(--ink-muted)", marginBottom: 12 }}>
+        Client: {project.client} &middot; Service: <ProjectTypeBadge type={project.type} />
       </div>
       <div className="field"><label>Billing Milestone / Note</label><input value={description} onChange={e => setDescription(e.target.value)} placeholder="e.g. 50% Milestone Advance" /></div>
       <div className="field"><label>Billing Amount (PKR)</label><input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="0" /></div>
-      <div style={{ display: "flex", gap: 12 }}>
+      <div style={{ display: "flex", gap: 10 }}>
         <div className="field" style={{ flex: 1 }}><label>Issue Date</label><input type="date" value={issueDate} onChange={e => setIssueDate(e.target.value)} /></div>
         <div className="field" style={{ flex: 1 }}><label>Due Date</label><input type="date" value={dueDate} onChange={e => setDueDate(e.target.value)} /></div>
       </div>
-      <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 8 }} disabled={!valid}
+      <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 6 }} disabled={!valid}
         onClick={() => valid && onSubmit(project, { description, amount: Number(amount), issueDate, dueDate })}>
-        Post Client Billing &amp; Receivable
+        Post Client Billing
       </button>
     </ModalShell>
   );
@@ -1645,22 +1712,22 @@ function ProjectCostModal({ project, onClose, onSubmit }) {
   const [paidVia, setPaidVia] = useState("Bank");
   const valid = vendor && Number(amount) > 0;
   return (
-    <ModalShell title={`Record Project Cost — ${project.name}`} onClose={onClose}>
-      <div style={{ fontSize: 13, color: "var(--ink-muted)", marginBottom: 14 }}>
-        Client: {project.client} &middot; Service Line: <ProjectTypeBadge type={project.type} />
+    <ModalShell title={`Record Cost — ${project.name}`} onClose={onClose}>
+      <div style={{ fontSize: 12, color: "var(--ink-muted)", marginBottom: 12 }}>
+        Client: {project.client} &middot; Service: <ProjectTypeBadge type={project.type} />
       </div>
-      <div className="field"><label>Vendor / Contractor Payee</label><input value={vendor} onChange={e => setVendor(e.target.value)} placeholder="e.g. Production House / Sound Studio" /></div>
-      <div className="field"><label>Cost Description</label><input value={description} onChange={e => setDescription(e.target.value)} placeholder="e.g. Camera crew & 4K editing" /></div>
+      <div className="field"><label>Vendor / Payee</label><input value={vendor} onChange={e => setVendor(e.target.value)} placeholder="e.g. Production House / Sound Studio" /></div>
+      <div className="field"><label>Cost Description</label><input value={description} onChange={e => setDescription(e.target.value)} placeholder="e.g. Camera crew & editing" /></div>
       <div className="field"><label>Cost Amount (PKR)</label><input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="0" /></div>
-      <div style={{ display: "flex", gap: 12 }}>
+      <div style={{ display: "flex", gap: 10 }}>
         <div className="field" style={{ flex: 1 }}><label>Date</label><input type="date" value={date} onChange={e => setDate(e.target.value)} /></div>
         <div className="field" style={{ flex: 1 }}><label>Paid Via</label>
           <select value={paidVia} onChange={e => setPaidVia(e.target.value)}><option>Bank</option><option>Cash</option></select>
         </div>
       </div>
-      <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 8 }} disabled={!valid}
+      <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 6 }} disabled={!valid}
         onClick={() => valid && onSubmit(project, { vendor, description, amount: Number(amount), date, paidVia })}>
-        Post Production Cost &amp; Expense
+        Post Production Cost
       </button>
     </ModalShell>
   );
@@ -1673,30 +1740,30 @@ function ProjectDetailModal({ project, invoices, expenses, sites, onClose, onSta
   const isOOH = project.type === "OOH Advertising";
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal" style={{ width: 680, maxHeight: "88vh", overflowY: "auto" }} onClick={e => e.stopPropagation()}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+      <div className="modal" style={{ width: 680 }} onClick={e => e.stopPropagation()}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
           <div>
-            <div className="section-title" style={{ margin: 0, fontSize: 18 }}>{project.name}</div>
-            <div style={{ fontSize: 13, color: "var(--ink-muted)", marginTop: 4 }}>Client: {project.client} &middot; {fmtDate(project.startDate)} – {fmtDate(project.endDate)}</div>
+            <div className="section-title" style={{ margin: 0, fontSize: 16 }}>{project.name}</div>
+            <div style={{ fontSize: 12, color: "var(--ink-muted)", marginTop: 2 }}>Client: {project.client} &middot; {fmtDate(project.startDate)} – {fmtDate(project.endDate)}</div>
           </div>
-          <button className="btn" style={{ padding: 6 }} onClick={onClose}><X size={15} /></button>
+          <button className="btn" style={{ padding: 5 }} onClick={onClose}><X size={14} /></button>
         </div>
 
-        <div style={{ display: "flex", gap: 12, alignItems: "center", margin: "14px 0 18px" }}>
+        <div style={{ display: "flex", gap: 10, alignItems: "center", margin: "10px 0 14px" }}>
           <ProjectTypeBadge type={project.type} />
           <select value={project.status} onChange={e => onStatusChange(e.target.value)}
-            style={{ background: "var(--surface-2)", border: "1px solid var(--rule)", borderRadius: 20, color: "var(--ink)", fontSize: 12.5, padding: "5px 12px", fontWeight: 600 }}>
+            style={{ background: "var(--surface-2)", border: "1px solid var(--rule)", borderRadius: 20, color: "var(--ink)", fontSize: 12, padding: "4px 10px", fontWeight: 600 }}>
             {PROJECT_STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
           </select>
         </div>
 
         {project.description && (
-          <div style={{ fontSize: 13, color: "var(--ink-muted)", marginBottom: 18, background: "var(--surface-2)", padding: "10px 14px", borderRadius: 8 }}>
+          <div style={{ fontSize: 12, color: "var(--ink-muted)", marginBottom: 14, background: "var(--surface-2)", padding: "8px 12px", borderRadius: 8 }}>
             {project.description}
           </div>
         )}
 
-        <div className="grid-kpi" style={{ gridTemplateColumns: "repeat(4, 1fr)", marginBottom: 20 }}>
+        <div className="grid-kpi" style={{ gridTemplateColumns: "repeat(4, 1fr)", marginBottom: 16 }}>
           <KpiCard label="Total Billed" value={pkr(project.billed)} icon={FileText} accent="var(--jade)" />
           <KpiCard label="Outstanding" value={pkr(project.outstanding)} icon={Landmark} accent="var(--amber)" />
           <KpiCard label="Costs Out" value={pkr(project.cost)} icon={Coins} accent="var(--rose)" />
@@ -1705,86 +1772,92 @@ function ProjectDetailModal({ project, invoices, expenses, sites, onClose, onSta
 
         {isOOH && (
           <>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-              <div className="section-title" style={{ margin: 0, fontSize: 14 }}><Building2 size={15} color="var(--gold)" /> Assigned Outdoor Sites ({sites.length})</div>
-              <button className="btn" style={{ fontSize: 12, padding: "6px 12px" }} onClick={onAddSite}><Plus size={13} /> Add Site</button>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+              <div className="section-title" style={{ margin: 0, fontSize: 13 }}><Building2 size={14} color="var(--gold)" /> Outdoor Sites ({sites.length})</div>
+              <button className="btn" style={{ fontSize: 11.5, padding: "4px 9px" }} onClick={onAddSite}><Plus size={12} /> Add Site</button>
             </div>
-            <div className="card" style={{ marginBottom: 20 }}>
-              <table>
-                <thead><tr><th>Site Name</th><th>Area</th><th>Size</th><th>Booked Dates</th><th style={{ textAlign: "right" }}>Monthly Rate</th><th>Action</th></tr></thead>
-                <tbody>
-                  {sites.map(h => (
-                    <tr key={h.id}>
-                      <td style={{ fontWeight: 600 }}>{h.name}</td>
-                      <td><span className="badge-mini"><MapPin size={10} style={{ verticalAlign: -1 }} /> {h.area}</span></td>
-                      <td><span className="badge-mini"><Ruler size={10} style={{ verticalAlign: -1 }} /> {h.size}</span></td>
-                      <td className="mono" style={{ fontSize: 12 }}>{fmtDate(h.bookedFrom)} – {fmtDate(h.bookedTo)}</td>
-                      <td className="mono" style={{ textAlign: "right" }}>{pkr(h.pricePerMonth)}</td>
-                      <td><button className="btn" style={{ padding: "4px 8px", fontSize: 11.5 }} onClick={() => onReleaseSite(h)}>Release</button></td>
-                    </tr>
-                  ))}
-                  {sites.length === 0 && (
-                    <tr><td colSpan={6} style={{ textAlign: "center", color: "var(--ink-muted)", padding: 18 }}>No sites assigned yet.</td></tr>
-                  )}
-                </tbody>
-              </table>
+            <div className="card" style={{ marginBottom: 16 }}>
+              <div className="table-responsive">
+                <table>
+                  <thead><tr><th>Site Name</th><th>Area</th><th>Size</th><th>Booked Dates</th><th style={{ textAlign: "right" }}>Rate/Mo</th><th>Action</th></tr></thead>
+                  <tbody>
+                    {sites.map(h => (
+                      <tr key={h.id}>
+                        <td style={{ fontWeight: 600 }}>{h.name}</td>
+                        <td><span className="badge-mini"><MapPin size={9} style={{ verticalAlign: -1 }} /> {h.area}</span></td>
+                        <td><span className="badge-mini"><Ruler size={9} style={{ verticalAlign: -1 }} /> {h.size}</span></td>
+                        <td className="mono" style={{ fontSize: 11.5 }}>{fmtDate(h.bookedFrom)} – {fmtDate(h.bookedTo)}</td>
+                        <td className="mono" style={{ textAlign: "right" }}>{pkr(h.pricePerMonth)}</td>
+                        <td><button className="btn" style={{ padding: "3px 7px", fontSize: 11 }} onClick={() => onReleaseSite(h)}>Release</button></td>
+                      </tr>
+                    ))}
+                    {sites.length === 0 && (
+                      <tr><td colSpan={6} style={{ textAlign: "center", color: "var(--ink-muted)", padding: 14 }}>No sites assigned yet.</td></tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </>
         )}
 
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-          <div className="section-title" style={{ margin: 0, fontSize: 14 }}><FileText size={15} color="var(--gold)" /> Client Billings</div>
-          <button className="btn" style={{ fontSize: 12, padding: "6px 12px" }} onClick={onAddBilling}><Plus size={13} /> Add Billing</button>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+          <div className="section-title" style={{ margin: 0, fontSize: 13 }}><FileText size={14} color="var(--gold)" /> Client Billings</div>
+          <button className="btn" style={{ fontSize: 11.5, padding: "4px 9px" }} onClick={onAddBilling}><Plus size={12} /> Add Billing</button>
         </div>
-        <div className="card" style={{ marginBottom: 20 }}>
-          <table>
-            <thead><tr><th>Description</th><th>Issue</th><th>Due</th><th style={{ textAlign: "right" }}>Amount</th><th>Status</th><th>Actions</th></tr></thead>
-            <tbody>
-              {invoicesWithStatus.map(inv => (
-                <tr key={inv.id}>
-                  <td style={{ color: "var(--ink-muted)" }}>{inv.description}</td>
-                  <td className="mono" style={{ fontSize: 12 }}>{fmtDate(inv.issueDate)}</td>
-                  <td className="mono" style={{ fontSize: 12 }}>{fmtDate(inv.dueDate)}</td>
-                  <td className="mono" style={{ textAlign: "right" }}>{pkr(inv.amount)}</td>
-                  <td><StatusBadge status={inv.status} /></td>
-                  <td style={{ display: "flex", gap: 6 }}>
-                    {!inv.paid && <button className="btn" style={{ padding: "4px 8px", fontSize: 11.5 }} onClick={() => onMarkPaid(inv)}>Mark Paid</button>}
-                    <button className="btn" style={{ padding: "4px 8px", fontSize: 11.5 }}
-                      onClick={() => onPrint({ voucherNo: "INV-" + inv.id.toUpperCase(), type: "Invoice", date: inv.issueDate, party: inv.client, description: inv.description, amount: inv.amount })}>
-                      <Printer size={13} />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-              {invoicesWithStatus.length === 0 && (
-                <tr><td colSpan={6} style={{ textAlign: "center", color: "var(--ink-muted)", padding: 18 }}>No billing invoices created yet.</td></tr>
-              )}
-            </tbody>
-          </table>
+        <div className="card" style={{ marginBottom: 16 }}>
+          <div className="table-responsive">
+            <table>
+              <thead><tr><th>Description</th><th>Issue</th><th>Due</th><th style={{ textAlign: "right" }}>Amount</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody>
+                {invoicesWithStatus.map(inv => (
+                  <tr key={inv.id}>
+                    <td style={{ color: "var(--ink-muted)" }}>{inv.description}</td>
+                    <td className="mono" style={{ fontSize: 11.5 }}>{fmtDate(inv.issueDate)}</td>
+                    <td className="mono" style={{ fontSize: 11.5 }}>{fmtDate(inv.dueDate)}</td>
+                    <td className="mono" style={{ textAlign: "right" }}>{pkr(inv.amount)}</td>
+                    <td><StatusBadge status={inv.status} /></td>
+                    <td style={{ display: "flex", gap: 4 }}>
+                      {!inv.paid && <button className="btn" style={{ padding: "3px 7px", fontSize: 11 }} onClick={() => onMarkPaid(inv)}>Mark Paid</button>}
+                      <button className="btn" style={{ padding: "3px 6px", fontSize: 11 }}
+                        onClick={() => onPrint({ voucherNo: "INV-" + inv.id.toUpperCase(), type: "Invoice", date: inv.issueDate, party: inv.client, description: inv.description, amount: inv.amount })}>
+                        <Printer size={12} />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+                {invoicesWithStatus.length === 0 && (
+                  <tr><td colSpan={6} style={{ textAlign: "center", color: "var(--ink-muted)", padding: 14 }}>No billing invoices created yet.</td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
 
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-          <div className="section-title" style={{ margin: 0, fontSize: 14 }}><Coins size={15} color="var(--gold)" /> Vendor &amp; Production Costs</div>
-          <button className="btn" style={{ fontSize: 12, padding: "6px 12px" }} onClick={onAddCost}><Plus size={13} /> Add Cost</button>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+          <div className="section-title" style={{ margin: 0, fontSize: 13 }}><Coins size={14} color="var(--gold)" /> Vendor Costs</div>
+          <button className="btn" style={{ fontSize: 11.5, padding: "4px 9px" }} onClick={onAddCost}><Plus size={12} /> Add Cost</button>
         </div>
         <div className="card">
-          <table>
-            <thead><tr><th>Vendor</th><th>Description</th><th>Date</th><th>Paid Via</th><th style={{ textAlign: "right" }}>Amount</th></tr></thead>
-            <tbody>
-              {expenses.map(exp => (
-                <tr key={exp.id}>
-                  <td style={{ fontWeight: 600 }}>{exp.vendor}</td>
-                  <td style={{ color: "var(--ink-muted)" }}>{exp.description || "—"}</td>
-                  <td className="mono" style={{ fontSize: 12 }}>{fmtDate(exp.date)}</td>
-                  <td>{exp.paidVia}</td>
-                  <td className="mono" style={{ textAlign: "right", color: "var(--rose)" }}>{pkr(exp.amount)}</td>
-                </tr>
-              ))}
-              {expenses.length === 0 && (
-                <tr><td colSpan={5} style={{ textAlign: "center", color: "var(--ink-muted)", padding: 18 }}>No vendor costs logged yet.</td></tr>
-              )}
-            </tbody>
-          </table>
+          <div className="table-responsive">
+            <table>
+              <thead><tr><th>Vendor</th><th>Description</th><th>Date</th><th>Paid Via</th><th style={{ textAlign: "right" }}>Amount</th></tr></thead>
+              <tbody>
+                {expenses.map(exp => (
+                  <tr key={exp.id}>
+                    <td style={{ fontWeight: 600 }}>{exp.vendor}</td>
+                    <td style={{ color: "var(--ink-muted)" }}>{exp.description || "—"}</td>
+                    <td className="mono" style={{ fontSize: 11.5 }}>{fmtDate(exp.date)}</td>
+                    <td>{exp.paidVia}</td>
+                    <td className="mono" style={{ textAlign: "right", color: "var(--rose)" }}>{pkr(exp.amount)}</td>
+                  </tr>
+                ))}
+                {expenses.length === 0 && (
+                  <tr><td colSpan={5} style={{ textAlign: "center", color: "var(--ink-muted)", padding: 14 }}>No vendor costs logged yet.</td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
@@ -1796,59 +1869,59 @@ function PrintPreviewModal({ doc, onClose }) {
   return (
     <div className="modal-backdrop no-print" onClick={onClose}>
       <style>{`@page { size: ${PAGE_SIZES[pageSize]}; margin: 14mm; }`}</style>
-      <div className="modal" style={{ width: 600 }} onClick={e => e.stopPropagation()}>
-        <div className="no-print" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-          <div className="section-title" style={{ margin: 0 }}>Voucher &amp; Document Print Preview</div>
-          <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-            <select value={pageSize} onChange={e => setPageSize(e.target.value)} style={{ background: "var(--surface-2)", border: "1px solid var(--rule)", borderRadius: 7, color: "var(--ink)", fontSize: 13, padding: "6px 10px" }}>
+      <div className="modal" style={{ width: 580 }} onClick={e => e.stopPropagation()}>
+        <div className="no-print" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+          <div className="section-title" style={{ margin: 0 }}>Print Preview</div>
+          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            <select value={pageSize} onChange={e => setPageSize(e.target.value)} style={{ background: "var(--surface-2)", border: "1px solid var(--rule)", borderRadius: 7, color: "var(--ink)", fontSize: 12, padding: "5px 8px" }}>
               {Object.keys(PAGE_SIZES).map(p => <option key={p}>{p}</option>)}
             </select>
-            <button className="btn btn-primary" style={{ padding: "6px 12px" }} onClick={() => window.print()}><Printer size={14} /> Print Document</button>
-            <button className="btn" style={{ padding: 6 }} onClick={onClose}><X size={15} /></button>
+            <button className="btn btn-primary" style={{ padding: "5px 10px", fontSize: 12 }} onClick={() => window.print()}><Printer size={13} /> Print</button>
+            <button className="btn" style={{ padding: 5 }} onClick={onClose}><X size={14} /></button>
           </div>
         </div>
-        <div className="print-area" style={{ background: "#ffffff", color: "#111827", borderRadius: 10, padding: 28, fontFamily: "Georgia, serif" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "2px solid #111827", paddingBottom: 12, marginBottom: 18 }}>
+        <div className="print-area" style={{ background: "#ffffff", color: "#111827", borderRadius: 10, padding: 24, fontFamily: "Georgia, serif" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "2px solid #111827", paddingBottom: 10, marginBottom: 16 }}>
             <div>
-              <div style={{ fontSize: 20, fontWeight: 700 }}>AdPulse Properties &amp; Media</div>
-              <div style={{ fontSize: 11.5, color: "#4B5563" }}>Digital, Creative Services &amp; OOH Agency, Karachi</div>
+              <div style={{ fontSize: 18, fontWeight: 700 }}>AdPulse Properties &amp; Media</div>
+              <div style={{ fontSize: 11, color: "#4B5563" }}>Digital &amp; Creative Services Agency, Karachi</div>
             </div>
             <div style={{ textAlign: "right" }}>
-              <div style={{ fontSize: 14, fontWeight: 700 }}>{doc.type || VOUCHER_TYPES[doc.type] || doc.voucherNo}</div>
-              <div className="mono" style={{ fontSize: 12, fontWeight: 600, color: "#111827" }}>{doc.voucherNo}</div>
+              <div style={{ fontSize: 13, fontWeight: 700 }}>{doc.type || VOUCHER_TYPES[doc.type] || doc.voucherNo}</div>
+              <div className="mono" style={{ fontSize: 11.5, fontWeight: 600, color: "#111827" }}>{doc.voucherNo}</div>
             </div>
           </div>
-          <table style={{ width: "100%", fontSize: 13, marginBottom: 18 }}>
+          <table style={{ width: "100%", fontSize: 12.5, marginBottom: 16, minWidth: 0 }}>
             <tbody>
-              <tr><td style={{ padding: "5px 0", color: "#4B5563", width: 130 }}>Date</td><td className="mono">{fmtDate(doc.date)}</td></tr>
-              <tr><td style={{ padding: "5px 0", color: "#4B5563" }}>Party / Client</td><td style={{ fontWeight: 600 }}>{doc.party || "—"}</td></tr>
-              <tr><td style={{ padding: "5px 0", color: "#4B5563" }}>Particulars</td><td>{doc.description}</td></tr>
+              <tr><td style={{ padding: "4px 0", color: "#4B5563", width: 120 }}>Date</td><td className="mono">{fmtDate(doc.date)}</td></tr>
+              <tr><td style={{ padding: "4px 0", color: "#4B5563" }}>Party / Client</td><td style={{ fontWeight: 600 }}>{doc.party || "—"}</td></tr>
+              <tr><td style={{ padding: "4px 0", color: "#4B5563" }}>Particulars</td><td>{doc.description}</td></tr>
             </tbody>
           </table>
-          <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 16 }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, minWidth: 0 }}>
             <thead>
               <tr>
-                <th style={{ textAlign: "left", borderBottom: "1.5px solid #111827", padding: "8px 0", fontSize: 12, color: "#4B5563" }}>Description</th>
-                <th style={{ textAlign: "right", borderBottom: "1.5px solid #111827", padding: "8px 0", fontSize: 12, color: "#4B5563" }}>Amount</th>
+                <th style={{ textAlign: "left", borderBottom: "1.5px solid #111827", padding: "6px 0", fontSize: 11.5, color: "#4B5563" }}>Description</th>
+                <th style={{ textAlign: "right", borderBottom: "1.5px solid #111827", padding: "6px 0", fontSize: 11.5, color: "#4B5563" }}>Amount</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td style={{ padding: "10px 0" }}>{doc.description}</td>
-                <td className="mono" style={{ textAlign: "right", padding: "10px 0", fontWeight: 600 }}>{pkr(doc.amount)}</td>
+                <td style={{ padding: "8px 0" }}>{doc.description}</td>
+                <td className="mono" style={{ textAlign: "right", padding: "8px 0", fontWeight: 600 }}>{pkr(doc.amount)}</td>
               </tr>
             </tbody>
             <tfoot>
               <tr>
-                <td style={{ borderTop: "2px solid #111827", padding: "10px 0", fontWeight: 700, fontSize: 14 }}>Total Payable / Received</td>
-                <td className="mono" style={{ borderTop: "2px solid #111827", textAlign: "right", padding: "10px 0", fontWeight: 700, fontSize: 15 }}>{pkr(doc.amount)}</td>
+                <td style={{ borderTop: "2px solid #111827", padding: "8px 0", fontWeight: 700, fontSize: 13 }}>Total</td>
+                <td className="mono" style={{ borderTop: "2px solid #111827", textAlign: "right", padding: "8px 0", fontWeight: 700, fontSize: 14 }}>{pkr(doc.amount)}</td>
               </tr>
             </tfoot>
           </table>
-          <div style={{ fontSize: 12, fontStyle: "italic", color: "#374151", marginBottom: 36, background: "#F3F4F6", padding: "8px 12px", borderRadius: 6 }}>
+          <div style={{ fontSize: 11.5, fontStyle: "italic", color: "#374151", marginBottom: 30, background: "#F3F4F6", padding: "6px 10px", borderRadius: 5 }}>
             Amount in words: <b>{amountInWords(doc.amount)}</b>
           </div>
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11.5, color: "#4B5563" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#4B5563" }}>
             <div>Prepared by: ______________</div>
             <div>Checked by: ______________</div>
             <div>Approved by: ______________</div>
