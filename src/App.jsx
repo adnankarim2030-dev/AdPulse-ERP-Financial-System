@@ -318,8 +318,8 @@ function StatusBadge({ status }) {
   return (
     <span style={{
       display: "inline-flex", alignItems: "center", gap: 5,
-      color: s.color, background: s.bg, padding: "3px 9px",
-      borderRadius: 20, fontSize: 11.5, fontWeight: 600, letterSpacing: 0.2, whiteSpace: "nowrap",
+      color: s.color, background: s.bg, padding: "4px 10px",
+      borderRadius: 20, fontSize: 12.5, fontWeight: 600, letterSpacing: 0.2, whiteSpace: "nowrap",
     }}>
       <Icon size={12} /> {status}
     </span>
@@ -352,8 +352,8 @@ function ProjectStatusBadge({ status }) {
   return (
     <span style={{
       display: "inline-flex", alignItems: "center", gap: 5,
-      color: s.color, background: s.bg, padding: "3px 9px",
-      borderRadius: 20, fontSize: 11.5, fontWeight: 600, letterSpacing: 0.2, whiteSpace: "nowrap",
+      color: s.color, background: s.bg, padding: "4px 10px",
+      borderRadius: 20, fontSize: 12.5, fontWeight: 600, letterSpacing: 0.2, whiteSpace: "nowrap",
     }}>
       <Icon size={12} /> {status}
     </span>
@@ -371,8 +371,8 @@ function EmployeeStatusBadge({ status }) {
   return (
     <span style={{
       display: "inline-flex", alignItems: "center", gap: 5,
-      color: s.color, background: s.bg, padding: "3px 9px",
-      borderRadius: 20, fontSize: 11.5, fontWeight: 600, letterSpacing: 0.2, whiteSpace: "nowrap",
+      color: s.color, background: s.bg, padding: "4px 10px",
+      borderRadius: 20, fontSize: 12.5, fontWeight: 600, letterSpacing: 0.2, whiteSpace: "nowrap",
     }}>
       <Icon size={12} /> {status}
     </span>
@@ -390,8 +390,8 @@ function LeaveStatusBadge({ status }) {
   return (
     <span style={{
       display: "inline-flex", alignItems: "center", gap: 5,
-      color: s.color, background: s.bg, padding: "3px 9px",
-      borderRadius: 20, fontSize: 11.5, fontWeight: 600, letterSpacing: 0.2, whiteSpace: "nowrap",
+      color: s.color, background: s.bg, padding: "4px 10px",
+      borderRadius: 20, fontSize: 12.5, fontWeight: 600, letterSpacing: 0.2, whiteSpace: "nowrap",
     }}>
       <Icon size={12} /> {status}
     </span>
