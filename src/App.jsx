@@ -5,7 +5,8 @@ import {
   TrendingUp, TrendingDown, ScrollText, Building2, ClipboardList,
   UploadCloud, Printer, MapPin, Ruler, Loader2, FileCheck2,
   Briefcase, Video, PartyPopper, Megaphone, Users, Newspaper,
-  ChevronRight, Coins, Menu
+  ChevronRight, Coins, Menu, UserPlus, UserCheck, UserX, CalendarCheck,
+  CalendarX, Banknote, Contact, Phone, Mail
 } from "lucide-react";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -93,7 +94,13 @@ function amountInWords(num) {
   return parts.join(" ") + " Rupees Only";
 }
 
-const EXPENSE_CATEGORIES = ["Ad Spend", "Software", "Rent", "Contractor", "Utilities", "Production Vendor", "Other"];
+const EXPENSE_CATEGORIES = ["Ad Spend", "Software", "Rent", "Contractor", "Utilities", "Payroll", "Production Vendor", "Other"];
+
+/* ---------- HR & Payroll ---------- */
+const HR_DEPARTMENTS = ["Creative", "Digital Marketing", "OOH Operations", "Client Servicing", "Production", "Accounts & Finance", "HR & Admin"];
+const LEAVE_TYPES = ["Casual", "Sick", "Annual", "Unpaid"];
+const EMP_STATUSES = ["Active", "On Leave", "Terminated"];
+function empCode(n) { return "EMP-" + String(n).padStart(3, "0"); }
 
 // Six Core Service Lines for Advertising Agency
 const PROJECT_TYPES = [
@@ -157,6 +164,38 @@ function seedHoardings() {
     { id: uid(), name: "II Chundrigar Financial Hub", area: "II Chundrigar", size: "25x50 ft", pricePerMonth: 200000, status: "Booked", project: "Launch Campaign", client: "Prime Estate Enterprises", bookedFrom: "2026-07-05", bookedTo: "2026-09-05" },
     { id: uid(), name: "Gulshan-e-Iqbal Flyover", area: "Gulshan-e-Iqbal", size: "12x24 ft", pricePerMonth: 70000, status: "Available", project: "", client: "" },
   ];
+}
+
+function seedEmployees() {
+  return [
+    { id: uid(), code: empCode(1), name: "Ayesha Farooq", department: "Creative", designation: "Creative Director", email: "ayesha.farooq@adpulse.pk", phone: "0300-1234567", joinDate: "2022-03-01", status: "Active", salary: 285000, cnic: "42101-1234567-1", bankAccount: "PK-HBL-00112233", leaveBalance: 16 },
+    { id: uid(), code: empCode(2), name: "Bilal Sheikh", department: "Digital Marketing", designation: "Digital Marketing Manager", email: "bilal.sheikh@adpulse.pk", phone: "0301-2345678", joinDate: "2022-08-15", status: "Active", salary: 220000, cnic: "42101-2345678-2", bankAccount: "PK-UBL-00223344", leaveBalance: 12 },
+    { id: uid(), code: empCode(3), name: "Zainab Hussain", department: "Client Servicing", designation: "Account Manager", email: "zainab.hussain@adpulse.pk", phone: "0302-3456789", joinDate: "2023-01-10", status: "Active", salary: 165000, cnic: "42101-3456789-3", bankAccount: "PK-MCB-00334455", leaveBalance: 18 },
+    { id: uid(), code: empCode(4), name: "Hamza Qureshi", department: "OOH Operations", designation: "Operations Executive", email: "hamza.qureshi@adpulse.pk", phone: "0303-4567890", joinDate: "2021-11-20", status: "On Leave", salary: 140000, cnic: "42101-4567890-4", bankAccount: "PK-ABL-00445566", leaveBalance: 6 },
+    { id: uid(), code: empCode(5), name: "Sana Malik", department: "Production", designation: "Production Coordinator", email: "sana.malik@adpulse.pk", phone: "0304-5678901", joinDate: "2023-06-05", status: "Active", salary: 130000, cnic: "42101-5678901-5", bankAccount: "PK-HBL-00556677", leaveBalance: 20 },
+    { id: uid(), code: empCode(6), name: "Faisal Ahmed", department: "Accounts & Finance", designation: "Accounts Officer", email: "faisal.ahmed@adpulse.pk", phone: "0305-6789012", joinDate: "2020-04-12", status: "Active", salary: 155000, cnic: "42101-6789012-6", bankAccount: "PK-UBL-00667788", leaveBalance: 9 },
+    { id: uid(), code: empCode(7), name: "Mehak Raza", department: "HR & Admin", designation: "HR Executive", email: "mehak.raza@adpulse.pk", phone: "0306-7890123", joinDate: "2024-02-18", status: "Active", salary: 120000, cnic: "42101-7890123-7", bankAccount: "PK-MCB-00778899", leaveBalance: 19 },
+    { id: uid(), code: empCode(8), name: "Usman Tariq", department: "Digital Marketing", designation: "Graphic Designer", email: "usman.tariq@adpulse.pk", phone: "0307-8901234", joinDate: "2023-09-01", status: "Terminated", salary: 95000, cnic: "42101-8901234-8", bankAccount: "PK-ABL-00889900", leaveBalance: 0 },
+  ];
+}
+
+function seedLeaveRequests(employees) {
+  const byName = n => employees.find(e => e.name === n);
+  return [
+    { id: uid(), employeeId: byName("Hamza Qureshi")?.id || "e4", employeeName: "Hamza Qureshi", type: "Sick", fromDate: "2026-07-18", toDate: "2026-07-22", days: 5, reason: "Recovering from fever", status: "Approved", appliedOn: "2026-07-16" },
+    { id: uid(), employeeId: byName("Zainab Hussain")?.id || "e3", employeeName: "Zainab Hussain", type: "Casual", fromDate: "2026-07-28", toDate: "2026-07-29", days: 2, reason: "Family function", status: "Pending", appliedOn: "2026-07-20" },
+    { id: uid(), employeeId: byName("Sana Malik")?.id || "e5", employeeName: "Sana Malik", type: "Annual", fromDate: "2026-08-03", toDate: "2026-08-07", days: 5, reason: "Travelling out of city", status: "Pending", appliedOn: "2026-07-19" },
+    { id: uid(), employeeId: byName("Faisal Ahmed")?.id || "e6", employeeName: "Faisal Ahmed", type: "Casual", fromDate: "2026-07-10", toDate: "2026-07-10", days: 1, reason: "Personal errand", status: "Rejected", appliedOn: "2026-07-08" },
+  ];
+}
+
+function seedPayrollRun(employees) {
+  const active = employees.filter(e => e.status !== "Terminated");
+  const entries = active.map(e => ({ employeeId: e.id, name: e.name, department: e.department, gross: e.salary, deduction: 0, net: e.salary }));
+  const totalNet = entries.reduce((s, e) => s + e.net, 0);
+  const run = { id: uid(), month: "June 2026", runDate: "2026-06-30", employeeCount: entries.length, totalGross: totalNet, totalDeductions: 0, totalNet, entries };
+  const exp = { id: uid(), vendor: "Payroll — June 2026", category: "Payroll", description: `Salaries for ${entries.length} employees`, amount: totalNet, date: run.runDate, paidVia: "Bank" };
+  return { run, expense: exp };
 }
 
 function buildInitialJournal(invoices, expenses) {
@@ -259,10 +298,14 @@ function buildInitialData() {
   linkSite("Gulshan-e-Iqbal Flyover", ramzan, "2026-07-10", "2026-08-31");
   linkSite("II Chundrigar Financial Hub", launch, "2026-07-05", "2026-09-05");
 
+  const employees = seedEmployees();
+  const leaveRequests = seedLeaveRequests(employees);
+  const { run: payrollRun, expense: payrollExpense } = seedPayrollRun(employees);
+
   const invoices = [...seedInvoices(), ...seedProjectInvoices(projects), ...hoardingInvoices];
-  const expenses = [...seedExpenses(), ...seedProjectExpenses(projects)];
+  const expenses = [...seedExpenses(), ...seedProjectExpenses(projects), payrollExpense];
   const journal = buildInitialJournal(invoices, expenses);
-  return { projects, invoices, expenses, journal, hoardings };
+  return { projects, invoices, expenses, journal, hoardings, employees, leaveRequests, payrollRuns: [payrollRun] };
 }
 
 /* ---------- SMALL UI COMPONENTS ---------- */
@@ -318,6 +361,48 @@ function ProjectStatusBadge({ status }) {
       <Icon size={12} /> {status}
     </span>
   );
+}
+
+function EmployeeStatusBadge({ status }) {
+  const map = {
+    Active: { color: "var(--jade)", bg: "var(--jade-glow)", icon: UserCheck },
+    "On Leave": { color: "var(--amber)", bg: "var(--amber-glow)", icon: Clock },
+    Terminated: { color: "var(--rose)", bg: "var(--rose-glow)", icon: UserX },
+  };
+  const s = map[status] || map.Active;
+  const Icon = s.icon;
+  return (
+    <span style={{
+      display: "inline-flex", alignItems: "center", gap: 5,
+      color: s.color, background: s.bg, padding: "3px 9px",
+      borderRadius: 20, fontSize: 11.5, fontWeight: 600, letterSpacing: 0.2, whiteSpace: "nowrap",
+    }}>
+      <Icon size={12} /> {status}
+    </span>
+  );
+}
+
+function LeaveStatusBadge({ status }) {
+  const map = {
+    Pending: { color: "var(--amber)", bg: "var(--amber-glow)", icon: Clock },
+    Approved: { color: "var(--jade)", bg: "var(--jade-glow)", icon: CalendarCheck },
+    Rejected: { color: "var(--rose)", bg: "var(--rose-glow)", icon: CalendarX },
+  };
+  const s = map[status] || map.Pending;
+  const Icon = s.icon;
+  return (
+    <span style={{
+      display: "inline-flex", alignItems: "center", gap: 5,
+      color: s.color, background: s.bg, padding: "3px 9px",
+      borderRadius: 20, fontSize: 11.5, fontWeight: 600, letterSpacing: 0.2, whiteSpace: "nowrap",
+    }}>
+      <Icon size={12} /> {status}
+    </span>
+  );
+}
+
+function DepartmentBadge({ department }) {
+  return <span className="badge-mini">{department}</span>;
 }
 
 function KpiCard({ label, value, sub, icon: Icon, accent }) {
@@ -395,6 +480,25 @@ export default function App() {
   const [sitePickerProject, setSitePickerProject] = useState(null);
   const [printDoc, setPrintDoc] = useState(null);
   const [oohFilters, setOohFilters] = useState({ area: "All", size: "All", status: "All", maxPrice: "" });
+
+  const [employees, setEmployees] = useState(seedData.employees);
+  const [leaveRequests, setLeaveRequests] = useState(seedData.leaveRequests);
+  const [payrollRuns, setPayrollRuns] = useState(seedData.payrollRuns);
+  const [attendanceToday, setAttendanceToday] = useState(() => {
+    const onLeaveIds = new Set(seedData.leaveRequests
+      .filter(l => l.status === "Approved" && l.fromDate <= "2026-07-21" && l.toDate >= "2026-07-21")
+      .map(l => l.employeeId));
+    const m = {};
+    seedData.employees.forEach(e => {
+      m[e.id] = e.status === "Terminated" ? "N/A" : onLeaveIds.has(e.id) ? "Leave" : "Present";
+    });
+    return m;
+  });
+  const [hrView, setHrView] = useState("directory");
+  const [showEmployeeForm, setShowEmployeeForm] = useState(false);
+  const [showLeaveForm, setShowLeaveForm] = useState(false);
+  const [employeeDetail, setEmployeeDetail] = useState(null);
+  const [payrollConfirm, setPayrollConfirm] = useState(false);
 
   const voucherCounters = useRef({ JV: 0, PV: 0, RV: 0, SV: 0 });
 
@@ -512,6 +616,18 @@ export default function App() {
     });
     return flat.slice(0, 8);
   }, [journal]);
+
+  /* HR: headcount, payroll cost, leave & attendance stats */
+  const hrStats = useMemo(() => {
+    const active = employees.filter(e => e.status !== "Terminated");
+    const onLeave = employees.filter(e => e.status === "On Leave");
+    const monthlyPayrollCost = active.reduce((s, e) => s + e.salary, 0);
+    const pendingLeaves = leaveRequests.filter(l => l.status === "Pending").length;
+    const presentToday = Object.values(attendanceToday).filter(v => v === "Present").length;
+    const absentToday = Object.values(attendanceToday).filter(v => v === "Absent").length;
+    const leaveToday = Object.values(attendanceToday).filter(v => v === "Leave").length;
+    return { total: employees.length, active: active.length, onLeave: onLeave.length, monthlyPayrollCost, pendingLeaves, presentToday, absentToday, leaveToday };
+  }, [employees, leaveRequests, attendanceToday]);
 
   /* ---------- ACTIONS ---------- */
 
@@ -659,6 +775,84 @@ export default function App() {
     setCostModalProject(null);
   }
 
+  /* HR Actions */
+  function addEmployee({ name, department, designation, email, phone, joinDate, salary, cnic, bankAccount }) {
+    const emp = {
+      id: uid(), code: empCode(employees.length + 1), name, department, designation, email, phone,
+      joinDate, status: "Active", salary: Number(salary), cnic, bankAccount, leaveBalance: 20,
+    };
+    setEmployees(list => [emp, ...list]);
+    setAttendanceToday(a => ({ ...a, [emp.id]: "Present" }));
+    setShowEmployeeForm(false);
+  }
+
+  function setEmployeeStatus(emp, status) {
+    setEmployees(list => list.map(e => e.id === emp.id ? { ...e, status } : e));
+    if (status === "Terminated") setAttendanceToday(a => ({ ...a, [emp.id]: "N/A" }));
+  }
+
+  function markAttendance(empId, value) {
+    setAttendanceToday(a => ({ ...a, [empId]: value }));
+  }
+
+  function applyLeave({ employeeId, type, fromDate, toDate, reason }) {
+    const emp = employees.find(e => e.id === employeeId);
+    if (!emp) return;
+    const days = Math.max(1, Math.round((new Date(toDate) - new Date(fromDate)) / 86400000) + 1);
+    const req = {
+      id: uid(), employeeId, employeeName: emp.name, type, fromDate, toDate, days, reason,
+      status: "Pending", appliedOn: TODAY.toISOString().slice(0, 10),
+    };
+    setLeaveRequests(list => [req, ...list]);
+    setShowLeaveForm(false);
+  }
+
+  function decideLeaveRequest(req, decision) {
+    setLeaveRequests(list => list.map(l => l.id === req.id ? { ...l, status: decision } : l));
+    if (decision === "Approved") {
+      if (req.type !== "Unpaid") {
+        setEmployees(list => list.map(e => e.id === req.employeeId
+          ? { ...e, leaveBalance: Math.max(0, e.leaveBalance - req.days) }
+          : e));
+      }
+      const coversToday = req.fromDate <= "2026-07-21" && req.toDate >= "2026-07-21";
+      if (coversToday) {
+        setEmployees(list => list.map(e => e.id === req.employeeId ? { ...e, status: "On Leave" } : e));
+        setAttendanceToday(a => ({ ...a, [req.employeeId]: "Leave" }));
+      }
+    }
+  }
+
+  function runPayroll() {
+    const month = TODAY.toLocaleDateString("en-GB", { month: "long", year: "numeric" });
+    const runDate = TODAY.toISOString().slice(0, 10);
+    const unpaidDaysByEmp = {};
+    leaveRequests.forEach(l => {
+      if (l.status === "Approved" && l.type === "Unpaid") {
+        unpaidDaysByEmp[l.employeeId] = (unpaidDaysByEmp[l.employeeId] || 0) + l.days;
+      }
+    });
+    const active = employees.filter(e => e.status !== "Terminated");
+    const entries = active.map(e => {
+      const unpaidDays = unpaidDaysByEmp[e.id] || 0;
+      const deduction = Math.round((e.salary / 30) * unpaidDays);
+      return { employeeId: e.id, name: e.name, department: e.department, gross: e.salary, deduction, net: e.salary - deduction };
+    });
+    const totalGross = entries.reduce((s, e) => s + e.gross, 0);
+    const totalDeductions = entries.reduce((s, e) => s + e.deduction, 0);
+    const totalNet = entries.reduce((s, e) => s + e.net, 0);
+    const run = { id: uid(), month, runDate, employeeCount: entries.length, totalGross, totalDeductions, totalNet, entries };
+    setPayrollRuns(list => [run, ...list]);
+
+    const exp = { id: uid(), vendor: `Payroll — ${month}`, category: "Payroll", description: `Salaries for ${entries.length} employees`, amount: totalNet, date: runDate, paidVia: "Bank" };
+    setExpenses(list => [exp, ...list]);
+    postEntry(runDate, `Payroll — ${month} (${entries.length} employees)`, [
+      { account: "expense", debit: totalNet, credit: 0, memo: "Payroll" },
+      { account: "bank", debit: 0, credit: totalNet },
+    ], "PR-" + exp.id.toUpperCase());
+    setPayrollConfirm(false);
+  }
+
   async function handleFileUpload(file) {
     const docId = uid();
     setDocuments(d => [{ id: docId, fileName: file.name, status: "processing" }, ...d]);
@@ -711,6 +905,7 @@ export default function App() {
     { key: "invoices", label: "Invoices", icon: FileText },
     { key: "expenses", label: "Expenses", icon: Receipt },
     { key: "ooh", label: "OOH Advertising", icon: Building2 },
+    { key: "hr", label: "HR & Payroll", icon: Users },
     { key: "vouchers", label: "Vouchers", icon: ClipboardList },
     { key: "documents", label: "Documents", icon: UploadCloud },
     { key: "ledger", label: "Ledger", icon: BookOpenText },
@@ -739,7 +934,7 @@ export default function App() {
           </button>
         ))}
         <div style={{ marginTop: "auto", padding: "14px 10px", borderTop: "1px solid var(--rule)", fontSize: 11.5, color: "var(--ink-muted)" }}>
-          Karachi Agency Hub &middot; 4 Users
+          Karachi Agency Hub &middot; {hrStats.active} Employees
         </div>
       </aside>
 
@@ -955,7 +1150,7 @@ export default function App() {
                 </button>
                 <div>
                   <h1>Operating Expenses</h1>
-                  <p>Track vendor bills, software, and utility costs</p>
+                  <p>Track vendor bills, software, payroll and utility costs</p>
                 </div>
               </div>
               <div className="topbar-actions">
@@ -1077,6 +1272,207 @@ export default function App() {
                   </table>
                 </div>
               </div>
+            </div>
+          </>
+        )}
+
+        {tab === "hr" && (
+          <>
+            <div className="topbar">
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <button className="mobile-toggle" onClick={() => setMobileNavOpen(true)}>
+                  <Menu size={20} />
+                </button>
+                <div>
+                  <h1>HR &amp; Payroll Management</h1>
+                  <p>Employee directory, attendance, leave approvals &amp; automated payroll</p>
+                </div>
+              </div>
+              <div className="topbar-actions">
+                {hrView === "leaves" && <button className="btn" onClick={() => setShowLeaveForm(true)}><Plus size={14} /> Apply Leave</button>}
+                {hrView === "directory" && <button className="btn btn-primary" onClick={() => setShowEmployeeForm(true)}><UserPlus size={14} /> New Employee</button>}
+                {hrView === "payroll" && <button className="btn btn-primary" onClick={() => setPayrollConfirm(true)}><Banknote size={14} /> Run Monthly Payroll</button>}
+              </div>
+            </div>
+            <div className="content">
+              <div className="grid-kpi">
+                <KpiCard label="Total Staff" value={hrStats.total} sub={`${hrStats.active} active staff`} icon={Users} accent="var(--gold)" />
+                <KpiCard label="On Leave" value={hrStats.onLeave} sub={`${hrStats.pendingLeaves} pending approvals`} icon={CalendarX} accent="var(--amber)" />
+                <KpiCard label="Present Today" value={hrStats.presentToday} sub={`${hrStats.absentToday} absent, ${hrStats.leaveToday} leave`} icon={UserCheck} accent="var(--jade)" />
+                <KpiCard label="Monthly Salary Cost" value={pkr(hrStats.monthlyPayrollCost)} sub="Gross Active Staff Payroll" icon={Wallet} accent="var(--jade)" />
+              </div>
+
+              <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
+                {[
+                  { key: "directory", label: "Directory", icon: Contact },
+                  { key: "attendance", label: "Attendance", icon: CalendarCheck },
+                  { key: "leaves", label: "Leave Requests", icon: CalendarX },
+                  { key: "payroll", label: "Payroll Runs", icon: Banknote },
+                ].map(v => (
+                  <button key={v.key} className="btn" style={{
+                    fontSize: 12, padding: "6px 12px",
+                    background: hrView === v.key ? "var(--gold)" : "var(--surface-2)",
+                    color: hrView === v.key ? "#060D17" : "var(--ink)",
+                    borderColor: hrView === v.key ? "var(--gold)" : "var(--rule)",
+                  }} onClick={() => setHrView(v.key)}>
+                    <v.icon size={13} /> {v.label}
+                  </button>
+                ))}
+              </div>
+
+              {hrView === "directory" && (
+                <div className="card">
+                  <div className="table-responsive">
+                    <table>
+                      <thead><tr>
+                        <th>Emp Code</th><th>Employee Name</th><th>Department</th><th>Designation</th>
+                        <th style={{ textAlign: "right" }}>Monthly Salary</th><th>Status</th><th>Actions</th>
+                      </tr></thead>
+                      <tbody>
+                        {employees.map(e => (
+                          <tr key={e.id}>
+                            <td className="mono" style={{ fontSize: 11.5, color: "var(--ink-muted)" }}>{e.code}</td>
+                            <td style={{ fontWeight: 600, cursor: "pointer" }} onClick={() => setEmployeeDetail(e)}>{e.name}</td>
+                            <td><DepartmentBadge department={e.department} /></td>
+                            <td style={{ color: "var(--ink-muted)" }}>{e.designation}</td>
+                            <td className="mono" style={{ textAlign: "right" }}>{pkr(e.salary)}</td>
+                            <td><EmployeeStatusBadge status={e.status} /></td>
+                            <td style={{ display: "flex", gap: 6 }}>
+                              <button className="btn" style={{ padding: "4px 8px", fontSize: 11 }} onClick={() => setEmployeeDetail(e)}>Profile</button>
+                              {e.status !== "Terminated" && (
+                                <button className="btn" style={{ padding: "4px 8px", fontSize: 11 }} onClick={() => setEmployeeStatus(e, "Terminated")}>Terminate</button>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              {hrView === "attendance" && (
+                <div className="card">
+                  <div className="table-responsive">
+                    <table>
+                      <thead><tr><th>Code</th><th>Name</th><th>Department</th><th>Today Status</th><th>Quick Toggle</th></tr></thead>
+                      <tbody>
+                        {employees.filter(e => e.status !== "Terminated").map(e => (
+                          <tr key={e.id}>
+                            <td className="mono" style={{ fontSize: 11.5, color: "var(--ink-muted)" }}>{e.code}</td>
+                            <td style={{ fontWeight: 600 }}>{e.name}</td>
+                            <td><DepartmentBadge department={e.department} /></td>
+                            <td>
+                              <span className="badge-mini" style={{
+                                color: attendanceToday[e.id] === "Present" ? "var(--jade)" : attendanceToday[e.id] === "Absent" ? "var(--rose)" : "var(--amber)",
+                                background: "transparent", fontWeight: 700
+                              }}>{attendanceToday[e.id]}</span>
+                            </td>
+                            <td style={{ display: "flex", gap: 6 }}>
+                              <button className="btn" style={{ padding: "3px 8px", fontSize: 11 }} onClick={() => markAttendance(e.id, "Present")}>Present</button>
+                              <button className="btn" style={{ padding: "3px 8px", fontSize: 11 }} onClick={() => markAttendance(e.id, "Absent")}>Absent</button>
+                              <button className="btn" style={{ padding: "3px 8px", fontSize: 11 }} onClick={() => markAttendance(e.id, "Leave")}>Leave</button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              {hrView === "leaves" && (
+                <div className="card">
+                  <div className="table-responsive">
+                    <table>
+                      <thead><tr>
+                        <th>Employee</th><th>Type</th><th>From</th><th>To</th><th>Days</th>
+                        <th>Reason</th><th>Status</th><th>Actions</th>
+                      </tr></thead>
+                      <tbody>
+                        {leaveRequests.map(l => (
+                          <tr key={l.id}>
+                            <td style={{ fontWeight: 600 }}>{l.employeeName}</td>
+                            <td>{l.type}</td>
+                            <td className="mono" style={{ fontSize: 11.5 }}>{fmtDate(l.fromDate)}</td>
+                            <td className="mono" style={{ fontSize: 11.5 }}>{fmtDate(l.toDate)}</td>
+                            <td className="mono">{l.days}</td>
+                            <td style={{ color: "var(--ink-muted)" }}>{l.reason}</td>
+                            <td><LeaveStatusBadge status={l.status} /></td>
+                            <td style={{ display: "flex", gap: 6 }}>
+                              {l.status === "Pending" && (
+                                <>
+                                  <button className="btn btn-primary" style={{ padding: "3px 8px", fontSize: 11 }} onClick={() => decideLeaveRequest(l, "Approved")}>Approve</button>
+                                  <button className="btn" style={{ padding: "3px 8px", fontSize: 11 }} onClick={() => decideLeaveRequest(l, "Rejected")}>Reject</button>
+                                </>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                        {leaveRequests.length === 0 && (
+                          <tr><td colSpan={8} style={{ textAlign: "center", color: "var(--ink-muted)", padding: 18 }}>No leave requests found.</td></tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              {hrView === "payroll" && (
+                <>
+                  <div className="card" style={{ marginBottom: 18 }}>
+                    <div className="table-responsive">
+                      <table>
+                        <thead><tr>
+                          <th>Month</th><th>Run Date</th><th>Employees</th>
+                          <th style={{ textAlign: "right" }}>Gross Total</th><th style={{ textAlign: "right" }}>Deductions</th><th style={{ textAlign: "right" }}>Net Disbursed</th>
+                        </tr></thead>
+                        <tbody>
+                          {payrollRuns.map(r => (
+                            <tr key={r.id}>
+                              <td style={{ fontWeight: 600 }}>{r.month}</td>
+                              <td className="mono" style={{ fontSize: 11.5 }}>{fmtDate(r.runDate)}</td>
+                              <td className="mono">{r.employeeCount}</td>
+                              <td className="mono" style={{ textAlign: "right" }}>{pkr(r.totalGross)}</td>
+                              <td className="mono" style={{ textAlign: "right", color: r.totalDeductions ? "var(--rose)" : "var(--ink-muted)" }}>{pkr(r.totalDeductions)}</td>
+                              <td className="mono" style={{ textAlign: "right", fontWeight: 700, color: "var(--jade)" }}>{pkr(r.totalNet)}</td>
+                            </tr>
+                          ))}
+                          {payrollRuns.length === 0 && (
+                            <tr><td colSpan={6} style={{ textAlign: "center", color: "var(--ink-muted)", padding: 18 }}>No payroll runs executed yet.</td></tr>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                  {payrollRuns.length > 0 && (
+                    <div className="card">
+                      <div style={{ padding: "14px 16px 4px" }} className="section-title">
+                        <Banknote size={15} color="var(--gold)" /> {payrollRuns[0].month} — Staff Payslip Breakdown
+                      </div>
+                      <div className="table-responsive">
+                        <table>
+                          <thead><tr>
+                            <th>Staff Member</th><th>Department</th>
+                            <th style={{ textAlign: "right" }}>Gross Salary</th><th style={{ textAlign: "right" }}>Leave Deduction</th><th style={{ textAlign: "right" }}>Net Payable</th>
+                          </tr></thead>
+                          <tbody>
+                            {payrollRuns[0].entries.map(e => (
+                              <tr key={e.employeeId}>
+                                <td style={{ fontWeight: 600 }}>{e.name}</td>
+                                <td><DepartmentBadge department={e.department} /></td>
+                                <td className="mono" style={{ textAlign: "right" }}>{pkr(e.gross)}</td>
+                                <td className="mono" style={{ textAlign: "right", color: e.deduction ? "var(--rose)" : "var(--ink-muted)" }}>{e.deduction ? "-" + pkr(e.deduction) : "—"}</td>
+                                <td className="mono" style={{ textAlign: "right", fontWeight: 700 }}>{pkr(e.net)}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
             </div>
           </>
         )}
@@ -1280,7 +1676,7 @@ export default function App() {
                   <table>
                     <tbody>
                       <tr><td style={{ fontWeight: 600 }}>Service Revenue Billed</td><td className="mono" style={{ textAlign: "right", color: "var(--jade)", fontWeight: 700 }}>{pkr(revenueBalance)}</td></tr>
-                      <tr><td style={{ fontWeight: 600 }}>Operating Expenses</td><td className="mono" style={{ textAlign: "right", color: "var(--rose)", fontWeight: 700 }}>({pkr(expenseBalance)})</td></tr>
+                      <tr><td style={{ fontWeight: 600 }}>Operating &amp; Payroll Expenses</td><td className="mono" style={{ textAlign: "right", color: "var(--rose)", fontWeight: 700 }}>({pkr(expenseBalance)})</td></tr>
                       <tr style={{ background: "rgba(255,255,255,0.02)" }}>
                         <td style={{ fontWeight: 700, fontSize: 14 }}>Net Operating Profit</td>
                         <td className="mono" style={{ textAlign: "right", fontWeight: 700, fontSize: 15, color: netProfit >= 0 ? "var(--jade)" : "var(--rose)" }}>{pkr(netProfit)}</td>
@@ -1366,6 +1762,24 @@ export default function App() {
           />
         );
       })()}
+      {showEmployeeForm && <EmployeeModal onClose={() => setShowEmployeeForm(false)} onSubmit={addEmployee} />}
+      {showLeaveForm && <LeaveModal employees={employees.filter(e => e.status !== "Terminated")} onClose={() => setShowLeaveForm(false)} onSubmit={applyLeave} />}
+      {employeeDetail && (
+        <EmployeeDetailModal
+          employee={employees.find(e => e.id === employeeDetail.id) || employeeDetail}
+          leaveHistory={leaveRequests.filter(l => l.employeeId === employeeDetail.id)}
+          onClose={() => setEmployeeDetail(null)}
+          onStatusChange={status => setEmployeeStatus(employeeDetail, status)}
+        />
+      )}
+      {payrollConfirm && (
+        <PayrollConfirmModal
+          activeCount={employees.filter(e => e.status !== "Terminated").length}
+          totalCost={hrStats.monthlyPayrollCost}
+          onClose={() => setPayrollConfirm(false)}
+          onConfirm={runPayroll}
+        />
+      )}
     </div>
   );
 }
@@ -1861,6 +2275,146 @@ function ProjectDetailModal({ project, invoices, expenses, sites, onClose, onSta
         </div>
       </div>
     </div>
+  );
+}
+
+/* HR MODALS */
+
+function EmployeeModal({ onClose, onSubmit }) {
+  const [name, setName] = useState("");
+  const [department, setDepartment] = useState(HR_DEPARTMENTS[0]);
+  const [designation, setDesignation] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [joinDate, setJoinDate] = useState("2026-07-21");
+  const [salary, setSalary] = useState("");
+  const [cnic, setCnic] = useState("");
+  const [bankAccount, setBankAccount] = useState("");
+
+  const valid = name && designation && Number(salary) > 0;
+  return (
+    <ModalShell title="New Employee Registration" onClose={onClose}>
+      <div className="field"><label>Full Name</label><input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Tariq Jamil" /></div>
+      <div style={{ display: "flex", gap: 10 }}>
+        <div className="field" style={{ flex: 1 }}><label>Department</label>
+          <select value={department} onChange={e => setDepartment(e.target.value)}>
+            {HR_DEPARTMENTS.map(d => <option key={d}>{d}</option>)}
+          </select>
+        </div>
+        <div className="field" style={{ flex: 1 }}><label>Designation</label><input value={designation} onChange={e => setDesignation(e.target.value)} placeholder="e.g. Sr. Designer" /></div>
+      </div>
+      <div style={{ display: "flex", gap: 10 }}>
+        <div className="field" style={{ flex: 1 }}><label>Email</label><input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="name@adpulse.pk" /></div>
+        <div className="field" style={{ flex: 1 }}><label>Phone</label><input value={phone} onChange={e => setPhone(e.target.value)} placeholder="0300-1234567" /></div>
+      </div>
+      <div style={{ display: "flex", gap: 10 }}>
+        <div className="field" style={{ flex: 1 }}><label>Monthly Salary (PKR)</label><input type="number" value={salary} onChange={e => setSalary(e.target.value)} placeholder="0" /></div>
+        <div className="field" style={{ flex: 1 }}><label>Joining Date</label><input type="date" value={joinDate} onChange={e => setJoinDate(e.target.value)} /></div>
+      </div>
+      <div style={{ display: "flex", gap: 10 }}>
+        <div className="field" style={{ flex: 1 }}><label>CNIC #</label><input value={cnic} onChange={e => setCnic(e.target.value)} placeholder="42101-XXXXXXX-X" /></div>
+        <div className="field" style={{ flex: 1 }}><label>Bank Account IBAN</label><input value={bankAccount} onChange={e => setBankAccount(e.target.value)} placeholder="PK-HBL-XXXXXX" /></div>
+      </div>
+      <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 6 }} disabled={!valid}
+        onClick={() => valid && onSubmit({ name, department, designation, email, phone, joinDate, salary: Number(salary), cnic, bankAccount })}>
+        Register Staff Member
+      </button>
+    </ModalShell>
+  );
+}
+
+function LeaveModal({ employees, onClose, onSubmit }) {
+  const [employeeId, setEmployeeId] = useState(employees[0]?.id || "");
+  const [type, setType] = useState(LEAVE_TYPES[0]);
+  const [fromDate, setFromDate] = useState("2026-07-22");
+  const [toDate, setToDate] = useState("2026-07-23");
+  const [reason, setReason] = useState("");
+
+  const valid = employeeId && fromDate && toDate && reason;
+  return (
+    <ModalShell title="Apply Employee Leave" onClose={onClose}>
+      <div className="field"><label>Employee</label>
+        <select value={employeeId} onChange={e => setEmployeeId(e.target.value)}>
+          {employees.map(e => <option key={e.id} value={e.id}>{e.name} ({e.department})</option>)}
+        </select>
+      </div>
+      <div className="field"><label>Leave Category</label>
+        <select value={type} onChange={e => setType(e.target.value)}>
+          {LEAVE_TYPES.map(t => <option key={t}>{t}</option>)}
+        </select>
+      </div>
+      <div style={{ display: "flex", gap: 10 }}>
+        <div className="field" style={{ flex: 1 }}><label>From Date</label><input type="date" value={fromDate} onChange={e => setFromDate(e.target.value)} /></div>
+        <div className="field" style={{ flex: 1 }}><label>To Date</label><input type="date" value={toDate} onChange={e => setToDate(e.target.value)} /></div>
+      </div>
+      <div className="field"><label>Reason</label><input value={reason} onChange={e => setReason(e.target.value)} placeholder="Brief leave explanation" /></div>
+      <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 6 }} disabled={!valid}
+        onClick={() => valid && onSubmit({ employeeId, type, fromDate, toDate, reason })}>
+        Submit Leave Request
+      </button>
+    </ModalShell>
+  );
+}
+
+function EmployeeDetailModal({ employee, leaveHistory, onClose, onStatusChange }) {
+  return (
+    <ModalShell title={`Employee Profile — ${employee.name}`} onClose={onClose}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+        <div>
+          <div className="mono" style={{ fontSize: 12, color: "var(--ink-muted)" }}>{employee.code} &middot; <DepartmentBadge department={employee.department} /></div>
+          <div style={{ fontSize: 13, color: "var(--gold)", fontWeight: 600 }}>{employee.designation}</div>
+        </div>
+        <select value={employee.status} onChange={e => onStatusChange(e.target.value)}
+          style={{ background: "var(--surface-2)", border: "1px solid var(--rule)", borderRadius: 20, color: "var(--ink)", fontSize: 12, padding: "4px 10px", fontWeight: 600 }}>
+          {EMP_STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
+        </select>
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, fontSize: 12.5, marginBottom: 14, background: "var(--surface-2)", padding: 12, borderRadius: 8 }}>
+        <div><span style={{ color: "var(--ink-muted)" }}>Monthly Salary:</span> <br/><b className="mono">{pkr(employee.salary)}</b></div>
+        <div><span style={{ color: "var(--ink-muted)" }}>Leave Balance:</span> <br/><b>{employee.leaveBalance} days remaining</b></div>
+        <div><span style={{ color: "var(--ink-muted)" }}>Joining Date:</span> <br/>{fmtDate(employee.joinDate)}</div>
+        <div><span style={{ color: "var(--ink-muted)" }}>Phone:</span> <br/>{employee.phone || "—"}</div>
+        <div><span style={{ color: "var(--ink-muted)" }}>CNIC #:</span> <br/><span className="mono">{employee.cnic || "—"}</span></div>
+        <div><span style={{ color: "var(--ink-muted)" }}>Bank IBAN:</span> <br/><span className="mono" style={{ fontSize: 11 }}>{employee.bankAccount || "—"}</span></div>
+      </div>
+
+      <div className="section-title" style={{ fontSize: 13, marginBottom: 8 }}><CalendarCheck size={14} color="var(--gold)" /> Leave History</div>
+      <div className="card" style={{ maxHeight: 150, overflowY: "auto" }}>
+        <div className="table-responsive">
+          <table>
+            <thead><tr><th>Type</th><th>From – To</th><th>Days</th><th>Status</th></tr></thead>
+            <tbody>
+              {leaveHistory.map(l => (
+                <tr key={l.id}>
+                  <td>{l.type}</td>
+                  <td className="mono" style={{ fontSize: 11 }}>{fmtDate(l.fromDate)} – {fmtDate(l.toDate)}</td>
+                  <td className="mono">{l.days}</td>
+                  <td><LeaveStatusBadge status={l.status} /></td>
+                </tr>
+              ))}
+              {leaveHistory.length === 0 && (
+                <tr><td colSpan={4} style={{ textAlign: "center", color: "var(--ink-muted)", padding: 10 }}>No leave records on file.</td></tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </ModalShell>
+  );
+}
+
+function PayrollConfirmModal({ activeCount, totalCost, onClose, onConfirm }) {
+  return (
+    <ModalShell title="Run Monthly Payroll Disbursal" onClose={onClose}>
+      <div style={{ fontSize: 13, color: "var(--ink-muted)", marginBottom: 14 }}>
+        This action will generate staff payslips for <b>{activeCount} active employees</b> and automatically post the consolidated payroll expense entry (Total: <b className="mono" style={{ color: "var(--gold)" }}>{pkr(totalCost)}</b>) directly to the General Ledger &amp; P&amp;L.
+      </div>
+      <div style={{ display: "flex", gap: 10 }}>
+        <button className="btn" style={{ flex: 1, justifyContent: "center" }} onClick={onClose}>Cancel</button>
+        <button className="btn btn-primary" style={{ flex: 1.5, justifyContent: "center" }} onClick={onConfirm}>Confirm &amp; Post Payroll</button>
+      </div>
+    </ModalShell>
   );
 }
 
