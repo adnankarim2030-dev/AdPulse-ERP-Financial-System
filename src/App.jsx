@@ -6,7 +6,7 @@ import {
   UploadCloud, Printer, MapPin, Ruler, Loader2, FileCheck2,
   Briefcase, Video, PartyPopper, Megaphone, Users, Newspaper,
   ChevronRight, Coins, Menu, UserPlus, UserCheck, UserX, CalendarCheck,
-  CalendarX, Banknote, Contact, Phone, Mail
+  CalendarX, Banknote, Contact, Phone, Mail, Edit, Trash2
 } from "lucide-react";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -15,7 +15,6 @@ import {
 
 /* ---------- HELPERS & FORMATTERS ---------- */
 
-// Pakistani lakh/crore grouping: 1234567 -> 12,34,567
 function groupIndian(numStr) {
   if (numStr.length <= 3) return numStr;
   const last3 = numStr.slice(-3);
@@ -61,7 +60,6 @@ const PAGE_SIZES = {
   Legal: "8.5in 14in",
 };
 
-// Pakistani Lakh/Crore Amount in Words Generator
 const ONES = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten",
   "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
 const TENS = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
@@ -102,14 +100,13 @@ const LEAVE_TYPES = ["Casual", "Sick", "Annual", "Unpaid"];
 const EMP_STATUSES = ["Active", "On Leave", "Terminated"];
 function empCode(n) { return "EMP-" + String(n).padStart(3, "0"); }
 
-// Six Core Service Lines for Advertising Agency
 const PROJECT_TYPES = [
-  { key: "TVC Production", label: "TVC Production", icon: Video, color: "#D4AF37" },
-  { key: "Events", label: "Events", icon: PartyPopper, color: "#ED5E68" },
-  { key: "OOH Advertising", label: "OOH Advertising", icon: Building2, color: "#27C383" },
-  { key: "Digital Marketing", label: "Digital Marketing", icon: Megaphone, color: "#4CA5FF" },
-  { key: "BTL Marketing", label: "BTL Marketing", icon: Users, color: "#F2A649" },
-  { key: "Print Media", label: "Print Media", icon: Newspaper, color: "#9D76E8" },
+  { key: "TVC Production", label: "TVC Production", icon: Video, color: "#B8860B" },
+  { key: "Events", label: "Events", icon: PartyPopper, color: "#E11D48" },
+  { key: "OOH Advertising", label: "OOH Advertising", icon: Building2, color: "#059669" },
+  { key: "Digital Marketing", label: "Digital Marketing", icon: Megaphone, color: "#0284C7" },
+  { key: "BTL Marketing", label: "BTL Marketing", icon: Users, color: "#D97706" },
+  { key: "Print Media", label: "Print Media", icon: Newspaper, color: "#7C3AED" },
 ];
 
 const PROJECT_STATUSES = ["Planning", "Ongoing", "Completed", "On Hold"];
@@ -335,7 +332,7 @@ function ProjectTypeBadge({ type }) {
   return (
     <span style={{
       display: "inline-flex", alignItems: "center", gap: 5,
-      color: m.color, background: m.color + "22", padding: "3px 9px",
+      color: m.color, background: m.color + "1A", padding: "3px 9px",
       borderRadius: 20, fontSize: 11.5, fontWeight: 600, letterSpacing: 0.2, whiteSpace: "nowrap",
     }}>
       <Icon size={11.5} /> {m.label}
@@ -410,11 +407,11 @@ function KpiCard({ label, value, sub, icon: Icon, accent }) {
     <div className="card" style={{ padding: "16px 18px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
         <div>
-          <div style={{ fontSize: 11, color: "var(--ink-muted)", fontWeight: 600, textTransform: "uppercase", letterSpacing: 0.8 }}>{label}</div>
+          <div style={{ fontSize: 11, color: "var(--ink-muted)", fontWeight: 700, textTransform: "uppercase", letterSpacing: 0.8 }}>{label}</div>
           <div className="mono" style={{ fontSize: 21, fontWeight: 700, marginTop: 6, color: "var(--ink)" }}>{value}</div>
-          {sub && <div style={{ fontSize: 11.5, color: "var(--ink-muted)", marginTop: 4 }}>{sub}</div>}
+          {sub && <div style={{ fontSize: 11.5, color: "var(--ink-muted)", marginTop: 4, fontWeight: 500 }}>{sub}</div>}
         </div>
-        <div style={{ background: accent + "22", color: accent, borderRadius: 9, padding: 8, display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ background: accent + "1A", color: accent, borderRadius: 9, padding: 8, display: "flex", alignItems: "center", justifyCenter: "center" }}>
           <Icon size={18} />
         </div>
       </div>
@@ -463,17 +460,25 @@ export default function App() {
   const [projects, setProjects] = useState(seedData.projects);
 
   const [showInvoiceForm, setShowInvoiceForm] = useState(false);
+  const [editingInvoice, setEditingInvoice] = useState(null);
+
   const [showExpenseForm, setShowExpenseForm] = useState(false);
+  const [editingExpense, setEditingExpense] = useState(null);
+
   const [showVoucherForm, setShowVoucherForm] = useState(false);
   const [voucherDefaultType, setVoucherDefaultType] = useState("JV");
 
   const [showProjectForm, setShowProjectForm] = useState(false);
+  const [editingProject, setEditingProject] = useState(null);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [billingModalProject, setBillingModalProject] = useState(null);
   const [costModalProject, setCostModalProject] = useState(null);
   const [projectFilters, setProjectFilters] = useState({ type: "All", status: "All", client: "" });
 
   const [hoardings, setHoardings] = useState(seedData.hoardings);
+  const [showHoardingForm, setShowHoardingForm] = useState(false);
+  const [editingHoarding, setEditingHoarding] = useState(null);
+
   const [vouchers, setVouchers] = useState([]);
   const [documents, setDocuments] = useState([]);
   const [bookingHoarding, setBookingHoarding] = useState(null);
@@ -482,6 +487,7 @@ export default function App() {
   const [oohFilters, setOohFilters] = useState({ area: "All", size: "All", status: "All", maxPrice: "" });
 
   const [employees, setEmployees] = useState(seedData.employees);
+  const [editingEmployee, setEditingEmployee] = useState(null);
   const [leaveRequests, setLeaveRequests] = useState(seedData.leaveRequests);
   const [payrollRuns, setPayrollRuns] = useState(seedData.payrollRuns);
   const [attendanceToday, setAttendanceToday] = useState(() => {
@@ -544,7 +550,6 @@ export default function App() {
   const overdueTotal = invoicesWithStatus.filter(i => i.status === "Overdue").reduce((s, i) => s + i.amount, 0);
   const unpaidTotal = invoicesWithStatus.filter(i => i.status !== "Paid").reduce((s, i) => s + i.amount, 0);
 
-  /* cash running balance for chart */
   const cashSeries = useMemo(() => {
     const cashLines = [];
     journal.forEach(e => e.lines.forEach(l => {
@@ -564,14 +569,12 @@ export default function App() {
     }));
   }, [journal]);
 
-  /* expense by category for reports */
   const expenseByCategory = useMemo(() => {
     const m = {};
     expenses.forEach(e => { m[e.category] = (m[e.category] || 0) + e.amount; });
     return Object.entries(m).map(([category, amount]) => ({ category, amount }));
   }, [expenses]);
 
-  /* project-wise stats: billed / received / cost / margin */
   const projectStats = useMemo(() => {
     const map = {};
     projects.forEach(p => { map[p.id] = { billed: 0, received: 0, cost: 0 }; });
@@ -592,7 +595,6 @@ export default function App() {
     return { ...p, ...s, outstanding: s.billed - s.received, margin: s.billed - s.cost };
   }), [projects, projectStats]);
 
-  /* revenue & cost grouped by project type */
   const projectTypeSummary = useMemo(() => {
     const m = {};
     PROJECT_TYPES.forEach(t => { m[t.key] = { type: t.label, revenue: 0, cost: 0 }; });
@@ -617,7 +619,6 @@ export default function App() {
     return flat.slice(0, 8);
   }, [journal]);
 
-  /* HR: headcount, payroll cost, leave & attendance stats */
   const hrStats = useMemo(() => {
     const active = employees.filter(e => e.status !== "Terminated");
     const onLeave = employees.filter(e => e.status === "On Leave");
@@ -641,6 +642,11 @@ export default function App() {
     setShowInvoiceForm(false);
   }
 
+  function updateInvoice(updated) {
+    setInvoices(list => list.map(i => i.id === updated.id ? updated : i));
+    setEditingInvoice(null);
+  }
+
   function markPaid(inv, via) {
     setInvoices(list => list.map(i => i.id === inv.id ? { ...i, paid: true, paidVia: via } : i));
     postEntry(TODAY.toISOString().slice(0, 10), `Payment received - ${inv.client}`, [
@@ -657,6 +663,11 @@ export default function App() {
       { account: paidVia === "Cash" ? "cash" : "bank", debit: 0, credit: amount },
     ], "EXP-" + exp.id.toUpperCase());
     setShowExpenseForm(false);
+  }
+
+  function updateExpense(updated) {
+    setExpenses(list => list.map(e => e.id === updated.id ? updated : e));
+    setEditingExpense(null);
   }
 
   function makeVoucherNo(type) {
@@ -692,6 +703,24 @@ export default function App() {
     setVouchers(v => [{ id: uid(), voucherNo, type, date, party, description, amount }, ...v]);
     setShowVoucherForm(false);
     return voucherNo;
+  }
+
+  /* OOH Inventory CRUD */
+  function addHoarding(siteData) {
+    const newSite = { id: uid(), status: "Available", project: "", client: "", ...siteData };
+    setHoardings(list => [newSite, ...list]);
+    setShowHoardingForm(false);
+  }
+
+  function updateHoarding(updated) {
+    setHoardings(list => list.map(h => h.id === updated.id ? updated : h));
+    setEditingHoarding(null);
+  }
+
+  function removeHoarding(id) {
+    if (window.confirm("Are you sure you want to remove this billboard site from inventory?")) {
+      setHoardings(list => list.filter(h => h.id !== id));
+    }
   }
 
   function bookHoarding(hoarding, { mode, projectId, client, projectName, startDate, endDate, rent }) {
@@ -745,6 +774,11 @@ export default function App() {
     return proj;
   }
 
+  function updateProject(updated) {
+    setProjects(list => list.map(p => p.id === updated.id ? updated : p));
+    setEditingProject(null);
+  }
+
   function updateProjectStatus(projectId, status) {
     setProjects(list => list.map(p => p.id === projectId ? { ...p, status } : p));
   }
@@ -784,6 +818,11 @@ export default function App() {
     setEmployees(list => [emp, ...list]);
     setAttendanceToday(a => ({ ...a, [emp.id]: "Present" }));
     setShowEmployeeForm(false);
+  }
+
+  function updateEmployee(updated) {
+    setEmployees(list => list.map(e => e.id === updated.id ? updated : e));
+    setEditingEmployee(null);
   }
 
   function setEmployeeStatus(emp, status) {
@@ -922,10 +961,10 @@ export default function App() {
       {/* Sidebar Navigation */}
       <aside className={`sidebar ${mobileNavOpen ? "mobile-open" : ""}`}>
         <div className="brand">
-          <div className="brand-mark">AP</div>
+          <img src="./logo.png" alt="AdPulse Logo" className="brand-logo-img" onError={(e) => { e.target.style.display = 'none'; }} />
           <div>
             <div className="brand-name">AdPulse ERP</div>
-            <div className="brand-sub">Financial System</div>
+            <div className="brand-sub">IMC PVT LTD</div>
           </div>
         </div>
         {NAV.map(n => (
@@ -934,7 +973,7 @@ export default function App() {
           </button>
         ))}
         <div style={{ marginTop: "auto", padding: "14px 10px", borderTop: "1px solid var(--rule)", fontSize: 11.5, color: "var(--ink-muted)" }}>
-          Karachi Agency Hub &middot; {hrStats.active} Employees
+          AdPulse IMC &middot; {hrStats.active} Staff Active
         </div>
       </aside>
 
@@ -948,7 +987,7 @@ export default function App() {
                 </button>
                 <div>
                   <h1>Dashboard Overview</h1>
-                  <p>Financial performance as of {fmtDate(TODAY)}</p>
+                  <p>AdPulse IMC PVT LTD — Performance as of {fmtDate(TODAY)}</p>
                 </div>
               </div>
               <div className="topbar-actions">
@@ -971,15 +1010,15 @@ export default function App() {
                   <AreaChart data={cashSeries}>
                     <defs>
                       <linearGradient id="cashFill" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#27C383" stopOpacity={0.4} />
-                        <stop offset="100%" stopColor="#27C383" stopOpacity={0} />
+                        <stop offset="0%" stopColor="#059669" stopOpacity={0.25} />
+                        <stop offset="100%" stopColor="#059669" stopOpacity={0} />
                       </linearGradient>
                     </defs>
-                    <CartesianGrid stroke="#234168" strokeDasharray="3 3" vertical={false} />
-                    <XAxis dataKey="date" stroke="#8E9EB5" fontSize={11} />
-                    <YAxis stroke="#8E9EB5" fontSize={11} tickFormatter={v => (v / 1000) + "k"} />
-                    <Tooltip contentStyle={{ background: "#0E1D31", border: "1px solid #2E5280", borderRadius: 8, fontSize: 12 }} formatter={v => pkr(v)} />
-                    <Area type="monotone" dataKey="balance" stroke="#27C383" strokeWidth={2.5} fill="url(#cashFill)" />
+                    <CartesianGrid stroke="#E2E8F0" strokeDasharray="3 3" vertical={false} />
+                    <XAxis dataKey="date" stroke="#64748B" fontSize={11} />
+                    <YAxis stroke="#64748B" fontSize={11} tickFormatter={v => (v / 1000) + "k"} />
+                    <Tooltip contentStyle={{ background: "#FFFFFF", border: "1px solid #CBD5E1", borderRadius: 8, fontSize: 12, boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }} formatter={v => pkr(v)} />
+                    <Area type="monotone" dataKey="balance" stroke="#059669" strokeWidth={2.5} fill="url(#cashFill)" />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
@@ -1062,9 +1101,12 @@ export default function App() {
                             <td className="mono" style={{ textAlign: "right" }}>{pkr(p.billed)}</td>
                             <td className="mono" style={{ textAlign: "right", color: "var(--rose)" }}>{pkr(p.cost)}</td>
                             <td className="mono" style={{ textAlign: "right", fontWeight: 600, color: p.margin >= 0 ? "var(--jade)" : "var(--rose)" }}>{pkr(p.margin)}</td>
-                            <td>
-                              <button className="btn" style={{ padding: "4px 9px", fontSize: 11.5 }} onClick={() => setSelectedProjectId(p.id)}>
+                            <td style={{ display: "flex", gap: 5 }}>
+                              <button className="btn" style={{ padding: "4px 8px", fontSize: 11.5 }} onClick={() => setSelectedProjectId(p.id)}>
                                 Manage <ChevronRight size={12} />
+                              </button>
+                              <button className="btn" style={{ padding: "4px 6px", fontSize: 11.5 }} onClick={() => setEditingProject(p)}>
+                                <Edit size={13} />
                               </button>
                             </td>
                           </tr>
@@ -1116,12 +1158,15 @@ export default function App() {
                           <td className="mono">{fmtDate(inv.dueDate)}</td>
                           <td className="mono" style={{ textAlign: "right", fontWeight: 600 }}>{pkr(inv.amount)}</td>
                           <td><StatusBadge status={inv.status} /></td>
-                          <td style={{ display: "flex", gap: 6 }}>
+                          <td style={{ display: "flex", gap: 4 }}>
                             {!inv.paid && (
                               <button className="btn" style={{ padding: "4px 8px", fontSize: 11.5 }} onClick={() => markPaid(inv, "Bank")}>
                                 Mark Paid
                               </button>
                             )}
+                            <button className="btn" style={{ padding: "4px 6px", fontSize: 11.5 }} onClick={() => setEditingInvoice(inv)}>
+                              <Edit size={13} />
+                            </button>
                             <button className="btn" style={{ padding: "4px 7px", fontSize: 11.5 }}
                               onClick={() => setPrintDoc({ voucherNo: "INV-" + inv.id.toUpperCase(), type: "Invoice", date: inv.issueDate, party: inv.client, description: inv.description, amount: inv.amount })}>
                               <Printer size={13} />
@@ -1164,7 +1209,7 @@ export default function App() {
                     <thead>
                       <tr>
                         <th>Vendor / Payee</th><th>Category</th><th>Associated Project</th><th>Date</th><th>Paid Via</th>
-                        <th style={{ textAlign: "right" }}>Amount</th>
+                        <th style={{ textAlign: "right" }}>Amount</th><th>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -1176,6 +1221,11 @@ export default function App() {
                           <td className="mono">{fmtDate(exp.date)}</td>
                           <td>{exp.paidVia}</td>
                           <td className="mono" style={{ textAlign: "right", color: "var(--rose)", fontWeight: 600 }}>{pkr(exp.amount)}</td>
+                          <td>
+                            <button className="btn" style={{ padding: "4px 6px", fontSize: 11.5 }} onClick={() => setEditingExpense(exp)}>
+                              <Edit size={13} />
+                            </button>
+                          </td>
                         </tr>
                       ))}
                     </tbody>
@@ -1195,8 +1245,11 @@ export default function App() {
                 </button>
                 <div>
                   <h1>OOH Billboard Inventory</h1>
-                  <p>Outdoor media site rentals &amp; project bookings</p>
+                  <p>Outdoor media site rentals, add/edit site inventory &amp; project bookings</p>
                 </div>
+              </div>
+              <div className="topbar-actions">
+                <button className="btn btn-primary" onClick={() => setShowHoardingForm(true)}><Plus size={14} /> Add New Site</button>
               </div>
             </div>
             <div className="content">
@@ -1259,12 +1312,18 @@ export default function App() {
                                   </button>
                                 : <span style={{ color: "var(--ink-muted)" }}>—</span>}
                             </td>
-                            <td>
+                            <td style={{ display: "flex", gap: 4 }}>
                               {h.status === "Available"
-                                ? <button className="btn btn-primary" style={{ padding: "4px 10px", fontSize: 11.5 }} onClick={() => setBookingHoarding(h)}>Book Site</button>
+                                ? <button className="btn btn-primary" style={{ padding: "4px 9px", fontSize: 11.5 }} onClick={() => setBookingHoarding(h)}>Book</button>
                                 : h.status === "Booked"
-                                  ? <button className="btn" style={{ padding: "4px 8px", fontSize: 11.5 }} onClick={() => releaseHoarding(h)}>Release</button>
+                                  ? <button className="btn" style={{ padding: "4px 7px", fontSize: 11.5 }} onClick={() => releaseHoarding(h)}>Release</button>
                                   : null}
+                              <button className="btn" style={{ padding: "4px 6px", fontSize: 11.5 }} onClick={() => setEditingHoarding(h)} title="Edit Site">
+                                <Edit size={13} />
+                              </button>
+                              <button className="btn" style={{ padding: "4px 6px", fontSize: 11.5, color: "var(--rose)" }} onClick={() => removeHoarding(h.id)} title="Remove Site">
+                                <Trash2 size={13} />
+                              </button>
                             </td>
                           </tr>
                         ))}
@@ -1311,9 +1370,9 @@ export default function App() {
                 ].map(v => (
                   <button key={v.key} className="btn" style={{
                     fontSize: 12, padding: "6px 12px",
-                    background: hrView === v.key ? "var(--gold)" : "var(--surface-2)",
-                    color: hrView === v.key ? "#060D17" : "var(--ink)",
-                    borderColor: hrView === v.key ? "var(--gold)" : "var(--rule)",
+                    background: hrView === v.key ? "#B8860B" : "#FFFFFF",
+                    color: hrView === v.key ? "#FFFFFF" : "#0F172A",
+                    borderColor: hrView === v.key ? "#B8860B" : "#CBD5E1",
                   }} onClick={() => setHrView(v.key)}>
                     <v.icon size={13} /> {v.label}
                   </button>
@@ -1337,10 +1396,13 @@ export default function App() {
                             <td style={{ color: "var(--ink-muted)" }}>{e.designation}</td>
                             <td className="mono" style={{ textAlign: "right" }}>{pkr(e.salary)}</td>
                             <td><EmployeeStatusBadge status={e.status} /></td>
-                            <td style={{ display: "flex", gap: 6 }}>
-                              <button className="btn" style={{ padding: "4px 8px", fontSize: 11 }} onClick={() => setEmployeeDetail(e)}>Profile</button>
+                            <td style={{ display: "flex", gap: 4 }}>
+                              <button className="btn" style={{ padding: "4px 7px", fontSize: 11 }} onClick={() => setEmployeeDetail(e)}>Profile</button>
+                              <button className="btn" style={{ padding: "4px 6px", fontSize: 11 }} onClick={() => setEditingEmployee(e)}>
+                                <Edit size={13} />
+                              </button>
                               {e.status !== "Terminated" && (
-                                <button className="btn" style={{ padding: "4px 8px", fontSize: 11 }} onClick={() => setEmployeeStatus(e, "Terminated")}>Terminate</button>
+                                <button className="btn" style={{ padding: "4px 7px", fontSize: 11 }} onClick={() => setEmployeeStatus(e, "Terminated")}>Terminate</button>
                               )}
                             </td>
                           </tr>
@@ -1677,7 +1739,7 @@ export default function App() {
                     <tbody>
                       <tr><td style={{ fontWeight: 600 }}>Service Revenue Billed</td><td className="mono" style={{ textAlign: "right", color: "var(--jade)", fontWeight: 700 }}>{pkr(revenueBalance)}</td></tr>
                       <tr><td style={{ fontWeight: 600 }}>Operating &amp; Payroll Expenses</td><td className="mono" style={{ textAlign: "right", color: "var(--rose)", fontWeight: 700 }}>({pkr(expenseBalance)})</td></tr>
-                      <tr style={{ background: "rgba(255,255,255,0.02)" }}>
+                      <tr style={{ background: "rgba(0,0,0,0.02)" }}>
                         <td style={{ fontWeight: 700, fontSize: 14 }}>Net Operating Profit</td>
                         <td className="mono" style={{ textAlign: "right", fontWeight: 700, fontSize: 15, color: netProfit >= 0 ? "var(--jade)" : "var(--rose)" }}>{pkr(netProfit)}</td>
                       </tr>
@@ -1690,11 +1752,11 @@ export default function App() {
                 <div className="section-title"><Receipt size={16} color="var(--gold)" /> Expenses by Category</div>
                 <ResponsiveContainer width="100%" height={210}>
                   <BarChart data={expenseByCategory}>
-                    <CartesianGrid stroke="#234168" strokeDasharray="3 3" vertical={false} />
-                    <XAxis dataKey="category" stroke="#8E9EB5" fontSize={10.5} />
-                    <YAxis stroke="#8E9EB5" fontSize={11} tickFormatter={v => (v / 1000) + "k"} />
-                    <Tooltip contentStyle={{ background: "#0E1D31", border: "1px solid #2E5280", borderRadius: 8, fontSize: 12 }} formatter={v => pkr(v)} />
-                    <Bar dataKey="amount" fill="#D4AF37" radius={[4, 4, 0, 0]} />
+                    <CartesianGrid stroke="#E2E8F0" strokeDasharray="3 3" vertical={false} />
+                    <XAxis dataKey="category" stroke="#64748B" fontSize={10.5} />
+                    <YAxis stroke="#64748B" fontSize={11} tickFormatter={v => (v / 1000) + "k"} />
+                    <Tooltip contentStyle={{ background: "#FFFFFF", border: "1px solid #CBD5E1", borderRadius: 8, fontSize: 12, boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }} formatter={v => pkr(v)} />
+                    <Bar dataKey="amount" fill="#B8860B" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -1703,13 +1765,13 @@ export default function App() {
                 <div className="section-title"><Briefcase size={16} color="var(--gold)" /> Revenue vs Production Cost by Service Line</div>
                 <ResponsiveContainer width="100%" height={230}>
                   <BarChart data={projectTypeSummary}>
-                    <CartesianGrid stroke="#234168" strokeDasharray="3 3" vertical={false} />
-                    <XAxis dataKey="type" stroke="#8E9EB5" fontSize={10} />
-                    <YAxis stroke="#8E9EB5" fontSize={11} tickFormatter={v => (v / 1000) + "k"} />
-                    <Tooltip contentStyle={{ background: "#0E1D31", border: "1px solid #2E5280", borderRadius: 8, fontSize: 12 }} formatter={v => pkr(v)} />
+                    <CartesianGrid stroke="#E2E8F0" strokeDasharray="3 3" vertical={false} />
+                    <XAxis dataKey="type" stroke="#64748B" fontSize={10} />
+                    <YAxis stroke="#64748B" fontSize={11} tickFormatter={v => (v / 1000) + "k"} />
+                    <Tooltip contentStyle={{ background: "#FFFFFF", border: "1px solid #CBD5E1", borderRadius: 8, fontSize: 12, boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }} formatter={v => pkr(v)} />
                     <Legend wrapperStyle={{ fontSize: 11.5 }} />
-                    <Bar dataKey="revenue" name="Revenue" fill="#27C383" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="cost" name="Cost" fill="#ED5E68" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="revenue" name="Revenue" fill="#059669" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="cost" name="Cost" fill="#E11D48" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -1720,8 +1782,16 @@ export default function App() {
 
       {/* MODALS */}
       {showInvoiceForm && <InvoiceModal onClose={() => setShowInvoiceForm(false)} onSubmit={addInvoice} />}
+      {editingInvoice && <InvoiceModal initialData={editingInvoice} onClose={() => setEditingInvoice(null)} onSubmit={updateInvoice} />}
+
       {showExpenseForm && <ExpenseModal onClose={() => setShowExpenseForm(false)} onSubmit={addExpense} />}
+      {editingExpense && <ExpenseModal initialData={editingExpense} onClose={() => setEditingExpense(null)} onSubmit={updateExpense} />}
+
       {showVoucherForm && <VoucherModal defaultType={voucherDefaultType} onClose={() => setShowVoucherForm(false)} onSubmit={createVoucher} />}
+      
+      {showHoardingForm && <HoardingModal onClose={() => setShowHoardingForm(false)} onSubmit={addHoarding} />}
+      {editingHoarding && <HoardingModal initialData={editingHoarding} onClose={() => setEditingHoarding(null)} onSubmit={updateHoarding} />}
+
       {bookingHoarding && (
         <BookHoardingModal
           hoarding={bookingHoarding}
@@ -1740,6 +1810,8 @@ export default function App() {
       )}
       {printDoc && <PrintPreviewModal doc={printDoc} onClose={() => setPrintDoc(null)} />}
       {showProjectForm && <ProjectModal onClose={() => setShowProjectForm(false)} onSubmit={createProject} />}
+      {editingProject && <ProjectModal initialData={editingProject} onClose={() => setEditingProject(null)} onSubmit={updateProject} />}
+
       {billingModalProject && <ProjectBillingModal project={billingModalProject} onClose={() => setBillingModalProject(null)} onSubmit={addProjectBilling} />}
       {costModalProject && <ProjectCostModal project={costModalProject} onClose={() => setCostModalProject(null)} onSubmit={addProjectCost} />}
       {selectedProjectId && (() => {
@@ -1763,6 +1835,8 @@ export default function App() {
         );
       })()}
       {showEmployeeForm && <EmployeeModal onClose={() => setShowEmployeeForm(false)} onSubmit={addEmployee} />}
+      {editingEmployee && <EmployeeModal initialData={editingEmployee} onClose={() => setEditingEmployee(null)} onSubmit={updateEmployee} />}
+
       {showLeaveForm && <LeaveModal employees={employees.filter(e => e.status !== "Terminated")} onClose={() => setShowLeaveForm(false)} onSubmit={applyLeave} />}
       {employeeDetail && (
         <EmployeeDetailModal
@@ -1800,15 +1874,15 @@ function ModalShell({ title, onClose, children }) {
   );
 }
 
-function InvoiceModal({ onClose, onSubmit }) {
-  const [client, setClient] = useState("");
-  const [description, setDescription] = useState("");
-  const [amount, setAmount] = useState("");
-  const [issueDate, setIssueDate] = useState("2026-07-21");
-  const [dueDate, setDueDate] = useState("2026-08-05");
+function InvoiceModal({ initialData, onClose, onSubmit }) {
+  const [client, setClient] = useState(initialData?.client || "");
+  const [description, setDescription] = useState(initialData?.description || "");
+  const [amount, setAmount] = useState(initialData?.amount || "");
+  const [issueDate, setIssueDate] = useState(initialData?.issueDate || "2026-07-21");
+  const [dueDate, setDueDate] = useState(initialData?.dueDate || "2026-08-05");
   const valid = client && description && Number(amount) > 0;
   return (
-    <ModalShell title="Create New Client Invoice" onClose={onClose}>
+    <ModalShell title={initialData ? "Edit Client Invoice" : "Create New Client Invoice"} onClose={onClose}>
       <div className="field"><label>Client Name</label><input value={client} onChange={e => setClient(e.target.value)} placeholder="e.g. Prime Estate Enterprises" /></div>
       <div className="field"><label>Service / Scope Particulars</label><input value={description} onChange={e => setDescription(e.target.value)} placeholder="e.g. TVC Post Production" /></div>
       <div className="field"><label>Total Amount (PKR)</label><input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="0" /></div>
@@ -1817,22 +1891,22 @@ function InvoiceModal({ onClose, onSubmit }) {
         <div className="field" style={{ flex: 1 }}><label>Due Date</label><input type="date" value={dueDate} onChange={e => setDueDate(e.target.value)} /></div>
       </div>
       <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 6 }} disabled={!valid}
-        onClick={() => valid && onSubmit({ client, description, amount: Number(amount), issueDate, dueDate })}>
-        Generate &amp; Post Invoice
+        onClick={() => valid && onSubmit(initialData ? { ...initialData, client, description, amount: Number(amount), issueDate, dueDate } : { client, description, amount: Number(amount), issueDate, dueDate })}>
+        {initialData ? "Save Invoice Changes" : "Generate & Post Invoice"}
       </button>
     </ModalShell>
   );
 }
 
-function ExpenseModal({ onClose, onSubmit }) {
-  const [vendor, setVendor] = useState("");
-  const [category, setCategory] = useState(EXPENSE_CATEGORIES[0]);
-  const [amount, setAmount] = useState("");
-  const [date, setDate] = useState("2026-07-21");
-  const [paidVia, setPaidVia] = useState("Bank");
+function ExpenseModal({ initialData, onClose, onSubmit }) {
+  const [vendor, setVendor] = useState(initialData?.vendor || "");
+  const [category, setCategory] = useState(initialData?.category || EXPENSE_CATEGORIES[0]);
+  const [amount, setAmount] = useState(initialData?.amount || "");
+  const [date, setDate] = useState(initialData?.date || "2026-07-21");
+  const [paidVia, setPaidVia] = useState(initialData?.paidVia || "Bank");
   const valid = vendor && Number(amount) > 0;
   return (
-    <ModalShell title="Record Operating Expense" onClose={onClose}>
+    <ModalShell title={initialData ? "Edit Operating Expense" : "Record Operating Expense"} onClose={onClose}>
       <div className="field"><label>Vendor / Payee</label><input value={vendor} onChange={e => setVendor(e.target.value)} placeholder="e.g. Meta Ads / Studio Rental" /></div>
       <div className="field"><label>Category</label>
         <select value={category} onChange={e => setCategory(e.target.value)}>
@@ -1849,8 +1923,39 @@ function ExpenseModal({ onClose, onSubmit }) {
         </div>
       </div>
       <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 6 }} disabled={!valid}
-        onClick={() => valid && onSubmit({ vendor, category, amount: Number(amount), date, paidVia })}>
-        Post Expense Entry
+        onClick={() => valid && onSubmit(initialData ? { ...initialData, vendor, category, amount: Number(amount), date, paidVia } : { vendor, category, amount: Number(amount), date, paidVia })}>
+        {initialData ? "Save Expense Changes" : "Post Expense Entry"}
+      </button>
+    </ModalShell>
+  );
+}
+
+function HoardingModal({ initialData, onClose, onSubmit }) {
+  const [name, setName] = useState(initialData?.name || "");
+  const [area, setArea] = useState(initialData?.area || "");
+  const [size, setSize] = useState(initialData?.size || "");
+  const [pricePerMonth, setPricePerMonth] = useState(initialData?.pricePerMonth || "");
+  const [status, setStatus] = useState(initialData?.status || "Available");
+
+  const valid = name && area && size && Number(pricePerMonth) > 0;
+  return (
+    <ModalShell title={initialData ? "Edit Billboard Site Inventory" : "Add New Billboard Site"} onClose={onClose}>
+      <div className="field"><label>Site Identifier / Location Name</label><input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Shahrah-e-Faisal Site 2" /></div>
+      <div style={{ display: "flex", gap: 10 }}>
+        <div className="field" style={{ flex: 1 }}><label>Area / Zone</label><input value={area} onChange={e => setArea(e.target.value)} placeholder="e.g. Clifton / Tariq Road" /></div>
+        <div className="field" style={{ flex: 1 }}><label>Dimensions / Size</label><input value={size} onChange={e => setSize(e.target.value)} placeholder="e.g. 20x40 ft" /></div>
+      </div>
+      <div style={{ display: "flex", gap: 10 }}>
+        <div className="field" style={{ flex: 1 }}><label>Monthly Rate (PKR)</label><input type="number" value={pricePerMonth} onChange={e => setPricePerMonth(e.target.value)} placeholder="0" /></div>
+        <div className="field" style={{ flex: 1 }}><label>Status</label>
+          <select value={status} onChange={e => setStatus(e.target.value)}>
+            <option>Available</option><option>Booked</option><option>Maintenance</option>
+          </select>
+        </div>
+      </div>
+      <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 6 }} disabled={!valid}
+        onClick={() => valid && onSubmit(initialData ? { ...initialData, name, area, size, pricePerMonth: Number(pricePerMonth), status } : { name, area, size, pricePerMonth: Number(pricePerMonth), status })}>
+        {initialData ? "Save Site Changes" : "Add to Billboard Inventory"}
       </button>
     </ModalShell>
   );
@@ -1934,11 +2039,11 @@ function VoucherModal({ defaultType, onClose, onSubmit }) {
         <>
           {lines.map((l, i) => (
             <div key={i} style={{ display: "flex", gap: 6, marginBottom: 6 }}>
-              <select value={l.account} onChange={e => updateLine(i, "account", e.target.value)} style={{ flex: 1.5, background: "var(--surface-2)", border: "1px solid var(--rule)", borderRadius: 7, color: "var(--ink)", fontSize: 12, padding: "6px 7px" }}>
+              <select value={l.account} onChange={e => updateLine(i, "account", e.target.value)} style={{ flex: 1.5, background: "#FFFFFF", border: "1px solid #CBD5E1", borderRadius: 7, color: "#0F172A", fontSize: 12, padding: "6px 7px" }}>
                 {Object.entries(ACCOUNTS).map(([k, a]) => <option key={k} value={k}>{a.name}</option>)}
               </select>
-              <input type="number" placeholder="Debit" value={l.debit} onChange={e => updateLine(i, "debit", e.target.value)} style={{ width: 75, background: "var(--surface-2)", border: "1px solid var(--rule)", borderRadius: 7, color: "var(--ink)", fontSize: 12, padding: "6px 7px" }} />
-              <input type="number" placeholder="Credit" value={l.credit} onChange={e => updateLine(i, "credit", e.target.value)} style={{ width: 75, background: "var(--surface-2)", border: "1px solid var(--rule)", borderRadius: 7, color: "var(--ink)", fontSize: 12, padding: "6px 7px" }} />
+              <input type="number" placeholder="Debit" value={l.debit} onChange={e => updateLine(i, "debit", e.target.value)} style={{ width: 75, background: "#FFFFFF", border: "1px solid #CBD5E1", borderRadius: 7, color: "#0F172A", fontSize: 12, padding: "6px 7px" }} />
+              <input type="number" placeholder="Credit" value={l.credit} onChange={e => updateLine(i, "credit", e.target.value)} style={{ width: 75, background: "#FFFFFF", border: "1px solid #CBD5E1", borderRadius: 7, color: "#0F172A", fontSize: 12, padding: "6px 7px" }} />
             </div>
           ))}
           <button className="btn" style={{ fontSize: 11.5, marginBottom: 10 }} onClick={() => setLines(ls => [...ls, { account: "cash", debit: "", credit: "" }])}>
@@ -2063,16 +2168,16 @@ function AddSiteModal({ project, hoardings, onClose, onSubmit }) {
   );
 }
 
-function ProjectModal({ onClose, onSubmit }) {
-  const [client, setClient] = useState("");
-  const [type, setType] = useState(PROJECT_TYPES[0].key);
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [startDate, setStartDate] = useState("2026-07-21");
-  const [endDate, setEndDate] = useState("2026-08-05");
+function ProjectModal({ initialData, onClose, onSubmit }) {
+  const [client, setClient] = useState(initialData?.client || "");
+  const [type, setType] = useState(initialData?.type || PROJECT_TYPES[0].key);
+  const [name, setName] = useState(initialData?.name || "");
+  const [description, setDescription] = useState(initialData?.description || "");
+  const [startDate, setStartDate] = useState(initialData?.startDate || "2026-07-21");
+  const [endDate, setEndDate] = useState(initialData?.endDate || "2026-08-05");
   const valid = client && name && startDate && endDate;
   return (
-    <ModalShell title="Create New Agency Project" onClose={onClose}>
+    <ModalShell title={initialData ? "Edit Project Details" : "Create New Agency Project"} onClose={onClose}>
       <div className="field"><label>Client Name</label><input value={client} onChange={e => setClient(e.target.value)} placeholder="e.g. Imtiaz Retail" /></div>
       <div className="field"><label>Service Line Category</label>
         <select value={type} onChange={e => setType(e.target.value)}>
@@ -2086,8 +2191,8 @@ function ProjectModal({ onClose, onSubmit }) {
         <div className="field" style={{ flex: 1 }}><label>End Date</label><input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} /></div>
       </div>
       <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 6 }} disabled={!valid}
-        onClick={() => valid && onSubmit({ client, type, name, description, startDate, endDate })}>
-        Initialize Project
+        onClick={() => valid && onSubmit(initialData ? { ...initialData, client, type, name, description, startDate, endDate } : { client, type, name, description, startDate, endDate })}>
+        {initialData ? "Save Project Changes" : "Initialize Project"}
       </button>
     </ModalShell>
   );
@@ -2166,13 +2271,13 @@ function ProjectDetailModal({ project, invoices, expenses, sites, onClose, onSta
         <div style={{ display: "flex", gap: 10, alignItems: "center", margin: "10px 0 14px" }}>
           <ProjectTypeBadge type={project.type} />
           <select value={project.status} onChange={e => onStatusChange(e.target.value)}
-            style={{ background: "var(--surface-2)", border: "1px solid var(--rule)", borderRadius: 20, color: "var(--ink)", fontSize: 12, padding: "4px 10px", fontWeight: 600 }}>
+            style={{ background: "#FFFFFF", border: "1px solid #CBD5E1", borderRadius: 20, color: "#0F172A", fontSize: 12, padding: "4px 10px", fontWeight: 600 }}>
             {PROJECT_STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
           </select>
         </div>
 
         {project.description && (
-          <div style={{ fontSize: 12, color: "var(--ink-muted)", marginBottom: 14, background: "var(--surface-2)", padding: "8px 12px", borderRadius: 8 }}>
+          <div style={{ fontSize: 12, color: "var(--ink-muted)", marginBottom: 14, background: "#F1F5F9", padding: "8px 12px", borderRadius: 8 }}>
             {project.description}
           </div>
         )}
@@ -2280,20 +2385,20 @@ function ProjectDetailModal({ project, invoices, expenses, sites, onClose, onSta
 
 /* HR MODALS */
 
-function EmployeeModal({ onClose, onSubmit }) {
-  const [name, setName] = useState("");
-  const [department, setDepartment] = useState(HR_DEPARTMENTS[0]);
-  const [designation, setDesignation] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [joinDate, setJoinDate] = useState("2026-07-21");
-  const [salary, setSalary] = useState("");
-  const [cnic, setCnic] = useState("");
-  const [bankAccount, setBankAccount] = useState("");
+function EmployeeModal({ initialData, onClose, onSubmit }) {
+  const [name, setName] = useState(initialData?.name || "");
+  const [department, setDepartment] = useState(initialData?.department || HR_DEPARTMENTS[0]);
+  const [designation, setDesignation] = useState(initialData?.designation || "");
+  const [email, setEmail] = useState(initialData?.email || "");
+  const [phone, setPhone] = useState(initialData?.phone || "");
+  const [joinDate, setJoinDate] = useState(initialData?.joinDate || "2026-07-21");
+  const [salary, setSalary] = useState(initialData?.salary || "");
+  const [cnic, setCnic] = useState(initialData?.cnic || "");
+  const [bankAccount, setBankAccount] = useState(initialData?.bankAccount || "");
 
   const valid = name && designation && Number(salary) > 0;
   return (
-    <ModalShell title="New Employee Registration" onClose={onClose}>
+    <ModalShell title={initialData ? "Edit Employee Profile" : "New Employee Registration"} onClose={onClose}>
       <div className="field"><label>Full Name</label><input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Tariq Jamil" /></div>
       <div style={{ display: "flex", gap: 10 }}>
         <div className="field" style={{ flex: 1 }}><label>Department</label>
@@ -2316,8 +2421,8 @@ function EmployeeModal({ onClose, onSubmit }) {
         <div className="field" style={{ flex: 1 }}><label>Bank Account IBAN</label><input value={bankAccount} onChange={e => setBankAccount(e.target.value)} placeholder="PK-HBL-XXXXXX" /></div>
       </div>
       <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 6 }} disabled={!valid}
-        onClick={() => valid && onSubmit({ name, department, designation, email, phone, joinDate, salary: Number(salary), cnic, bankAccount })}>
-        Register Staff Member
+        onClick={() => valid && onSubmit(initialData ? { ...initialData, name, department, designation, email, phone, joinDate, salary: Number(salary), cnic, bankAccount } : { name, department, designation, email, phone, joinDate, salary: Number(salary), cnic, bankAccount })}>
+        {initialData ? "Save Employee Profile" : "Register Staff Member"}
       </button>
     </ModalShell>
   );
@@ -2362,15 +2467,15 @@ function EmployeeDetailModal({ employee, leaveHistory, onClose, onStatusChange }
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
         <div>
           <div className="mono" style={{ fontSize: 12, color: "var(--ink-muted)" }}>{employee.code} &middot; <DepartmentBadge department={employee.department} /></div>
-          <div style={{ fontSize: 13, color: "var(--gold)", fontWeight: 600 }}>{employee.designation}</div>
+          <div style={{ fontSize: 13, color: "var(--gold)", fontWeight: 700 }}>{employee.designation}</div>
         </div>
         <select value={employee.status} onChange={e => onStatusChange(e.target.value)}
-          style={{ background: "var(--surface-2)", border: "1px solid var(--rule)", borderRadius: 20, color: "var(--ink)", fontSize: 12, padding: "4px 10px", fontWeight: 600 }}>
+          style={{ background: "#FFFFFF", border: "1px solid #CBD5E1", borderRadius: 20, color: "#0F172A", fontSize: 12, padding: "4px 10px", fontWeight: 600 }}>
           {EMP_STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
         </select>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, fontSize: 12.5, marginBottom: 14, background: "var(--surface-2)", padding: 12, borderRadius: 8 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, fontSize: 12.5, marginBottom: 14, background: "#F1F5F9", padding: 12, borderRadius: 8 }}>
         <div><span style={{ color: "var(--ink-muted)" }}>Monthly Salary:</span> <br/><b className="mono">{pkr(employee.salary)}</b></div>
         <div><span style={{ color: "var(--ink-muted)" }}>Leave Balance:</span> <br/><b>{employee.leaveBalance} days remaining</b></div>
         <div><span style={{ color: "var(--ink-muted)" }}>Joining Date:</span> <br/>{fmtDate(employee.joinDate)}</div>
@@ -2423,59 +2528,63 @@ function PrintPreviewModal({ doc, onClose }) {
   return (
     <div className="modal-backdrop no-print" onClick={onClose}>
       <style>{`@page { size: ${PAGE_SIZES[pageSize]}; margin: 14mm; }`}</style>
-      <div className="modal" style={{ width: 580 }} onClick={e => e.stopPropagation()}>
+      <div className="modal" style={{ width: 620 }} onClick={e => e.stopPropagation()}>
         <div className="no-print" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
           <div className="section-title" style={{ margin: 0 }}>Print Preview</div>
           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-            <select value={pageSize} onChange={e => setPageSize(e.target.value)} style={{ background: "var(--surface-2)", border: "1px solid var(--rule)", borderRadius: 7, color: "var(--ink)", fontSize: 12, padding: "5px 8px" }}>
+            <select value={pageSize} onChange={e => setPageSize(e.target.value)} style={{ background: "#FFFFFF", border: "1px solid #CBD5E1", borderRadius: 7, color: "#0F172A", fontSize: 12, padding: "5px 8px" }}>
               {Object.keys(PAGE_SIZES).map(p => <option key={p}>{p}</option>)}
             </select>
-            <button className="btn btn-primary" style={{ padding: "5px 10px", fontSize: 12 }} onClick={() => window.print()}><Printer size={13} /> Print</button>
+            <button className="btn btn-primary" style={{ padding: "5px 10px", fontSize: 12 }} onClick={() => window.print()}><Printer size={13} /> Print Document</button>
             <button className="btn" style={{ padding: 5 }} onClick={onClose}><X size={14} /></button>
           </div>
         </div>
-        <div className="print-area" style={{ background: "#ffffff", color: "#111827", borderRadius: 10, padding: 24, fontFamily: "Georgia, serif" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "2px solid #111827", paddingBottom: 10, marginBottom: 16 }}>
-            <div>
-              <div style={{ fontSize: 18, fontWeight: 700 }}>AdPulse Properties &amp; Media</div>
-              <div style={{ fontSize: 11, color: "#4B5563" }}>Digital &amp; Creative Services Agency, Karachi</div>
+
+        <div className="print-area" style={{ background: "#ffffff", color: "#0F172A", borderRadius: 10, padding: 24, fontFamily: "Georgia, serif" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "2px solid #0F172A", paddingBottom: 12, marginBottom: 16 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+              <img src="./logo.png" alt="AdPulse Logo" style={{ maxHeight: 48, width: "auto" }} onError={(e) => { e.target.style.display = 'none'; }} />
+              <div>
+                <div style={{ fontSize: 20, fontWeight: 800, color: "#0F172A", letterSpacing: "-0.3px" }}>AdPulse IMC PVT LTD</div>
+                <div style={{ fontSize: 11, color: "#475569", fontWeight: "sans-serif" }}>Integrated Media &amp; Creative Services &middot; Karachi, Pakistan</div>
+              </div>
             </div>
             <div style={{ textAlign: "right" }}>
-              <div style={{ fontSize: 13, fontWeight: 700 }}>{doc.type || VOUCHER_TYPES[doc.type] || doc.voucherNo}</div>
-              <div className="mono" style={{ fontSize: 11.5, fontWeight: 600, color: "#111827" }}>{doc.voucherNo}</div>
+              <div style={{ fontSize: 14, fontWeight: 800, color: "#B8860B", textTransform: "uppercase" }}>{doc.type || VOUCHER_TYPES[doc.type] || doc.voucherNo}</div>
+              <div className="mono" style={{ fontSize: 12, fontWeight: 700, color: "#0F172A" }}>{doc.voucherNo}</div>
             </div>
           </div>
           <table style={{ width: "100%", fontSize: 12.5, marginBottom: 16, minWidth: 0 }}>
             <tbody>
-              <tr><td style={{ padding: "4px 0", color: "#4B5563", width: 120 }}>Date</td><td className="mono">{fmtDate(doc.date)}</td></tr>
-              <tr><td style={{ padding: "4px 0", color: "#4B5563" }}>Party / Client</td><td style={{ fontWeight: 600 }}>{doc.party || "—"}</td></tr>
-              <tr><td style={{ padding: "4px 0", color: "#4B5563" }}>Particulars</td><td>{doc.description}</td></tr>
+              <tr><td style={{ padding: "4px 0", color: "#475569", width: 120 }}>Date</td><td className="mono">{fmtDate(doc.date)}</td></tr>
+              <tr><td style={{ padding: "4px 0", color: "#475569" }}>Party / Client</td><td style={{ fontWeight: 700 }}>{doc.party || "—"}</td></tr>
+              <tr><td style={{ padding: "4px 0", color: "#475569" }}>Particulars</td><td>{doc.description}</td></tr>
             </tbody>
           </table>
           <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, minWidth: 0 }}>
             <thead>
               <tr>
-                <th style={{ textAlign: "left", borderBottom: "1.5px solid #111827", padding: "6px 0", fontSize: 11.5, color: "#4B5563" }}>Description</th>
-                <th style={{ textAlign: "right", borderBottom: "1.5px solid #111827", padding: "6px 0", fontSize: 11.5, color: "#4B5563" }}>Amount</th>
+                <th style={{ textAlign: "left", borderBottom: "1.5px solid #0F172A", padding: "6px 0", fontSize: 11.5, color: "#475569" }}>Description / Scope</th>
+                <th style={{ textAlign: "right", borderBottom: "1.5px solid #0F172A", padding: "6px 0", fontSize: 11.5, color: "#475569" }}>Amount</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td style={{ padding: "8px 0" }}>{doc.description}</td>
-                <td className="mono" style={{ textAlign: "right", padding: "8px 0", fontWeight: 600 }}>{pkr(doc.amount)}</td>
+                <td className="mono" style={{ textAlign: "right", padding: "8px 0", fontWeight: 700 }}>{pkr(doc.amount)}</td>
               </tr>
             </tbody>
             <tfoot>
               <tr>
-                <td style={{ borderTop: "2px solid #111827", padding: "8px 0", fontWeight: 700, fontSize: 13 }}>Total</td>
-                <td className="mono" style={{ borderTop: "2px solid #111827", textAlign: "right", padding: "8px 0", fontWeight: 700, fontSize: 14 }}>{pkr(doc.amount)}</td>
+                <td style={{ borderTop: "2px solid #0F172A", padding: "8px 0", fontWeight: 800, fontSize: 13 }}>Total Net Amount</td>
+                <td className="mono" style={{ borderTop: "2px solid #0F172A", textAlign: "right", padding: "8px 0", fontWeight: 800, fontSize: 14, color: "#B8860B" }}>{pkr(doc.amount)}</td>
               </tr>
             </tfoot>
           </table>
-          <div style={{ fontSize: 11.5, fontStyle: "italic", color: "#374151", marginBottom: 30, background: "#F3F4F6", padding: "6px 10px", borderRadius: 5 }}>
-            Amount in words: <b>{amountInWords(doc.amount)}</b>
+          <div style={{ fontSize: 11.5, fontStyle: "italic", color: "#334155", marginBottom: 30, background: "#F1F5F9", padding: "8px 12px", borderRadius: 6, border: "1px solid #E2E8F0" }}>
+            Amount in words: <b style={{ color: "#0F172A" }}>{amountInWords(doc.amount)}</b>
           </div>
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#4B5563" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#475569", paddingTop: 10 }}>
             <div>Prepared by: ______________</div>
             <div>Checked by: ______________</div>
             <div>Approved by: ______________</div>
