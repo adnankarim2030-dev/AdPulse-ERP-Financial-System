@@ -46,6 +46,7 @@ const ACCOUNTS = {
   expense: { name: "Operating Expenses", type: "expense" },
   equity: { name: "Owner's Equity", type: "equity" },
   srb_payable: { name: "SRB Sales Tax Payable", type: "liability" },
+  wht_receivable: { name: "WHT Receivable (Advance Tax)", type: "asset" },
 };
 
 const VOUCHER_TYPES = {
@@ -723,8 +724,8 @@ export default function App() {
   }
 
   /* Financial Actions */
-  function addInvoice({ client, description, amount, applySst, sstAmount, totalAmount, issueDate, dueDate }) {
-    const inv = { id: uid(), client, description, amount, applySst, sstAmount, totalAmount, issueDate, dueDate, paid: false, paidVia: null };
+  function addInvoice({ client, description, amount, applySst, sstRate, sstAmount, applyWht, whtRate, whtAmount, totalAmount, issueDate, dueDate }) {
+    const inv = { id: uid(), client, description, amount, applySst, sstRate, sstAmount, applyWht, whtRate, whtAmount, totalAmount, issueDate, dueDate, paid: false, paidVia: null };
     setInvoices(list => [inv, ...list]);
     
     const lines = [
@@ -732,6 +733,7 @@ export default function App() {
       { account: "revenue", debit: 0, credit: inv.amount },
     ];
     if (inv.applySst) lines.push({ account: "srb_payable", debit: 0, credit: inv.sstAmount });
+    if (inv.applyWht) lines.push({ account: "wht_receivable", debit: inv.whtAmount, credit: 0 });
     
     postEntry(issueDate, `Invoice - ${client} (${description})`, lines, "INV-" + inv.id.toUpperCase());
     setShowInvoiceForm(false);
@@ -1044,13 +1046,21 @@ export default function App() {
     } else if (extracted.documentType === "Quotation") {
       // quotations saved for reference
     } else if (direction === "issued") {
+      const sstR = Number(extracted.sstRate) || 0;
+      const whtR = Number(extracted.whtRate) || 0;
+      const sstA = extracted.applySst ? amount * sstR / 100 : 0;
+      const whtA = extracted.applyWht ? amount * whtR / 100 : 0;
       addInvoice({
         client: extracted.party || "Client",
         description: extracted.description || "Uploaded Invoice",
         amount,
         applySst: !!extracted.applySst,
-        sstAmount: extracted.applySst ? amount * 0.15 : 0,
-        totalAmount: extracted.applySst ? amount * 1.15 : amount,
+        sstRate: sstR,
+        sstAmount: sstA,
+        applyWht: !!extracted.applyWht,
+        whtRate: whtR,
+        whtAmount: whtA,
+        totalAmount: amount + sstA - whtA,
         issueDate: extracted.date || TODAY.toISOString().slice(0, 10),
         dueDate: extracted.date || TODAY.toISOString().slice(0, 10)
       });
@@ -1312,7 +1322,7 @@ export default function App() {
                     <thead>
                       <tr>
                         <th>Client Name</th><th>Description</th><th>Service Project</th><th>Issue Date</th><th>Due Date</th>
-                        <th style={{ textAlign: "right" }}>Amount</th><th style={{ textAlign: "right" }}>SRB SST</th><th style={{ textAlign: "right" }}>Total</th><th>Status</th><th>Actions</th>
+                        <th style={{ textAlign: "right" }}>Amount</th><th style={{ textAlign: "right" }}>SRB SST</th><th style={{ textAlign: "right" }}>WHT</th><th style={{ textAlign: "right" }}>Total</th><th>Status</th><th>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -1325,6 +1335,7 @@ export default function App() {
                           <td className="mono">{fmtDate(inv.dueDate)}</td>
                           <td className="mono" style={{ textAlign: "right", color: "var(--ink-muted)" }}>{pkr(inv.amount)}</td>
                           <td className="mono" style={{ textAlign: "right", color: "var(--rose)" }}>{inv.applySst ? pkr(inv.sstAmount) : "—"}</td>
+                          <td className="mono" style={{ textAlign: "right", color: "var(--green)" }}>{inv.applyWht ? pkr(inv.whtAmount) : "—"}</td>
                           <td className="mono" style={{ textAlign: "right", fontWeight: 600 }}>{pkr(inv.totalAmount || inv.amount)}</td>
                           <td><StatusBadge status={inv.status} /></td>
                           <td style={{ display: "flex", gap: 4 }}>
@@ -1337,7 +1348,7 @@ export default function App() {
                               <Edit size={13} />
                             </button>
                             <button className="btn" style={{ padding: "4px 7px", fontSize: 12 }}
-                              onClick={() => setPrintDoc({ voucherNo: "INV-" + inv.id.toUpperCase(), type: "Invoice", date: inv.issueDate, party: inv.client, description: inv.description, amount: inv.amount, applySst: inv.applySst, sstAmount: inv.sstAmount, totalAmount: inv.totalAmount || inv.amount })}>
+                              onClick={() => setPrintDoc({ voucherNo: "INV-" + inv.id.toUpperCase(), type: "Invoice", date: inv.issueDate, party: inv.client, description: inv.description, amount: inv.amount, applySst: inv.applySst, sstRate: inv.sstRate, sstAmount: inv.sstAmount, applyWht: inv.applyWht, whtRate: inv.whtRate, whtAmount: inv.whtAmount, totalAmount: inv.totalAmount || inv.amount })}>
                               <Printer size={13} />
                             </button>
                           </td>
@@ -1726,14 +1737,37 @@ export default function App() {
                       <div className="field" style={{ margin: 0, gridColumn: "1 / -1" }}><label>Particulars</label>
                         <input value={doc.extracted.description || ""} onChange={e => updateDocField(doc.id, "description", e.target.value)} /></div>
                       {doc.direction === "issued" && (
-                        <div className="field" style={{ margin: 0, gridColumn: "1 / -1" }}>
-                          <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontWeight: 600 }}>
-                            <input type="checkbox" checked={!!doc.extracted.applySst} onChange={e => updateDocField(doc.id, "applySst", e.target.checked)} />
-                            Apply Sindh Sales Tax (SRB, 15%)
-                          </label>
-                          {doc.extracted.applySst && (
+                        <div className="field" style={{ margin: 0, gridColumn: "1 / -1", display: "flex", flexDirection: "column", gap: 10 }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                            <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontWeight: 600, minWidth: 200 }}>
+                              <input type="checkbox" checked={!!doc.extracted.applySst} onChange={e => updateDocField(doc.id, "applySst", e.target.checked)} />
+                              Apply Sindh Sales Tax (SRB)
+                            </label>
+                            {doc.extracted.applySst && (
+                              <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                                <input type="number" value={doc.extracted.sstRate || ""} onChange={e => updateDocField(doc.id, "sstRate", e.target.value)} placeholder="%" style={{ width: 60, padding: "4px 8px", fontSize: 13 }} />
+                                <span style={{ fontSize: 13, color: "var(--ink-muted)" }}>%</span>
+                              </div>
+                            )}
+                          </div>
+                          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                            <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontWeight: 600, minWidth: 200 }}>
+                              <input type="checkbox" checked={!!doc.extracted.applyWht} onChange={e => updateDocField(doc.id, "applyWht", e.target.checked)} />
+                              Apply Withholding Tax (WHT)
+                            </label>
+                            {doc.extracted.applyWht && (
+                              <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                                <input type="number" value={doc.extracted.whtRate || ""} onChange={e => updateDocField(doc.id, "whtRate", e.target.value)} placeholder="%" style={{ width: 60, padding: "4px 8px", fontSize: 13 }} />
+                                <span style={{ fontSize: 13, color: "var(--ink-muted)" }}>%</span>
+                              </div>
+                            )}
+                          </div>
+                          {(doc.extracted.applySst || doc.extracted.applyWht) && (
                             <div style={{ fontSize: 13, marginTop: 4, color: "var(--ink-muted)" }}>
-                              Subtotal: {pkr(doc.extracted.amount)} &bull; Tax: {pkr((doc.extracted.amount || 0) * 0.15)} &bull; Total: <strong style={{ color: "var(--rose)" }}>{pkr((doc.extracted.amount || 0) * 1.15)}</strong>
+                              Subtotal: {pkr(doc.extracted.amount)} 
+                              {doc.extracted.applySst && ` • Tax: +${pkr(((doc.extracted.amount || 0) * (Number(doc.extracted.sstRate) || 0)) / 100)}`}
+                              {doc.extracted.applyWht && ` • WHT: -${pkr(((doc.extracted.amount || 0) * (Number(doc.extracted.whtRate) || 0)) / 100)}`}
+                              {' '}• Net Total: <strong style={{ color: "var(--ink)" }}>{pkr((doc.extracted.amount || 0) + (doc.extracted.applySst ? ((doc.extracted.amount || 0) * (Number(doc.extracted.sstRate) || 0)) / 100 : 0) - (doc.extracted.applyWht ? ((doc.extracted.amount || 0) * (Number(doc.extracted.whtRate) || 0)) / 100 : 0))}</strong>
                             </div>
                           )}
                         </div>
@@ -2365,12 +2399,16 @@ function InvoiceModal({ initialData, onClose, onSubmit }) {
   const [description, setDescription] = useState(initialData?.description || "");
   const [amount, setAmount] = useState(initialData?.amount || "");
   const [applySst, setApplySst] = useState(initialData?.applySst || false);
+  const [sstRate, setSstRate] = useState(initialData?.sstRate || "");
+  const [applyWht, setApplyWht] = useState(initialData?.applyWht || false);
+  const [whtRate, setWhtRate] = useState(initialData?.whtRate || "");
   const [issueDate, setIssueDate] = useState(initialData?.issueDate || "2026-07-21");
   const [dueDate, setDueDate] = useState(initialData?.dueDate || "2026-08-05");
   
   const amt = Number(amount) || 0;
-  const sstAmount = applySst ? amt * 0.15 : 0;
-  const totalAmount = amt + sstAmount;
+  const sstAmount = (applySst && Number(sstRate)) ? (amt * Number(sstRate) / 100) : 0;
+  const whtAmount = (applyWht && Number(whtRate)) ? (amt * Number(whtRate) / 100) : 0;
+  const totalAmount = amt + sstAmount - whtAmount;
   const valid = client && description && amt > 0;
   
   return (
@@ -2379,26 +2417,52 @@ function InvoiceModal({ initialData, onClose, onSubmit }) {
       <div className="field"><label>Service / Scope Particulars</label><input value={description} onChange={e => setDescription(e.target.value)} placeholder="e.g. TVC Post Production" /></div>
       <div className="field"><label>Gross Amount (PKR)</label><input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="0" /></div>
       
-      <div style={{ marginBottom: 16 }}>
-        <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, cursor: "pointer", userSelect: "none" }}>
-          <input type="checkbox" checked={applySst} onChange={e => setApplySst(e.target.checked)} />
-          Apply Sindh Sales Tax (SRB, 15%)
-        </label>
+      <div style={{ marginBottom: 16, display: "flex", flexDirection: "column", gap: 10 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, cursor: "pointer", userSelect: "none", minWidth: 200 }}>
+            <input type="checkbox" checked={applySst} onChange={e => setApplySst(e.target.checked)} />
+            Apply Sindh Sales Tax (SRB)
+          </label>
+          {applySst && (
+            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+              <input type="number" value={sstRate} onChange={e => setSstRate(e.target.value)} placeholder="%" style={{ width: 60, padding: "4px 8px", fontSize: 13 }} />
+              <span style={{ fontSize: 13, color: "var(--ink-muted)" }}>%</span>
+            </div>
+          )}
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, cursor: "pointer", userSelect: "none", minWidth: 200 }}>
+            <input type="checkbox" checked={applyWht} onChange={e => setApplyWht(e.target.checked)} />
+            Apply Withholding Tax (WHT)
+          </label>
+          {applyWht && (
+            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+              <input type="number" value={whtRate} onChange={e => setWhtRate(e.target.value)} placeholder="%" style={{ width: 60, padding: "4px 8px", fontSize: 13 }} />
+              <span style={{ fontSize: 13, color: "var(--ink-muted)" }}>%</span>
+            </div>
+          )}
+        </div>
       </div>
 
       <div style={{ background: "var(--bg)", padding: "10px 14px", borderRadius: 8, marginBottom: 16, fontSize: 13 }}>
         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-          <span style={{ color: "var(--ink-muted)" }}>Subtotal</span>
+          <span style={{ color: "var(--ink-muted)" }}>Subtotal (Gross)</span>
           <span>{pkr(amt)}</span>
         </div>
         {applySst && (
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4, color: "var(--rose)" }}>
-            <span>SRB Tax (15%)</span>
+            <span>SRB Tax ({sstRate || 0}%)</span>
             <span>+ {pkr(sstAmount)}</span>
           </div>
         )}
+        {applyWht && (
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4, color: "var(--green)" }}>
+            <span>WHT Deduction ({whtRate || 0}%)</span>
+            <span>- {pkr(whtAmount)}</span>
+          </div>
+        )}
         <div style={{ display: "flex", justifyContent: "space-between", fontWeight: 600, marginTop: 8, paddingTop: 8, borderTop: "1px solid var(--rule)", fontSize: 14 }}>
-          <span>Total Payable</span>
+          <span>Net Total Payable</span>
           <span>{pkr(totalAmount)}</span>
         </div>
       </div>
@@ -2408,7 +2472,7 @@ function InvoiceModal({ initialData, onClose, onSubmit }) {
         <div className="field" style={{ flex: 1 }}><label>Due Date</label><input type="date" value={dueDate} onChange={e => setDueDate(e.target.value)} /></div>
       </div>
       <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 6 }} disabled={!valid}
-        onClick={() => valid && onSubmit(initialData ? { ...initialData, client, description, amount: amt, applySst, sstAmount, totalAmount, issueDate, dueDate } : { client, description, amount: amt, applySst, sstAmount, totalAmount, issueDate, dueDate })}>
+        onClick={() => valid && onSubmit(initialData ? { ...initialData, client, description, amount: amt, applySst, sstRate: Number(sstRate) || 0, sstAmount, applyWht, whtRate: Number(whtRate) || 0, whtAmount, totalAmount, issueDate, dueDate } : { client, description, amount: amt, applySst, sstRate: Number(sstRate) || 0, sstAmount, applyWht, whtRate: Number(whtRate) || 0, whtAmount, totalAmount, issueDate, dueDate })}>
         {initialData ? "Save Invoice Changes" : "Generate & Post Invoice"}
       </button>
     </ModalShell>
@@ -3095,8 +3159,14 @@ function PrintPreviewModal({ doc, onClose }) {
               </tr>
               {doc.applySst && (
                 <tr>
-                  <td style={{ padding: "5px 0", fontSize: 13, color: "#475569" }}>Add: Sindh Sales Tax (SRB) @ 15%</td>
+                  <td style={{ padding: "5px 0", fontSize: 13, color: "#475569" }}>Add: Sindh Sales Tax (SRB) @ {doc.sstRate || 0}%</td>
                   <td className="mono" style={{ textAlign: "right", padding: "5px 0", fontSize: 14, color: "#475569" }}>{pkr(doc.sstAmount)}</td>
+                </tr>
+              )}
+              {doc.applyWht && (
+                <tr>
+                  <td style={{ padding: "5px 0", fontSize: 13, color: "#475569" }}>Less: Withholding Tax (WHT) @ {doc.whtRate || 0}%</td>
+                  <td className="mono" style={{ textAlign: "right", padding: "5px 0", fontSize: 14, color: "#475569" }}>- {pkr(doc.whtAmount)}</td>
                 </tr>
               )}
             </tbody>
@@ -3176,6 +3246,7 @@ function ClientStatementPrintModal({ clientName, invoices, projects, onClose }) 
                 <th style={{ textAlign: "left", borderBottom: "1.5px solid #0F172A", padding: "7px 0", fontSize: 12.5, color: "#475569" }}>Status</th>
                 <th style={{ textAlign: "right", borderBottom: "1.5px solid #0F172A", padding: "7px 0", fontSize: 12.5, color: "#475569" }}>Gross</th>
                 <th style={{ textAlign: "right", borderBottom: "1.5px solid #0F172A", padding: "7px 0", fontSize: 12.5, color: "#475569" }}>SST</th>
+                <th style={{ textAlign: "right", borderBottom: "1.5px solid #0F172A", padding: "7px 0", fontSize: 12.5, color: "#475569" }}>WHT</th>
                 <th style={{ textAlign: "right", borderBottom: "1.5px solid #0F172A", padding: "7px 0", fontSize: 12.5, color: "#475569" }}>Net Billed</th>
               </tr>
             </thead>
@@ -3189,6 +3260,7 @@ function ClientStatementPrintModal({ clientName, invoices, projects, onClose }) 
                   </td>
                   <td className="mono" style={{ textAlign: "right", padding: "9px 0", color: "#475569", fontSize: 13 }}>{pkr(inv.amount)}</td>
                   <td className="mono" style={{ textAlign: "right", padding: "9px 0", color: "#475569", fontSize: 13 }}>{inv.applySst ? pkr(inv.sstAmount) : "—"}</td>
+                  <td className="mono" style={{ textAlign: "right", padding: "9px 0", color: "#475569", fontSize: 13 }}>{inv.applyWht ? pkr(inv.whtAmount) : "—"}</td>
                   <td className="mono" style={{ textAlign: "right", padding: "9px 0", fontWeight: 700, fontSize: 14 }}>{pkr(inv.totalAmount || inv.amount)}</td>
                 </tr>
               ))}
@@ -3282,6 +3354,7 @@ function ProjectStatementPrintModal({ project, invoices, expenses, onClose }) {
                 <th style={{ textAlign: "left", borderBottom: "1.5px solid #0F172A", padding: "7px 0", fontSize: 12.5, color: "#475569" }}>Milestone Description</th>
                 <th style={{ textAlign: "right", borderBottom: "1.5px solid #0F172A", padding: "7px 0", fontSize: 12.5, color: "#475569" }}>Gross</th>
                 <th style={{ textAlign: "right", borderBottom: "1.5px solid #0F172A", padding: "7px 0", fontSize: 12.5, color: "#475569" }}>SST</th>
+                <th style={{ textAlign: "right", borderBottom: "1.5px solid #0F172A", padding: "7px 0", fontSize: 12.5, color: "#475569" }}>WHT</th>
                 <th style={{ textAlign: "right", borderBottom: "1.5px solid #0F172A", padding: "7px 0", fontSize: 12.5, color: "#475569" }}>Amount</th>
               </tr>
             </thead>
@@ -3292,6 +3365,7 @@ function ProjectStatementPrintModal({ project, invoices, expenses, onClose }) {
                   <td style={{ padding: "9px 0", fontSize: 13.5 }}>{inv.description}</td>
                   <td className="mono" style={{ textAlign: "right", padding: "9px 0", color: "#475569", fontSize: 13 }}>{pkr(inv.amount)}</td>
                   <td className="mono" style={{ textAlign: "right", padding: "9px 0", color: "#475569", fontSize: 13 }}>{inv.applySst ? pkr(inv.sstAmount) : "—"}</td>
+                  <td className="mono" style={{ textAlign: "right", padding: "9px 0", color: "#475569", fontSize: 13 }}>{inv.applyWht ? pkr(inv.whtAmount) : "—"}</td>
                   <td className="mono" style={{ textAlign: "right", padding: "9px 0", fontWeight: 700, fontSize: 14 }}>{pkr(inv.totalAmount || inv.amount)}</td>
                 </tr>
               ))}
