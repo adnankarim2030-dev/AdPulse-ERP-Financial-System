@@ -2389,17 +2389,17 @@ function InvoiceModal({ initialData, onClose, onSubmit }) {
       <div style={{ background: "var(--bg)", padding: "10px 14px", borderRadius: 8, marginBottom: 16, fontSize: 13 }}>
         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
           <span style={{ color: "var(--ink-muted)" }}>Subtotal</span>
-          <span>{fmt(amt)}</span>
+          <span>{pkr(amt)}</span>
         </div>
         {applySst && (
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4, color: "var(--rose)" }}>
             <span>SRB Tax (15%)</span>
-            <span>+ {fmt(sstAmount)}</span>
+            <span>+ {pkr(sstAmount)}</span>
           </div>
         )}
         <div style={{ display: "flex", justifyContent: "space-between", fontWeight: 600, marginTop: 8, paddingTop: 8, borderTop: "1px solid var(--rule)", fontSize: 14 }}>
           <span>Total Payable</span>
-          <span>{fmt(totalAmount)}</span>
+          <span>{pkr(totalAmount)}</span>
         </div>
       </div>
 
