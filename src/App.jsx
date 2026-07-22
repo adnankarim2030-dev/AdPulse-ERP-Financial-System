@@ -45,6 +45,7 @@ const ACCOUNTS = {
   revenue: { name: "Service Revenue", type: "revenue" },
   expense: { name: "Operating Expenses", type: "expense" },
   equity: { name: "Owner's Equity", type: "equity" },
+  srb_payable: { name: "SRB Sales Tax Payable", type: "liability" },
 };
 
 const VOUCHER_TYPES = {
@@ -170,11 +171,11 @@ function seedJournal() {
 
 function seedInvoices() {
   return [
-    { id: uid(), client: "Prime Estate Enterprises", description: "Website + Proposal Package", amount: 450000, issueDate: "2026-07-05", dueDate: "2026-07-20", paid: true, paidVia: "Bank" },
-    { id: uid(), client: "Imtiaz Retail", description: "Q3 Campaign Strategy Retainer", amount: 1250000, issueDate: "2026-07-10", dueDate: "2026-07-25", paid: false, paidVia: null },
-    { id: uid(), client: "Kinza Beverages", description: "Website + Brand Package", amount: 680000, issueDate: "2026-06-15", dueDate: "2026-06-30", paid: false, paidVia: null },
-    { id: uid(), client: "North Town Residency", description: "FB/Insta Campaign - Commercial Units", amount: 320000, issueDate: "2026-07-15", dueDate: "2026-07-30", paid: false, paidVia: null },
-    { id: uid(), client: "Magnitude", description: "Logo Design Package", amount: 85000, issueDate: "2026-06-20", dueDate: "2026-07-05", paid: true, paidVia: "Cash" },
+    { id: uid(), client: "Prime Estate Enterprises", description: "Website + Proposal Package", amount: 450000, applySst: true, sstAmount: 67500, totalAmount: 517500, issueDate: "2026-07-05", dueDate: "2026-07-20", paid: true, paidVia: "Bank" },
+    { id: uid(), client: "Imtiaz Retail", description: "Q3 Campaign Strategy Retainer", amount: 1250000, applySst: true, sstAmount: 187500, totalAmount: 1437500, issueDate: "2026-07-10", dueDate: "2026-07-25", paid: false, paidVia: null },
+    { id: uid(), client: "Kinza Beverages", description: "Website + Brand Package", amount: 680000, applySst: true, sstAmount: 102000, totalAmount: 782000, issueDate: "2026-06-15", dueDate: "2026-06-30", paid: false, paidVia: null },
+    { id: uid(), client: "North Town Residency", description: "FB/Insta Campaign - Commercial Units", amount: 320000, applySst: true, sstAmount: 48000, totalAmount: 368000, issueDate: "2026-07-15", dueDate: "2026-07-30", paid: false, paidVia: null },
+    { id: uid(), client: "Magnitude", description: "Logo Design Package", amount: 85000, applySst: true, sstAmount: 12750, totalAmount: 97750, issueDate: "2026-06-20", dueDate: "2026-07-05", paid: true, paidVia: "Cash" },
   ];
 }
 
@@ -235,21 +236,26 @@ function buildInitialJournal(invoices, expenses) {
   const entries = seedJournal();
 
   invoices.forEach(inv => {
+    const totalAmount = inv.totalAmount || inv.amount;
+    const lines = [
+      { account: "ar", debit: totalAmount, credit: 0 },
+      { account: "revenue", debit: 0, credit: inv.amount },
+    ];
+    if (inv.applySst && inv.sstAmount) {
+      lines.push({ account: "srb_payable", debit: 0, credit: inv.sstAmount });
+    }
     entries.push({
       id: uid(), date: inv.issueDate, reference: "INV-" + inv.id.toUpperCase(),
       description: `Invoice - ${inv.client} (${inv.description})`,
-      lines: [
-        { account: "ar", debit: inv.amount, credit: 0 },
-        { account: "revenue", debit: 0, credit: inv.amount },
-      ],
+      lines,
     });
     if (inv.paid) {
       entries.push({
         id: uid(), date: inv.dueDate, reference: "PMT-" + inv.id.toUpperCase(),
         description: `Payment received - ${inv.client}`,
         lines: [
-          { account: inv.paidVia === "Cash" ? "cash" : "bank", debit: inv.amount, credit: 0 },
-          { account: "ar", debit: 0, credit: inv.amount },
+          { account: inv.paidVia === "Cash" ? "cash" : "bank", debit: totalAmount, credit: 0 },
+          { account: "ar", debit: 0, credit: totalAmount },
         ],
       });
     }
@@ -289,6 +295,7 @@ function seedProjectInvoices(projects) {
   };
   return projects.map(p => ({
     id: uid(), client: p.client, description: `${p.type} — ${p.name}`, amount: billAmount[p.type],
+    applySst: true, sstAmount: billAmount[p.type] * 0.15, totalAmount: billAmount[p.type] * 1.15,
     issueDate: p.startDate, dueDate: p.endDate,
     paid: p.status === "Completed", paidVia: p.status === "Completed" ? "Bank" : null,
     projectId: p.id,
@@ -322,7 +329,8 @@ function buildInitialData() {
     h.bookedFrom = bookedFrom; h.bookedTo = bookedTo;
     hoardingInvoices.push({
       id: uid(), client: proj.client, description: `OOH Advertising — ${proj.name}: ${h.name} rental`,
-      amount: h.pricePerMonth, issueDate: bookedFrom, dueDate: bookedTo,
+      amount: h.pricePerMonth, applySst: true, sstAmount: h.pricePerMonth * 0.15, totalAmount: h.pricePerMonth * 1.15, 
+      issueDate: bookedFrom, dueDate: bookedTo,
       paid: false, paidVia: null, projectId: proj.id,
     });
   };
@@ -596,6 +604,8 @@ export default function App() {
   const arBalance = balances.net.ar;
   const revenueBalance = balances.net.revenue;
   const expenseBalance = balances.net.expense;
+  const srbPayableBalance = balances.net.srb_payable || 0;
+  const totalSstInvoiced = invoices.reduce((s, i) => s + (i.applySst ? i.sstAmount : 0), 0);
   const netProfit = revenueBalance - expenseBalance;
 
   const overdueTotal = invoicesWithStatus.filter(i => i.status === "Overdue").reduce((s, i) => s + i.amount, 0);
@@ -713,13 +723,17 @@ export default function App() {
   }
 
   /* Financial Actions */
-  function addInvoice({ client, description, amount, issueDate, dueDate }) {
-    const inv = { id: uid(), client, description, amount, issueDate, dueDate, paid: false, paidVia: null };
+  function addInvoice({ client, description, amount, applySst, sstAmount, totalAmount, issueDate, dueDate }) {
+    const inv = { id: uid(), client, description, amount, applySst, sstAmount, totalAmount, issueDate, dueDate, paid: false, paidVia: null };
     setInvoices(list => [inv, ...list]);
-    postEntry(issueDate, `Invoice - ${client} (${description})`, [
-      { account: "ar", debit: amount, credit: 0 },
-      { account: "revenue", debit: 0, credit: amount },
-    ], "INV-" + inv.id.toUpperCase());
+    
+    const lines = [
+      { account: "ar", debit: inv.totalAmount || inv.amount, credit: 0 },
+      { account: "revenue", debit: 0, credit: inv.amount },
+    ];
+    if (inv.applySst) lines.push({ account: "srb_payable", debit: 0, credit: inv.sstAmount });
+    
+    postEntry(issueDate, `Invoice - ${client} (${description})`, lines, "INV-" + inv.id.toUpperCase());
     setShowInvoiceForm(false);
   }
 
@@ -730,10 +744,28 @@ export default function App() {
 
   function markPaid(inv, via) {
     setInvoices(list => list.map(i => i.id === inv.id ? { ...i, paid: true, paidVia: via } : i));
+    const paidAmount = inv.totalAmount || inv.amount;
     postEntry(TODAY.toISOString().slice(0, 10), `Payment received - ${inv.client}`, [
-      { account: via === "Cash" ? "cash" : "bank", debit: inv.amount, credit: 0 },
-      { account: "ar", debit: 0, credit: inv.amount },
+      { account: via === "Cash" ? "cash" : "bank", debit: paidAmount, credit: 0 },
+      { account: "ar", debit: 0, credit: paidAmount },
     ], "PMT-" + inv.id.toUpperCase());
+  }
+
+  function recordSrbRemittance() {
+    if (srbPayableBalance <= 0) {
+      alert("No pending SRB Sales Tax liability to remit.");
+      return;
+    }
+    if (cashBalance < srbPayableBalance) {
+      alert("Insufficient cash/bank balance to remit SRB Sales Tax.");
+      return;
+    }
+    const today = TODAY.toISOString().slice(0, 10);
+    postEntry(today, `Sindh Sales Tax (SRB) Remittance`, [
+      { account: "srb_payable", debit: srbPayableBalance, credit: 0 },
+      { account: "bank", debit: 0, credit: srbPayableBalance },
+    ], "TAX-" + uid().slice(0, 4).toUpperCase());
+    alert(`Successfully posted remittance of ${pkr(srbPayableBalance)} to SRB.`);
   }
 
   function addExpense({ vendor, category, amount, date, paidVia }) {
@@ -1011,6 +1043,17 @@ export default function App() {
       ], "DOC-" + doc.id.toUpperCase());
     } else if (extracted.documentType === "Quotation") {
       // quotations saved for reference
+    } else if (direction === "issued") {
+      addInvoice({
+        client: extracted.party || "Client",
+        description: extracted.description || "Uploaded Invoice",
+        amount,
+        applySst: !!extracted.applySst,
+        sstAmount: extracted.applySst ? amount * 0.15 : 0,
+        totalAmount: extracted.applySst ? amount * 1.15 : amount,
+        issueDate: extracted.date || TODAY.toISOString().slice(0, 10),
+        dueDate: extracted.date || TODAY.toISOString().slice(0, 10)
+      });
     } else {
       createVoucher("SV", { date: extracted.date, party: extracted.party, description: extracted.description, amount });
     }
@@ -1269,7 +1312,7 @@ export default function App() {
                     <thead>
                       <tr>
                         <th>Client Name</th><th>Description</th><th>Service Project</th><th>Issue Date</th><th>Due Date</th>
-                        <th style={{ textAlign: "right" }}>Amount</th><th>Status</th><th>Actions</th>
+                        <th style={{ textAlign: "right" }}>Amount</th><th style={{ textAlign: "right" }}>SRB SST</th><th style={{ textAlign: "right" }}>Total</th><th>Status</th><th>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -1280,7 +1323,9 @@ export default function App() {
                           <td>{inv.projectId ? <ProjectTypeBadge type={projects.find(p => p.id === inv.projectId)?.type} /> : <span style={{ color: "var(--ink-muted)" }}>—</span>}</td>
                           <td className="mono">{fmtDate(inv.issueDate)}</td>
                           <td className="mono">{fmtDate(inv.dueDate)}</td>
-                          <td className="mono" style={{ textAlign: "right", fontWeight: 600 }}>{pkr(inv.amount)}</td>
+                          <td className="mono" style={{ textAlign: "right", color: "var(--ink-muted)" }}>{pkr(inv.amount)}</td>
+                          <td className="mono" style={{ textAlign: "right", color: "var(--rose)" }}>{inv.applySst ? pkr(inv.sstAmount) : "—"}</td>
+                          <td className="mono" style={{ textAlign: "right", fontWeight: 600 }}>{pkr(inv.totalAmount || inv.amount)}</td>
                           <td><StatusBadge status={inv.status} /></td>
                           <td style={{ display: "flex", gap: 4 }}>
                             {!inv.paid && (
@@ -1292,7 +1337,7 @@ export default function App() {
                               <Edit size={13} />
                             </button>
                             <button className="btn" style={{ padding: "4px 7px", fontSize: 12 }}
-                              onClick={() => setPrintDoc({ voucherNo: "INV-" + inv.id.toUpperCase(), type: "Invoice", date: inv.issueDate, party: inv.client, description: inv.description, amount: inv.amount })}>
+                              onClick={() => setPrintDoc({ voucherNo: "INV-" + inv.id.toUpperCase(), type: "Invoice", date: inv.issueDate, party: inv.client, description: inv.description, amount: inv.amount, applySst: inv.applySst, sstAmount: inv.sstAmount, totalAmount: inv.totalAmount || inv.amount })}>
                               <Printer size={13} />
                             </button>
                           </td>
@@ -1680,6 +1725,19 @@ export default function App() {
                         </select></div>
                       <div className="field" style={{ margin: 0, gridColumn: "1 / -1" }}><label>Particulars</label>
                         <input value={doc.extracted.description || ""} onChange={e => updateDocField(doc.id, "description", e.target.value)} /></div>
+                      {doc.direction === "issued" && (
+                        <div className="field" style={{ margin: 0, gridColumn: "1 / -1" }}>
+                          <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontWeight: 600 }}>
+                            <input type="checkbox" checked={!!doc.extracted.applySst} onChange={e => updateDocField(doc.id, "applySst", e.target.checked)} />
+                            Apply Sindh Sales Tax (SRB, 15%)
+                          </label>
+                          {doc.extracted.applySst && (
+                            <div style={{ fontSize: 13, marginTop: 4, color: "var(--ink-muted)" }}>
+                              Subtotal: {pkr(doc.extracted.amount)} &bull; Tax: {pkr((doc.extracted.amount || 0) * 0.15)} &bull; Total: <strong style={{ color: "var(--rose)" }}>{pkr((doc.extracted.amount || 0) * 1.15)}</strong>
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                     <button className="btn btn-primary" style={{ fontSize: 13 }} onClick={() => postDocumentToLedger(doc)}>
                       Confirm &amp; Post to General Ledger
@@ -1745,6 +1803,26 @@ export default function App() {
                     </tr>
                   </tbody>
                 </table>
+              </div>
+            </div>
+
+            <div className="card" style={{ padding: 20, marginBottom: 18, borderTop: "3px solid var(--rose)" }}>
+              <div className="section-title"><Landmark size={18} color="var(--rose)" /> Sindh Sales Tax (SRB) Summary</div>
+              <div className="table-responsive">
+                <table>
+                  <tbody>
+                    <tr><td style={{ fontWeight: 600 }}>Total SST Invoiced (15%)</td><td className="mono" style={{ textAlign: "right", color: "var(--ink)", fontWeight: 700 }}>{pkr(totalSstInvoiced)}</td></tr>
+                    <tr style={{ background: "rgba(0,0,0,0.02)" }}>
+                      <td style={{ fontWeight: 700, fontSize: 15 }}>Current Payable Balance</td>
+                      <td className="mono" style={{ textAlign: "right", fontWeight: 700, fontSize: 16, color: "var(--rose)" }}>{pkr(srbPayableBalance)}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div style={{ marginTop: 14, textAlign: "right" }}>
+                <button className="btn btn-primary" onClick={recordSrbRemittance} disabled={srbPayableBalance <= 0}>
+                  Record Remittance Payment
+                </button>
               </div>
             </div>
 
@@ -2286,20 +2364,51 @@ function InvoiceModal({ initialData, onClose, onSubmit }) {
   const [client, setClient] = useState(initialData?.client || "");
   const [description, setDescription] = useState(initialData?.description || "");
   const [amount, setAmount] = useState(initialData?.amount || "");
+  const [applySst, setApplySst] = useState(initialData?.applySst || false);
   const [issueDate, setIssueDate] = useState(initialData?.issueDate || "2026-07-21");
   const [dueDate, setDueDate] = useState(initialData?.dueDate || "2026-08-05");
-  const valid = client && description && Number(amount) > 0;
+  
+  const amt = Number(amount) || 0;
+  const sstAmount = applySst ? amt * 0.15 : 0;
+  const totalAmount = amt + sstAmount;
+  const valid = client && description && amt > 0;
+  
   return (
     <ModalShell title={initialData ? "Edit Client Invoice" : "Create New Client Invoice"} onClose={onClose}>
       <div className="field"><label>Client Name</label><input value={client} onChange={e => setClient(e.target.value)} placeholder="e.g. Prime Estate Enterprises" /></div>
       <div className="field"><label>Service / Scope Particulars</label><input value={description} onChange={e => setDescription(e.target.value)} placeholder="e.g. TVC Post Production" /></div>
-      <div className="field"><label>Total Amount (PKR)</label><input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="0" /></div>
+      <div className="field"><label>Gross Amount (PKR)</label><input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="0" /></div>
+      
+      <div style={{ marginBottom: 16 }}>
+        <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, cursor: "pointer", userSelect: "none" }}>
+          <input type="checkbox" checked={applySst} onChange={e => setApplySst(e.target.checked)} />
+          Apply Sindh Sales Tax (SRB, 15%)
+        </label>
+      </div>
+
+      <div style={{ background: "var(--bg)", padding: "10px 14px", borderRadius: 8, marginBottom: 16, fontSize: 13 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+          <span style={{ color: "var(--ink-muted)" }}>Subtotal</span>
+          <span>{fmt(amt)}</span>
+        </div>
+        {applySst && (
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4, color: "var(--rose)" }}>
+            <span>SRB Tax (15%)</span>
+            <span>+ {fmt(sstAmount)}</span>
+          </div>
+        )}
+        <div style={{ display: "flex", justifyContent: "space-between", fontWeight: 600, marginTop: 8, paddingTop: 8, borderTop: "1px solid var(--rule)", fontSize: 14 }}>
+          <span>Total Payable</span>
+          <span>{fmt(totalAmount)}</span>
+        </div>
+      </div>
+
       <div style={{ display: "flex", gap: 10 }}>
         <div className="field" style={{ flex: 1 }}><label>Issue Date</label><input type="date" value={issueDate} onChange={e => setIssueDate(e.target.value)} /></div>
         <div className="field" style={{ flex: 1 }}><label>Due Date</label><input type="date" value={dueDate} onChange={e => setDueDate(e.target.value)} /></div>
       </div>
       <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 6 }} disabled={!valid}
-        onClick={() => valid && onSubmit(initialData ? { ...initialData, client, description, amount: Number(amount), issueDate, dueDate } : { client, description, amount: Number(amount), issueDate, dueDate })}>
+        onClick={() => valid && onSubmit(initialData ? { ...initialData, client, description, amount: amt, applySst, sstAmount, totalAmount, issueDate, dueDate } : { client, description, amount: amt, applySst, sstAmount, totalAmount, issueDate, dueDate })}>
         {initialData ? "Save Invoice Changes" : "Generate & Post Invoice"}
       </button>
     </ModalShell>
@@ -2984,16 +3093,22 @@ function PrintPreviewModal({ doc, onClose }) {
                 <td style={{ padding: "9px 0", fontSize: 14 }}>{doc.description}</td>
                 <td className="mono" style={{ textAlign: "right", padding: "9px 0", fontWeight: 700, fontSize: 15 }}>{pkr(doc.amount)}</td>
               </tr>
+              {doc.applySst && (
+                <tr>
+                  <td style={{ padding: "5px 0", fontSize: 13, color: "#475569" }}>Add: Sindh Sales Tax (SRB) @ 15%</td>
+                  <td className="mono" style={{ textAlign: "right", padding: "5px 0", fontSize: 14, color: "#475569" }}>{pkr(doc.sstAmount)}</td>
+                </tr>
+              )}
             </tbody>
             <tfoot>
               <tr>
-                <td style={{ borderTop: "2px solid #0F172A", padding: "10px 0", fontWeight: 800, fontSize: 14.5 }}>Total Net Amount</td>
-                <td className="mono" style={{ borderTop: "2px solid #0F172A", textAlign: "right", padding: "10px 0", fontWeight: 800, fontSize: 16, color: "#B8860B" }}>{pkr(doc.amount)}</td>
+                <td style={{ borderTop: "2px solid #0F172A", padding: "10px 0", fontWeight: 800, fontSize: 14.5 }}>Total Net Amount Payable</td>
+                <td className="mono" style={{ borderTop: "2px solid #0F172A", textAlign: "right", padding: "10px 0", fontWeight: 800, fontSize: 16, color: "#B8860B" }}>{pkr(doc.totalAmount || doc.amount)}</td>
               </tr>
             </tfoot>
           </table>
           <div style={{ fontSize: 12.5, fontStyle: "italic", color: "#334155", marginBottom: 34, background: "#F1F5F9", padding: "10px 14px", borderRadius: 7, border: "1px solid #E2E8F0" }}>
-            Amount in words: <b style={{ color: "#0F172A" }}>{amountInWords(doc.amount)}</b>
+            Amount in words: <b style={{ color: "#0F172A" }}>{amountInWords(doc.totalAmount || doc.amount)}</b>
           </div>
           <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#475569", paddingTop: 12 }}>
             <div>Prepared by: ______________</div>
@@ -3010,8 +3125,8 @@ function ClientStatementPrintModal({ clientName, invoices, projects, onClose }) 
   const [pageSize, setPageSize] = useState("A4");
   const clientInvoices = invoices.filter(i => i.client.toLowerCase() === clientName.toLowerCase());
   const clientProjects = projects.filter(p => p.client.toLowerCase() === clientName.toLowerCase());
-  const totalBilled = clientInvoices.reduce((s, i) => s + i.amount, 0);
-  const totalPaid = clientInvoices.filter(i => i.paid).reduce((s, i) => s + i.amount, 0);
+  const totalBilled = clientInvoices.reduce((s, i) => s + (i.totalAmount || i.amount), 0);
+  const totalPaid = clientInvoices.filter(i => i.paid).reduce((s, i) => s + (i.totalAmount || i.amount), 0);
   const totalOutstanding = totalBilled - totalPaid;
 
   return (
@@ -3059,7 +3174,9 @@ function ClientStatementPrintModal({ clientName, invoices, projects, onClose }) 
                 <th style={{ textAlign: "left", borderBottom: "1.5px solid #0F172A", padding: "7px 0", fontSize: 12.5, color: "#475569" }}>Issue Date</th>
                 <th style={{ textAlign: "left", borderBottom: "1.5px solid #0F172A", padding: "7px 0", fontSize: 12.5, color: "#475569" }}>Description / Scope</th>
                 <th style={{ textAlign: "left", borderBottom: "1.5px solid #0F172A", padding: "7px 0", fontSize: 12.5, color: "#475569" }}>Status</th>
-                <th style={{ textAlign: "right", borderBottom: "1.5px solid #0F172A", padding: "7px 0", fontSize: 12.5, color: "#475569" }}>Billed Amount</th>
+                <th style={{ textAlign: "right", borderBottom: "1.5px solid #0F172A", padding: "7px 0", fontSize: 12.5, color: "#475569" }}>Gross</th>
+                <th style={{ textAlign: "right", borderBottom: "1.5px solid #0F172A", padding: "7px 0", fontSize: 12.5, color: "#475569" }}>SST</th>
+                <th style={{ textAlign: "right", borderBottom: "1.5px solid #0F172A", padding: "7px 0", fontSize: 12.5, color: "#475569" }}>Net Billed</th>
               </tr>
             </thead>
             <tbody>
@@ -3070,7 +3187,9 @@ function ClientStatementPrintModal({ clientName, invoices, projects, onClose }) 
                   <td style={{ padding: "9px 0", fontSize: 13 }}>
                     <span style={{ color: inv.paid ? "#059669" : "#D97706", fontWeight: 700 }}>{inv.paid ? "PAID" : "UNPAID"}</span>
                   </td>
-                  <td className="mono" style={{ textAlign: "right", padding: "9px 0", fontWeight: 700, fontSize: 14 }}>{pkr(inv.amount)}</td>
+                  <td className="mono" style={{ textAlign: "right", padding: "9px 0", color: "#475569", fontSize: 13 }}>{pkr(inv.amount)}</td>
+                  <td className="mono" style={{ textAlign: "right", padding: "9px 0", color: "#475569", fontSize: 13 }}>{inv.applySst ? pkr(inv.sstAmount) : "—"}</td>
+                  <td className="mono" style={{ textAlign: "right", padding: "9px 0", fontWeight: 700, fontSize: 14 }}>{pkr(inv.totalAmount || inv.amount)}</td>
                 </tr>
               ))}
               {clientInvoices.length === 0 && (
@@ -3079,15 +3198,15 @@ function ClientStatementPrintModal({ clientName, invoices, projects, onClose }) 
             </tbody>
             <tfoot>
               <tr>
-                <td colSpan={3} style={{ borderTop: "1.5px solid #0F172A", padding: "8px 0", fontWeight: 700, fontSize: 13.5 }}>Total Billed</td>
+                <td colSpan={5} style={{ borderTop: "1.5px solid #0F172A", padding: "8px 0", fontWeight: 700, fontSize: 13.5 }}>Total Billed</td>
                 <td className="mono" style={{ borderTop: "1.5px solid #0F172A", textAlign: "right", padding: "8px 0", fontWeight: 700, fontSize: 14 }}>{pkr(totalBilled)}</td>
               </tr>
               <tr>
-                <td colSpan={3} style={{ padding: "4px 0", fontWeight: 700, fontSize: 13.5, color: "#059669" }}>Total Payments Received</td>
+                <td colSpan={5} style={{ padding: "4px 0", fontWeight: 700, fontSize: 13.5, color: "#059669" }}>Total Payments Received</td>
                 <td className="mono" style={{ textAlign: "right", padding: "4px 0", fontWeight: 700, fontSize: 14, color: "#059669" }}>({pkr(totalPaid)})</td>
               </tr>
               <tr>
-                <td colSpan={3} style={{ borderTop: "2px solid #0F172A", padding: "10px 0", fontWeight: 800, fontSize: 15 }}>Net Balance Payable</td>
+                <td colSpan={5} style={{ borderTop: "2px solid #0F172A", padding: "10px 0", fontWeight: 800, fontSize: 15 }}>Net Balance Payable</td>
                 <td className="mono" style={{ borderTop: "2px solid #0F172A", textAlign: "right", padding: "10px 0", fontWeight: 800, fontSize: 16.5, color: "#B8860B" }}>{pkr(totalOutstanding)}</td>
               </tr>
             </tfoot>
@@ -3112,7 +3231,7 @@ function ProjectStatementPrintModal({ project, invoices, expenses, onClose }) {
   const [pageSize, setPageSize] = useState("A4");
   const projInvoices = invoices.filter(i => i.projectId === project.id);
   const projExpenses = expenses.filter(e => e.projectId === project.id);
-  const totalBilled = projInvoices.reduce((s, i) => s + i.amount, 0);
+  const totalBilled = projInvoices.reduce((s, i) => s + (i.totalAmount || i.amount), 0);
   const totalCost = projExpenses.reduce((s, e) => s + e.amount, 0);
   const netMargin = totalBilled - totalCost;
 
@@ -3161,6 +3280,8 @@ function ProjectStatementPrintModal({ project, invoices, expenses, onClose }) {
               <tr>
                 <th style={{ textAlign: "left", borderBottom: "1.5px solid #0F172A", padding: "7px 0", fontSize: 12.5, color: "#475569" }}>Date</th>
                 <th style={{ textAlign: "left", borderBottom: "1.5px solid #0F172A", padding: "7px 0", fontSize: 12.5, color: "#475569" }}>Milestone Description</th>
+                <th style={{ textAlign: "right", borderBottom: "1.5px solid #0F172A", padding: "7px 0", fontSize: 12.5, color: "#475569" }}>Gross</th>
+                <th style={{ textAlign: "right", borderBottom: "1.5px solid #0F172A", padding: "7px 0", fontSize: 12.5, color: "#475569" }}>SST</th>
                 <th style={{ textAlign: "right", borderBottom: "1.5px solid #0F172A", padding: "7px 0", fontSize: 12.5, color: "#475569" }}>Amount</th>
               </tr>
             </thead>
@@ -3169,16 +3290,18 @@ function ProjectStatementPrintModal({ project, invoices, expenses, onClose }) {
                 <tr key={inv.id}>
                   <td className="mono" style={{ padding: "9px 0", fontSize: 13 }}>{fmtDate(inv.issueDate)}</td>
                   <td style={{ padding: "9px 0", fontSize: 13.5 }}>{inv.description}</td>
-                  <td className="mono" style={{ textAlign: "right", padding: "9px 0", fontWeight: 700, fontSize: 14 }}>{pkr(inv.amount)}</td>
+                  <td className="mono" style={{ textAlign: "right", padding: "9px 0", color: "#475569", fontSize: 13 }}>{pkr(inv.amount)}</td>
+                  <td className="mono" style={{ textAlign: "right", padding: "9px 0", color: "#475569", fontSize: 13 }}>{inv.applySst ? pkr(inv.sstAmount) : "—"}</td>
+                  <td className="mono" style={{ textAlign: "right", padding: "9px 0", fontWeight: 700, fontSize: 14 }}>{pkr(inv.totalAmount || inv.amount)}</td>
                 </tr>
               ))}
               {projInvoices.length === 0 && (
-                <tr><td colSpan={3} style={{ textAlign: "center", padding: 14, color: "#64748B" }}>No billings logged for this project.</td></tr>
+                <tr><td colSpan={5} style={{ textAlign: "center", padding: 14, color: "#64748B" }}>No billings logged for this project.</td></tr>
               )}
             </tbody>
             <tfoot>
               <tr>
-                <td colSpan={2} style={{ borderTop: "2px solid #0F172A", padding: "10px 0", fontWeight: 800, fontSize: 15 }}>Total Billed Project Net</td>
+                <td colSpan={4} style={{ borderTop: "2px solid #0F172A", padding: "10px 0", fontWeight: 800, fontSize: 15 }}>Total Billed Project Net</td>
                 <td className="mono" style={{ borderTop: "2px solid #0F172A", textAlign: "right", padding: "10px 0", fontWeight: 800, fontSize: 16.5, color: "#B8860B" }}>{pkr(totalBilled)}</td>
               </tr>
             </tfoot>
