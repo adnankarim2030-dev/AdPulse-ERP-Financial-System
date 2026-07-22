@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useRef } from "react";
 import {
   LayoutDashboard, FileText, Receipt, BookOpenText, BarChart3,
-  Plus, X, CheckCircle2, Clock, AlertCircle, Wallet, Landmark,
+  Plus, X, CheckCircle2, Clock, AlertCircle, Wallet, Landmark, ShoppingCart,
   TrendingUp, TrendingDown, ScrollText, Building2, ClipboardList,
   UploadCloud, Printer, MapPin, Ruler, Loader2, FileCheck2,
   Briefcase, Video, PartyPopper, Megaphone, Users, Newspaper,
@@ -47,6 +47,7 @@ const ACCOUNTS = {
   equity: { name: "Owner's Equity", type: "equity" },
   srb_payable: { name: "SRB Sales Tax Payable", type: "liability" },
   wht_receivable: { name: "WHT Receivable (Advance Tax)", type: "asset" },
+  ap: { name: "Accounts Payable", type: "liability" },
 };
 
 const VOUCHER_TYPES = {
@@ -511,6 +512,7 @@ export default function App() {
   const [journal, setJournal] = useState(seedData.journal);
   const [invoices, setInvoices] = useState(seedData.invoices);
   const [expenses, setExpenses] = useState(seedData.expenses);
+  const [purchaseOrders, setPurchaseOrders] = useState([]);
   const [projects, setProjects] = useState(seedData.projects);
 
   const [showInvoiceForm, setShowInvoiceForm] = useState(false);
@@ -518,6 +520,13 @@ export default function App() {
 
   const [showExpenseForm, setShowExpenseForm] = useState(false);
   const [editingExpense, setEditingExpense] = useState(null);
+  const [payingExpenseId, setPayingExpenseId] = useState(null);
+
+  const [showPOForm, setShowPOForm] = useState(false);
+  const [editingPO, setEditingPO] = useState(null);
+  const [payingPOId, setPayingPOId] = useState(null);
+
+  const [cashBankFilter, setCashBankFilter] = useState("all");
 
   const [showVoucherForm, setShowVoucherForm] = useState(false);
   const [voucherDefaultType, setVoucherDefaultType] = useState("JV");
@@ -770,19 +779,82 @@ export default function App() {
     alert(`Successfully posted remittance of ${pkr(srbPayableBalance)} to SRB.`);
   }
 
-  function addExpense({ vendor, category, amount, date, paidVia }) {
-    const exp = { id: uid(), vendor, category, amount, date, paidVia };
+  function addExpense({ vendor, category, amount, date, status, paidVia }) {
+    const exp = { id: uid(), vendor, category, amount, date, status, paidVia };
     setExpenses(list => [exp, ...list]);
     postEntry(date, `${vendor} (${category})`, [
       { account: "expense", debit: amount, credit: 0, memo: category },
-      { account: paidVia === "Cash" ? "cash" : "bank", debit: 0, credit: amount },
+      { account: status === "paid" ? (paidVia === "Cash" ? "cash" : "bank") : "ap", debit: 0, credit: amount },
     ], "EXP-" + exp.id.toUpperCase());
     setShowExpenseForm(false);
+  }
+
+  function payExpense(expenseId, paymentVia, paymentDate) {
+    const exp = expenses.find(e => e.id === expenseId);
+    if (!exp || exp.status === "paid") return;
+    setExpenses(list => list.map(e => e.id === expenseId ? { ...e, status: "paid", paidVia: paymentVia } : e));
+    postEntry(paymentDate, `Payment to ${exp.vendor} (${exp.category})`, [
+      { account: "ap", debit: exp.amount, credit: 0 },
+      { account: paymentVia === "Cash" ? "cash" : "bank", debit: 0, credit: exp.amount },
+    ], "PMT-" + exp.id.toUpperCase());
   }
 
   function updateExpense(updated) {
     setExpenses(list => list.map(e => e.id === updated.id ? updated : e));
     setEditingExpense(null);
+  }
+
+  function addPO(poData) {
+    const po = { id: uid(), ...poData, status: "Draft" };
+    setPurchaseOrders(list => [po, ...list]);
+    setShowPOForm(false);
+  }
+
+  function updatePO(updated) {
+    setPurchaseOrders(list => list.map(p => p.id === updated.id ? updated : p));
+    setEditingPO(null);
+  }
+
+  function setPOStatus(id, newStatus) {
+    setPurchaseOrders(list => list.map(p => p.id === id ? { ...p, status: newStatus } : p));
+  }
+
+  function receiveAndBillPO(id) {
+    const po = purchaseOrders.find(p => p.id === id);
+    if (!po) return;
+    setPOStatus(id, "Billed");
+    addExpense({
+      vendor: po.vendor,
+      category: "Cost of Goods/Services Sold",
+      amount: po.amount,
+      date: TODAY.toISOString().slice(0, 10),
+      status: "unpaid",
+      paidVia: null
+    });
+    // Link somehow? We can just add it.
+  }
+
+  function payPO(id, paymentVia, paymentDate) {
+    const po = purchaseOrders.find(p => p.id === id);
+    if (!po) return;
+    setPOStatus(id, "Paid");
+    // To clear AP, we will post a payment
+    postEntry(paymentDate, `Payment for PO-${po.id.toUpperCase()} to ${po.vendor}`, [
+      { account: "ap", debit: po.amount, credit: 0 },
+      { account: paymentVia === "Cash" ? "cash" : "bank", debit: 0, credit: po.amount },
+    ], "POPMT-" + po.id.toUpperCase());
+    
+    // Attempt to also mark the related expense as paid if we can find it by amount and vendor (simple heuristic)
+    setExpenses(list => {
+      let found = false;
+      return list.map(e => {
+        if (!found && e.vendor === po.vendor && e.amount === po.amount && e.status === "unpaid") {
+          found = true;
+          return { ...e, status: "paid", paidVia: paymentVia };
+        }
+        return e;
+      });
+    });
   }
 
   function makeVoucherNo(type) {
@@ -1075,7 +1147,9 @@ export default function App() {
     { key: "dashboard", label: "Dashboard", icon: LayoutDashboard },
     { key: "projects", label: "Projects", icon: Briefcase },
     { key: "invoices", label: "Invoices", icon: FileText },
+    { key: "purchase-orders", label: "Purchase Orders", icon: ShoppingCart },
     { key: "expenses", label: "Expenses", icon: Receipt },
+    { key: "cash-bank", label: "Cash & Bank", icon: Landmark },
     { key: "ooh", label: "OOH Advertising", icon: Building2 },
     { key: "hr", label: "HR & Payroll", icon: Users },
     { key: "vouchers", label: "Vouchers", icon: ClipboardList },
@@ -1190,6 +1264,12 @@ export default function App() {
                 <KpiCard label="Accounts Receivable" value={pkr(arBalance)} sub={`${pkr(overdueTotal)} overdue`} icon={Landmark} accent="var(--amber)" />
                 <KpiCard label="Revenue (Period)" value={pkr(revenueBalance)} sub="Posted Invoices & Billings" icon={TrendingUp} accent="var(--jade)" />
                 <KpiCard label="Net Profit (Period)" value={pkr(netProfit)} sub={`Operating Costs ${pkr(expenseBalance)}`} icon={netProfit >= 0 ? TrendingUp : TrendingDown} accent={netProfit >= 0 ? "var(--jade)" : "var(--rose)"} />
+              </div>
+              <div className="grid-kpi" style={{ marginTop: 16 }}>
+                <KpiCard label="Accounts Payable" value={pkr(Object.values(journal).filter(j => j.account === "ap").reduce((s, j) => s + j.credit - j.debit, 0))} sub="Unpaid Vendor Bills" icon={Receipt} accent="var(--rose)" />
+                <KpiCard label="Open POs" value={purchaseOrders.filter(p => p.status === "Draft" || p.status === "Approved").length} sub="Draft & Approved" icon={ShoppingCart} accent="var(--sky)" />
+                <KpiCard label="Bank Balance" value={pkr(Object.values(journal).filter(j => j.account === "bank").reduce((s, j) => s + j.debit - j.credit, 0))} sub="Primary Account" icon={Landmark} accent="var(--jade)" />
+                <KpiCard label="Petty Cash" value={pkr(Object.values(journal).filter(j => j.account === "cash").reduce((s, j) => s + j.debit - j.credit, 0))} sub="In Hand" icon={Wallet} accent="var(--jade)" />
               </div>
 
               <div className="card" style={{ padding: 18, marginBottom: 18 }}>
@@ -1373,7 +1453,7 @@ export default function App() {
                   <table>
                     <thead>
                       <tr>
-                        <th>Vendor / Payee</th><th>Category</th><th>Associated Project</th><th>Date</th><th>Paid Via</th>
+                        <th>Vendor / Payee</th><th>Category</th><th>Associated Project</th><th>Date</th><th>Status</th>
                         <th style={{ textAlign: "right" }}>Amount</th><th>Actions</th>
                       </tr>
                     </thead>
@@ -1384,15 +1464,185 @@ export default function App() {
                           <td><span className="badge-mini">{exp.category}</span></td>
                           <td>{exp.projectId ? (projects.find(p => p.id === exp.projectId)?.name || "—") : <span style={{ color: "var(--ink-muted)" }}>—</span>}</td>
                           <td className="mono">{fmtDate(exp.date)}</td>
-                          <td>{exp.paidVia}</td>
+                          <td>
+                            {exp.status === "unpaid" ? (
+                              <span style={{ color: "#D97706", fontWeight: 700, fontSize: 13 }}>UNPAID (AP)</span>
+                            ) : (
+                              <span style={{ color: "#059669", fontWeight: 700, fontSize: 13 }}>PAID {exp.paidVia ? `via ${exp.paidVia}` : ""}</span>
+                            )}
+                          </td>
                           <td className="mono" style={{ textAlign: "right", color: "var(--rose)", fontWeight: 600 }}>{pkr(exp.amount)}</td>
                           <td>
-                            <button className="btn" style={{ padding: "4px 6px", fontSize: 12 }} onClick={() => setEditingExpense(exp)}>
-                              <Edit size={13} />
-                            </button>
+                            <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                              {exp.status === "unpaid" && (
+                                <button className="btn btn-primary" style={{ padding: "4px 8px", fontSize: 12 }} onClick={() => setPayingExpenseId(exp.id)}>
+                                  <Landmark size={13} style={{ marginRight: 4 }} /> Pay
+                                </button>
+                              )}
+                              <button className="btn" style={{ padding: "4px 6px", fontSize: 12 }} onClick={() => setEditingExpense(exp)}>
+                                <Edit size={13} />
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </>
+          )}
+
+          {tab === "purchase-orders" && (
+            <>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                <div className="section-title" style={{ margin: 0 }}>Purchase Orders (PO)</div>
+                <button className="btn btn-primary" onClick={() => setShowPOForm(true)}><Plus size={14} /> Create PO</button>
+              </div>
+
+              <div className="stats-grid" style={{ marginBottom: 20 }}>
+                <div className="stat-card">
+                  <div className="stat-title">Open POs (Draft/Approved)</div>
+                  <div className="stat-value">{purchaseOrders.filter(p => p.status === "Draft" || p.status === "Approved").length}</div>
+                </div>
+                <div className="stat-card">
+                  <div className="stat-title">Billed / Unpaid POs</div>
+                  <div className="stat-value">{purchaseOrders.filter(p => p.status === "Billed").length}</div>
+                </div>
+                <div className="stat-card">
+                  <div className="stat-title">Accounts Payable (AP)</div>
+                  <div className="stat-value mono">{pkr(Object.values(journal).filter(j => j.account === "ap").reduce((s, j) => s + j.credit - j.debit, 0))}</div>
+                </div>
+                <div className="stat-card">
+                  <div className="stat-title">Total PO Value</div>
+                  <div className="stat-value mono">{pkr(purchaseOrders.reduce((s, p) => s + p.amount, 0))}</div>
+                </div>
+              </div>
+
+              <div className="card">
+                <div className="table-responsive">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>PO #</th><th>Vendor</th><th>Associated Project</th><th>Expected By</th><th>Status</th>
+                        <th style={{ textAlign: "right" }}>Amount</th><th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {purchaseOrders.map(po => (
+                        <tr key={po.id}>
+                          <td className="mono" style={{ fontWeight: 700 }}>PO-{po.id.slice(0,4).toUpperCase()}</td>
+                          <td style={{ fontWeight: 600 }}>{po.vendor}</td>
+                          <td>{po.projectId ? (projects.find(p => p.id === po.projectId)?.name || "—") : <span style={{ color: "var(--ink-muted)" }}>—</span>}</td>
+                          <td className="mono">{fmtDate(po.expectedDate)}</td>
+                          <td>
+                            <span className="badge-mini" style={{ 
+                              background: po.status === "Draft" ? "#F1F5F9" : po.status === "Approved" ? "#DBEAFE" : po.status === "Billed" ? "#FEF3C7" : po.status === "Paid" ? "#D1FAE5" : "#FEE2E2",
+                              color: po.status === "Draft" ? "#475569" : po.status === "Approved" ? "#1E40AF" : po.status === "Billed" ? "#92400E" : po.status === "Paid" ? "#065F46" : "#991B1B"
+                             }}>{po.status.toUpperCase()}</span>
+                          </td>
+                          <td className="mono" style={{ textAlign: "right", color: "var(--rose)", fontWeight: 600 }}>{pkr(po.amount)}</td>
+                          <td>
+                            <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                              {po.status === "Draft" && (
+                                <>
+                                  <button className="btn" style={{ padding: "4px 8px", fontSize: 12 }} onClick={() => setPOStatus(po.id, "Approved")}>Approve</button>
+                                  <button className="btn" style={{ padding: "4px 8px", fontSize: 12, color: "#DC2626" }} onClick={() => setPOStatus(po.id, "Cancelled")}>Cancel</button>
+                                </>
+                              )}
+                              {po.status === "Approved" && (
+                                <button className="btn btn-primary" style={{ padding: "4px 8px", fontSize: 12 }} onClick={() => receiveAndBillPO(po.id)}>Receive & Bill</button>
+                              )}
+                              {po.status === "Billed" && (
+                                <button className="btn btn-primary" style={{ padding: "4px 8px", fontSize: 12, background: "#059669", border: "none" }} onClick={() => setPayingPOId(po.id)}><Landmark size={13} style={{ marginRight: 4 }} /> Pay</button>
+                              )}
+                              {po.status === "Draft" && (
+                                <button className="btn" style={{ padding: "4px 6px", fontSize: 12 }} onClick={() => setEditingPO(po)}>
+                                  <Edit size={13} />
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                      {purchaseOrders.length === 0 && (
+                        <tr><td colSpan={7} style={{ textAlign: "center", color: "var(--ink-muted)", padding: 20 }}>No Purchase Orders found. Create one to get started.</td></tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </>
+          )}
+
+          {tab === "cash-bank" && (
+            <>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                <div className="section-title" style={{ margin: 0 }}>Cash & Bank Ledgers</div>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <button className="btn" onClick={() => { setVoucherDefaultType("PV"); setShowVoucherForm(true); }}>Payment Voucher</button>
+                  <button className="btn" onClick={() => { setVoucherDefaultType("RV"); setShowVoucherForm(true); }}>Receipt Voucher</button>
+                </div>
+              </div>
+
+              <div className="card" style={{ padding: "12px 16px", marginBottom: 16, display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
+                <div className="field" style={{ margin: 0, flex: 1, minWidth: 200 }}>
+                  <label>Filter Ledger</label>
+                  <select value={cashBankFilter} onChange={e => setCashBankFilter(e.target.value)}>
+                    <option value="all">All Cash & Bank Transactions</option>
+                    <option value="cash">Petty Cash Only</option>
+                    <option value="bank">Bank Account Only</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="stats-grid" style={{ marginBottom: 20 }}>
+                <div className="stat-card">
+                  <div className="stat-title">Petty Cash Balance</div>
+                  <div className="stat-value mono">{pkr(Object.values(journal).filter(j => j.account === "cash").reduce((s, j) => s + j.debit - j.credit, 0))}</div>
+                </div>
+                <div className="stat-card">
+                  <div className="stat-title">Bank Balance</div>
+                  <div className="stat-value mono">{pkr(Object.values(journal).filter(j => j.account === "bank").reduce((s, j) => s + j.debit - j.credit, 0))}</div>
+                </div>
+                <div className="stat-card" style={{ background: "var(--surface)", border: "1px solid var(--border)", boxShadow: "none" }}>
+                  <div className="stat-title">Combined Liquidity</div>
+                  <div className="stat-value mono">{pkr(Object.values(journal).filter(j => j.account === "cash" || j.account === "bank").reduce((s, j) => s + j.debit - j.credit, 0))}</div>
+                </div>
+              </div>
+
+              <div className="card">
+                <div className="table-responsive">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Date</th><th>Ref No</th><th>Account</th><th>Description</th>
+                        <th style={{ textAlign: "right", color: "var(--emerald)" }}>In (Debit)</th>
+                        <th style={{ textAlign: "right", color: "var(--rose)" }}>Out (Credit)</th>
+                        <th style={{ textAlign: "right" }}>Running Balance</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {(() => {
+                        const entries = Object.values(journal)
+                          .filter(j => (cashBankFilter === "all" ? (j.account === "cash" || j.account === "bank") : j.account === cashBankFilter))
+                          .sort((a, b) => new Date(a.date) - new Date(b.date));
+                        let balance = 0;
+                        return entries.map((entry, i) => {
+                          balance += (entry.debit - entry.credit);
+                          return (
+                            <tr key={i}>
+                              <td className="mono">{fmtDate(entry.date)}</td>
+                              <td className="mono">{entry.ref}</td>
+                              <td><span className="badge-mini">{entry.account === "cash" ? "Cash" : "Bank"}</span></td>
+                              <td>{entry.memo || entry.description}</td>
+                              <td className="mono" style={{ textAlign: "right", color: "var(--emerald)" }}>{entry.debit > 0 ? pkr(entry.debit) : ""}</td>
+                              <td className="mono" style={{ textAlign: "right", color: "var(--rose)" }}>{entry.credit > 0 ? pkr(entry.credit) : ""}</td>
+                              <td className="mono" style={{ textAlign: "right", fontWeight: 700 }}>{pkr(balance)}</td>
+                            </tr>
+                          );
+                        });
+                      })()}
                     </tbody>
                   </table>
                 </div>
@@ -1953,6 +2203,11 @@ export default function App() {
 
       {showExpenseForm && <ExpenseModal onClose={() => setShowExpenseForm(false)} onSubmit={addExpense} />}
       {editingExpense && <ExpenseModal initialData={editingExpense} onClose={() => setEditingExpense(null)} onSubmit={updateExpense} />}
+      {payingExpenseId && <PayExpenseModal expense={expenses.find(e => e.id === payingExpenseId)} onClose={() => setPayingExpenseId(null)} onSubmit={(id, via, date) => { payExpense(id, via, date); setPayingExpenseId(null); }} />}
+
+      {showPOForm && <POModal projects={projects} onClose={() => setShowPOForm(false)} onSubmit={addPO} />}
+      {editingPO && <POModal initialData={editingPO} projects={projects} onClose={() => setEditingPO(null)} onSubmit={updatePO} />}
+      {payingPOId && <PayPOModal po={purchaseOrders.find(p => p.id === payingPOId)} onClose={() => setPayingPOId(null)} onSubmit={(id, via, date) => { payPO(id, via, date); setPayingPOId(null); }} />}
 
       {showVoucherForm && <VoucherModal defaultType={voucherDefaultType} onClose={() => setShowVoucherForm(false)} onSubmit={createVoucher} />}
       
@@ -2484,6 +2739,7 @@ function ExpenseModal({ initialData, onClose, onSubmit }) {
   const [category, setCategory] = useState(initialData?.category || EXPENSE_CATEGORIES[0]);
   const [amount, setAmount] = useState(initialData?.amount || "");
   const [date, setDate] = useState(initialData?.date || "2026-07-21");
+  const [status, setStatus] = useState(initialData?.status || "paid");
   const [paidVia, setPaidVia] = useState(initialData?.paidVia || "Bank");
   const valid = vendor && Number(amount) > 0;
   return (
@@ -2497,15 +2753,107 @@ function ExpenseModal({ initialData, onClose, onSubmit }) {
       <div className="field"><label>Amount (PKR)</label><input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="0" /></div>
       <div style={{ display: "flex", gap: 10 }}>
         <div className="field" style={{ flex: 1 }}><label>Date</label><input type="date" value={date} onChange={e => setDate(e.target.value)} /></div>
-        <div className="field" style={{ flex: 1 }}><label>Paid Via</label>
+        <div className="field" style={{ flex: 1 }}><label>Status</label>
+          <select value={status} onChange={e => {
+            setStatus(e.target.value);
+            if (e.target.value === "unpaid") setPaidVia(null);
+            else if (!paidVia) setPaidVia("Bank");
+          }}>
+            <option value="paid">Paid</option>
+            <option value="unpaid">Unpaid (Accounts Payable)</option>
+          </select>
+        </div>
+        {status === "paid" && (
+          <div className="field" style={{ flex: 1 }}><label>Paid Via</label>
+            <select value={paidVia} onChange={e => setPaidVia(e.target.value)}>
+              <option>Bank</option><option>Cash</option>
+            </select>
+          </div>
+        )}
+      </div>
+      <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 6 }} disabled={!valid}
+        onClick={() => valid && onSubmit(initialData ? { ...initialData, vendor, category, amount: Number(amount), date, status, paidVia: status === "paid" ? paidVia : null } : { vendor, category, amount: Number(amount), date, status, paidVia: status === "paid" ? paidVia : null })}>
+        {initialData ? "Save Expense Changes" : "Post Expense Entry"}
+      </button>
+    </ModalShell>
+  );
+}
+
+function PayExpenseModal({ expense, onClose, onSubmit }) {
+  const [date, setDate] = useState("2026-07-21");
+  const [paidVia, setPaidVia] = useState("Bank");
+  return (
+    <ModalShell title="Pay Accounts Payable" onClose={onClose}>
+      <div style={{ marginBottom: 16, fontSize: 14, color: "var(--ink-muted)" }}>
+        Paying vendor <strong>{expense.vendor}</strong> for amount <strong>{pkr(expense.amount)}</strong>.
+      </div>
+      <div style={{ display: "flex", gap: 10 }}>
+        <div className="field" style={{ flex: 1 }}><label>Payment Date</label><input type="date" value={date} onChange={e => setDate(e.target.value)} /></div>
+        <div className="field" style={{ flex: 1 }}><label>Pay Via</label>
           <select value={paidVia} onChange={e => setPaidVia(e.target.value)}>
             <option>Bank</option><option>Cash</option>
           </select>
         </div>
       </div>
+      <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 6 }}
+        onClick={() => onSubmit(expense.id, paidVia, date)}>
+        Post Payment & Clear AP
+      </button>
+    </ModalShell>
+  );
+}
+
+function POModal({ initialData, projects, onClose, onSubmit }) {
+  const [vendor, setVendor] = useState(initialData?.vendor || "");
+  const [projectId, setProjectId] = useState(initialData?.projectId || "");
+  const [description, setDescription] = useState(initialData?.description || "");
+  const [amount, setAmount] = useState(initialData?.amount || "");
+  const [issueDate, setIssueDate] = useState(initialData?.issueDate || "2026-07-21");
+  const [expectedDate, setExpectedDate] = useState(initialData?.expectedDate || "2026-07-28");
+  
+  const valid = vendor && description && Number(amount) > 0;
+  return (
+    <ModalShell title={initialData ? "Edit Purchase Order" : "Create Purchase Order"} onClose={onClose}>
+      <div className="field"><label>Vendor / Supplier Name</label><input value={vendor} onChange={e => setVendor(e.target.value)} placeholder="e.g. Printer ABC" /></div>
+      <div className="field"><label>Link to Project (Optional)</label>
+        <select value={projectId} onChange={e => setProjectId(e.target.value)}>
+          <option value="">-- No Project --</option>
+          {projects.map(p => <option key={p.id} value={p.id}>{p.name} ({p.client})</option>)}
+        </select>
+      </div>
+      <div className="field"><label>Description / Particulars</label><input value={description} onChange={e => setDescription(e.target.value)} placeholder="e.g. Printing of 5000 flyers" /></div>
+      <div className="field"><label>Amount (PKR)</label><input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="0" /></div>
+      <div style={{ display: "flex", gap: 10 }}>
+        <div className="field" style={{ flex: 1 }}><label>Issue Date</label><input type="date" value={issueDate} onChange={e => setIssueDate(e.target.value)} /></div>
+        <div className="field" style={{ flex: 1 }}><label>Expected Delivery</label><input type="date" value={expectedDate} onChange={e => setExpectedDate(e.target.value)} /></div>
+      </div>
       <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 6 }} disabled={!valid}
-        onClick={() => valid && onSubmit(initialData ? { ...initialData, vendor, category, amount: Number(amount), date, paidVia } : { vendor, category, amount: Number(amount), date, paidVia })}>
-        {initialData ? "Save Expense Changes" : "Post Expense Entry"}
+        onClick={() => valid && onSubmit(initialData ? { ...initialData, vendor, projectId, description, amount: Number(amount), issueDate, expectedDate } : { vendor, projectId, description, amount: Number(amount), issueDate, expectedDate, status: "Draft" })}>
+        {initialData ? "Save PO" : "Create PO"}
+      </button>
+    </ModalShell>
+  );
+}
+
+function PayPOModal({ po, onClose, onSubmit }) {
+  const [date, setDate] = useState("2026-07-21");
+  const [paidVia, setPaidVia] = useState("Bank");
+  return (
+    <ModalShell title="Pay Purchase Order" onClose={onClose}>
+      <div style={{ marginBottom: 16, fontSize: 14, color: "var(--ink-muted)" }}>
+        Paying vendor <strong>{po.vendor}</strong> for amount <strong>{pkr(po.amount)}</strong>.
+      </div>
+      <div style={{ display: "flex", gap: 10 }}>
+        <div className="field" style={{ flex: 1 }}><label>Payment Date</label><input type="date" value={date} onChange={e => setDate(e.target.value)} /></div>
+        <div className="field" style={{ flex: 1 }}><label>Pay Via</label>
+          <select value={paidVia} onChange={e => setPaidVia(e.target.value)}>
+            <option>Bank</option><option>Cash</option>
+          </select>
+        </div>
+      </div>
+      <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 6 }}
+        onClick={() => onSubmit(po.id, paidVia, date)}>
+        Post Payment & Clear AP
       </button>
     </ModalShell>
   );
