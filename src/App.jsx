@@ -3130,7 +3130,7 @@ function PrintPreviewModal({ doc, onClose }) {
               <img src="./logo.png" alt="AdPulse Logo" style={{ maxHeight: 52, width: "auto" }} onError={(e) => { e.target.style.display = 'none'; }} />
               <div>
                 <div style={{ fontSize: 22, fontWeight: 800, color: "#0F172A", letterSpacing: "-0.3px" }}>AdPulse IMC PVT LTD</div>
-                <div style={{ fontSize: 12, color: "#475569", fontWeight: "sans-serif" }}>Integrated Media &amp; Creative Services &middot; Karachi, Pakistan</div>
+                <div style={{ fontSize: 12, color: "#475569", fontWeight: "sans-serif" }}></div>
               </div>
             </div>
             <div style={{ textAlign: "right" }}>
@@ -3220,7 +3220,7 @@ function ClientStatementPrintModal({ clientName, invoices, projects, onClose }) 
               <img src="./logo.png" alt="AdPulse Logo" style={{ maxHeight: 52, width: "auto" }} onError={(e) => { e.target.style.display = 'none'; }} />
               <div>
                 <div style={{ fontSize: 22, fontWeight: 800, color: "#0F172A", letterSpacing: "-0.3px" }}>AdPulse IMC PVT LTD</div>
-                <div style={{ fontSize: 12, color: "#475569", fontWeight: "sans-serif" }}>Integrated Media &amp; Creative Services &middot; Karachi, Pakistan</div>
+                <div style={{ fontSize: 12, color: "#475569", fontWeight: "sans-serif" }}></div>
               </div>
             </div>
             <div style={{ textAlign: "right" }}>
@@ -3328,7 +3328,7 @@ function ProjectStatementPrintModal({ project, invoices, expenses, onClose }) {
               <img src="./logo.png" alt="AdPulse Logo" style={{ maxHeight: 52, width: "auto" }} onError={(e) => { e.target.style.display = 'none'; }} />
               <div>
                 <div style={{ fontSize: 22, fontWeight: 800, color: "#0F172A", letterSpacing: "-0.3px" }}>AdPulse IMC PVT LTD</div>
-                <div style={{ fontSize: 12, color: "#475569", fontWeight: "sans-serif" }}>Integrated Media &amp; Creative Services &middot; Karachi, Pakistan</div>
+                <div style={{ fontSize: 12, color: "#475569", fontWeight: "sans-serif" }}></div>
               </div>
             </div>
             <div style={{ textAlign: "right" }}>
