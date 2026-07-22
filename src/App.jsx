@@ -282,13 +282,13 @@ function buildInitialJournal(invoices, expenses) {
 
 function seedProjects() {
   return [
-    { id: uid(), client: "Kinza Beverages", type: "TVC Production", name: "Summer Refresh TVC", description: "30-sec TV commercial: script, shoot & post-production edit", startDate: "2026-06-10", endDate: "2026-07-15", status: "Completed" },
-    { id: uid(), client: "Prime Estate Enterprises", type: "Events", name: "Project Launch Event", description: "Site launch event management & stage production", startDate: "2026-07-01", endDate: "2026-07-05", status: "Completed" },
-    { id: uid(), client: "Imtiaz Retail", type: "OOH Advertising", name: "Ramzan Drive Billboards", description: "City-wide hoarding & billboard campaign — multiple prime sites", startDate: "2026-07-01", endDate: "2026-08-31", status: "Ongoing" },
-    { id: uid(), client: "Prime Estate Enterprises", type: "OOH Advertising", name: "Launch Campaign Billboards", description: "Site-launch hoarding campaign around II Chundrigar", startDate: "2026-07-05", endDate: "2026-09-05", status: "Ongoing" },
-    { id: uid(), client: "North Town Residency", type: "Digital Marketing", name: "Commercial Units Digital Push", description: "FB/Insta lead generation campaign & ad management", startDate: "2026-07-15", endDate: "2026-08-15", status: "Ongoing" },
-    { id: uid(), client: "Magnitude", type: "BTL Marketing", name: "Retail Activation Drive", description: "In-store BTL brand activation & promotional sampling", startDate: "2026-06-20", endDate: "2026-07-10", status: "Completed" },
-    { id: uid(), client: "Kinza Beverages", type: "Print Media", name: "Newspaper Insert Campaign", description: "Print ad insertions - Dawn & Jang Sunday editions", startDate: "2026-07-05", endDate: "2026-07-25", status: "Planning" },
+    { id: uid(), projectCode: "PRJ-001", client: "Kinza Beverages", type: "TVC Production", name: "Summer Refresh TVC", description: "30-sec TV commercial: script, shoot & post-production edit", startDate: "2026-06-10", endDate: "2026-07-15", status: "Completed" },
+    { id: uid(), projectCode: "PRJ-002", client: "Prime Estate Enterprises", type: "Events", name: "Project Launch Event", description: "Site launch event management & stage production", startDate: "2026-07-01", endDate: "2026-07-05", status: "Completed" },
+    { id: uid(), projectCode: "PRJ-003", client: "Imtiaz Retail", type: "OOH Advertising", name: "Ramzan Drive Billboards", description: "City-wide hoarding & billboard campaign — multiple prime sites", startDate: "2026-07-01", endDate: "2026-08-31", status: "Ongoing" },
+    { id: uid(), projectCode: "PRJ-004", client: "Prime Estate Enterprises", type: "OOH Advertising", name: "Launch Campaign Billboards", description: "Site-launch hoarding campaign around II Chundrigar", startDate: "2026-07-05", endDate: "2026-09-05", status: "Ongoing" },
+    { id: uid(), projectCode: "PRJ-005", client: "North Town Residency", type: "Digital Marketing", name: "Commercial Units Digital Push", description: "FB/Insta lead generation campaign & ad management", startDate: "2026-07-15", endDate: "2026-08-15", status: "Ongoing" },
+    { id: uid(), projectCode: "PRJ-006", client: "Magnitude", type: "BTL Marketing", name: "Retail Activation Drive", description: "In-store BTL brand activation & promotional sampling", startDate: "2026-06-20", endDate: "2026-07-10", status: "Completed" },
+    { id: uid(), projectCode: "PRJ-007", client: "Kinza Beverages", type: "Print Media", name: "Newspaper Insert Campaign", description: "Print ad insertions - Dawn & Jang Sunday editions", startDate: "2026-07-05", endDate: "2026-07-25", status: "Planning" },
   ];
 }
 
@@ -954,9 +954,42 @@ export default function App() {
       : h));
   }
 
-  function createProject({ client, type, name, description, startDate, endDate }) {
-    const proj = { id: uid(), client, type, name, description, startDate, endDate, status: "Planning" };
+  function createProject({ client, type, name, description, startDate, endDate, oohSites }) {
+    const nextNum = projects.length > 0 ? Math.max(...projects.map(p => parseInt((p.projectCode || "PRJ-000").split("-")[1] || 0))) + 1 : 1;
+    const projectCode = "PRJ-" + String(nextNum).padStart(3, '0');
+    const proj = { id: uid(), projectCode, client, type, name, description, startDate, endDate, status: "Planning" };
     setProjects(list => [proj, ...list]);
+    
+    if (type === "ooh" && oohSites && oohSites.length > 0) {
+      const newHoardings = [];
+      const newInvoices = [];
+      oohSites.forEach(site => {
+        if (site.name && site.area) {
+          const price = Number(site.pricePerMonth) || 0;
+          const h = {
+            id: uid(), name: site.name, area: site.area, size: site.size, pricePerMonth: price,
+            status: "Booked", client: proj.client, project: proj.name, projectId: proj.id,
+            bookedFrom: proj.startDate, bookedTo: proj.endDate
+          };
+          newHoardings.push(h);
+          if (price > 0) {
+            newInvoices.push({
+              id: uid(), client: proj.client, description: `OOH Advertising — ${proj.name}: ${h.name} rental`,
+              amount: price, applySst: true, sstAmount: price * 0.15, totalAmount: price * 1.15, 
+              issueDate: proj.startDate, dueDate: proj.endDate,
+              paid: false, paidVia: null, projectId: proj.id,
+            });
+          }
+        }
+      });
+      if (newHoardings.length > 0) {
+        setHoardings(list => [...newHoardings, ...list]);
+      }
+      if (newInvoices.length > 0) {
+        setInvoices(list => [...newInvoices, ...list]);
+      }
+    }
+
     setShowProjectForm(false);
     setSelectedProjectId(proj.id);
     return proj;
@@ -1348,7 +1381,10 @@ export default function App() {
                         .filter(p => !projectFilters.client || p.client.toLowerCase().includes(projectFilters.client.toLowerCase()) || p.name.toLowerCase().includes(projectFilters.client.toLowerCase()))
                         .map(p => (
                           <tr key={p.id}>
-                            <td style={{ fontWeight: 600, color: "var(--ink)" }}>{p.name}</td>
+                            <td style={{ fontWeight: 600, color: "var(--ink)" }}>
+                              <div style={{ fontSize: 11, color: "var(--ink-light)", fontWeight: 500 }}>{p.projectCode}</div>
+                              <div>{p.name}</div>
+                            </td>
                             <td style={{ color: "var(--ink-muted)" }}>{p.client}</td>
                             <td><ProjectTypeBadge type={p.type} /></td>
                             <td className="mono" style={{ fontSize: 12.5 }}>{fmtDate(p.startDate)} – {fmtDate(p.endDate)}</td>
@@ -1430,7 +1466,7 @@ export default function App() {
                               <Edit size={13} />
                             </button>
                             <button className="btn" style={{ padding: "4px 7px", fontSize: 12 }}
-                              onClick={() => setPrintDoc({ voucherNo: "INV-" + inv.id.toUpperCase(), type: "Invoice", date: inv.issueDate, party: inv.client, description: inv.description, amount: inv.amount, applySst: inv.applySst, sstRate: inv.sstRate, sstAmount: inv.sstAmount, applyWht: inv.applyWht, whtRate: inv.whtRate, whtAmount: inv.whtAmount, totalAmount: inv.totalAmount || inv.amount })}>
+                              onClick={() => setPrintDoc({ voucherNo: "INV-" + inv.id.toUpperCase(), type: "Invoice", date: inv.issueDate, party: inv.client, description: inv.description, amount: inv.amount, applySst: inv.applySst, sstRate: inv.sstRate, sstAmount: inv.sstAmount, applyWht: inv.applyWht, whtRate: inv.whtRate, whtAmount: inv.whtAmount, totalAmount: inv.totalAmount || inv.amount, projectCode: projects.find(p => p.id === inv.projectId)?.projectCode })}>
                               <Printer size={13} />
                             </button>
                           </td>
@@ -3106,7 +3142,20 @@ function ProjectModal({ initialData, onClose, onSubmit }) {
   const [description, setDescription] = useState(initialData?.description || "");
   const [startDate, setStartDate] = useState(initialData?.startDate || "2026-07-21");
   const [endDate, setEndDate] = useState(initialData?.endDate || "2026-08-05");
-  const valid = client && name && startDate && endDate;
+  
+  // OOH specific state
+  const [oohSites, setOohSites] = useState([{ name: "", area: "", size: "", pricePerMonth: "" }]);
+
+  const addOohSite = () => setOohSites([...oohSites, { name: "", area: "", size: "", pricePerMonth: "" }]);
+  const updateOohSite = (index, field, value) => {
+    const updated = [...oohSites];
+    updated[index][field] = value;
+    setOohSites(updated);
+  };
+  const removeOohSite = (index) => setOohSites(oohSites.filter((_, i) => i !== index));
+
+  const valid = client && name && startDate && endDate && (type !== "ooh" || oohSites.every(s => s.name && s.area));
+
   return (
     <ModalShell title={initialData ? "Edit Project Details" : "Create New Agency Project"} onClose={onClose}>
       <div className="field"><label>Client Name</label><input value={client} onChange={e => setClient(e.target.value)} placeholder="e.g. Imtiaz Retail" /></div>
@@ -3117,12 +3166,45 @@ function ProjectModal({ initialData, onClose, onSubmit }) {
       </div>
       <div className="field"><label>Project Title</label><input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Q3 Brand Campaign" /></div>
       <div className="field"><label>Scope Note</label><input value={description} onChange={e => setDescription(e.target.value)} placeholder="Brief summary of creative scope" /></div>
+      
+      {type === "ooh" && !initialData && (
+        <div style={{ background: "#F8FAFC", padding: 12, borderRadius: 8, marginBottom: 12, border: "1px solid #E2E8F0" }}>
+          <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 8, color: "#1E293B" }}>Outdoor Advertising Sites</div>
+          {oohSites.map((site, idx) => (
+            <div key={idx} style={{ display: "flex", gap: 8, marginBottom: 8, alignItems: "flex-end" }}>
+              <div className="field" style={{ flex: 2, margin: 0 }}>
+                <label style={{ fontSize: 11 }}>Location/Site Name</label>
+                <input style={{ padding: "4px 8px", fontSize: 12 }} value={site.name} onChange={e => updateOohSite(idx, "name", e.target.value)} placeholder="e.g. Tariq Road Junction" />
+              </div>
+              <div className="field" style={{ flex: 1.5, margin: 0 }}>
+                <label style={{ fontSize: 11 }}>Area</label>
+                <input style={{ padding: "4px 8px", fontSize: 12 }} value={site.area} onChange={e => updateOohSite(idx, "area", e.target.value)} placeholder="e.g. Tariq Road" />
+              </div>
+              <div className="field" style={{ flex: 1, margin: 0 }}>
+                <label style={{ fontSize: 11 }}>Size</label>
+                <input style={{ padding: "4px 8px", fontSize: 12 }} value={site.size} onChange={e => updateOohSite(idx, "size", e.target.value)} placeholder="40x20" />
+              </div>
+              <div className="field" style={{ flex: 1.5, margin: 0 }}>
+                <label style={{ fontSize: 11 }}>Monthly Rate</label>
+                <input type="number" style={{ padding: "4px 8px", fontSize: 12 }} value={site.pricePerMonth} onChange={e => updateOohSite(idx, "pricePerMonth", e.target.value)} placeholder="0" />
+              </div>
+              {oohSites.length > 1 && (
+                <button className="btn" style={{ padding: "4px 8px", color: "var(--rose)", borderColor: "#FCA5A5" }} onClick={() => removeOohSite(idx)}>
+                  <Trash size={14} />
+                </button>
+              )}
+            </div>
+          ))}
+          <button className="btn" style={{ fontSize: 12, padding: "4px 8px" }} onClick={addOohSite}><Plus size={14} /> Add Another Site</button>
+        </div>
+      )}
+
       <div style={{ display: "flex", gap: 10 }}>
         <div className="field" style={{ flex: 1 }}><label>Start Date</label><input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} /></div>
         <div className="field" style={{ flex: 1 }}><label>End Date</label><input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} /></div>
       </div>
       <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 6 }} disabled={!valid}
-        onClick={() => valid && onSubmit(initialData ? { ...initialData, client, type, name, description, startDate, endDate } : { client, type, name, description, startDate, endDate })}>
+        onClick={() => valid && onSubmit(initialData ? { ...initialData, client, type, name, description, startDate, endDate } : { client, type, name, description, startDate, endDate, oohSites })}>
         {initialData ? "Save Project Changes" : "Initialize Project"}
       </button>
     </ModalShell>
@@ -3492,6 +3574,7 @@ function PrintPreviewModal({ doc, onClose }) {
             <tbody>
               <tr><td style={{ padding: "4px 0", color: "#475569", width: 130 }}>Date</td><td className="mono">{fmtDate(doc.date)}</td></tr>
               <tr><td style={{ padding: "4px 0", color: "#475569" }}>Party / Client</td><td style={{ fontWeight: 700 }}>{doc.party || "—"}</td></tr>
+              {doc.projectCode && <tr><td style={{ padding: "4px 0", color: "#475569" }}>Project Code</td><td className="mono" style={{ fontWeight: 700 }}>{doc.projectCode}</td></tr>}
               <tr><td style={{ padding: "4px 0", color: "#475569" }}>Particulars</td><td>{doc.description}</td></tr>
             </tbody>
           </table>
@@ -3683,7 +3766,7 @@ function ProjectStatementPrintModal({ project, invoices, expenses, onClose }) {
             </div>
             <div style={{ textAlign: "right" }}>
               <div style={{ fontSize: 15, fontWeight: 800, color: "#B8860B", textTransform: "uppercase" }}>PROJECT STATEMENT</div>
-              <div className="mono" style={{ fontSize: 13, fontWeight: 700, color: "#0F172A" }}>PROJ-{project.name.replace(/\s+/g, "").toUpperCase().slice(0, 6)}</div>
+              <div className="mono" style={{ fontSize: 13, fontWeight: 700, color: "#0F172A" }}>{project.projectCode || `PROJ-${project.name.replace(/\s+/g, "").toUpperCase().slice(0, 6)}`}</div>
             </div>
           </div>
 
