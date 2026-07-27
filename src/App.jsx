@@ -7,7 +7,8 @@ import {
   Briefcase, Video, PartyPopper, Megaphone, Users, Newspaper,
   ChevronRight, Coins, Menu, UserPlus, UserCheck, UserX, CalendarCheck,
   CalendarX, Banknote, Contact, Phone, Mail, Edit, Trash2, Settings,
-  Lock, KeyRound, ShieldCheck, LogOut, User, Check, Eye, EyeOff
+  Lock, KeyRound, ShieldCheck, LogOut, User, Check, Eye, EyeOff,
+  Package, Boxes, ArrowUpRight, ArrowDownLeft, Layers, SlidersHorizontal, AlertTriangle
 } from "lucide-react";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -119,6 +120,14 @@ function projectTypeMeta(key) {
   return PROJECT_TYPES.find(t => t.key === key) || PROJECT_TYPES[0];
 }
 
+const INVENTORY_CATEGORIES = [
+  "Printing & Vinyl",
+  "Production Equipment",
+  "Event & BTL Merchandise",
+  "OOH & Hardware Assets",
+  "Office & Admin Supplies"
+];
+
 const ALL_MODULE_TABS = [
   { key: "dashboard", label: "Dashboard" },
   { key: "projects", label: "Projects" },
@@ -127,6 +136,7 @@ const ALL_MODULE_TABS = [
   { key: "expenses", label: "Expenses" },
   { key: "cash-bank", label: "Cash & Bank" },
   { key: "ooh", label: "OOH Advertising" },
+  { key: "inventory", label: "Inventory & Assets" },
   { key: "hr", label: "HR & Payroll" },
   { key: "vouchers", label: "Vouchers" },
   { key: "documents", label: "Documents" },
@@ -201,6 +211,35 @@ function seedHoardings() {
     { id: uid(), name: "North Nazimabad Chowrangi", area: "North Nazimabad", size: "15x30 ft", pricePerMonth: 95000, status: "Maintenance", project: "", client: "" },
     { id: uid(), name: "II Chundrigar Financial Hub", area: "II Chundrigar", size: "25x50 ft", pricePerMonth: 200000, status: "Booked", project: "Launch Campaign", client: "Prime Estate Enterprises", bookedFrom: "2026-07-05", bookedTo: "2026-09-05" },
     { id: uid(), name: "Gulshan-e-Iqbal Flyover", area: "Gulshan-e-Iqbal", size: "12x24 ft", pricePerMonth: 70000, status: "Available", project: "", client: "" },
+  ];
+}
+
+function seedInventoryItems() {
+  return [
+    { id: uid(), sku: "SKU-PRN-001", name: "Frontlit Star Vinyl Roll (10ft x 100ft)", category: "Printing & Vinyl", unit: "Rolls", quantity: 18, minQuantity: 5, unitCost: 18500, warehouse: "Korangi Warehouse A", lastUpdated: "2026-07-20", description: "320gsm premium glossy vinyl roll for outdoor hoardings" },
+    { id: uid(), sku: "SKU-PRN-002", name: "Backlit Flex Banner Film (8ft x 100ft)", category: "Printing & Vinyl", unit: "Rolls", quantity: 4, minQuantity: 5, unitCost: 22000, warehouse: "Korangi Warehouse A", lastUpdated: "2026-07-18", description: "240gsm high-translucency backlit film for illuminated signboards" },
+    { id: uid(), sku: "SKU-PRN-003", name: "Acrylic Sheets Clear (4ft x 8ft x 3mm)", category: "Printing & Vinyl", unit: "Sheets", quantity: 35, minQuantity: 10, unitCost: 4800, warehouse: "Site Area Depot", lastUpdated: "2026-07-15", description: "Clear cast acrylic sheet for indoor & outdoor signage" },
+    { id: uid(), sku: "SKU-EQP-001", name: "Sony FX3 Cinema Camera Body Kit", category: "Production Equipment", unit: "Units", quantity: 3, minQuantity: 1, unitCost: 950000, warehouse: "Studio HQ Vault", lastUpdated: "2026-07-10", description: "4K Full-Frame Cinema Line Camera for TVC shoots" },
+    { id: uid(), sku: "SKU-EQP-002", name: "Aputure LS 600d Pro LED Daylight Light", category: "Production Equipment", unit: "Units", quantity: 5, minQuantity: 2, unitCost: 420000, warehouse: "Studio HQ Vault", lastUpdated: "2026-07-12", description: "600W high-output LED video fixture with Bowens mount" },
+    { id: uid(), sku: "SKU-EQP-003", name: "Sennheiser EW-D Wireless Mic Set", category: "Production Equipment", unit: "Sets", quantity: 2, minQuantity: 2, unitCost: 185000, warehouse: "Studio HQ Vault", lastUpdated: "2026-07-08", description: "Digital wireless handheld & lavalier audio kit" },
+    { id: uid(), sku: "SKU-MER-001", name: "Roll-up Standee Metallic Frame (2ft x 5ft)", category: "Event & BTL Merchandise", unit: "Pcs", quantity: 40, minQuantity: 15, unitCost: 3200, warehouse: "Site Area Depot", lastUpdated: "2026-07-14", description: "Aluminum retractable banner stand mechanism" },
+    { id: uid(), sku: "SKU-MER-002", name: "Branded Promotional Canopy Tent (10ft x 10ft)", category: "Event & BTL Merchandise", unit: "Sets", quantity: 8, minQuantity: 3, unitCost: 35000, warehouse: "Korangi Warehouse B", lastUpdated: "2026-07-11", description: "Waterproof pop-up gazebos for BTL outdoor activations" },
+    { id: uid(), sku: "SKU-OOH-001", name: "200W Waterproof LED Floodlight Fixtures", category: "OOH & Hardware Assets", unit: "Units", quantity: 26, minQuantity: 8, unitCost: 12500, warehouse: "Operations Hub", lastUpdated: "2026-07-19", description: "IP66 outdoor spotlight for night billboard illumination" },
+    { id: uid(), sku: "SKU-OOH-002", name: "Heavy Duty Iron Angle Frames (20ft)", category: "OOH & Hardware Assets", unit: "Pcs", quantity: 15, minQuantity: 5, unitCost: 16500, warehouse: "Operations Hub", lastUpdated: "2026-07-05", description: "Galvanized steel structural support angles" },
+    { id: uid(), sku: "SKU-OFF-001", name: "HP LaserJet Pro Toner Cartridge (85A)", category: "Office & Admin Supplies", unit: "Pcs", quantity: 12, minQuantity: 4, unitCost: 4500, warehouse: "Main Office Supply Room", lastUpdated: "2026-07-01", description: "High-yield black print cartridge for office billing" }
+  ];
+}
+
+function seedInventoryLogs(items) {
+  const findItem = sku => items.find(i => i.sku === sku) || items[0];
+  const vinyl = findItem("SKU-PRN-001");
+  const camera = findItem("SKU-EQP-001");
+  const standee = findItem("SKU-MER-001");
+  return [
+    { id: uid(), itemId: vinyl?.id || "i1", itemName: vinyl?.name || "Vinyl Roll", sku: "SKU-PRN-001", type: "Stock In", quantity: 20, unitCost: 18500, totalCost: 370000, date: "2026-07-01", reference: "PO-001", notes: "Received shipment from Al-Madina Printing Materials" },
+    { id: uid(), itemId: vinyl?.id || "i1", itemName: vinyl?.name || "Vinyl Roll", sku: "SKU-PRN-001", type: "Stock Out", quantity: 2, unitCost: 18500, totalCost: 37000, date: "2026-07-10", reference: "PRJ-002", projectName: "Ramzan Drive Billboards", notes: "Issued for Ramzan Drive hoarding prints" },
+    { id: uid(), itemId: camera?.id || "i2", itemName: camera?.name || "Sony FX3 Camera", sku: "SKU-EQP-001", type: "Stock In", quantity: 3, unitCost: 950000, totalCost: 2850000, date: "2026-07-05", reference: "PO-004", notes: "Procured from Sony Official Distributor Pakistan" },
+    { id: uid(), itemId: standee?.id || "i3", itemName: standee?.name || "Roll-up Standee Frame", sku: "SKU-MER-001", type: "Stock Out", quantity: 10, unitCost: 3200, totalCost: 32000, date: "2026-07-16", reference: "PRJ-004", projectName: "Summer Brand Launch", notes: "Issued for BTL venue setup" },
   ];
 }
 
@@ -347,10 +386,13 @@ function buildInitialData() {
   const leaveRequests = seedLeaveRequests(employees);
   const { run: payrollRun, expense: payrollExpense } = seedPayrollRun(employees);
 
+  const inventoryItems = seedInventoryItems();
+  const inventoryLogs = seedInventoryLogs(inventoryItems);
+
   const invoices = [...seedInvoices(), ...seedProjectInvoices(projects), ...hoardingInvoices];
   const expenses = [...seedExpenses(), ...seedProjectExpenses(projects), payrollExpense];
   const journal = buildInitialJournal(invoices, expenses);
-  return { projects, invoices, expenses, journal, hoardings, employees, leaveRequests, payrollRuns: [payrollRun] };
+  return { projects, invoices, expenses, journal, hoardings, employees, leaveRequests, payrollRuns: [payrollRun], inventoryItems, inventoryLogs };
 }
 
 /* ---------- SMALL UI COMPONENTS ---------- */
@@ -543,6 +585,14 @@ export default function App() {
   const [hoardings, setHoardings] = useState(seedData.hoardings);
   const [showHoardingForm, setShowHoardingForm] = useState(false);
   const [editingHoarding, setEditingHoarding] = useState(null);
+
+  const [inventoryItems, setInventoryItems] = useState(() => seedData.inventoryItems || []);
+  const [inventoryLogs, setInventoryLogs] = useState(() => seedData.inventoryLogs || []);
+  const [showInventoryItemModal, setShowInventoryItemModal] = useState(false);
+  const [editingInventoryItem, setEditingInventoryItem] = useState(null);
+  const [showStockMovementModal, setShowStockMovementModal] = useState(false);
+  const [stockMovementItem, setStockMovementItem] = useState(null);
+  const [inventoryFilters, setInventoryFilters] = useState({ category: "All", status: "All", search: "" });
 
   const [vouchers, setVouchers] = useState([]);
   const [documents, setDocuments] = useState([]);
@@ -1004,6 +1054,79 @@ export default function App() {
     setProjects(list => list.map(p => p.id === projectId ? { ...p, status } : p));
   }
 
+  function createInventoryItem(itemData) {
+    const newItem = {
+      id: uid(),
+      sku: itemData.sku || ("SKU-INV-" + String(inventoryItems.length + 1).padStart(3, '0')),
+      name: itemData.name,
+      category: itemData.category,
+      unit: itemData.unit || "Pcs",
+      quantity: Number(itemData.quantity) || 0,
+      minQuantity: Number(itemData.minQuantity) || 5,
+      unitCost: Number(itemData.unitCost) || 0,
+      warehouse: itemData.warehouse || "Main Store",
+      lastUpdated: TODAY.toISOString().slice(0, 10),
+      description: itemData.description || "",
+    };
+    setInventoryItems(list => [newItem, ...list]);
+    setShowInventoryItemModal(false);
+    
+    if (newItem.quantity > 0) {
+      const log = {
+        id: uid(), itemId: newItem.id, itemName: newItem.name, sku: newItem.sku,
+        type: "Stock In", quantity: newItem.quantity, unitCost: newItem.unitCost,
+        totalCost: newItem.quantity * newItem.unitCost, date: newItem.lastUpdated,
+        reference: "INIT-STOCK", notes: "Initial item opening stock creation"
+      };
+      setInventoryLogs(logs => [log, ...logs]);
+    }
+  }
+
+  function updateInventoryItem(updated) {
+    setInventoryItems(list => list.map(i => i.id === updated.id ? { ...updated, lastUpdated: TODAY.toISOString().slice(0, 10) } : i));
+    setEditingInventoryItem(null);
+  }
+
+  function deleteInventoryItem(item) {
+    if (window.confirm(`Are you sure you want to delete ${item.name} from Inventory?`)) {
+      setInventoryItems(list => list.filter(i => i.id !== item.id));
+    }
+  }
+
+  function recordStockMovement({ itemId, type, quantity, unitCost, reference, projectId, notes }) {
+    const item = inventoryItems.find(i => i.id === itemId);
+    if (!item) return;
+    const qty = Number(quantity) || 0;
+    const cost = Number(unitCost) || item.unitCost;
+    const proj = projects.find(p => p.id === projectId);
+    
+    let newQty = item.quantity;
+    if (type === "Stock In") newQty += qty;
+    else if (type === "Stock Out") newQty = Math.max(0, newQty - qty);
+    else if (type === "Adjustment") newQty = qty;
+
+    setInventoryItems(list => list.map(i => i.id === itemId ? { ...i, quantity: newQty, unitCost: cost, lastUpdated: TODAY.toISOString().slice(0, 10) } : i));
+
+    const log = {
+      id: uid(),
+      itemId: item.id,
+      itemName: item.name,
+      sku: item.sku,
+      type,
+      quantity: qty,
+      unitCost: cost,
+      totalCost: qty * cost,
+      date: TODAY.toISOString().slice(0, 10),
+      reference: reference || (type === "Stock Out" ? (proj?.projectCode || "PROJECT-OUT") : "STOCK-ADJ"),
+      projectId: projectId || null,
+      projectName: proj ? proj.name : null,
+      notes: notes || ""
+    };
+    setInventoryLogs(logs => [log, ...logs]);
+    setShowStockMovementModal(false);
+    setStockMovementItem(null);
+  }
+
   function addProjectBilling(project, { description, amount, issueDate, dueDate }) {
     const inv = {
       id: uid(), client: project.client,
@@ -1186,6 +1309,7 @@ export default function App() {
     { key: "expenses", label: "Expenses", icon: Receipt },
     { key: "cash-bank", label: "Cash & Bank", icon: Landmark },
     { key: "ooh", label: "OOH Advertising", icon: Building2 },
+    { key: "inventory", label: "Inventory & Assets", icon: Package },
     { key: "hr", label: "HR & Payroll", icon: Users },
     { key: "vouchers", label: "Vouchers", icon: ClipboardList },
     { key: "documents", label: "Documents", icon: UploadCloud },
@@ -1776,6 +1900,206 @@ export default function App() {
             </>
           )}
 
+          {tab === "inventory" && (
+            <>
+              {(() => {
+                const totalValue = inventoryItems.reduce((s, i) => s + (i.quantity * i.unitCost), 0);
+                const totalItems = inventoryItems.length;
+                const lowStockCount = inventoryItems.filter(i => i.quantity <= i.minQuantity).length;
+                const totalLogs = inventoryLogs.length;
+
+                const filteredItems = inventoryItems
+                  .filter(i => inventoryFilters.category === "All" || i.category === inventoryFilters.category)
+                  .filter(i => {
+                    if (inventoryFilters.status === "Low Stock") return i.quantity <= i.minQuantity && i.quantity > 0;
+                    if (inventoryFilters.status === "Out of Stock") return i.quantity === 0;
+                    if (inventoryFilters.status === "In Stock") return i.quantity > i.minQuantity;
+                    return true;
+                  })
+                  .filter(i => {
+                    if (!inventoryFilters.search) return true;
+                    const q = inventoryFilters.search.toLowerCase();
+                    return i.name.toLowerCase().includes(q) || i.sku.toLowerCase().includes(q) || i.warehouse.toLowerCase().includes(q);
+                  });
+
+                return (
+                  <>
+                    <div className="grid-kpi">
+                      <KpiCard label="Total Inventory Value" value={pkr(totalValue)} sub="Asset Valuation at Cost" icon={Package} accent="var(--jade)" />
+                      <KpiCard label="Total SKU Items" value={totalItems} sub={`${INVENTORY_CATEGORIES.length} Active Categories`} icon={Boxes} accent="var(--sky)" />
+                      <KpiCard label="Low / Out of Stock" value={lowStockCount} sub="Items Reached Reorder Level" icon={AlertTriangle} accent={lowStockCount > 0 ? "var(--rose)" : "var(--jade)"} />
+                      <KpiCard label="Movement Logs" value={totalLogs} sub="Stock In / Stock Out History" icon={Layers} accent="var(--gold)" />
+                    </div>
+
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, flexWrap: "wrap", gap: 12 }}>
+                      <div className="section-title" style={{ margin: 0 }}><Boxes size={18} color="var(--gold)" /> Item Master & Stock Control</div>
+                      <div style={{ display: "flex", gap: 8 }}>
+                        <button className="btn" onClick={() => { setStockMovementItem(null); setShowStockMovementModal(true); }}>
+                          <ArrowUpRight size={14} color="var(--jade)" /> Stock In / Out
+                        </button>
+                        <button className="btn btn-primary" onClick={() => { setEditingInventoryItem(null); setShowInventoryItemModal(true); }}>
+                          <Plus size={14} /> Add SKU Item
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="card" style={{ padding: "12px 16px", marginBottom: 16, display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
+                      <div className="field" style={{ margin: 0, flex: 1, minWidth: 160 }}>
+                        <label>Category</label>
+                        <select value={inventoryFilters.category} onChange={e => setInventoryFilters(f => ({ ...f, category: e.target.value }))}>
+                          <option>All</option>
+                          {INVENTORY_CATEGORIES.map(c => <option key={c}>{c}</option>)}
+                        </select>
+                      </div>
+                      <div className="field" style={{ margin: 0, flex: 1, minWidth: 130 }}>
+                        <label>Stock Status</label>
+                        <select value={inventoryFilters.status} onChange={e => setInventoryFilters(f => ({ ...f, status: e.target.value }))}>
+                          <option>All</option>
+                          <option>In Stock</option>
+                          <option>Low Stock</option>
+                          <option>Out of Stock</option>
+                        </select>
+                      </div>
+                      <div className="field" style={{ margin: 0, flex: 2, minWidth: 200 }}>
+                        <label>Search SKU / Name / Location</label>
+                        <input value={inventoryFilters.search} onChange={e => setInventoryFilters(f => ({ ...f, search: e.target.value }))} placeholder="Search item, code, or warehouse..." />
+                      </div>
+                    </div>
+
+                    <div className="card" style={{ marginBottom: 24 }}>
+                      <div className="table-responsive">
+                        <table>
+                          <thead>
+                            <tr>
+                              <th>SKU Code</th><th>Item Name & Description</th><th>Category</th>
+                              <th style={{ textAlign: "right" }}>In Stock Qty</th><th style={{ textAlign: "right" }}>Reorder Level</th>
+                              <th style={{ textAlign: "right" }}>Unit Cost</th><th style={{ textAlign: "right" }}>Total Value</th>
+                              <th>Warehouse</th><th>Status</th><th>Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {filteredItems.map(item => {
+                              const isOut = item.quantity === 0;
+                              const isLow = item.quantity <= item.minQuantity && !isOut;
+                              const totalVal = item.quantity * item.unitCost;
+                              return (
+                                <tr key={item.id}>
+                                  <td className="mono" style={{ fontWeight: 700, fontSize: 12.5, color: "var(--gold)" }}>{item.sku}</td>
+                                  <td>
+                                    <div style={{ fontWeight: 600, color: "var(--ink)" }}>{item.name}</div>
+                                    <div style={{ fontSize: 11.5, color: "var(--ink-muted)" }}>{item.description || "—"}</div>
+                                  </td>
+                                  <td><span className="badge-mini">{item.category}</span></td>
+                                  <td className="mono" style={{ textAlign: "right", fontWeight: 700, color: isOut ? "var(--rose)" : isLow ? "var(--amber)" : "var(--ink)" }}>
+                                    {item.quantity} {item.unit}
+                                  </td>
+                                  <td className="mono" style={{ textAlign: "right", color: "var(--ink-muted)", fontSize: 12 }}>
+                                    {item.minQuantity} {item.unit}
+                                  </td>
+                                  <td className="mono" style={{ textAlign: "right" }}>{pkr(item.unitCost)}</td>
+                                  <td className="mono" style={{ textAlign: "right", fontWeight: 600 }}>{pkr(totalVal)}</td>
+                                  <td style={{ fontSize: 12, color: "var(--ink-muted)" }}>{item.warehouse}</td>
+                                  <td>
+                                    {isOut ? (
+                                      <span className="badge-mini" style={{ background: "var(--rose-glow)", color: "var(--rose)", fontWeight: 600 }}>Out of Stock</span>
+                                    ) : isLow ? (
+                                      <span className="badge-mini" style={{ background: "var(--amber-glow)", color: "var(--amber)", fontWeight: 600 }}>Low Stock</span>
+                                    ) : (
+                                      <span className="badge-mini" style={{ background: "var(--jade-glow)", color: "var(--jade)", fontWeight: 600 }}>In Stock</span>
+                                    )}
+                                  </td>
+                                  <td style={{ display: "flex", gap: 4 }}>
+                                    <button className="btn" style={{ padding: "4px 8px", fontSize: 12 }} onClick={() => { setStockMovementItem(item); setShowStockMovementModal(true); }}>
+                                      Movement
+                                    </button>
+                                    <button className="btn" style={{ padding: "4px 6px", fontSize: 12 }} onClick={() => { setEditingInventoryItem(item); setShowInventoryItemModal(true); }} title="Edit Item">
+                                      <Edit size={13} />
+                                    </button>
+                                    <button className="btn" style={{ padding: "4px 6px", fontSize: 12, color: "var(--rose)" }} onClick={() => deleteInventoryItem(item)} title="Delete Item">
+                                      <Trash2 size={13} />
+                                    </button>
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                            {filteredItems.length === 0 && (
+                              <tr>
+                                <td colSpan={10} style={{ textAlign: "center", padding: 20, color: "var(--ink-muted)" }}>
+                                  No inventory items match your current filter criteria.
+                                </td>
+                              </tr>
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+
+                    <div className="card" style={{ padding: 18 }}>
+                      <div className="section-title" style={{ marginBottom: 14 }}>
+                        <ScrollText size={16} color="var(--gold)" /> Stock Movement Audit & Issue Log
+                      </div>
+                      <div className="table-responsive">
+                        <table>
+                          <thead>
+                            <tr>
+                              <th>Date</th><th>SKU & Item</th><th>Type</th>
+                              <th style={{ textAlign: "right" }}>Quantity</th><th style={{ textAlign: "right" }}>Unit Cost</th>
+                              <th style={{ textAlign: "right" }}>Total Cost</th><th>Ref / Project</th><th>Notes / Remarks</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {inventoryLogs.slice(0, 15).map(log => (
+                              <tr key={log.id}>
+                                <td className="mono" style={{ fontSize: 12.5 }}>{fmtDate(log.date)}</td>
+                                <td>
+                                  <span className="mono" style={{ fontWeight: 600, fontSize: 11.5, marginRight: 6, color: "var(--gold)" }}>{log.sku}</span>
+                                  <span>{log.itemName}</span>
+                                </td>
+                                <td>
+                                  {log.type === "Stock In" ? (
+                                    <span className="badge-mini" style={{ background: "var(--jade-glow)", color: "var(--jade)", fontWeight: 600 }}>
+                                      <ArrowDownLeft size={10} style={{ verticalAlign: -1 }} /> Stock In
+                                    </span>
+                                  ) : log.type === "Stock Out" ? (
+                                    <span className="badge-mini" style={{ background: "var(--rose-glow)", color: "var(--rose)", fontWeight: 600 }}>
+                                      <ArrowUpRight size={10} style={{ verticalAlign: -1 }} /> Stock Out
+                                    </span>
+                                  ) : (
+                                    <span className="badge-mini" style={{ background: "var(--sky-glow)", color: "var(--sky)", fontWeight: 600 }}>
+                                      Adjustment
+                                    </span>
+                                  )}
+                                </td>
+                                <td className="mono" style={{ textAlign: "right", fontWeight: 600 }}>{log.quantity}</td>
+                                <td className="mono" style={{ textAlign: "right" }}>{pkr(log.unitCost)}</td>
+                                <td className="mono" style={{ textAlign: "right", fontWeight: 600 }}>{pkr(log.totalCost)}</td>
+                                <td style={{ fontSize: 12.5 }}>
+                                  {log.projectName ? (
+                                    <span style={{ color: "var(--sky)", fontWeight: 500 }}>{log.reference} — {log.projectName}</span>
+                                  ) : (
+                                    <span style={{ color: "var(--ink-muted)" }}>{log.reference}</span>
+                                  )}
+                                </td>
+                                <td style={{ fontSize: 12, color: "var(--ink-muted)" }}>{log.notes || "—"}</td>
+                              </tr>
+                            ))}
+                            {inventoryLogs.length === 0 && (
+                              <tr>
+                                <td colSpan={8} style={{ textAlign: "center", padding: 16, color: "var(--ink-muted)" }}>
+                                  No stock movement transactions recorded yet.
+                                </td>
+                              </tr>
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </>
+                );
+              })()}
+            </>
+          )}
+
           {tab === "hr" && (
             <>
               <div className="grid-kpi">
@@ -2329,6 +2653,22 @@ export default function App() {
           totalCost={hrStats.monthlyPayrollCost}
           onClose={() => setPayrollConfirm(false)}
           onConfirm={runPayroll}
+        />
+      )}
+      {showInventoryItemModal && (
+        <InventoryItemModal
+          initialData={editingInventoryItem}
+          onClose={() => { setShowInventoryItemModal(false); setEditingInventoryItem(null); }}
+          onSubmit={editingInventoryItem ? updateInventoryItem : createInventoryItem}
+        />
+      )}
+      {showStockMovementModal && (
+        <StockMovementModal
+          initialItem={stockMovementItem}
+          items={inventoryItems}
+          projects={projects}
+          onClose={() => { setShowStockMovementModal(false); setStockMovementItem(null); }}
+          onSubmit={recordStockMovement}
         />
       )}
     </div>
@@ -2923,6 +3263,161 @@ function HoardingModal({ initialData, onClose, onSubmit }) {
       <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 6 }} disabled={!valid}
         onClick={() => valid && onSubmit(initialData ? { ...initialData, name, area, size, pricePerMonth: Number(pricePerMonth), status } : { name, area, size, pricePerMonth: Number(pricePerMonth), status })}>
         {initialData ? "Save Site Changes" : "Add to Billboard Inventory"}
+      </button>
+    </ModalShell>
+  );
+}
+
+function InventoryItemModal({ initialData, onClose, onSubmit }) {
+  const [sku, setSku] = useState(initialData?.sku || "");
+  const [name, setName] = useState(initialData?.name || "");
+  const [category, setCategory] = useState(initialData?.category || INVENTORY_CATEGORIES[0]);
+  const [unit, setUnit] = useState(initialData?.unit || "Pcs");
+  const [quantity, setQuantity] = useState(initialData?.quantity !== undefined ? initialData.quantity : "");
+  const [minQuantity, setMinQuantity] = useState(initialData?.minQuantity !== undefined ? initialData.minQuantity : 5);
+  const [unitCost, setUnitCost] = useState(initialData?.unitCost !== undefined ? initialData.unitCost : "");
+  const [warehouse, setWarehouse] = useState(initialData?.warehouse || "Main Store");
+  const [description, setDescription] = useState(initialData?.description || "");
+
+  const valid = name && category && Number(unitCost) >= 0;
+
+  return (
+    <ModalShell title={initialData ? "Edit SKU Inventory Item" : "Add New SKU Inventory Item"} onClose={onClose}>
+      <div style={{ display: "flex", gap: 10 }}>
+        <div className="field" style={{ flex: 1 }}>
+          <label>SKU Code (Optional)</label>
+          <input value={sku} onChange={e => setSku(e.target.value)} placeholder="Auto-generated if empty" />
+        </div>
+        <div className="field" style={{ flex: 1 }}>
+          <label>Category</label>
+          <select value={category} onChange={e => setCategory(e.target.value)}>
+            {INVENTORY_CATEGORIES.map(c => <option key={c}>{c}</option>)}
+          </select>
+        </div>
+      </div>
+      <div className="field">
+        <label>Item Name</label>
+        <input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Frontlit Star Vinyl Roll 10x100ft" />
+      </div>
+      <div style={{ display: "flex", gap: 10 }}>
+        <div className="field" style={{ flex: 1 }}>
+          <label>Unit of Measure</label>
+          <select value={unit} onChange={e => setUnit(e.target.value)}>
+            <option>Pcs</option><option>Rolls</option><option>Sheets</option><option>Units</option><option>Sets</option><option>Boxes</option><option>Kg</option><option>Meters</option>
+          </select>
+        </div>
+        {!initialData && (
+          <div className="field" style={{ flex: 1 }}>
+            <label>Initial Opening Qty</label>
+            <input type="number" value={quantity} onChange={e => setQuantity(e.target.value)} placeholder="0" />
+          </div>
+        )}
+        <div className="field" style={{ flex: 1 }}>
+          <label>Reorder Point (Min Qty)</label>
+          <input type="number" value={minQuantity} onChange={e => setMinQuantity(e.target.value)} placeholder="5" />
+        </div>
+      </div>
+      <div style={{ display: "flex", gap: 10 }}>
+        <div className="field" style={{ flex: 1 }}>
+          <label>Unit Cost Price (PKR)</label>
+          <input type="number" value={unitCost} onChange={e => setUnitCost(e.target.value)} placeholder="0" />
+        </div>
+        <div className="field" style={{ flex: 1 }}>
+          <label>Warehouse / Storage Location</label>
+          <input value={warehouse} onChange={e => setWarehouse(e.target.value)} placeholder="e.g. Korangi Warehouse A" />
+        </div>
+      </div>
+      <div className="field">
+        <label>Item Specs & Description</label>
+        <textarea rows={2} value={description} onChange={e => setDescription(e.target.value)} placeholder="Specifications, grade, supplier details..." />
+      </div>
+      <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 6 }} disabled={!valid}
+        onClick={() => valid && onSubmit(initialData ? { ...initialData, sku, name, category, unit, minQuantity: Number(minQuantity), unitCost: Number(unitCost), warehouse, description } : { sku, name, category, unit, quantity: Number(quantity) || 0, minQuantity: Number(minQuantity), unitCost: Number(unitCost), warehouse, description })}>
+        {initialData ? "Save Item Changes" : "Save New SKU Item"}
+      </button>
+    </ModalShell>
+  );
+}
+
+function StockMovementModal({ initialItem, items, projects, onClose, onSubmit }) {
+  const [itemId, setItemId] = useState(initialItem?.id || items[0]?.id || "");
+  const [type, setType] = useState("Stock Out");
+  const [quantity, setQuantity] = useState("");
+  const selectedItem = items.find(i => i.id === itemId) || items[0];
+  const [unitCost, setUnitCost] = useState(selectedItem?.unitCost || "");
+  const [reference, setReference] = useState("");
+  const [projectId, setProjectId] = useState("");
+  const [notes, setNotes] = useState("");
+
+  const qty = Number(quantity) || 0;
+  const valid = itemId && qty > 0;
+
+  return (
+    <ModalShell title="Record Stock Movement (Stock In / Out)" onClose={onClose}>
+      <div className="field">
+        <label>Select Inventory SKU Item</label>
+        <select value={itemId} onChange={e => {
+          const id = e.target.value;
+          setItemId(id);
+          const itm = items.find(i => i.id === id);
+          if (itm) setUnitCost(itm.unitCost);
+        }}>
+          {items.map(i => (
+            <option key={i.id} value={i.id}>
+              [{i.sku}] {i.name} — Current Stock: {i.quantity} {i.unit}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div style={{ display: "flex", gap: 10 }}>
+        <div className="field" style={{ flex: 1 }}>
+          <label>Movement Type</label>
+          <select value={type} onChange={e => setType(e.target.value)}>
+            <option value="Stock Out">Stock Out (Issue to Project / Consumed)</option>
+            <option value="Stock In">Stock In (Purchase Received / Restock)</option>
+            <option value="Adjustment">Stock Adjustment (Audit Count)</option>
+          </select>
+        </div>
+        <div className="field" style={{ flex: 1 }}>
+          <label>Quantity ({selectedItem?.unit || "Pcs"})</label>
+          <input type="number" value={quantity} onChange={e => setQuantity(e.target.value)} placeholder="0" />
+        </div>
+      </div>
+
+      <div style={{ display: "flex", gap: 10 }}>
+        <div className="field" style={{ flex: 1 }}>
+          <label>Unit Cost (PKR)</label>
+          <input type="number" value={unitCost} onChange={e => setUnitCost(e.target.value)} placeholder={selectedItem?.unitCost || 0} />
+        </div>
+        <div className="field" style={{ flex: 1 }}>
+          <label>Ref PO / Invoice / Doc #</label>
+          <input value={reference} onChange={e => setReference(e.target.value)} placeholder="e.g. PO-005 or ISSUE-101" />
+        </div>
+      </div>
+
+      {type === "Stock Out" && (
+        <div className="field">
+          <label>Link to Client Project (Optional)</label>
+          <select value={projectId} onChange={e => setProjectId(e.target.value)}>
+            <option value="">-- No Project (General Usage) --</option>
+            {projects.map(p => (
+              <option key={p.id} value={p.id}>
+                {p.projectCode} — {p.client} ({p.name})
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
+      <div className="field">
+        <label>Movement Remarks / Reason</label>
+        <input value={notes} onChange={e => setNotes(e.target.value)} placeholder="e.g. Issued 2 vinyl rolls for billboard printing" />
+      </div>
+
+      <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 6 }} disabled={!valid}
+        onClick={() => valid && onSubmit({ itemId, type, quantity: Number(quantity), unitCost: Number(unitCost) || selectedItem?.unitCost || 0, reference, projectId, notes })}>
+        Submit Stock Movement
       </button>
     </ModalShell>
   );
