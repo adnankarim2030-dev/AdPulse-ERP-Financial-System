@@ -1010,14 +1010,15 @@ export default function App() {
     const proj = { id: uid(), projectCode, client, type, name, description, startDate, endDate, status: "Planning" };
     setProjects(list => [proj, ...list]);
     
-    if (type === "ooh" && oohSites && oohSites.length > 0) {
+    const isOohType = type === "OOH Advertising" || type === "ooh";
+    if (isOohType && oohSites && oohSites.length > 0) {
       const newHoardings = [];
       const newInvoices = [];
       oohSites.forEach(site => {
         if (site.name && site.area) {
           const price = Number(site.pricePerMonth) || 0;
           const h = {
-            id: uid(), name: site.name, area: site.area, size: site.size, pricePerMonth: price,
+            id: uid(), name: site.name, area: site.area, size: site.size || "Standard", pricePerMonth: price,
             status: "Booked", client: proj.client, project: proj.name, projectId: proj.id,
             bookedFrom: proj.startDate, bookedTo: proj.endDate
           };
@@ -3638,8 +3639,10 @@ function ProjectModal({ initialData, onClose, onSubmit }) {
   const [startDate, setStartDate] = useState(initialData?.startDate || "2026-07-21");
   const [endDate, setEndDate] = useState(initialData?.endDate || "2026-08-05");
   
-  // OOH specific state
+  // OOH specific state (Multiple Sites: Area wise, Size wise, Rate wise)
   const [oohSites, setOohSites] = useState([{ name: "", area: "", size: "", pricePerMonth: "" }]);
+
+  const isOoh = type === "OOH Advertising" || type === "ooh";
 
   const addOohSite = () => setOohSites([...oohSites, { name: "", area: "", size: "", pricePerMonth: "" }]);
   const updateOohSite = (index, field, value) => {
@@ -3649,7 +3652,7 @@ function ProjectModal({ initialData, onClose, onSubmit }) {
   };
   const removeOohSite = (index) => setOohSites(oohSites.filter((_, i) => i !== index));
 
-  const valid = client && name && startDate && endDate && (type !== "ooh" || oohSites.every(s => s.name && s.area));
+  const valid = client && name && startDate && endDate && (!isOoh || oohSites.every(s => s.name && s.area));
 
   return (
     <ModalShell title={initialData ? "Edit Project Details" : "Create New Agency Project"} onClose={onClose}>
@@ -3662,35 +3665,48 @@ function ProjectModal({ initialData, onClose, onSubmit }) {
       <div className="field"><label>Project Title</label><input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Q3 Brand Campaign" /></div>
       <div className="field"><label>Scope Note</label><input value={description} onChange={e => setDescription(e.target.value)} placeholder="Brief summary of creative scope" /></div>
       
-      {type === "ooh" && !initialData && (
-        <div style={{ background: "#F8FAFC", padding: 12, borderRadius: 8, marginBottom: 12, border: "1px solid #E2E8F0" }}>
-          <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 8, color: "#1E293B" }}>Outdoor Advertising Sites</div>
+      {isOoh && !initialData && (
+        <div style={{ background: "var(--bg)", padding: 14, borderRadius: 8, marginBottom: 14, border: "1.5px solid var(--rule)" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+            <div>
+              <div style={{ fontWeight: 700, fontSize: 13, color: "var(--ink)" }}>Outdoor Billboard Sites (Multiple Add)</div>
+              <div style={{ fontSize: 11.5, color: "var(--ink-muted)" }}>Add client OOH sites by Area, Size & Monthly Rate</div>
+            </div>
+            <button className="btn btn-primary" style={{ fontSize: 11.5, padding: "3px 8px" }} onClick={addOohSite} type="button">
+              <Plus size={13} /> Add Site
+            </button>
+          </div>
+
           {oohSites.map((site, idx) => (
-            <div key={idx} style={{ display: "flex", gap: 8, marginBottom: 8, alignItems: "flex-end" }}>
-              <div className="field" style={{ flex: 2, margin: 0 }}>
-                <label style={{ fontSize: 11 }}>Location/Site Name</label>
-                <input style={{ padding: "4px 8px", fontSize: 12 }} value={site.name} onChange={e => updateOohSite(idx, "name", e.target.value)} placeholder="e.g. Tariq Road Junction" />
+            <div key={idx} style={{ background: "#FFFFFF", padding: 10, borderRadius: 6, border: "1px solid #E2E8F0", marginBottom: 8 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: "var(--gold)", marginBottom: 6 }}>Site #{idx + 1} Details</div>
+              <div style={{ display: "grid", gridTemplateColumns: "2fr 1.5fr 1fr 1.5fr auto", gap: 8, alignItems: "center" }}>
+                <div className="field" style={{ margin: 0 }}>
+                  <label style={{ fontSize: 10.5 }}>Location / Site Name</label>
+                  <input style={{ padding: "5px 8px", fontSize: 12 }} value={site.name} onChange={e => updateOohSite(idx, "name", e.target.value)} placeholder="e.g. Tariq Road Junction Site 1" />
+                </div>
+                <div className="field" style={{ margin: 0 }}>
+                  <label style={{ fontSize: 10.5 }}>Area / Zone</label>
+                  <input style={{ padding: "5px 8px", fontSize: 12 }} value={site.area} onChange={e => updateOohSite(idx, "area", e.target.value)} placeholder="e.g. Tariq Road" />
+                </div>
+                <div className="field" style={{ margin: 0 }}>
+                  <label style={{ fontSize: 10.5 }}>Size</label>
+                  <input style={{ padding: "5px 8px", fontSize: 12 }} value={site.size} onChange={e => updateOohSite(idx, "size", e.target.value)} placeholder="20x40 ft" />
+                </div>
+                <div className="field" style={{ margin: 0 }}>
+                  <label style={{ fontSize: 10.5 }}>Monthly Rate (PKR)</label>
+                  <input type="number" style={{ padding: "5px 8px", fontSize: 12 }} value={site.pricePerMonth} onChange={e => updateOohSite(idx, "pricePerMonth", e.target.value)} placeholder="0" />
+                </div>
+                <div>
+                  {oohSites.length > 1 && (
+                    <button className="btn" type="button" style={{ padding: "5px 7px", color: "var(--rose)", borderColor: "#FCA5A5", marginTop: 14 }} onClick={() => removeOohSite(idx)}>
+                      <Trash2 size={13} />
+                    </button>
+                  )}
+                </div>
               </div>
-              <div className="field" style={{ flex: 1.5, margin: 0 }}>
-                <label style={{ fontSize: 11 }}>Area</label>
-                <input style={{ padding: "4px 8px", fontSize: 12 }} value={site.area} onChange={e => updateOohSite(idx, "area", e.target.value)} placeholder="e.g. Tariq Road" />
-              </div>
-              <div className="field" style={{ flex: 1, margin: 0 }}>
-                <label style={{ fontSize: 11 }}>Size</label>
-                <input style={{ padding: "4px 8px", fontSize: 12 }} value={site.size} onChange={e => updateOohSite(idx, "size", e.target.value)} placeholder="40x20" />
-              </div>
-              <div className="field" style={{ flex: 1.5, margin: 0 }}>
-                <label style={{ fontSize: 11 }}>Monthly Rate</label>
-                <input type="number" style={{ padding: "4px 8px", fontSize: 12 }} value={site.pricePerMonth} onChange={e => updateOohSite(idx, "pricePerMonth", e.target.value)} placeholder="0" />
-              </div>
-              {oohSites.length > 1 && (
-                <button className="btn" style={{ padding: "4px 8px", color: "var(--rose)", borderColor: "#FCA5A5" }} onClick={() => removeOohSite(idx)}>
-                  <Trash size={14} />
-                </button>
-              )}
             </div>
           ))}
-          <button className="btn" style={{ fontSize: 12, padding: "4px 8px" }} onClick={addOohSite}><Plus size={14} /> Add Another Site</button>
         </div>
       )}
 
