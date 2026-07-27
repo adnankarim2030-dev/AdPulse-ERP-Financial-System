@@ -203,6 +203,15 @@ function seedExpenses() {
   ];
 }
 
+function seedBankAccounts() {
+  return [
+    { id: "bank-hbl", bankName: "Habib Bank Limited (HBL)", accountTitle: "AdPulse IMC PVT LTD (Main Ops)", accountNumber: "0014-2289-1001", iban: "PK36HABB00001422891001", accountType: "Current Account", branch: "Shahrah-e-Faisal Branch", openingBalance: 1250000, color: "#059669" },
+    { id: "bank-mcb", bankName: "MCB Bank Ltd", accountTitle: "AdPulse Financial Services", accountNumber: "0088-1122-3344", iban: "PK91MUCB008811223344", accountType: "Corporate Account", branch: "II Chundrigar Road Branch", openingBalance: 850000, color: "#0284C7" },
+    { id: "bank-meezan", bankName: "Meezan Bank Ltd", accountTitle: "AdPulse Media (Islamic Business)", accountNumber: "0102-0304-0506", iban: "PK55MEZN010203040506", accountType: "Islamic Current", branch: "Clifton Block 5 Branch", openingBalance: 400000, color: "#B8860B" },
+    { id: "bank-cash", bankName: "Petty Cash Vault", accountTitle: "Office Petty Cash Custodian", accountNumber: "CASH-VAULT-01", iban: "N/A (Cash in Hand)", accountType: "Petty Cash", branch: "Main Office Counter", openingBalance: 75000, color: "#D97706" },
+  ];
+}
+
 function seedHoardings() {
   return [
     { id: uid(), name: "Shahrah-e-Faisal Site 1", area: "Shahrah-e-Faisal", size: "20x40 ft", pricePerMonth: 150000, status: "Available", project: "", client: "" },
@@ -388,11 +397,12 @@ function buildInitialData() {
 
   const inventoryItems = seedInventoryItems();
   const inventoryLogs = seedInventoryLogs(inventoryItems);
+  const bankAccounts = seedBankAccounts();
 
   const invoices = [...seedInvoices(), ...seedProjectInvoices(projects), ...hoardingInvoices];
   const expenses = [...seedExpenses(), ...seedProjectExpenses(projects), payrollExpense];
   const journal = buildInitialJournal(invoices, expenses);
-  return { projects, invoices, expenses, journal, hoardings, employees, leaveRequests, payrollRuns: [payrollRun], inventoryItems, inventoryLogs };
+  return { projects, invoices, expenses, journal, hoardings, employees, leaveRequests, payrollRuns: [payrollRun], inventoryItems, inventoryLogs, bankAccounts };
 }
 
 /* ---------- SMALL UI COMPONENTS ---------- */
@@ -570,6 +580,9 @@ export default function App() {
   const [editingPO, setEditingPO] = useState(null);
   const [payingPOId, setPayingPOId] = useState(null);
 
+  const [bankAccounts, setBankAccounts] = useState(() => seedData.bankAccounts || []);
+  const [showBankAccountModal, setShowBankAccountModal] = useState(false);
+  const [editingBankAccount, setEditingBankAccount] = useState(null);
   const [cashBankFilter, setCashBankFilter] = useState("all");
 
   const [showVoucherForm, setShowVoucherForm] = useState(false);
@@ -1126,6 +1139,40 @@ export default function App() {
     setInventoryLogs(logs => [log, ...logs]);
     setShowStockMovementModal(false);
     setStockMovementItem(null);
+  }
+
+  function createBankAccount(data) {
+    const newAccount = {
+      id: "bank-" + uid(),
+      bankName: data.bankName,
+      accountTitle: data.accountTitle,
+      accountNumber: data.accountNumber,
+      iban: data.iban || "N/A",
+      accountType: data.accountType || "Current Account",
+      branch: data.branch || "Karachi Branch",
+      openingBalance: Number(data.openingBalance) || 0,
+      color: data.color || "#0284C7"
+    };
+    setBankAccounts(list => [...list, newAccount]);
+    setShowBankAccountModal(false);
+
+    if (newAccount.openingBalance > 0) {
+      postEntry(TODAY.toISOString().slice(0, 10), `Opening Balance — ${newAccount.bankName}`, [
+        { account: "bank", bankAccountId: newAccount.id, debit: newAccount.openingBalance, credit: 0 },
+        { account: "equity", debit: 0, credit: newAccount.openingBalance }
+      ], "OB-" + newAccount.id.toUpperCase());
+    }
+  }
+
+  function updateBankAccount(updated) {
+    setBankAccounts(list => list.map(b => b.id === updated.id ? updated : b));
+    setEditingBankAccount(null);
+  }
+
+  function deleteBankAccount(account) {
+    if (window.confirm(`Are you sure you want to remove ${account.bankName} (${account.accountNumber})?`)) {
+      setBankAccounts(list => list.filter(b => b.id !== account.id));
+    }
   }
 
   function addProjectBilling(project, { description, amount, issueDate, dueDate }) {
@@ -1740,76 +1787,160 @@ export default function App() {
 
           {tab === "cash-bank" && (
             <>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-                <div className="section-title" style={{ margin: 0 }}>Cash & Bank Ledgers</div>
-                <div style={{ display: "flex", gap: 8 }}>
-                  <button className="btn" onClick={() => { setVoucherDefaultType("PV"); setShowVoucherForm(true); }}>Payment Voucher</button>
-                  <button className="btn" onClick={() => { setVoucherDefaultType("RV"); setShowVoucherForm(true); }}>Receipt Voucher</button>
-                </div>
-              </div>
+              {(() => {
+                const accountBalances = bankAccounts.map(b => {
+                  let netMovement = 0;
+                  if (b.id === "bank-cash" || b.accountType === "Petty Cash") {
+                    netMovement = journal.filter(j => j.account === "cash").reduce((s, j) => s + (j.debit - j.credit), 0);
+                  } else {
+                    netMovement = journal.reduce((sum, entry) => {
+                      let eSum = 0;
+                      entry.lines.forEach(l => {
+                        if (l.account === "bank" && (l.bankAccountId === b.id || (!l.bankAccountId && b.id === "bank-hbl"))) {
+                          eSum += (l.debit - l.credit);
+                        }
+                      });
+                      return sum + eSum;
+                    }, 0);
+                  }
+                  return { ...b, liveBalance: (b.openingBalance || 0) + netMovement };
+                });
 
-              <div className="card" style={{ padding: "12px 16px", marginBottom: 16, display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
-                <div className="field" style={{ margin: 0, flex: 1, minWidth: 200 }}>
-                  <label>Filter Ledger</label>
-                  <select value={cashBankFilter} onChange={e => setCashBankFilter(e.target.value)}>
-                    <option value="all">All Cash & Bank Transactions</option>
-                    <option value="cash">Petty Cash Only</option>
-                    <option value="bank">Bank Account Only</option>
-                  </select>
-                </div>
-              </div>
+                const totalLiquidity = accountBalances.reduce((s, b) => s + b.liveBalance, 0);
 
-              <div className="stats-grid" style={{ marginBottom: 20 }}>
-                <div className="stat-card">
-                  <div className="stat-title">Petty Cash Balance</div>
-                  <div className="stat-value mono">{pkr(Object.values(journal).filter(j => j.account === "cash").reduce((s, j) => s + j.debit - j.credit, 0))}</div>
-                </div>
-                <div className="stat-card">
-                  <div className="stat-title">Bank Balance</div>
-                  <div className="stat-value mono">{pkr(Object.values(journal).filter(j => j.account === "bank").reduce((s, j) => s + j.debit - j.credit, 0))}</div>
-                </div>
-                <div className="stat-card" style={{ background: "var(--surface)", border: "1px solid var(--border)", boxShadow: "none" }}>
-                  <div className="stat-title">Combined Liquidity</div>
-                  <div className="stat-value mono">{pkr(Object.values(journal).filter(j => j.account === "cash" || j.account === "bank").reduce((s, j) => s + j.debit - j.credit, 0))}</div>
-                </div>
-              </div>
+                const filteredEntries = Object.values(journal)
+                  .filter(j => {
+                    if (cashBankFilter === "all") return j.account === "cash" || j.account === "bank";
+                    if (cashBankFilter === "cash") return j.account === "cash";
+                    if (cashBankFilter === "bank") return j.account === "bank";
+                    const matchedLine = j.lines?.find(l => l.bankAccountId === cashBankFilter || (!l.bankAccountId && cashBankFilter === "bank-hbl" && l.account === "bank"));
+                    return !!matchedLine;
+                  })
+                  .sort((a, b) => new Date(a.date) - new Date(b.date));
 
-              <div className="card">
-                <div className="table-responsive">
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Date</th><th>Ref No</th><th>Account</th><th>Description</th>
-                        <th style={{ textAlign: "right", color: "var(--emerald)" }}>In (Debit)</th>
-                        <th style={{ textAlign: "right", color: "var(--rose)" }}>Out (Credit)</th>
-                        <th style={{ textAlign: "right" }}>Running Balance</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {(() => {
-                        const entries = Object.values(journal)
-                          .filter(j => (cashBankFilter === "all" ? (j.account === "cash" || j.account === "bank") : j.account === cashBankFilter))
-                          .sort((a, b) => new Date(a.date) - new Date(b.date));
-                        let balance = 0;
-                        return entries.map((entry, i) => {
-                          balance += (entry.debit - entry.credit);
-                          return (
-                            <tr key={i}>
-                              <td className="mono">{fmtDate(entry.date)}</td>
-                              <td className="mono">{entry.ref}</td>
-                              <td><span className="badge-mini">{entry.account === "cash" ? "Cash" : "Bank"}</span></td>
-                              <td>{entry.memo || entry.description}</td>
-                              <td className="mono" style={{ textAlign: "right", color: "var(--emerald)" }}>{entry.debit > 0 ? pkr(entry.debit) : ""}</td>
-                              <td className="mono" style={{ textAlign: "right", color: "var(--rose)" }}>{entry.credit > 0 ? pkr(entry.credit) : ""}</td>
-                              <td className="mono" style={{ textAlign: "right", fontWeight: 700 }}>{pkr(balance)}</td>
+                return (
+                  <>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, flexWrap: "wrap", gap: 12 }}>
+                      <div className="section-title" style={{ margin: 0 }}>
+                        <Landmark size={18} color="var(--gold)" /> Multiple Bank Accounts & Liquidity Position
+                      </div>
+                      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                        <button className="btn btn-primary" onClick={() => { setEditingBankAccount(null); setShowBankAccountModal(true); }}>
+                          <Plus size={14} /> Add Bank Account
+                        </button>
+                        <button className="btn" onClick={() => { setVoucherDefaultType("PV"); setShowVoucherForm(true); }}>
+                          Payment Voucher
+                        </button>
+                        <button className="btn" onClick={() => { setVoucherDefaultType("RV"); setShowVoucherForm(true); }}>
+                          Receipt Voucher
+                        </button>
+                      </div>
+                    </div>
+
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 14, marginBottom: 20 }}>
+                      {accountBalances.map(b => (
+                        <div key={b.id} className="card" style={{ padding: 16, borderLeft: `4px solid ${b.color || "var(--gold)"}` }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
+                            <div>
+                              <div style={{ fontWeight: 700, fontSize: 14, color: "var(--ink)" }}>{b.bankName}</div>
+                              <div style={{ fontSize: 11.5, color: "var(--ink-muted)" }}>{b.accountTitle}</div>
+                            </div>
+                            <span className="badge-mini" style={{ background: "var(--bg)", border: "1px solid var(--rule)" }}>{b.accountType}</span>
+                          </div>
+                          <div className="mono" style={{ fontSize: 11, color: "var(--gold)", marginBottom: 8, fontWeight: 600 }}>
+                            {b.accountNumber}
+                          </div>
+                          <div style={{ fontSize: 11, color: "var(--ink-muted)", marginBottom: 10, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                            {b.branch}
+                          </div>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", borderTop: "1px solid var(--rule)", paddingTop: 10 }}>
+                            <span style={{ fontSize: 11.5, color: "var(--ink-muted)" }}>Live Balance:</span>
+                            <span className="mono" style={{ fontSize: 15, fontWeight: 700, color: b.liveBalance >= 0 ? "var(--jade)" : "var(--rose)" }}>
+                              {pkr(b.liveBalance)}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+
+                      <div className="card" style={{ padding: 16, background: "var(--gold-glow)", border: "1px solid var(--gold)" }}>
+                        <div style={{ fontWeight: 700, fontSize: 14, color: "var(--gold)", marginBottom: 4 }}>Total Liquidity Position</div>
+                        <div style={{ fontSize: 11.5, color: "var(--ink-muted)", marginBottom: 12 }}>Combined Total Cash + Bank Balances</div>
+                        <div className="mono" style={{ fontSize: 20, fontWeight: 800, color: "var(--ink)" }}>
+                          {pkr(totalLiquidity)}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="card" style={{ padding: "12px 16px", marginBottom: 16, display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
+                      <div className="field" style={{ margin: 0, flex: 1, minWidth: 220 }}>
+                        <label>Filter Ledger by Bank Account</label>
+                        <select value={cashBankFilter} onChange={e => setCashBankFilter(e.target.value)}>
+                          <option value="all">All Cash & Bank Accounts ({pkr(totalLiquidity)})</option>
+                          <option value="cash">Petty Cash Vault Only</option>
+                          {bankAccounts.filter(b => b.id !== "bank-cash").map(b => (
+                            <option key={b.id} value={b.id}>
+                              {b.bankName} — {b.accountNumber} ({pkr(accountBalances.find(x => x.id === b.id)?.liveBalance || 0)})
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="card">
+                      <div className="table-responsive">
+                        <table>
+                          <thead>
+                            <tr>
+                              <th>Date</th><th>Ref No</th><th>Account / Bank</th><th>Particulars / Description</th>
+                              <th style={{ textAlign: "right", color: "var(--emerald)" }}>Deposit (In)</th>
+                              <th style={{ textAlign: "right", color: "var(--rose)" }}>Payment (Out)</th>
+                              <th style={{ textAlign: "right" }}>Running Balance</th>
                             </tr>
-                          );
-                        });
-                      })()}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
+                          </thead>
+                          <tbody>
+                            {(() => {
+                              let balance = 0;
+                              return filteredEntries.map((entry, i) => {
+                                balance += (entry.debit - entry.credit);
+                                const bankLine = entry.lines?.find(l => l.bankAccountId);
+                                const bankInfo = bankAccounts.find(b => b.id === bankLine?.bankAccountId);
+                                return (
+                                  <tr key={i}>
+                                    <td className="mono" style={{ fontSize: 12.5 }}>{fmtDate(entry.date)}</td>
+                                    <td className="mono" style={{ fontWeight: 600, color: "var(--gold)", fontSize: 12 }}>{entry.ref}</td>
+                                    <td>
+                                      <span className="badge-mini">
+                                        {bankInfo ? bankInfo.bankName : entry.account === "cash" ? "Petty Cash" : "Bank Account"}
+                                      </span>
+                                    </td>
+                                    <td>{entry.memo || entry.description}</td>
+                                    <td className="mono" style={{ textAlign: "right", color: "var(--emerald)", fontWeight: 600 }}>
+                                      {entry.debit > 0 ? pkr(entry.debit) : ""}
+                                    </td>
+                                    <td className="mono" style={{ textAlign: "right", color: "var(--rose)", fontWeight: 600 }}>
+                                      {entry.credit > 0 ? pkr(entry.credit) : ""}
+                                    </td>
+                                    <td className="mono" style={{ textAlign: "right", fontWeight: 700 }}>
+                                      {pkr(balance)}
+                                    </td>
+                                  </tr>
+                                );
+                              });
+                            })()}
+                            {filteredEntries.length === 0 && (
+                              <tr>
+                                <td colSpan={7} style={{ textAlign: "center", padding: 20, color: "var(--ink-muted)" }}>
+                                  No transactions found for the selected bank account filter.
+                                </td>
+                              </tr>
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </>
+                );
+              })()}
             </>
           )}
 
@@ -2672,6 +2803,13 @@ export default function App() {
           onSubmit={recordStockMovement}
         />
       )}
+      {showBankAccountModal && (
+        <BankAccountModal
+          initialData={editingBankAccount}
+          onClose={() => { setShowBankAccountModal(false); setEditingBankAccount(null); }}
+          onSubmit={editingBankAccount ? updateBankAccount : createBankAccount}
+        />
+      )}
     </div>
   );
 }
@@ -3419,6 +3557,73 @@ function StockMovementModal({ initialItem, items, projects, onClose, onSubmit })
       <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 6 }} disabled={!valid}
         onClick={() => valid && onSubmit({ itemId, type, quantity: Number(quantity), unitCost: Number(unitCost) || selectedItem?.unitCost || 0, reference, projectId, notes })}>
         Submit Stock Movement
+      </button>
+    </ModalShell>
+  );
+}
+
+function BankAccountModal({ initialData, onClose, onSubmit }) {
+  const [bankName, setBankName] = useState(initialData?.bankName || "");
+  const [accountTitle, setAccountTitle] = useState(initialData?.accountTitle || "");
+  const [accountNumber, setAccountNumber] = useState(initialData?.accountNumber || "");
+  const [iban, setIban] = useState(initialData?.iban || "");
+  const [accountType, setAccountType] = useState(initialData?.accountType || "Current Account");
+  const [branch, setBranch] = useState(initialData?.branch || "");
+  const [openingBalance, setOpeningBalance] = useState(initialData?.openingBalance !== undefined ? initialData.openingBalance : "");
+  const [color, setColor] = useState(initialData?.color || "#059669");
+
+  const valid = bankName && accountTitle && accountNumber;
+
+  return (
+    <ModalShell title={initialData ? "Edit Bank Account Details" : "Register New Bank Account"} onClose={onClose}>
+      <div className="field">
+        <label>Bank Name</label>
+        <input value={bankName} onChange={e => setBankName(e.target.value)} placeholder="e.g. Habib Bank Limited / Allied Bank" />
+      </div>
+
+      <div className="field">
+        <label>Account Title</label>
+        <input value={accountTitle} onChange={e => setAccountTitle(e.target.value)} placeholder="e.g. AdPulse IMC PVT LTD (Main Ops)" />
+      </div>
+
+      <div style={{ display: "flex", gap: 10 }}>
+        <div className="field" style={{ flex: 1 }}>
+          <label>Account Number</label>
+          <input value={accountNumber} onChange={e => setAccountNumber(e.target.value)} placeholder="e.g. 0014-2289-1001" />
+        </div>
+        <div className="field" style={{ flex: 1 }}>
+          <label>IBAN (Optional)</label>
+          <input value={iban} onChange={e => setIban(e.target.value)} placeholder="e.g. PK36HABB00001422891001" />
+        </div>
+      </div>
+
+      <div style={{ display: "flex", gap: 10 }}>
+        <div className="field" style={{ flex: 1 }}>
+          <label>Account Type</label>
+          <select value={accountType} onChange={e => setAccountType(e.target.value)}>
+            <option>Current Account</option>
+            <option>Corporate Account</option>
+            <option>Savings Account</option>
+            <option>Islamic Current</option>
+            <option>Petty Cash</option>
+          </select>
+        </div>
+        {!initialData && (
+          <div className="field" style={{ flex: 1 }}>
+            <label>Opening Balance (PKR)</label>
+            <input type="number" value={openingBalance} onChange={e => setOpeningBalance(e.target.value)} placeholder="0" />
+          </div>
+        )}
+      </div>
+
+      <div className="field">
+        <label>Branch Name & Location</label>
+        <input value={branch} onChange={e => setBranch(e.target.value)} placeholder="e.g. Shahrah-e-Faisal Branch, Karachi" />
+      </div>
+
+      <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 6 }} disabled={!valid}
+        onClick={() => valid && onSubmit(initialData ? { ...initialData, bankName, accountTitle, accountNumber, iban, accountType, branch, color } : { bankName, accountTitle, accountNumber, iban, accountType, branch, openingBalance: Number(openingBalance) || 0, color })}>
+        {initialData ? "Save Bank Changes" : "Register Bank Account"}
       </button>
     </ModalShell>
   );
