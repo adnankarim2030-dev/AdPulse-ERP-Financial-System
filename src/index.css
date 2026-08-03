@@ -244,15 +244,15 @@ html, body, #root {
 }
 
 .nav-item:hover {
-  background: #F1F5F9;
-  color: #0F172A;
+  background: #FFF1F2;
+  color: #BE123C;
 }
 
 .nav-item.active {
-  background: #FEF3C7;
-  color: #78350F;
+  background: #FFE4E6;
+  color: #881337;
   font-weight: 700;
-  box-shadow: inset 4px 0 0 #B8860B;
+  box-shadow: inset 4px 0 0 #E11D48;
 }
 
 /* Main Workspace */
