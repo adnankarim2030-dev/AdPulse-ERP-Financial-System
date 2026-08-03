@@ -8,8 +8,13 @@ import {
   ChevronRight, Coins, Menu, UserPlus, UserCheck, UserX, CalendarCheck,
   CalendarX, Banknote, Contact, Phone, Mail, Edit, Trash2, Settings,
   Lock, KeyRound, ShieldCheck, LogOut, User, Check, Eye, EyeOff,
-  Package, Boxes, ArrowUpRight, ArrowDownLeft, Layers, SlidersHorizontal, AlertTriangle
+  Package, Boxes, ArrowUpRight, ArrowDownLeft, Layers, SlidersHorizontal, AlertTriangle,
+  Download, Upload, HardDrive, RefreshCw, FileJson, Cloud, CloudOff, Database, Save
 } from "lucide-react";
+import {
+  getSupabaseConfig, saveSupabaseConfig, isSupabaseConfigured,
+  pushStateToSupabase, pullStateFromSupabase
+} from "./supabase.js";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, BarChart, Bar, Legend
@@ -553,7 +558,6 @@ function LedgerStrip({ rows, showAccounts }) {
 export default function App() {
   /* Authentication & Session state */
   const [currentUser, setCurrentUser] = useState(null); // null = Welcome Gateway Screen
-  const [usersList, setUsersList] = useState(SEED_USERS);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
 
@@ -563,12 +567,42 @@ export default function App() {
 
   /* Financial & Operations state */
   const [seedData] = useState(buildInitialData);
-  const [journal, setJournal] = useState(seedData.journal);
-  const [invoices, setInvoices] = useState(seedData.invoices);
-  const [expenses, setExpenses] = useState(seedData.expenses);
-  const [purchaseOrders, setPurchaseOrders] = useState([]);
-  const [projects, setProjects] = useState(seedData.projects);
 
+  const STORAGE_KEY = "adpulse_erp_financial_backup_v1";
+
+  // Helper to load state from localStorage or fallback to default
+  const getInitialState = (key, fallback) => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && parsed.data && parsed.data[key] !== undefined) {
+          return parsed.data[key];
+        }
+      }
+    } catch (e) {
+      console.warn("Could not read localStorage backup:", e);
+    }
+    return fallback;
+  };
+
+  const [usersList, setUsersList] = useState(() => getInitialState("usersList", SEED_USERS));
+  const [journal, setJournal] = useState(() => getInitialState("journal", seedData.journal));
+  const [invoices, setInvoices] = useState(() => getInitialState("invoices", seedData.invoices));
+  const [expenses, setExpenses] = useState(() => getInitialState("expenses", seedData.expenses));
+  const [purchaseOrders, setPurchaseOrders] = useState(() => getInitialState("purchaseOrders", []));
+  const [projects, setProjects] = useState(() => getInitialState("projects", seedData.projects));
+  const [bankAccounts, setBankAccounts] = useState(() => getInitialState("bankAccounts", seedData.bankAccounts || []));
+  const [hoardings, setHoardings] = useState(() => getInitialState("hoardings", seedData.hoardings));
+  const [inventoryItems, setInventoryItems] = useState(() => getInitialState("inventoryItems", seedData.inventoryItems || []));
+  const [inventoryLogs, setInventoryLogs] = useState(() => getInitialState("inventoryLogs", seedData.inventoryLogs || []));
+  const [vouchers, setVouchers] = useState(() => getInitialState("vouchers", []));
+  const [documents, setDocuments] = useState(() => getInitialState("documents", []));
+  const [employees, setEmployees] = useState(() => getInitialState("employees", seedData.employees));
+  const [leaveRequests, setLeaveRequests] = useState(() => getInitialState("leaveRequests", seedData.leaveRequests));
+  const [payrollRuns, setPayrollRuns] = useState(() => getInitialState("payrollRuns", seedData.payrollRuns));
+
+  /* Modal & Form UI states */
   const [showInvoiceForm, setShowInvoiceForm] = useState(false);
   const [editingInvoice, setEditingInvoice] = useState(null);
 
@@ -580,7 +614,6 @@ export default function App() {
   const [editingPO, setEditingPO] = useState(null);
   const [payingPOId, setPayingPOId] = useState(null);
 
-  const [bankAccounts, setBankAccounts] = useState(() => seedData.bankAccounts || []);
   const [showBankAccountModal, setShowBankAccountModal] = useState(false);
   const [editingBankAccount, setEditingBankAccount] = useState(null);
   const [cashBankFilter, setCashBankFilter] = useState("all");
@@ -595,20 +628,15 @@ export default function App() {
   const [costModalProject, setCostModalProject] = useState(null);
   const [projectFilters, setProjectFilters] = useState({ type: "All", status: "All", client: "" });
 
-  const [hoardings, setHoardings] = useState(seedData.hoardings);
   const [showHoardingForm, setShowHoardingForm] = useState(false);
   const [editingHoarding, setEditingHoarding] = useState(null);
 
-  const [inventoryItems, setInventoryItems] = useState(() => seedData.inventoryItems || []);
-  const [inventoryLogs, setInventoryLogs] = useState(() => seedData.inventoryLogs || []);
   const [showInventoryItemModal, setShowInventoryItemModal] = useState(false);
   const [editingInventoryItem, setEditingInventoryItem] = useState(null);
   const [showStockMovementModal, setShowStockMovementModal] = useState(false);
   const [stockMovementItem, setStockMovementItem] = useState(null);
   const [inventoryFilters, setInventoryFilters] = useState({ category: "All", status: "All", search: "" });
 
-  const [vouchers, setVouchers] = useState([]);
-  const [documents, setDocuments] = useState([]);
   const [bookingHoarding, setBookingHoarding] = useState(null);
   const [sitePickerProject, setSitePickerProject] = useState(null);
   const [printDoc, setPrintDoc] = useState(null);
@@ -616,10 +644,304 @@ export default function App() {
   const [projectStatementId, setProjectStatementId] = useState(null);
   const [oohFilters, setOohFilters] = useState({ area: "All", size: "All", status: "All", maxPrice: "" });
 
-  const [employees, setEmployees] = useState(seedData.employees);
+  const [hrView, setHrView] = useState("directory");
+  const [showEmployeeForm, setShowEmployeeForm] = useState(false);
+  const [showLeaveForm, setShowLeaveForm] = useState(false);
+  const [employeeDetail, setEmployeeDetail] = useState(null);
+  const [payrollConfirm, setPayrollConfirm] = useState(false);
+
+  /* User Management state for Admin Settings */
+  const [showAddUserForm, setShowAddUserForm] = useState(false);
+  const [editingUser, setEditingUser] = useState(null);
+
+  const [lastBackupTime, setLastBackupTime] = useState(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.timestamp) return new Date(parsed.timestamp).toLocaleString();
+      }
+    } catch (e) {}
+    return null;
+  });
+
+  const [backupNotification, setBackupNotification] = useState(null);
+  const [supabaseConfig, setSupabaseConfigState] = useState(() => getSupabaseConfig());
+  const [isSyncingCloud, setIsSyncingCloud] = useState(false);
+
+  const handleSaveSupabaseConfig = (url, key) => {
+    saveSupabaseConfig(url, key);
+    const updated = getSupabaseConfig();
+    setSupabaseConfigState(updated);
+    if (updated.url && updated.key) {
+      setBackupNotification({
+        type: "success",
+        text: "Supabase credentials saved successfully & Cloud Database connected!"
+      });
+    } else {
+      setBackupNotification({
+        type: "error",
+        text: "Supabase credentials cleared. System operating in Offline Local Mode."
+      });
+    }
+    setTimeout(() => setBackupNotification(null), 5000);
+  };
+
+  const handlePushToCloud = async () => {
+    setIsSyncingCloud(true);
+    try {
+      const payload = {
+        system: "AdPulse ERP Financial System",
+        version: "1.0.0",
+        timestamp: new Date().toISOString(),
+        lastSavedBy: currentUser ? `${currentUser.name} (${currentUser.role})` : "Admin",
+        data: {
+          journal, invoices, expenses, purchaseOrders, projects,
+          bankAccounts, hoardings, inventoryItems, inventoryLogs,
+          vouchers, documents, employees, leaveRequests, payrollRuns, usersList
+        }
+      };
+      await pushStateToSupabase(payload);
+      const timeNow = new Date().toLocaleString();
+      setLastBackupTime(timeNow + " (Cloud Sync)");
+      setBackupNotification({
+        type: "success",
+        text: "Local data successfully pushed & synced to Supabase Cloud database!"
+      });
+      setTimeout(() => setBackupNotification(null), 6000);
+    } catch (err) {
+      console.error("Cloud push failed:", err);
+      setBackupNotification({
+        type: "error",
+        text: `Cloud Sync Failed: ${err.message || "Please check Supabase URL & API key."}`
+      });
+    } finally {
+      setIsSyncingCloud(false);
+    }
+  };
+
+  const handlePullFromCloud = async () => {
+    setIsSyncingCloud(true);
+    try {
+      const cloudData = await pullStateFromSupabase();
+      if (!cloudData || !cloudData.data) {
+        throw new Error("No snapshot payload found in Supabase database.");
+      }
+      const bData = cloudData.data;
+      if (Array.isArray(bData.journal)) setJournal(bData.journal);
+      if (Array.isArray(bData.invoices)) setInvoices(bData.invoices);
+      if (Array.isArray(bData.expenses)) setExpenses(bData.expenses);
+      if (Array.isArray(bData.purchaseOrders)) setPurchaseOrders(bData.purchaseOrders);
+      if (Array.isArray(bData.projects)) setProjects(bData.projects);
+      if (Array.isArray(bData.bankAccounts)) setBankAccounts(bData.bankAccounts);
+      if (Array.isArray(bData.hoardings)) setHoardings(bData.hoardings);
+      if (Array.isArray(bData.inventoryItems)) setInventoryItems(bData.inventoryItems);
+      if (Array.isArray(bData.inventoryLogs)) setInventoryLogs(bData.inventoryLogs);
+      if (Array.isArray(bData.vouchers)) setVouchers(bData.vouchers);
+      if (Array.isArray(bData.documents)) setDocuments(bData.documents);
+      if (Array.isArray(bData.employees)) setEmployees(bData.employees);
+      if (Array.isArray(bData.leaveRequests)) setLeaveRequests(bData.leaveRequests);
+      if (Array.isArray(bData.payrollRuns)) setPayrollRuns(bData.payrollRuns);
+      if (Array.isArray(bData.usersList)) setUsersList(bData.usersList);
+
+      const syncTime = new Date(cloudData.updatedAt || Date.now()).toLocaleString();
+      setLastBackupTime(syncTime + " (From Cloud)");
+      setBackupNotification({
+        type: "success",
+        text: `Successfully pulled & restored latest data snapshot from Supabase! (Updated by ${cloudData.updatedBy || 'Admin'})`
+      });
+      setTimeout(() => setBackupNotification(null), 6000);
+    } catch (err) {
+      console.error("Cloud pull failed:", err);
+      setBackupNotification({
+        type: "error",
+        text: `Failed to pull from cloud: ${err.message || "Please verify Supabase tables exist."}`
+      });
+    } finally {
+      setIsSyncingCloud(false);
+    }
+  };
+
+  // Auto-save system state to localStorage
+  React.useEffect(() => {
+    try {
+      const payload = {
+        system: "AdPulse ERP Financial System",
+        version: "1.0",
+        timestamp: new Date().toISOString(),
+        lastSavedBy: currentUser ? currentUser.name : "System",
+        data: {
+          journal,
+          invoices,
+          expenses,
+          purchaseOrders,
+          projects,
+          bankAccounts,
+          hoardings,
+          inventoryItems,
+          inventoryLogs,
+          vouchers,
+          documents,
+          employees,
+          leaveRequests,
+          payrollRuns,
+          usersList
+        }
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+    } catch (e) {
+      console.error("Auto-save to localStorage failed:", e);
+    }
+  }, [
+    journal, invoices, expenses, purchaseOrders, projects, bankAccounts,
+    hoardings, inventoryItems, inventoryLogs, vouchers, documents,
+    employees, leaveRequests, payrollRuns, usersList, currentUser
+  ]);
+
+  const handleExportBackup = () => {
+    try {
+      const payload = {
+        system: "AdPulse ERP Financial System",
+        version: "1.0.0",
+        timestamp: new Date().toISOString(),
+        exportedBy: currentUser ? `${currentUser.name} (${currentUser.role})` : "Admin",
+        dataSummary: {
+          totalJournalEntries: journal.length,
+          totalInvoices: invoices.length,
+          totalExpenses: expenses.length,
+          totalProjects: projects.length,
+          totalBankAccounts: bankAccounts.length,
+          totalEmployees: employees.length,
+          totalUsers: usersList.length
+        },
+        data: {
+          journal,
+          invoices,
+          expenses,
+          purchaseOrders,
+          projects,
+          bankAccounts,
+          hoardings,
+          inventoryItems,
+          inventoryLogs,
+          vouchers,
+          documents,
+          employees,
+          leaveRequests,
+          payrollRuns,
+          usersList
+        }
+      };
+
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(payload, null, 2));
+      const downloadAnchor = document.createElement("a");
+      const filename = `AdPulse_Financial_Backup_${new Date().toISOString().slice(0, 10)}_${Date.now().toString().slice(-4)}.json`;
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", filename);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+
+      const timeNow = new Date().toLocaleString();
+      setLastBackupTime(timeNow);
+      setBackupNotification({
+        type: "success",
+        text: `Backup exported successfully as "${filename}"!`
+      });
+      setTimeout(() => setBackupNotification(null), 6000);
+    } catch (e) {
+      console.error("Backup export failed:", e);
+      setBackupNotification({
+        type: "error",
+        text: "Failed to export backup file."
+      });
+    }
+  };
+
+  const handleRestoreBackup = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const jsonContent = event.target?.result;
+        if (!jsonContent) throw new Error("Uploaded file is empty.");
+        const parsed = JSON.parse(jsonContent.toString());
+
+        const backupData = parsed.data || parsed;
+        if (!backupData || typeof backupData !== "object") {
+          throw new Error("Invalid backup structure. Data object not found.");
+        }
+
+        if (!backupData.journal && !backupData.invoices && !backupData.projects) {
+          throw new Error("Invalid backup file. Required financial modules are missing.");
+        }
+
+        if (Array.isArray(backupData.journal)) setJournal(backupData.journal);
+        if (Array.isArray(backupData.invoices)) setInvoices(backupData.invoices);
+        if (Array.isArray(backupData.expenses)) setExpenses(backupData.expenses);
+        if (Array.isArray(backupData.purchaseOrders)) setPurchaseOrders(backupData.purchaseOrders);
+        if (Array.isArray(backupData.projects)) setProjects(backupData.projects);
+        if (Array.isArray(backupData.bankAccounts)) setBankAccounts(backupData.bankAccounts);
+        if (Array.isArray(backupData.hoardings)) setHoardings(backupData.hoardings);
+        if (Array.isArray(backupData.inventoryItems)) setInventoryItems(backupData.inventoryItems);
+        if (Array.isArray(backupData.inventoryLogs)) setInventoryLogs(backupData.inventoryLogs);
+        if (Array.isArray(backupData.vouchers)) setVouchers(backupData.vouchers);
+        if (Array.isArray(backupData.documents)) setDocuments(backupData.documents);
+        if (Array.isArray(backupData.employees)) setEmployees(backupData.employees);
+        if (Array.isArray(backupData.leaveRequests)) setLeaveRequests(backupData.leaveRequests);
+        if (Array.isArray(backupData.payrollRuns)) setPayrollRuns(backupData.payrollRuns);
+        if (Array.isArray(backupData.usersList)) setUsersList(backupData.usersList);
+
+        const restoredTime = new Date().toLocaleString();
+        setLastBackupTime(restoredTime);
+        setBackupNotification({
+          type: "success",
+          text: `System state successfully restored from "${file.name}"!`
+        });
+        setTimeout(() => setBackupNotification(null), 7000);
+      } catch (err) {
+        console.error("Failed to restore backup:", err);
+        setBackupNotification({
+          type: "error",
+          text: `Backup Restore Failed: ${err.message || "Invalid JSON format."}`
+        });
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = "";
+  };
+
+  const handleResetData = () => {
+    if (window.confirm("CAUTION: Are you sure you want to reset all system data back to initial demo data? Any unexported local changes will be reset.")) {
+      const initial = buildInitialData();
+      setJournal(initial.journal);
+      setInvoices(initial.invoices);
+      setExpenses(initial.expenses);
+      setPurchaseOrders([]);
+      setProjects(initial.projects);
+      setBankAccounts(initial.bankAccounts || []);
+      setHoardings(initial.hoardings);
+      setInventoryItems(initial.inventoryItems || []);
+      setInventoryLogs(initial.inventoryLogs || []);
+      setVouchers([]);
+      setDocuments([]);
+      setEmployees(initial.employees);
+      setLeaveRequests(initial.leaveRequests);
+      setPayrollRuns(initial.payrollRuns);
+      setUsersList(SEED_USERS);
+      localStorage.removeItem(STORAGE_KEY);
+      setLastBackupTime(null);
+      setBackupNotification({
+        type: "success",
+        text: "System data reset to initial default seed data successfully."
+      });
+      setTimeout(() => setBackupNotification(null), 5000);
+    }
+  };
+
   const [editingEmployee, setEditingEmployee] = useState(null);
-  const [leaveRequests, setLeaveRequests] = useState(seedData.leaveRequests);
-  const [payrollRuns, setPayrollRuns] = useState(seedData.payrollRuns);
   const [attendanceToday, setAttendanceToday] = useState(() => {
     const onLeaveIds = new Set(seedData.leaveRequests
       .filter(l => l.status === "Approved" && l.fromDate <= "2026-07-21" && l.toDate >= "2026-07-21")
@@ -630,15 +952,6 @@ export default function App() {
     });
     return m;
   });
-  const [hrView, setHrView] = useState("directory");
-  const [showEmployeeForm, setShowEmployeeForm] = useState(false);
-  const [showLeaveForm, setShowLeaveForm] = useState(false);
-  const [employeeDetail, setEmployeeDetail] = useState(null);
-  const [payrollConfirm, setPayrollConfirm] = useState(false);
-
-  /* User Management state for Admin Settings */
-  const [showAddUserForm, setShowAddUserForm] = useState(false);
-  const [editingUser, setEditingUser] = useState(null);
 
   const voucherCounters = useRef({ JV: 0, PV: 0, RV: 0, SV: 0 });
 
@@ -768,8 +1081,20 @@ export default function App() {
 
   /* User & Password Actions */
   function handleLogin(userObj) {
-    setCurrentUser(userObj);
-    const firstAllowed = userObj.allowedTabs?.[0] || "dashboard";
+    if (!userObj) return;
+    const allowed = Array.isArray(userObj.allowedTabs) && userObj.allowedTabs.length > 0
+      ? userObj.allowedTabs
+      : ALL_MODULE_TABS.map(t => t.key);
+
+    const safeUser = {
+      ...userObj,
+      name: userObj.name || "User",
+      role: userObj.role || "Staff",
+      department: userObj.department || "General",
+      allowedTabs: allowed
+    };
+    setCurrentUser(safeUser);
+    const firstAllowed = allowed[0] || "dashboard";
     setTab(firstAllowed);
   }
 
@@ -1367,8 +1692,9 @@ export default function App() {
 
   const NAV = useMemo(() => {
     if (!currentUser) return [];
-    let items = ALL_NAV_ITEMS.filter(n => currentUser.allowedTabs.includes(n.key));
-    if (currentUser.role === "Admin") {
+    const allowed = Array.isArray(currentUser.allowedTabs) ? currentUser.allowedTabs : ALL_MODULE_TABS.map(t => t.key);
+    let items = ALL_NAV_ITEMS.filter(n => allowed.includes(n.key));
+    if (currentUser.role === "Admin" && !items.some(i => i.key === "settings")) {
       items.push({ key: "settings", label: "Admin Settings", icon: Settings });
     }
     return items;
@@ -1435,14 +1761,18 @@ export default function App() {
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             {/* User Profile Badge */}
             <div style={{ display: "flex", alignItems: "center", gap: 10, background: "#F1F5F9", padding: "6px 12px", borderRadius: 10, border: "1px solid #CBD5E1" }}>
-              <div style={{ background: currentUser.role === "Admin" ? "#B8860B" : "#0284C7", color: "#FFFFFF", width: 28, height: 28, borderRadius: 7, display: "flex", alignItems: "center", justifyCenter: "center", fontWeight: 700, fontSize: 13 }}>
-                {currentUser.name.charAt(0)}
+              <div style={{ background: (currentUser?.role === "Admin") ? "#B8860B" : "#0284C7", color: "#FFFFFF", width: 28, height: 28, borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 13 }}>
+                {(currentUser?.name || "U").charAt(0)}
               </div>
               <div style={{ fontSize: 13 }}>
-                <div style={{ fontWeight: 700, color: "#0F172A", lineHeight: 1.1 }}>{currentUser.name}</div>
-                <div style={{ fontSize: 11, color: "#475569" }}>{currentUser.role} &middot; {currentUser.department}</div>
+                <div style={{ fontWeight: 700, color: "#0F172A", lineHeight: 1.1 }}>{currentUser?.name || "User"}</div>
+                <div style={{ fontSize: 11, color: "#475569" }}>{currentUser?.role || "Staff"} &middot; {currentUser?.department || "General"}</div>
               </div>
             </div>
+
+            <button className="btn" style={{ padding: "7px 11px", fontSize: 13, borderColor: "var(--gold)", color: "var(--gold)", fontWeight: 600 }} onClick={handleExportBackup} title="Quick Backup Data (.json)">
+              <Download size={14} /> Backup
+            </button>
 
             <button className="btn" style={{ padding: "7px 11px", fontSize: 13 }} onClick={() => setShowChangePassword(true)} title="Change Password">
               <Lock size={14} /> Password
@@ -2680,6 +3010,110 @@ export default function App() {
                 </table>
               </div>
             </div>
+
+            {/* SUPABASE CLOUD CONNECTION & SYNC CARD */}
+            <SupabaseConfigCard
+              config={supabaseConfig}
+              onSaveConfig={handleSaveSupabaseConfig}
+              onPushToCloud={handlePushToCloud}
+              onPullFromCloud={handlePullFromCloud}
+              isSyncing={isSyncingCloud}
+            />
+
+            {/* DATA BACKUP & DISASTER RECOVERY CENTER */}
+            <div style={{ marginTop: 28 }}>
+              <div className="section-title" style={{ marginBottom: 12 }}>
+                <HardDrive size={20} color="var(--gold)" /> Data Backup &amp; Disaster Recovery Center
+              </div>
+
+              {backupNotification && (
+                <div style={{
+                  padding: "12px 16px",
+                  borderRadius: 8,
+                  marginBottom: 16,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
+                  fontSize: 14,
+                  fontWeight: 600,
+                  background: backupNotification.type === "success" ? "#ECFDF5" : "#FEF2F2",
+                  color: backupNotification.type === "success" ? "#065F46" : "#991B1B",
+                  border: `1px solid ${backupNotification.type === "success" ? "#A7F3D0" : "#FCA5A5"}`
+                }}>
+                  {backupNotification.type === "success" ? <CheckCircle2 size={18} /> : <AlertTriangle size={18} />}
+                  <div>{backupNotification.text}</div>
+                </div>
+              )}
+
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 16 }}>
+                {/* Export Backup Card */}
+                <div className="card" style={{ padding: 20, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+                  <div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+                      <div style={{ background: "#FEF3C7", color: "#B8860B", padding: 8, borderRadius: 8 }}>
+                        <Download size={22} />
+                      </div>
+                      <div>
+                        <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700 }}>Export System Backup</h3>
+                        <p style={{ margin: 0, fontSize: 12.5, color: "var(--ink-muted)" }}>Download complete database snapshot as a JSON file</p>
+                      </div>
+                    </div>
+                    <div style={{ fontSize: 13, color: "#475569", margin: "12px 0 16px", lineHeight: 1.5 }}>
+                      Includes <strong>Journal Entries ({journal.length})</strong>, <strong>Invoices ({invoices.length})</strong>, <strong>Expenses ({expenses.length})</strong>, <strong>Projects ({projects.length})</strong>, <strong>Bank Accounts ({bankAccounts.length})</strong>, &amp; <strong>Users ({usersList.length})</strong>.
+                    </div>
+                  </div>
+                  <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", gap: 8, padding: "10px 14px", fontWeight: 700 }} onClick={handleExportBackup}>
+                    <Download size={16} /> Download Backup (.json)
+                  </button>
+                </div>
+
+                {/* Restore Backup Card */}
+                <div className="card" style={{ padding: 20, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+                  <div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+                      <div style={{ background: "#E0F2FE", color: "#0284C7", padding: 8, borderRadius: 8 }}>
+                        <Upload size={22} />
+                      </div>
+                      <div>
+                        <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700 }}>Restore Data Snapshot</h3>
+                        <p style={{ margin: 0, fontSize: 12.5, color: "var(--ink-muted)" }}>Restore system state from a previously saved JSON backup</p>
+                      </div>
+                    </div>
+                    <div style={{ fontSize: 13, color: "#475569", margin: "12px 0 16px", lineHeight: 1.5 }}>
+                      Upload a valid <code>.json</code> backup file to instant-restore all financial records, vouchers, and staff permissions.
+                    </div>
+                  </div>
+                  <label className="btn" style={{ width: "100%", justifyContent: "center", gap: 8, padding: "10px 14px", fontWeight: 700, cursor: "pointer", background: "#0284C7", color: "#FFFFFF", borderColor: "#0284C7" }}>
+                    <Upload size={16} /> Select Backup File to Restore
+                    <input type="file" accept=".json" onChange={handleRestoreBackup} style={{ display: "none" }} />
+                  </label>
+                </div>
+
+                {/* Local Storage & Reset Card */}
+                <div className="card" style={{ padding: 20, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+                  <div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+                      <div style={{ background: "#F1F5F9", color: "#475569", padding: 8, borderRadius: 8 }}>
+                        <HardDrive size={22} />
+                      </div>
+                      <div>
+                        <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700 }}>Auto-Save &amp; Factory Reset</h3>
+                        <p style={{ margin: 0, fontSize: 12.5, color: "var(--ink-muted)" }}>Manage local browser storage state</p>
+                      </div>
+                    </div>
+                    <div style={{ fontSize: 13, color: "#475569", margin: "12px 0 16px", lineHeight: 1.5 }}>
+                      <div><strong>Auto-Save Status:</strong> Active (Local Storage)</div>
+                      <div style={{ marginTop: 4, fontSize: 12, color: "var(--ink-muted)" }}>
+                        {lastBackupTime ? `Last Saved: ${lastBackupTime}` : "Data auto-saved on every change"}
+                      </div>
+                    </div>
+                  </div>
+                  <button className="btn" style={{ width: "100%", justifyContent: "center", gap: 8, padding: "10px 14px", fontWeight: 700, color: "var(--rose)", borderColor: "#FCA5A5" }} onClick={handleResetData}>
+                    <RefreshCw size={16} /> Reset to Demo Data
+                  </button>
+                </div>
+              </div>
+            </div>
           </>
         )}
         </div>
@@ -2810,6 +3244,81 @@ export default function App() {
           onSubmit={editingBankAccount ? updateBankAccount : createBankAccount}
         />
       )}
+    </div>
+  );
+}
+
+/* ---------- SUPABASE CLOUD CONFIGURATOR COMPONENT ---------- */
+
+function SupabaseConfigCard({ config, onSaveConfig, onPushToCloud, onPullFromCloud, isSyncing }) {
+  const [urlInput, setUrlInput] = useState(config.url || "");
+  const [keyInput, setKeyInput] = useState(config.key || "");
+  const [showKey, setShowKey] = useState(false);
+  const isConnected = Boolean(config.url && config.key);
+
+  return (
+    <div className="card" style={{ padding: 20, marginTop: 24 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <div style={{ background: isConnected ? "#ECFDF5" : "#FEF3C7", color: isConnected ? "#059669" : "#D97706", padding: 8, borderRadius: 8 }}>
+            {isConnected ? <Cloud size={22} /> : <CloudOff size={22} />}
+          </div>
+          <div>
+            <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700 }}>
+              Supabase Cloud Database Sync {isConnected ? <span className="badge-mini" style={{ background: "#DCFCE7", color: "#166534", marginLeft: 6 }}>Connected</span> : <span className="badge-mini" style={{ background: "#FEF3C7", color: "#92400E", marginLeft: 6 }}>Offline Local Mode</span>}
+            </h3>
+            <p style={{ margin: 0, fontSize: 12.5, color: "var(--ink-muted)" }}>Connect your free Supabase cloud database for multi-device team sync &amp; automated backups</p>
+          </div>
+        </div>
+        {isConnected && (
+          <div style={{ display: "flex", gap: 8 }}>
+            <button className="btn" style={{ fontSize: 13, gap: 6 }} onClick={onPullFromCloud} disabled={isSyncing}>
+              <Upload size={14} /> Pull from Cloud
+            </button>
+            <button className="btn btn-primary" style={{ fontSize: 13, gap: 6 }} onClick={onPushToCloud} disabled={isSyncing}>
+              <Cloud size={14} /> Push Local Data to Cloud
+            </button>
+          </div>
+        )}
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr auto", gap: 12, alignItems: "end", background: "#F8FAFC", padding: 14, borderRadius: 8, border: "1px solid #E2E8F0" }}>
+        <div>
+          <label style={{ fontSize: 12, fontWeight: 700, color: "#475569", display: "block", marginBottom: 4 }}>Supabase Project URL</label>
+          <input
+            type="text"
+            placeholder="https://your-project.supabase.co"
+            value={urlInput}
+            onChange={e => setUrlInput(e.target.value)}
+            style={{ width: "100%", padding: "7px 10px", fontSize: 13, border: "1px solid #CBD5E1", borderRadius: 6 }}
+          />
+        </div>
+        <div>
+          <label style={{ fontSize: 12, fontWeight: 700, color: "#475569", display: "block", marginBottom: 4 }}>Supabase Anon API Key</label>
+          <div style={{ position: "relative" }}>
+            <input
+              type={showKey ? "text" : "password"}
+              placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+              value={keyInput}
+              onChange={e => setKeyInput(e.target.value)}
+              style={{ width: "100%", padding: "7px 32px 7px 10px", fontSize: 13, border: "1px solid #CBD5E1", borderRadius: 6 }}
+            />
+            <button type="button" onClick={() => setShowKey(!showKey)} style={{ position: "absolute", right: 6, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", color: "#64748B", cursor: "pointer" }}>
+              {showKey ? <EyeOff size={14} /> : <Eye size={14} />}
+            </button>
+          </div>
+        </div>
+        <div>
+          <button className="btn btn-primary" style={{ padding: "7px 14px", fontSize: 13 }} onClick={() => onSaveConfig(urlInput, keyInput)}>
+            Save Credentials
+          </button>
+        </div>
+      </div>
+
+      <div style={{ marginTop: 10, fontSize: 12, color: "#64748B", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div>SQL migration script generated: <code className="mono" style={{ color: "#B8860B" }}>supabase_schema.sql</code> (Run in your Supabase SQL Editor)</div>
+        <div style={{ fontSize: 11.5, color: "#94A3B8" }}>Credentials saved locally in browser or via .env</div>
+      </div>
     </div>
   );
 }
