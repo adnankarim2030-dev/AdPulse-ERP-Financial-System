@@ -1770,7 +1770,7 @@ export default function App() {
               </div>
             </div>
 
-            <button className="btn" style={{ padding: "7px 11px", fontSize: 13, borderColor: "var(--gold)", color: "var(--gold)", fontWeight: 600 }} onClick={handleExportBackup} title="Quick Backup Data (.json)">
+            <button className="btn" style={{ padding: "7px 11px", fontSize: 13 }} onClick={handleExportBackup} title="Quick Backup Data (.json)">
               <Download size={14} /> Backup
             </button>
 
@@ -1778,7 +1778,7 @@ export default function App() {
               <Lock size={14} /> Password
             </button>
 
-            <button className="btn" style={{ padding: "7px 11px", fontSize: 13, color: "var(--rose)", borderColor: "#FCA5A5" }} onClick={handleLogout} title="Sign Out">
+            <button className="btn" style={{ padding: "7px 11px", fontSize: 13 }} onClick={handleLogout} title="Sign Out">
               <LogOut size={14} /> Exit
             </button>
           </div>
