@@ -1761,9 +1761,19 @@ export default function App() {
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             {/* User Profile Badge */}
             <div style={{ display: "flex", alignItems: "center", gap: 10, background: "#FFFFFF", padding: "6px 14px", borderRadius: 10, border: "1px solid #CBD5E1", boxShadow: "0 2px 6px rgba(0,0,0,0.04)" }}>
-              <div style={{ background: (currentUser?.role === "Admin") ? "#B8860B" : "#0284C7", color: "#FFFFFF", width: 30, height: 30, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 13.5 }}>
-                {(currentUser?.name || "U").charAt(0)}
-              </div>
+              <img
+                src="/logo.png"
+                alt="AdPulse Logo"
+                style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: 8,
+                  objectFit: "contain",
+                  background: "#FFFFFF",
+                  padding: 2,
+                  border: "1px solid #CBD5E1"
+                }}
+              />
               <div style={{ fontSize: 13 }}>
                 <div style={{ fontWeight: 700, color: "#0F172A", lineHeight: 1.1 }}>{currentUser?.name || "User"}</div>
                 <div style={{ fontSize: 11, color: "#475569", fontWeight: 500 }}>{currentUser?.role || "Staff"} &middot; {currentUser?.department || "General"}</div>
