@@ -1760,26 +1760,80 @@ export default function App() {
 
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             {/* User Profile Badge */}
-            <div style={{ display: "flex", alignItems: "center", gap: 10, background: "#F1F5F9", padding: "6px 12px", borderRadius: 10, border: "1px solid #CBD5E1" }}>
-              <div style={{ background: (currentUser?.role === "Admin") ? "#B8860B" : "#0284C7", color: "#FFFFFF", width: 28, height: 28, borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 13 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, background: "#FFFFFF", padding: "6px 14px", borderRadius: 10, border: "1px solid #CBD5E1", boxShadow: "0 2px 6px rgba(0,0,0,0.04)" }}>
+              <div style={{ background: (currentUser?.role === "Admin") ? "#B8860B" : "#0284C7", color: "#FFFFFF", width: 30, height: 30, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 13.5 }}>
                 {(currentUser?.name || "U").charAt(0)}
               </div>
               <div style={{ fontSize: 13 }}>
                 <div style={{ fontWeight: 700, color: "#0F172A", lineHeight: 1.1 }}>{currentUser?.name || "User"}</div>
-                <div style={{ fontSize: 11, color: "#475569" }}>{currentUser?.role || "Staff"} &middot; {currentUser?.department || "General"}</div>
+                <div style={{ fontSize: 11, color: "#475569", fontWeight: 500 }}>{currentUser?.role || "Staff"} &middot; {currentUser?.department || "General"}</div>
               </div>
             </div>
 
-            <button className="btn" style={{ padding: "7px 11px", fontSize: 13 }} onClick={handleExportBackup} title="Quick Backup Data (.json)">
-              <Download size={14} /> Backup
+            <button
+              className="topbar-action-btn"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+                padding: "8px 14px",
+                fontSize: 13,
+                fontWeight: 700,
+                borderRadius: 9,
+                cursor: "pointer",
+                background: "#059669",
+                color: "#FFFFFF",
+                border: "1.5px solid #059669",
+                boxShadow: "0 2px 6px rgba(5, 150, 105, 0.25)"
+              }}
+              onClick={handleExportBackup}
+              title="Quick Backup Data (.json)"
+            >
+              <Download size={14} color="#FFFFFF" /> Backup
             </button>
 
-            <button className="btn" style={{ padding: "7px 11px", fontSize: 13 }} onClick={() => setShowChangePassword(true)} title="Change Password">
-              <Lock size={14} /> Password
+            <button
+              className="topbar-action-btn"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+                padding: "8px 14px",
+                fontSize: 13,
+                fontWeight: 700,
+                borderRadius: 9,
+                cursor: "pointer",
+                background: "#059669",
+                color: "#FFFFFF",
+                border: "1.5px solid #059669",
+                boxShadow: "0 2px 6px rgba(5, 150, 105, 0.25)"
+              }}
+              onClick={() => setShowChangePassword(true)}
+              title="Change Password"
+            >
+              <Lock size={14} color="#FFFFFF" /> Password
             </button>
 
-            <button className="btn" style={{ padding: "7px 11px", fontSize: 13 }} onClick={handleLogout} title="Sign Out">
-              <LogOut size={14} /> Exit
+            <button
+              className="topbar-action-btn-exit"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+                padding: "8px 14px",
+                fontSize: 13,
+                fontWeight: 700,
+                borderRadius: 9,
+                cursor: "pointer",
+                background: "#DC2626",
+                color: "#FFFFFF",
+                border: "1.5px solid #DC2626",
+                boxShadow: "0 2px 6px rgba(220, 38, 38, 0.25)"
+              }}
+              onClick={handleLogout}
+              title="Sign Out"
+            >
+              <LogOut size={14} color="#FFFFFF" /> Exit
             </button>
           </div>
         </div>

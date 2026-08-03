@@ -397,6 +397,26 @@ button.btn-primary:focus,
   cursor: not-allowed;
 }
 
+.topbar-action-btn:hover {
+  background: #FFFFFF !important;
+  color: #059669 !important;
+  border-color: #059669 !important;
+}
+
+.topbar-action-btn:hover svg {
+  stroke: #059669 !important;
+}
+
+.topbar-action-btn-exit:hover {
+  background: #FFFFFF !important;
+  color: #DC2626 !important;
+  border-color: #DC2626 !important;
+}
+
+.topbar-action-btn-exit:hover svg {
+  stroke: #DC2626 !important;
+}
+
 .mobile-toggle {
   display: none;
   background: #FFFFFF;
