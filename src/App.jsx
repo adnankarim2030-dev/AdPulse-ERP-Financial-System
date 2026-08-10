@@ -2505,12 +2505,40 @@ export default function App() {
                           </thead>
                           <tbody>
                             {(() => {
-                              let balance = 0;
-                              return filteredEntries.map((entry, i) => {
+                              const selectedBank = bankAccounts.find(b => b.id === cashBankFilter);
+                              const startOpeningBalance = selectedBank ? (selectedBank.openingBalance || 0) : (cashBankFilter === "all" ? bankAccounts.reduce((s, b) => s + (b.openingBalance || 0), 0) : 0);
+                              
+                              let balance = startOpeningBalance;
+                              const rows = [];
+
+                              if (startOpeningBalance > 0) {
+                                rows.push(
+                                  <tr key="opening" style={{ background: "rgba(14, 165, 233, 0.04)" }}>
+                                    <td className="mono" style={{ fontSize: 12.5 }}>21 Jul 2026</td>
+                                    <td className="mono" style={{ fontWeight: 600, color: "var(--gold)", fontSize: 12 }}>OP-BAL</td>
+                                    <td>
+                                      <span className="badge-mini">
+                                        {selectedBank ? selectedBank.bankName : "Opening Balance"}
+                                      </span>
+                                    </td>
+                                    <td style={{ fontWeight: 600 }}>Opening Balance — {selectedBank ? selectedBank.bankName : "Combined Liquidity"}</td>
+                                    <td className="mono" style={{ textAlign: "right", color: "var(--emerald)", fontWeight: 600 }}>
+                                      {pkr(startOpeningBalance)}
+                                    </td>
+                                    <td className="mono" style={{ textAlign: "right", color: "var(--rose)", fontWeight: 600 }}>—</td>
+                                    <td className="mono" style={{ textAlign: "right", fontWeight: 700, color: "var(--emerald)" }}>
+                                      {pkr(startOpeningBalance)}
+                                    </td>
+                                  </tr>
+                                );
+                              }
+
+                              filteredEntries.forEach((entry, i) => {
+                                if (entry.description?.toLowerCase().includes("opening balance")) return;
                                 balance += (entry.debit - entry.credit);
                                 const bankLine = entry.lines?.find(l => l.bankAccountId);
                                 const bankInfo = bankAccounts.find(b => b.id === bankLine?.bankAccountId);
-                                return (
+                                rows.push(
                                   <tr key={i}>
                                     <td className="mono" style={{ fontSize: 12.5 }}>{fmtDate(entry.date)}</td>
                                     <td className="mono" style={{ fontWeight: 600, color: "var(--gold)", fontSize: 12 }}>{entry.ref}</td>
@@ -2532,7 +2560,10 @@ export default function App() {
                                   </tr>
                                 );
                               });
+
+                              return rows;
                             })()}
+
                             {filteredEntries.length === 0 && (
                               <tr>
                                 <td colSpan={7} style={{ textAlign: "center", padding: 20, color: "var(--ink-muted)" }}>
