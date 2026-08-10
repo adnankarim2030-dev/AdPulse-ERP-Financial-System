@@ -1454,7 +1454,7 @@ export default function App() {
     return `${type}-${String(voucherCounters.current[type]).padStart(3, "0")}`;
   }
 
-  function createVoucher(type, { date, party, description, amount, category, via, settleAR, lines }) {
+  function createVoucher(type, { projectId, date, party, description, amount, category, via, settleAR, lines }) {
     const voucherNo = makeVoucherNo(type);
     let journalLines = lines;
     if (type === "PV") {
@@ -1478,11 +1478,12 @@ export default function App() {
         { account: "revenue", debit: 0, credit: amount },
       ];
     }
-    postEntry(date, description, journalLines, voucherNo);
-    setVouchers(v => [{ id: uid(), voucherNo, type, date, party, description, amount }, ...v]);
+    postEntry(date, projectId ? `[Project] ${description}` : description, journalLines, voucherNo);
+    setVouchers(v => [{ id: uid(), voucherNo, type, projectId: projectId || null, date, party, description, amount }, ...v]);
     setShowVoucherForm(false);
     return voucherNo;
   }
+
 
   function addHoarding(siteData) {
     const newSite = { id: uid(), status: "Available", project: "", client: "", ...siteData };
@@ -3747,7 +3748,8 @@ export default function App() {
       {editingPO && <POModal initialData={editingPO} projects={projects} onClose={() => setEditingPO(null)} onSubmit={updatePO} />}
       {payingPOId && <PayPOModal po={purchaseOrders.find(p => p.id === payingPOId)} onClose={() => setPayingPOId(null)} onSubmit={(id, via, date) => { payPO(id, via, date); setPayingPOId(null); }} />}
 
-      {showVoucherForm && <VoucherModal defaultType={voucherDefaultType} onClose={() => setShowVoucherForm(false)} onSubmit={createVoucher} />}
+      {showVoucherForm && <VoucherModal projects={projects} defaultType={voucherDefaultType} onClose={() => setShowVoucherForm(false)} onSubmit={createVoucher} />}
+
 
       {pnlDrillDown && (
         <ModalShell title={`P&L Line Item Breakdown: ${pnlDrillDown.title}`} onClose={() => setPnlDrillDown(null)}>
@@ -4824,8 +4826,9 @@ function BankAccountModal({ initialData, onClose, onSubmit }) {
   );
 }
 
-function VoucherModal({ defaultType, onClose, onSubmit }) {
+function VoucherModal({ defaultType, projects = [], onClose, onSubmit }) {
   const [type, setType] = useState(defaultType || "JV");
+  const [projectId, setProjectId] = useState("");
   const [description, setDescription] = useState("");
   const [date, setDate] = useState("2026-07-21");
   const [party, setParty] = useState("");
@@ -4838,6 +4841,14 @@ function VoucherModal({ defaultType, onClose, onSubmit }) {
     { account: "revenue", debit: "", credit: "" },
   ]);
 
+  const handleProjectSelect = (id) => {
+    setProjectId(id);
+    const prj = projects.find(p => p.id === id);
+    if (prj && !party) {
+      setParty(prj.client);
+    }
+  };
+
   const updateLine = (i, key, val) => setLines(ls => ls.map((l, idx) => idx === i ? { ...l, [key]: val } : l));
   const totalD = lines.reduce((s, l) => s + (Number(l.debit) || 0), 0);
   const totalC = lines.reduce((s, l) => s + (Number(l.credit) || 0), 0);
@@ -4849,11 +4860,11 @@ function VoucherModal({ defaultType, onClose, onSubmit }) {
     if (!valid) return;
     if (type === "JV") {
       onSubmit("JV", {
-        date, party: "", description,
+        projectId, date, party: "", description,
         lines: lines.filter(l => Number(l.debit) || Number(l.credit)).map(l => ({ account: l.account, debit: Number(l.debit) || 0, credit: Number(l.credit) || 0 })),
       });
     } else {
-      onSubmit(type, { date, party, description, amount: Number(amount), category, via, settleAR });
+      onSubmit(type, { projectId, date, party, description, amount: Number(amount), category, via, settleAR });
     }
   }
 
@@ -4865,6 +4876,19 @@ function VoucherModal({ defaultType, onClose, onSubmit }) {
           {Object.entries(VOUCHER_TYPES).map(([k, v]) => <option key={k} value={k}>{k} — {v}</option>)}
         </select>
       </div>
+
+      {projects.length > 0 && (
+        <div className="field">
+          <label>Link to Project / Cost Center (Optional)</label>
+          <select value={projectId} onChange={e => handleProjectSelect(e.target.value)}>
+            <option value="">— General Office / Overhead (No Specific Project) —</option>
+            {projects.map(p => (
+              <option key={p.id} value={p.id}>{p.name} ({p.client})</option>
+            ))}
+          </select>
+        </div>
+      )}
+
       <div className="field"><label>Posting Date</label><input type="date" value={date} onChange={e => setDate(e.target.value)} /></div>
 
       {type !== "JV" && (
@@ -4925,6 +4949,7 @@ function VoucherModal({ defaultType, onClose, onSubmit }) {
     </ModalShell>
   );
 }
+
 
 function BookHoardingModal({ hoarding, projects, onClose, onSubmit }) {
   const [mode, setMode] = useState(projects.length ? "existing" : "new");
