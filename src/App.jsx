@@ -45,16 +45,71 @@ const TODAY = new Date("2026-07-21");
 const uid = (() => { let n = 1000; return () => (n++).toString(36); })();
 
 const ACCOUNTS = {
-  cash: { name: "Cash Account", type: "asset" },
-  bank: { name: "Bank Account (HBL/MCB)", type: "asset" },
-  ar: { name: "Accounts Receivable", type: "asset" },
-  revenue: { name: "Service Revenue", type: "revenue" },
-  expense: { name: "Operating Expenses", type: "expense" },
-  equity: { name: "Owner's Equity", type: "equity" },
-  srb_payable: { name: "SRB Sales Tax Payable", type: "liability" },
-  wht_receivable: { name: "WHT Receivable (Advance Tax)", type: "asset" },
-  ap: { name: "Accounts Payable", type: "liability" },
+  cash: { code: "1110", name: "Cash Account (In Hand)", type: "asset", category: "Current Assets" },
+  bank: { code: "1120", name: "Bank Account (HBL/MCB)", type: "asset", category: "Current Assets" },
+  ar: { code: "1130", name: "Accounts Receivable (Clients)", type: "asset", category: "Current Assets" },
+  wht_receivable: { code: "1140", name: "WHT Receivable (Advance Tax)", type: "asset", category: "Current Assets" },
+  equipment: { code: "1210", name: "Office & Production Equipment", type: "asset", category: "Fixed Assets" },
+  ooh_sites: { code: "1220", name: "OOH Billboard Structures", type: "asset", category: "Fixed Assets" },
+  ap: { code: "2110", name: "Accounts Payable (Vendors)", type: "liability", category: "Current Liabilities" },
+  srb_payable: { code: "2120", name: "SRB Sales Tax Payable", type: "liability", category: "Current Liabilities" },
+  equity: { code: "3110", name: "Owner's Equity / Capital", type: "equity", category: "Capital & Retained Earnings" },
+  revenue: { code: "4110", name: "Service & Media Revenue", type: "revenue", category: "Operating Revenue" },
+  direct_vendor: { code: "5110", name: "Production & Vendor Cost", type: "expense", category: "Direct Costs (COGS)", isDirect: true },
+  ad_spend: { code: "5120", name: "Media & Ad Spend", type: "expense", category: "Direct Costs (COGS)", isDirect: true },
+  payroll: { code: "5210", name: "Payroll & Salaries Expense", type: "expense", category: "Operating Expenses" },
+  rent: { code: "5220", name: "Office Rent Expense", type: "expense", category: "Operating Expenses" },
+  utilities: { code: "5230", name: "Utilities Expense", type: "expense", category: "Operating Expenses" },
+  software: { code: "5240", name: "Software & Subscriptions", type: "expense", category: "Operating Expenses" },
+  contractor: { code: "5250", name: "Contractor Fees", type: "expense", category: "Operating Expenses" },
+  expense: { code: "5260", name: "General Operating Expense", type: "expense", category: "Operating Expenses" },
 };
+
+const COA_STRUCTURE = [
+  {
+    code: "1000",
+    name: "1000 — Assets",
+    type: "asset",
+    subcategories: [
+      { code: "1100", name: "1100 — Current Assets", accounts: ["cash", "bank", "ar", "wht_receivable"] },
+      { code: "1200", name: "1200 — Non-Current & Fixed Assets", accounts: ["equipment", "ooh_sites"] },
+    ]
+  },
+  {
+    code: "2000",
+    name: "2000 — Liabilities",
+    type: "liability",
+    subcategories: [
+      { code: "2100", name: "2100 — Current Liabilities", accounts: ["ap", "srb_payable"] },
+    ]
+  },
+  {
+    code: "3000",
+    name: "3000 — Equity",
+    type: "equity",
+    subcategories: [
+      { code: "3100", name: "3100 — Capital & Retained Earnings", accounts: ["equity"] },
+    ]
+  },
+  {
+    code: "4000",
+    name: "4000 — Revenue",
+    type: "revenue",
+    subcategories: [
+      { code: "4100", name: "4100 — Operating Revenue", accounts: ["revenue"] },
+    ]
+  },
+  {
+    code: "5000",
+    name: "5000 — Expenses",
+    type: "expense",
+    subcategories: [
+      { code: "5100", name: "5100 — Direct Costs (COGS)", accounts: ["direct_vendor", "ad_spend"] },
+      { code: "5200", name: "5200 — Operating Expenses", accounts: ["payroll", "rent", "utilities", "software", "contractor", "expense"] },
+    ]
+  }
+];
+
 
 const VOUCHER_TYPES = {
   JV: "Journal Voucher",
@@ -621,6 +676,18 @@ export default function App() {
   const [showVoucherForm, setShowVoucherForm] = useState(false);
   const [voucherDefaultType, setVoucherDefaultType] = useState("JV");
 
+  /* General Ledger & COA UI States */
+  const [ledgerSubTab, setLedgerSubTab] = useState("entries");
+  const [selectedLedgerAccount, setSelectedLedgerAccount] = useState("all");
+
+  /* Profit & Loss Statement UI States */
+  const [pnlPeriod, setPnlPeriod] = useState("month");
+  const [pnlCustomStart, setPnlCustomStart] = useState("2026-07-01");
+  const [pnlCustomEnd, setPnlCustomEnd] = useState("2026-07-31");
+  const [showPnlComparison, setShowPnlComparison] = useState(false);
+  const [pnlDrillDown, setPnlDrillDown] = useState(null);
+
+
   const [showProjectForm, setShowProjectForm] = useState(false);
   const [editingProject, setEditingProject] = useState(null);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
@@ -996,6 +1063,140 @@ export default function App() {
   const totalSstInvoiced = invoices.reduce((s, i) => s + (i.applySst ? i.sstAmount : 0), 0);
   const netProfit = revenueBalance - expenseBalance;
 
+  const handleReverseEntry = (entry) => {
+    if (!window.confirm(`Create audit reversal entry for Voucher ${entry.reference || entry.id}?\n\nParticulars: "${entry.description}"\n\nThis will post an opposite entry to maintain audit trail without deleting original records.`)) return;
+    const revRef = `REV-${entry.reference || entry.id}`;
+    const revLines = entry.lines.map(l => ({
+      account: l.account,
+      debit: l.credit,
+      credit: l.debit,
+      memo: `Reversal of ${l.memo || entry.description}`
+    }));
+    const revDate = new Date().toISOString().split("T")[0];
+    postEntry(revDate, `Audit Reversal: ${entry.description}`, revLines, revRef);
+    setBackupNotification({
+      type: "success",
+      text: `Reversal Voucher ${revRef} successfully posted into General Ledger!`
+    });
+    setTimeout(() => setBackupNotification(null), 5000);
+  };
+
+  const accountLedgerData = useMemo(() => {
+    if (selectedLedgerAccount === "all") return [];
+    const accInfo = ACCOUNTS[selectedLedgerAccount];
+    const isNormalDebit = accInfo?.type === "asset" || accInfo?.type === "expense";
+
+    const rows = [];
+    let running = 0;
+    const sortedJournal = [...journal].sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    sortedJournal.forEach(e => {
+      e.lines.forEach(l => {
+        if (l.account === selectedLedgerAccount) {
+          const change = isNormalDebit ? (l.debit - l.credit) : (l.credit - l.debit);
+          running += change;
+          rows.push({
+            id: e.id,
+            date: e.date,
+            reference: e.reference,
+            description: e.description,
+            memo: l.memo,
+            debit: l.debit,
+            credit: l.credit,
+            runningBalance: running
+          });
+        }
+      });
+    });
+
+    return rows;
+  }, [journal, selectedLedgerAccount]);
+
+  /* P&L Period & Comparison Logic */
+  const pnlFilteredJournal = useMemo(() => {
+    if (pnlPeriod === "all") return journal;
+    const now = TODAY;
+    return journal.filter(e => {
+      const d = new Date(e.date);
+      if (pnlPeriod === "month") {
+        return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+      } else if (pnlPeriod === "quarter") {
+        const qNow = Math.floor(now.getMonth() / 3);
+        const qD = Math.floor(d.getMonth() / 3);
+        return qD === qNow && d.getFullYear() === now.getFullYear();
+      } else if (pnlPeriod === "year") {
+        return d.getFullYear() === now.getFullYear();
+      } else if (pnlPeriod === "custom" && pnlCustomStart && pnlCustomEnd) {
+        return d >= new Date(pnlCustomStart) && d <= new Date(pnlCustomEnd);
+      }
+      return true;
+    });
+  }, [journal, pnlPeriod, pnlCustomStart, pnlCustomEnd]);
+
+  const pnlPrevFilteredJournal = useMemo(() => {
+    if (!showPnlComparison || pnlPeriod === "all") return [];
+    const now = TODAY;
+    return journal.filter(e => {
+      const d = new Date(e.date);
+      if (pnlPeriod === "month") {
+        const prevMonth = now.getMonth() === 0 ? 11 : now.getMonth() - 1;
+        const prevYear = now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear();
+        return d.getMonth() === prevMonth && d.getFullYear() === prevYear;
+      } else if (pnlPeriod === "quarter") {
+        const qNow = Math.floor(now.getMonth() / 3);
+        const prevQ = qNow === 0 ? 3 : qNow - 1;
+        const prevYear = qNow === 0 ? now.getFullYear() - 1 : now.getFullYear();
+        const qD = Math.floor(d.getMonth() / 3);
+        return qD === prevQ && d.getFullYear() === prevYear;
+      } else if (pnlPeriod === "year") {
+        return d.getFullYear() === now.getFullYear() - 1;
+      }
+      return false;
+    });
+  }, [journal, pnlPeriod, showPnlComparison]);
+
+  const computePnlMetrics = (jList) => {
+    let rev = 0;
+    let directCosts = 0;
+    let opExpenses = 0;
+
+    const breakdown = {
+      revenue: [],
+      directCosts: [],
+      opExpenses: []
+    };
+
+    jList.forEach(e => {
+      e.lines.forEach(l => {
+        const accInfo = ACCOUNTS[l.account];
+        if (!accInfo) return;
+        if (accInfo.type === "revenue") {
+          const amt = l.credit - l.debit;
+          rev += amt;
+          breakdown.revenue.push({ ...l, date: e.date, reference: e.reference, description: e.description, amount: amt });
+        } else if (accInfo.type === "expense") {
+          const amt = l.debit - l.credit;
+          if (accInfo.isDirect) {
+            directCosts += amt;
+            breakdown.directCosts.push({ ...l, date: e.date, reference: e.reference, description: e.description, amount: amt });
+          } else {
+            opExpenses += amt;
+            breakdown.opExpenses.push({ ...l, date: e.date, reference: e.reference, description: e.description, amount: amt });
+          }
+        }
+      });
+    });
+
+    const grossProfit = rev - directCosts;
+    const netProfit = grossProfit - opExpenses;
+
+    return { rev, directCosts, grossProfit, opExpenses, netProfit, breakdown };
+  };
+
+  const pnlCurrent = useMemo(() => computePnlMetrics(pnlFilteredJournal), [pnlFilteredJournal]);
+  const pnlPrev = useMemo(() => computePnlMetrics(pnlPrevFilteredJournal), [pnlPrevFilteredJournal]);
+
+
   const overdueTotal = invoicesWithStatus.filter(i => i.status === "Overdue").reduce((s, i) => s + i.amount, 0);
   const unpaidTotal = invoicesWithStatus.filter(i => i.status !== "Paid").reduce((s, i) => s + i.amount, 0);
 
@@ -1123,8 +1324,8 @@ export default function App() {
   }
 
   /* Financial Actions */
-  function addInvoice({ client, description, amount, applySst, sstRate, sstAmount, applyWht, whtRate, whtAmount, totalAmount, issueDate, dueDate }) {
-    const inv = { id: uid(), client, description, amount, applySst, sstRate, sstAmount, applyWht, whtRate, whtAmount, totalAmount, issueDate, dueDate, paid: false, paidVia: null };
+  function addInvoice({ projectId, client, description, amount, applySst, sstRate, sstAmount, applyWht, whtRate, whtAmount, totalAmount, issueDate, dueDate }) {
+    const inv = { id: uid(), projectId: projectId || null, client, description, amount, applySst, sstRate, sstAmount, applyWht, whtRate, whtAmount, totalAmount, issueDate, dueDate, paid: false, paidVia: null };
     setInvoices(list => [inv, ...list]);
     
     const lines = [
@@ -1169,8 +1370,8 @@ export default function App() {
     alert(`Successfully posted remittance of ${pkr(srbPayableBalance)} to SRB.`);
   }
 
-  function addExpense({ vendor, category, amount, date, status, paidVia }) {
-    const exp = { id: uid(), vendor, category, amount, date, status, paidVia };
+  function addExpense({ projectId, vendor, category, amount, date, status, paidVia }) {
+    const exp = { id: uid(), projectId: projectId || null, vendor, category, amount, date, status, paidVia };
     setExpenses(list => [exp, ...list]);
     postEntry(date, `${vendor} (${category})`, [
       { account: "expense", debit: amount, credit: 0, memo: category },
@@ -1178,6 +1379,7 @@ export default function App() {
     ], "EXP-" + exp.id.toUpperCase());
     setShowExpenseForm(false);
   }
+
 
   function payExpense(expenseId, paymentVia, paymentDate) {
     const exp = expenses.find(e => e.id === expenseId);
@@ -2914,6 +3116,7 @@ export default function App() {
                     <button className="btn btn-primary" style={{ fontSize: 13 }} onClick={() => postDocumentToLedger(doc)}>
                       Confirm &amp; Post to General Ledger
                     </button>
+
                   </>
                 )}
               </div>
@@ -2923,61 +3126,401 @@ export default function App() {
 
         {tab === "ledger" && (
           <>
-            <div className="card" style={{ padding: 18, marginBottom: 16, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 10 }}>
-              <div className="section-title" style={{ margin: 0 }}>
-                <BookOpenText size={18} color="var(--gold)" /> Double-Entry Trial Balance Verification
+            {/* Ledger Sub-Nav Header */}
+            <div className="card" style={{ padding: 14, marginBottom: 16, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                <button
+                  className={"btn" + (ledgerSubTab === "entries" ? " btn-primary" : "")}
+                  onClick={() => setLedgerSubTab("entries")}
+                  style={{ fontSize: 13, padding: "7px 14px" }}
+                >
+                  <BookOpenText size={15} /> Journal Entries &amp; Trial Balance
+                </button>
+                <button
+                  className={"btn" + (ledgerSubTab === "coa" ? " btn-primary" : "")}
+                  onClick={() => setLedgerSubTab("coa")}
+                  style={{ fontSize: 13, padding: "7px 14px" }}
+                >
+                  <Layers size={15} /> Hierarchical Chart of Accounts
+                </button>
+                <button
+                  className={"btn" + (ledgerSubTab === "running_balance" ? " btn-primary" : "")}
+                  onClick={() => setLedgerSubTab("running_balance")}
+                  style={{ fontSize: 13, padding: "7px 14px" }}
+                >
+                  <SlidersHorizontal size={15} /> Account Running Balance
+                </button>
               </div>
-              <div className="mono" style={{ fontSize: 14 }}>
-                Debits {pkr(totalDebit)} &nbsp;=&nbsp; Credits {pkr(totalCredit)} &nbsp;&mdash;&nbsp;
+
+              <div className="mono" style={{ fontSize: 13.5 }}>
+                Debits {pkr(totalDebit)} = Credits {pkr(totalCredit)} &nbsp;&mdash;&nbsp;
                 <span className={isBalanced ? "trial-ok" : "trial-bad"} style={{ fontWeight: 700 }}>
                   {isBalanced ? "✓ Balanced" : "Out of Balance"}
                 </span>
               </div>
             </div>
 
-            {journal.map(e => (
-              <div className="card" key={e.id} style={{ padding: 16, marginBottom: 12 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10, flexWrap: "wrap", gap: 4 }}>
-                  <div style={{ fontWeight: 600, fontSize: 14.5 }}>{e.description}</div>
-                  <div style={{ fontSize: 13, color: "var(--ink-muted)" }} className="mono">{e.reference} &middot; {fmtDate(e.date)}</div>
+            {/* Sub-Tab 1: Journal Entries List & Reversal */}
+            {ledgerSubTab === "entries" && (
+              <>
+                {journal.map(e => (
+                  <div className="card" key={e.id} style={{ padding: 16, marginBottom: 12 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10, flexWrap: "wrap", gap: 8, alignItems: "center" }}>
+                      <div>
+                        <span style={{ fontWeight: 700, fontSize: 15, marginRight: 10 }}>{e.description}</span>
+                        {e.reference?.startsWith("REV-") && (
+                          <span className="badge-mini" style={{ background: "#FFE4E6", color: "#E11D48", fontWeight: 700 }}>Reversal Voucher</span>
+                        )}
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                        <div style={{ fontSize: 13, color: "var(--ink-muted)" }} className="mono">{e.reference} &middot; {fmtDate(e.date)}</div>
+                        {!e.reference?.startsWith("REV-") && (
+                          <button
+                            className="btn"
+                            style={{ padding: "4px 8px", fontSize: 12, border: "1px solid #CBD5E1", color: "var(--rose)" }}
+                            title="Post Audit Reversal Entry"
+                            onClick={() => handleReverseEntry(e)}
+                          >
+                            <RefreshCw size={12} /> Reverse / Adjust
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                    <div className="table-responsive">
+                      <table>
+                        <thead><tr><th>Account</th><th style={{ textAlign: "right" }}>Debit</th><th style={{ textAlign: "right" }}>Credit</th></tr></thead>
+                        <tbody>
+                          {e.lines.map((l, i) => (
+                            <tr key={i}>
+                              <td>
+                                <strong className="mono" style={{ color: "var(--ink-muted)", fontSize: 12, marginRight: 6 }}>{ACCOUNTS[l.account]?.code}</strong>
+                                {ACCOUNTS[l.account]?.name || l.account}
+                                {l.memo ? ` (${l.memo})` : ""}
+                              </td>
+                              <td className="mono" style={{ textAlign: "right" }}>{l.debit ? pkr(l.debit) : "—"}</td>
+                              <td className="mono" style={{ textAlign: "right" }}>{l.credit ? pkr(l.credit) : "—"}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                ))}
+              </>
+            )}
+
+            {/* Sub-Tab 2: Hierarchical Chart of Accounts Tree */}
+            {ledgerSubTab === "coa" && (
+              <div className="card" style={{ padding: 20 }}>
+                <div className="section-title" style={{ marginBottom: 16 }}>
+                  <Layers size={18} color="var(--gold)" /> Chart of Accounts Hierarchy (Assets → Sub-categories → Accounts)
                 </div>
-                <div className="table-responsive">
-                  <table>
-                    <thead><tr><th>Account</th><th style={{ textAlign: "right" }}>Debit</th><th style={{ textAlign: "right" }}>Credit</th></tr></thead>
-                    <tbody>
-                      {e.lines.map((l, i) => (
-                        <tr key={i}>
-                          <td>{ACCOUNTS[l.account]?.name || l.account}{l.memo ? ` (${l.memo})` : ""}</td>
-                          <td className="mono" style={{ textAlign: "right" }}>{l.debit ? pkr(l.debit) : "—"}</td>
-                          <td className="mono" style={{ textAlign: "right" }}>{l.credit ? pkr(l.credit) : "—"}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                {COA_STRUCTURE.map(cat => (
+                  <div key={cat.code} style={{ marginBottom: 20, border: "1px solid #E2E8F0", borderRadius: 8, padding: 14, background: "#FAFAFA" }}>
+                    <div style={{ fontSize: 16, fontWeight: 700, color: "var(--gold)", marginBottom: 10, display: "flex", justifyContent: "space-between" }}>
+                      <span>{cat.name}</span>
+                      <span className="badge-mini" style={{ background: "#FEF3C7", color: "#92400E" }}>{cat.type.toUpperCase()}</span>
+                    </div>
+
+                    {cat.subcategories.map(sub => (
+                      <div key={sub.code} style={{ marginLeft: 16, marginBottom: 12, background: "#FFFFFF", padding: 12, borderRadius: 6, border: "1px solid #CBD5E1" }}>
+                        <div style={{ fontWeight: 600, fontSize: 14, color: "#1E293B", marginBottom: 8 }}>
+                          {sub.name}
+                        </div>
+
+                        <div className="table-responsive">
+                          <table>
+                            <thead>
+                              <tr>
+                                <th>Code</th>
+                                <th>Account Title</th>
+                                <th>Type</th>
+                                <th style={{ textAlign: "right" }}>Net Balance</th>
+                                <th style={{ textAlign: "center" }}>Action</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {sub.accounts.map(accKey => {
+                                const acc = ACCOUNTS[accKey];
+                                const netBal = balances.net[accKey] || 0;
+                                return (
+                                  <tr key={accKey}>
+                                    <td className="mono" style={{ fontWeight: 700, color: "var(--gold)" }}>{acc?.code}</td>
+                                    <td style={{ fontWeight: 600 }}>{acc?.name}</td>
+                                    <td><span className="badge-mini">{acc?.type}</span></td>
+                                    <td className="mono" style={{ textAlign: "right", fontWeight: 700, color: netBal >= 0 ? "var(--jade)" : "var(--rose)" }}>
+                                      {pkr(netBal)}
+                                    </td>
+                                    <td style={{ textAlign: "center" }}>
+                                      <button
+                                        className="btn"
+                                        style={{ padding: "3px 8px", fontSize: 11.5 }}
+                                        onClick={() => {
+                                          setSelectedLedgerAccount(accKey);
+                                          setLedgerSubTab("running_balance");
+                                        }}
+                                      >
+                                        View Ledger
+                                      </button>
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ))}
               </div>
-            ))}
+            )}
+
+            {/* Sub-Tab 3: Account Running Balance */}
+            {ledgerSubTab === "running_balance" && (
+              <>
+                <div className="card" style={{ padding: 18, marginBottom: 16 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 10 }}>
+                    <div className="section-title" style={{ margin: 0 }}>Select Account Ledger</div>
+                    <select
+                      value={selectedLedgerAccount}
+                      onChange={e => setSelectedLedgerAccount(e.target.value)}
+                      style={{ padding: "8px 12px", borderRadius: 8, border: "1px solid #CBD5E1", fontSize: 14, fontWeight: 600, minWidth: 260 }}
+                    >
+                      <option value="all">— Select an Account —</option>
+                      {Object.entries(ACCOUNTS).map(([k, a]) => (
+                        <option key={k} value={k}>[{a.code}] {a.name} ({a.category})</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {selectedLedgerAccount !== "all" && (
+                  <div className="card" style={{ padding: 18 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14, borderBottom: "1px solid #E2E8F0", paddingBottom: 10 }}>
+                      <div>
+                        <div style={{ fontSize: 17, fontWeight: 700 }}>
+                          [{ACCOUNTS[selectedLedgerAccount]?.code}] {ACCOUNTS[selectedLedgerAccount]?.name}
+                        </div>
+                        <div style={{ fontSize: 13, color: "var(--ink-muted)" }}>
+                          Category: {ACCOUNTS[selectedLedgerAccount]?.category} &middot; Normal Balance: {ACCOUNTS[selectedLedgerAccount]?.type === "asset" || ACCOUNTS[selectedLedgerAccount]?.type === "expense" ? "Debit" : "Credit"}
+                        </div>
+                      </div>
+                      <div className="mono" style={{ fontSize: 16, fontWeight: 700, color: "var(--gold)" }}>
+                        Current Balance: {pkr(balances.net[selectedLedgerAccount] || 0)}
+                      </div>
+                    </div>
+
+                    <div className="table-responsive">
+                      <table>
+                        <thead>
+                          <tr>
+                            <th>Date</th>
+                            <th>Voucher #</th>
+                            <th>Particulars / Description</th>
+                            <th style={{ textAlign: "right" }}>Debit</th>
+                            <th style={{ textAlign: "right" }}>Credit</th>
+                            <th style={{ textAlign: "right" }}>Running Balance</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {accountLedgerData.length === 0 ? (
+                            <tr><td colSpan="6" style={{ textAlign: "center", color: "var(--ink-muted)", padding: 20 }}>No transactions recorded for this account yet.</td></tr>
+                          ) : (
+                            accountLedgerData.map((row, i) => (
+                              <tr key={i}>
+                                <td className="mono">{fmtDate(row.date)}</td>
+                                <td className="mono" style={{ fontWeight: 700, color: "var(--gold)" }}>{row.reference || "—"}</td>
+                                <td>{row.description}{row.memo ? ` (${row.memo})` : ""}</td>
+                                <td className="mono" style={{ textAlign: "right" }}>{row.debit ? pkr(row.debit) : "—"}</td>
+                                <td className="mono" style={{ textAlign: "right" }}>{row.credit ? pkr(row.credit) : "—"}</td>
+                                <td className="mono" style={{ textAlign: "right", fontWeight: 700, color: row.runningBalance >= 0 ? "var(--jade)" : "var(--rose)" }}>
+                                  {pkr(row.runningBalance)}
+                                </td>
+                              </tr>
+                            ))
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
           </>
         )}
 
         {tab === "reports" && (
           <>
+            {/* P&L Filter Toolbar */}
+            <div className="card" style={{ padding: 16, marginBottom: 18, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                <span style={{ fontWeight: 700, fontSize: 13.5, color: "var(--ink-muted)" }}>Period Filter:</span>
+                {[
+                  { key: "month", label: "This Month (Jul 2026)" },
+                  { key: "quarter", label: "This Quarter (Q3)" },
+                  { key: "year", label: "This Year (2026)" },
+                  { key: "all", label: "All Time" },
+                  { key: "custom", label: "Custom Range" },
+                ].map(p => (
+                  <button
+                    key={p.key}
+                    className={"btn" + (pnlPeriod === p.key ? " btn-primary" : "")}
+                    style={{ fontSize: 12.5, padding: "5px 11px" }}
+                    onClick={() => setPnlPeriod(p.key)}
+                  >
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+
+              <button
+                className={"btn" + (showPnlComparison ? " btn-primary" : "")}
+                style={{ fontSize: 12.5, padding: "5px 12px" }}
+                onClick={() => setShowPnlComparison(!showPnlComparison)}
+              >
+                <BarChart3 size={13} /> {showPnlComparison ? "✓ Hide Comparison" : "📊 Compare Previous Period"}
+              </button>
+            </div>
+
+            {pnlPeriod === "custom" && (
+              <div className="card" style={{ padding: 14, marginBottom: 18, display: "flex", gap: 14, alignItems: "center" }}>
+                <div className="field" style={{ margin: 0, flex: 1 }}>
+                  <label>From Date</label>
+                  <input type="date" value={pnlCustomStart} onChange={e => setPnlCustomStart(e.target.value)} />
+                </div>
+                <div className="field" style={{ margin: 0, flex: 1 }}>
+                  <label>To Date</label>
+                  <input type="date" value={pnlCustomEnd} onChange={e => setPnlCustomEnd(e.target.value)} />
+                </div>
+              </div>
+            )}
+
+            {/* P&L Main Statement Table */}
             <div className="card" style={{ padding: 20, marginBottom: 18 }}>
-              <div className="section-title"><BarChart3 size={18} color="var(--gold)" /> Statement of Profit &amp; Loss</div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+                <div className="section-title" style={{ margin: 0 }}>
+                  <BarChart3 size={18} color="var(--gold)" /> Statement of Profit &amp; Loss
+                </div>
+                <span className="badge-mini" style={{ background: "#FEF3C7", color: "#92400E", fontSize: 12 }}>
+                  Period: {pnlPeriod === "month" ? "July 2026" : pnlPeriod === "quarter" ? "Q3 2026" : pnlPeriod === "year" ? "FY 2026" : "All Time"}
+                </span>
+              </div>
+
               <div className="table-responsive">
                 <table>
+                  <thead>
+                    <tr>
+                      <th>Account Category / Line Item</th>
+                      <th style={{ textAlign: "right" }}>Current Period</th>
+                      {showPnlComparison && <th style={{ textAlign: "right" }}>Previous Period</th>}
+                      {showPnlComparison && <th style={{ textAlign: "right" }}>Variance (PKR / %)</th>}
+                      <th style={{ textAlign: "center" }}>Drill-Down</th>
+                    </tr>
+                  </thead>
                   <tbody>
-                    <tr><td style={{ fontWeight: 600 }}>Service Revenue Billed</td><td className="mono" style={{ textAlign: "right", color: "var(--jade)", fontWeight: 700 }}>{pkr(revenueBalance)}</td></tr>
-                    <tr><td style={{ fontWeight: 600 }}>Operating &amp; Payroll Expenses</td><td className="mono" style={{ textAlign: "right", color: "var(--rose)", fontWeight: 700 }}>({pkr(expenseBalance)})</td></tr>
-                    <tr style={{ background: "rgba(0,0,0,0.02)" }}>
-                      <td style={{ fontWeight: 700, fontSize: 16 }}>Net Operating Profit</td>
-                      <td className="mono" style={{ textAlign: "right", fontWeight: 700, fontSize: 17, color: netProfit >= 0 ? "var(--jade)" : "var(--rose)" }}>{pkr(netProfit)}</td>
+                    {/* Revenue */}
+                    <tr style={{ background: "rgba(5, 150, 105, 0.03)" }}>
+                      <td style={{ fontWeight: 700, fontSize: 14.5 }}>1. Operating Service &amp; Media Revenue</td>
+                      <td className="mono" style={{ textAlign: "right", color: "var(--jade)", fontWeight: 700, fontSize: 15 }}>
+                        {pkr(pnlCurrent.rev)}
+                      </td>
+                      {showPnlComparison && (
+                        <td className="mono" style={{ textAlign: "right", color: "var(--ink-muted)" }}>{pkr(pnlPrev.rev)}</td>
+                      )}
+                      {showPnlComparison && (
+                        <td className="mono" style={{ textAlign: "right", fontWeight: 700, color: pnlCurrent.rev >= pnlPrev.rev ? "var(--jade)" : "var(--rose)" }}>
+                          {pkr(pnlCurrent.rev - pnlPrev.rev)} ({pnlPrev.rev ? (((pnlCurrent.rev - pnlPrev.rev) / pnlPrev.rev) * 100).toFixed(1) + "%" : "100%"})
+                        </td>
+                      )}
+                      <td style={{ textAlign: "center" }}>
+                        <button className="btn" style={{ padding: "3px 8px", fontSize: 11.5 }} onClick={() => setPnlDrillDown({ title: "Service Revenue Breakdown", lines: pnlCurrent.breakdown.revenue })}>
+                          Inspect Entries
+                        </button>
+                      </td>
+                    </tr>
+
+                    {/* Direct Costs */}
+                    <tr>
+                      <td style={{ fontWeight: 600, paddingLeft: 20, color: "var(--ink-muted)" }}>Less: Direct Production &amp; Ad Spend Costs (COGS)</td>
+                      <td className="mono" style={{ textAlign: "right", color: "var(--rose)", fontWeight: 600 }}>
+                        ({pkr(pnlCurrent.directCosts)})
+                      </td>
+                      {showPnlComparison && (
+                        <td className="mono" style={{ textAlign: "right", color: "var(--ink-muted)" }}>({pkr(pnlPrev.directCosts)})</td>
+                      )}
+                      {showPnlComparison && (
+                        <td className="mono" style={{ textAlign: "right" }}>{pkr(pnlCurrent.directCosts - pnlPrev.directCosts)}</td>
+                      )}
+                      <td style={{ textAlign: "center" }}>
+                        <button className="btn" style={{ padding: "3px 8px", fontSize: 11.5 }} onClick={() => setPnlDrillDown({ title: "Direct Production & Media Costs", lines: pnlCurrent.breakdown.directCosts })}>
+                          Inspect Entries
+                        </button>
+                      </td>
+                    </tr>
+
+                    {/* Gross Profit Subtotal */}
+                    <tr style={{ background: "#F1F5F9", borderTop: "1px solid #CBD5E1", borderBottom: "1px solid #CBD5E1" }}>
+                      <td style={{ fontWeight: 700, fontSize: 15 }}>GROSS OPERATING PROFIT</td>
+                      <td className="mono" style={{ textAlign: "right", fontWeight: 700, fontSize: 15.5, color: pnlCurrent.grossProfit >= 0 ? "var(--jade)" : "var(--rose)" }}>
+                        {pkr(pnlCurrent.grossProfit)}
+                      </td>
+                      {showPnlComparison && (
+                        <td className="mono" style={{ textAlign: "right", fontWeight: 700 }}>{pkr(pnlPrev.grossProfit)}</td>
+                      )}
+                      {showPnlComparison && (
+                        <td className="mono" style={{ textAlign: "right", fontWeight: 700, color: pnlCurrent.grossProfit >= pnlPrev.grossProfit ? "var(--jade)" : "var(--rose)" }}>
+                          {pkr(pnlCurrent.grossProfit - pnlPrev.grossProfit)}
+                        </td>
+                      )}
+                      <td></td>
+                    </tr>
+
+                    {/* Operating Expenses */}
+                    <tr>
+                      <td style={{ fontWeight: 600, paddingLeft: 20, color: "var(--ink-muted)" }}>Less: Operating, Rent &amp; Payroll Expenses</td>
+                      <td className="mono" style={{ textAlign: "right", color: "var(--rose)", fontWeight: 600 }}>
+                        ({pkr(pnlCurrent.opExpenses)})
+                      </td>
+                      {showPnlComparison && (
+                        <td className="mono" style={{ textAlign: "right", color: "var(--ink-muted)" }}>({pkr(pnlPrev.opExpenses)})</td>
+                      )}
+                      {showPnlComparison && (
+                        <td className="mono" style={{ textAlign: "right" }}>{pkr(pnlCurrent.opExpenses - pnlPrev.opExpenses)}</td>
+                      )}
+                      <td style={{ textAlign: "center" }}>
+                        <button className="btn" style={{ padding: "3px 8px", fontSize: 11.5 }} onClick={() => setPnlDrillDown({ title: "Operating & General Expenses", lines: pnlCurrent.breakdown.opExpenses })}>
+                          Inspect Entries
+                        </button>
+                      </td>
+                    </tr>
+
+                    {/* Net Profit Final */}
+                    <tr style={{ background: pnlCurrent.netProfit >= 0 ? "rgba(5, 150, 105, 0.08)" : "rgba(225, 29, 72, 0.08)" }}>
+                      <td style={{ fontWeight: 800, fontSize: 16 }}>NET OPERATING PROFIT</td>
+                      <td className="mono" style={{ textAlign: "right", fontWeight: 800, fontSize: 17, color: pnlCurrent.netProfit >= 0 ? "var(--jade)" : "var(--rose)" }}>
+                        {pkr(pnlCurrent.netProfit)}
+                      </td>
+                      {showPnlComparison && (
+                        <td className="mono" style={{ textAlign: "right", fontWeight: 800, fontSize: 16 }}>{pkr(pnlPrev.netProfit)}</td>
+                      )}
+                      {showPnlComparison && (
+                        <td className="mono" style={{ textAlign: "right", fontWeight: 800, color: pnlCurrent.netProfit >= pnlPrev.netProfit ? "var(--jade)" : "var(--rose)" }}>
+                          {pkr(pnlCurrent.netProfit - pnlPrev.netProfit)}
+                        </td>
+                      )}
+                      <td style={{ textAlign: "center" }}>
+                        <button className="btn btn-primary" style={{ padding: "4px 9px", fontSize: 11.5 }} onClick={() => setPnlDrillDown({ title: "All Period P&L Journal Postings", lines: [...pnlCurrent.breakdown.revenue, ...pnlCurrent.breakdown.directCosts, ...pnlCurrent.breakdown.opExpenses] })}>
+                          Full Audit Log
+                        </button>
+                      </td>
                     </tr>
                   </tbody>
                 </table>
               </div>
             </div>
 
+            {/* SRB Sales Tax Summary */}
             <div className="card" style={{ padding: 20, marginBottom: 18, borderTop: "3px solid var(--rose)" }}>
               <div className="section-title"><Landmark size={18} color="var(--rose)" /> Sindh Sales Tax (SRB) Summary</div>
               <div className="table-responsive">
@@ -2998,6 +3541,7 @@ export default function App() {
               </div>
             </div>
 
+            {/* Expense Breakdown Chart */}
             <div className="card" style={{ padding: 20, marginBottom: 18 }}>
               <div className="section-title"><Receipt size={18} color="var(--gold)" /> Operating Expenses Breakdown</div>
               <ResponsiveContainer width="100%" height={230}>
@@ -3025,6 +3569,7 @@ export default function App() {
                 <UserPlus size={15} /> Create Staff Login
               </button>
             </div>
+
 
             <div className="card">
               <div className="table-responsive">
@@ -3190,11 +3735,12 @@ export default function App() {
       {showAddUserForm && <UserModal onClose={() => setShowAddUserForm(false)} onSubmit={handleAddUser} />}
       {editingUser && <UserModal initialData={editingUser} onClose={() => setEditingUser(null)} onSubmit={handleUpdateUser} />}
 
-      {showInvoiceForm && <InvoiceModal onClose={() => setShowInvoiceForm(false)} onSubmit={addInvoice} />}
-      {editingInvoice && <InvoiceModal initialData={editingInvoice} onClose={() => setEditingInvoice(null)} onSubmit={updateInvoice} />}
+      {showInvoiceForm && <InvoiceModal projects={projects} onClose={() => setShowInvoiceForm(false)} onSubmit={addInvoice} />}
+      {editingInvoice && <InvoiceModal initialData={editingInvoice} projects={projects} onClose={() => setEditingInvoice(null)} onSubmit={updateInvoice} />}
 
-      {showExpenseForm && <ExpenseModal onClose={() => setShowExpenseForm(false)} onSubmit={addExpense} />}
-      {editingExpense && <ExpenseModal initialData={editingExpense} onClose={() => setEditingExpense(null)} onSubmit={updateExpense} />}
+      {showExpenseForm && <ExpenseModal projects={projects} onClose={() => setShowExpenseForm(false)} onSubmit={addExpense} />}
+      {editingExpense && <ExpenseModal initialData={editingExpense} projects={projects} onClose={() => setEditingExpense(null)} onSubmit={updateExpense} />}
+
       {payingExpenseId && <PayExpenseModal expense={expenses.find(e => e.id === payingExpenseId)} onClose={() => setPayingExpenseId(null)} onSubmit={(id, via, date) => { payExpense(id, via, date); setPayingExpenseId(null); }} />}
 
       {showPOForm && <POModal projects={projects} onClose={() => setShowPOForm(false)} onSubmit={addPO} />}
@@ -3202,6 +3748,48 @@ export default function App() {
       {payingPOId && <PayPOModal po={purchaseOrders.find(p => p.id === payingPOId)} onClose={() => setPayingPOId(null)} onSubmit={(id, via, date) => { payPO(id, via, date); setPayingPOId(null); }} />}
 
       {showVoucherForm && <VoucherModal defaultType={voucherDefaultType} onClose={() => setShowVoucherForm(false)} onSubmit={createVoucher} />}
+
+      {pnlDrillDown && (
+        <ModalShell title={`P&L Line Item Breakdown: ${pnlDrillDown.title}`} onClose={() => setPnlDrillDown(null)}>
+          <div style={{ marginBottom: 12, fontSize: 13.5, color: "var(--ink-muted)" }}>
+            Showing individual double-entry ledger lines contributing to this P&L figure.
+          </div>
+          <div className="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Posting Date</th>
+                  <th>Voucher #</th>
+                  <th>Particulars / Description</th>
+                  <th>Account</th>
+                  <th style={{ textAlign: "right" }}>Amount (PKR)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {pnlDrillDown.lines.length === 0 ? (
+                  <tr><td colSpan="5" style={{ textAlign: "center", color: "var(--ink-muted)", padding: 16 }}>No transactions found for this category in the selected period.</td></tr>
+                ) : (
+                  pnlDrillDown.lines.map((l, i) => (
+                    <tr key={i}>
+                      <td className="mono">{fmtDate(l.date)}</td>
+                      <td className="mono" style={{ fontWeight: 700, color: "var(--gold)" }}>{l.reference || "—"}</td>
+                      <td>{l.description}{l.memo ? ` (${l.memo})` : ""}</td>
+                      <td><span className="badge-mini">{ACCOUNTS[l.account]?.name || l.account}</span></td>
+                      <td className="mono" style={{ textAlign: "right", fontWeight: 700, color: l.amount >= 0 ? "var(--jade)" : "var(--rose)" }}>
+                        {pkr(l.amount)}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+          <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 14 }} onClick={() => setPnlDrillDown(null)}>
+            Close Audit View
+          </button>
+        </ModalShell>
+      )}
+
       
       {showHoardingForm && <HoardingModal onClose={() => setShowHoardingForm(false)} onSubmit={addHoarding} />}
       {editingHoarding && <HoardingModal initialData={editingHoarding} onClose={() => setEditingHoarding(null)} onSubmit={updateHoarding} />}
@@ -3739,7 +4327,8 @@ function ModalShell({ title, onClose, children }) {
   );
 }
 
-function InvoiceModal({ initialData, onClose, onSubmit }) {
+function InvoiceModal({ initialData, projects = [], onClose, onSubmit }) {
+  const [projectId, setProjectId] = useState(initialData?.projectId || "");
   const [client, setClient] = useState(initialData?.client || "");
   const [description, setDescription] = useState(initialData?.description || "");
   const [amount, setAmount] = useState(initialData?.amount || "");
@@ -3755,9 +4344,29 @@ function InvoiceModal({ initialData, onClose, onSubmit }) {
   const whtAmount = (applyWht && Number(whtRate)) ? (amt * Number(whtRate) / 100) : 0;
   const totalAmount = amt + sstAmount - whtAmount;
   const valid = client && description && amt > 0;
+
+  const handleProjectSelect = (id) => {
+    setProjectId(id);
+    const prj = projects.find(p => p.id === id);
+    if (prj) {
+      if (prj.client) setClient(prj.client);
+      if (!description) setDescription(`${prj.name} — Billing`);
+    }
+  };
   
   return (
     <ModalShell title={initialData ? "Edit Client Invoice" : "Create New Client Invoice"} onClose={onClose}>
+      {projects.length > 0 && (
+        <div className="field">
+          <label>Link to Project (Optional)</label>
+          <select value={projectId} onChange={e => handleProjectSelect(e.target.value)}>
+            <option value="">— General / No Specific Project —</option>
+            {projects.map(p => (
+              <option key={p.id} value={p.id}>{p.name} ({p.client})</option>
+            ))}
+          </select>
+        </div>
+      )}
       <div className="field"><label>Client Name</label><input value={client} onChange={e => setClient(e.target.value)} placeholder="e.g. Prime Estate Enterprises" /></div>
       <div className="field"><label>Service / Scope Particulars</label><input value={description} onChange={e => setDescription(e.target.value)} placeholder="e.g. TVC Post Production" /></div>
       <div className="field"><label>Gross Amount (PKR)</label><input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="0" /></div>
@@ -3817,14 +4426,15 @@ function InvoiceModal({ initialData, onClose, onSubmit }) {
         <div className="field" style={{ flex: 1 }}><label>Due Date</label><input type="date" value={dueDate} onChange={e => setDueDate(e.target.value)} /></div>
       </div>
       <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 6 }} disabled={!valid}
-        onClick={() => valid && onSubmit(initialData ? { ...initialData, client, description, amount: amt, applySst, sstRate: Number(sstRate) || 0, sstAmount, applyWht, whtRate: Number(whtRate) || 0, whtAmount, totalAmount, issueDate, dueDate } : { client, description, amount: amt, applySst, sstRate: Number(sstRate) || 0, sstAmount, applyWht, whtRate: Number(whtRate) || 0, whtAmount, totalAmount, issueDate, dueDate })}>
+        onClick={() => valid && onSubmit(initialData ? { ...initialData, projectId, client, description, amount: amt, applySst, sstRate: Number(sstRate) || 0, sstAmount, applyWht, whtRate: Number(whtRate) || 0, whtAmount, totalAmount, issueDate, dueDate } : { projectId, client, description, amount: amt, applySst, sstRate: Number(sstRate) || 0, sstAmount, applyWht, whtRate: Number(whtRate) || 0, whtAmount, totalAmount, issueDate, dueDate })}>
         {initialData ? "Save Invoice Changes" : "Generate & Post Invoice"}
       </button>
     </ModalShell>
   );
 }
 
-function ExpenseModal({ initialData, onClose, onSubmit }) {
+function ExpenseModal({ initialData, projects = [], onClose, onSubmit }) {
+  const [projectId, setProjectId] = useState(initialData?.projectId || "");
   const [vendor, setVendor] = useState(initialData?.vendor || "");
   const [category, setCategory] = useState(initialData?.category || EXPENSE_CATEGORIES[0]);
   const [amount, setAmount] = useState(initialData?.amount || "");
@@ -3834,6 +4444,17 @@ function ExpenseModal({ initialData, onClose, onSubmit }) {
   const valid = vendor && Number(amount) > 0;
   return (
     <ModalShell title={initialData ? "Edit Operating Expense" : "Record Operating Expense"} onClose={onClose}>
+      {projects.length > 0 && (
+        <div className="field">
+          <label>Link to Project Cost Center (Optional)</label>
+          <select value={projectId} onChange={e => setProjectId(e.target.value)}>
+            <option value="">— General Operational Expense —</option>
+            {projects.map(p => (
+              <option key={p.id} value={p.id}>{p.name} ({p.client})</option>
+            ))}
+          </select>
+        </div>
+      )}
       <div className="field"><label>Vendor / Payee</label><input value={vendor} onChange={e => setVendor(e.target.value)} placeholder="e.g. Meta Ads / Studio Rental" /></div>
       <div className="field"><label>Category</label>
         <select value={category} onChange={e => setCategory(e.target.value)}>
@@ -3862,12 +4483,13 @@ function ExpenseModal({ initialData, onClose, onSubmit }) {
         )}
       </div>
       <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 6 }} disabled={!valid}
-        onClick={() => valid && onSubmit(initialData ? { ...initialData, vendor, category, amount: Number(amount), date, status, paidVia: status === "paid" ? paidVia : null } : { vendor, category, amount: Number(amount), date, status, paidVia: status === "paid" ? paidVia : null })}>
+        onClick={() => valid && onSubmit(initialData ? { ...initialData, projectId, vendor, category, amount: Number(amount), date, status, paidVia: status === "paid" ? paidVia : null } : { projectId, vendor, category, amount: Number(amount), date, status, paidVia: status === "paid" ? paidVia : null })}>
         {initialData ? "Save Expense Changes" : "Post Expense Entry"}
       </button>
     </ModalShell>
   );
 }
+
 
 function PayExpenseModal({ expense, onClose, onSubmit }) {
   const [date, setDate] = useState("2026-07-21");

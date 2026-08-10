@@ -108,23 +108,38 @@ ALTER TABLE journal_entries ENABLE ROW LEVEL SECURITY;
 ALTER TABLE bank_accounts ENABLE ROW LEVEL SECURITY;
 
 -- Allow Public Access Policy (for Anon API Key usage)
+DROP POLICY IF EXISTS "Allow anon read all" ON system_snapshots;
 CREATE POLICY "Allow anon read all" ON system_snapshots FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Allow anon write all" ON system_snapshots;
 CREATE POLICY "Allow anon write all" ON system_snapshots FOR ALL USING (true);
 
+DROP POLICY IF EXISTS "Allow anon read users" ON app_users;
 CREATE POLICY "Allow anon read users" ON app_users FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Allow anon write users" ON app_users;
 CREATE POLICY "Allow anon write users" ON app_users FOR ALL USING (true);
 
+DROP POLICY IF EXISTS "Allow anon read projects" ON projects;
 CREATE POLICY "Allow anon read projects" ON projects FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Allow anon write projects" ON projects;
 CREATE POLICY "Allow anon write projects" ON projects FOR ALL USING (true);
 
+DROP POLICY IF EXISTS "Allow anon read invoices" ON invoices;
 CREATE POLICY "Allow anon read invoices" ON invoices FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Allow anon write invoices" ON invoices;
 CREATE POLICY "Allow anon write invoices" ON invoices FOR ALL USING (true);
 
+DROP POLICY IF EXISTS "Allow anon read expenses" ON expenses;
 CREATE POLICY "Allow anon read expenses" ON expenses FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Allow anon write expenses" ON expenses;
 CREATE POLICY "Allow anon write expenses" ON expenses FOR ALL USING (true);
 
+DROP POLICY IF EXISTS "Allow anon read journal" ON journal_entries;
 CREATE POLICY "Allow anon read journal" ON journal_entries FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Allow anon write journal" ON journal_entries;
 CREATE POLICY "Allow anon write journal" ON journal_entries FOR ALL USING (true);
 
+DROP POLICY IF EXISTS "Allow anon read bank_accounts" ON bank_accounts;
 CREATE POLICY "Allow anon read bank_accounts" ON bank_accounts FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Allow anon write bank_accounts" ON bank_accounts;
 CREATE POLICY "Allow anon write bank_accounts" ON bank_accounts FOR ALL USING (true);
+
