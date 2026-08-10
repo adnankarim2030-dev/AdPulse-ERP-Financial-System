@@ -327,6 +327,28 @@ function seedEmployees() {
   ];
 }
 
+function seedMonthlyAttendance(empList = []) {
+  const att = {};
+  empList.forEach(e => {
+    att[e.id] = {};
+    for (let day = 1; day <= 31; day++) {
+      if (day === 5 || day === 12 || day === 19 || day === 26) {
+        att[e.id][day] = "OFF";
+      } else if (e.name === "Hamza Qureshi" && (day >= 18 && day <= 22)) {
+        att[e.id][day] = "L";
+      } else if (e.name === "Bilal Sheikh" && (day === 8 || day === 9)) {
+        att[e.id][day] = "A";
+      } else if (e.name === "Usman Tariq" && day > 15) {
+        att[e.id][day] = "OFF";
+      } else {
+        att[e.id][day] = "P";
+      }
+    }
+  });
+  return att;
+}
+
+
 function seedLeaveRequests(employees) {
   const byName = n => employees.find(e => e.name === n);
   return [
@@ -714,10 +736,32 @@ export default function App() {
   const [oohFilters, setOohFilters] = useState({ area: "All", size: "All", status: "All", maxPrice: "" });
 
   const [hrView, setHrView] = useState("directory");
+  const [attendanceSubView, setAttendanceSubView] = useState("grid");
+  const [monthlyAttendance, setMonthlyAttendance] = useState(() => getInitialState("monthly_attendance", () => seedMonthlyAttendance(seedEmployees())));
   const [showEmployeeForm, setShowEmployeeForm] = useState(false);
   const [showLeaveForm, setShowLeaveForm] = useState(false);
   const [employeeDetail, setEmployeeDetail] = useState(null);
   const [payrollConfirm, setPayrollConfirm] = useState(false);
+
+  const toggleDayAttendance = (empId, day) => {
+    setMonthlyAttendance(prev => {
+      const currentObj = prev[empId] || {};
+      const curStatus = currentObj[day] || "P";
+      let nextStatus = "P";
+      if (curStatus === "P") nextStatus = "A";
+      else if (curStatus === "A") nextStatus = "L";
+      else if (curStatus === "L") nextStatus = "OFF";
+      else if (curStatus === "OFF") nextStatus = "P";
+      return {
+        ...prev,
+        [empId]: {
+          ...currentObj,
+          [day]: nextStatus
+        }
+      };
+    });
+  };
+
 
   /* User Management state for Admin Settings */
   const [showAddUserForm, setShowAddUserForm] = useState(false);
@@ -2939,33 +2983,180 @@ export default function App() {
               )}
 
               {hrView === "attendance" && (
-                <div className="card">
-                  <div className="table-responsive">
-                    <table>
-                      <thead><tr><th>Code</th><th>Name</th><th>Department</th><th>Today Status</th><th>Quick Toggle</th></tr></thead>
-                      <tbody>
-                        {employees.filter(e => e.status !== "Terminated").map(e => (
-                          <tr key={e.id}>
-                            <td className="mono" style={{ fontSize: 12.5, color: "var(--ink-muted)" }}>{e.code}</td>
-                            <td style={{ fontWeight: 600 }}>{e.name}</td>
-                            <td><DepartmentBadge department={e.department} /></td>
-                            <td>
-                              <span className="badge-mini" style={{
-                                color: attendanceToday[e.id] === "Present" ? "var(--jade)" : attendanceToday[e.id] === "Absent" ? "var(--rose)" : "var(--amber)",
-                                background: "transparent", fontWeight: 700
-                              }}>{attendanceToday[e.id]}</span>
-                            </td>
-                            <td style={{ display: "flex", gap: 6 }}>
-                              <button className="btn" style={{ padding: "4px 9px", fontSize: 12 }} onClick={() => markAttendance(e.id, "Present")}>Present</button>
-                              <button className="btn" style={{ padding: "4px 9px", fontSize: 12 }} onClick={() => markAttendance(e.id, "Absent")}>Absent</button>
-                              <button className="btn" style={{ padding: "4px 9px", fontSize: 12 }} onClick={() => markAttendance(e.id, "Leave")}>Leave</button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                <>
+                  <div style={{ display: "flex", gap: 8, marginBottom: 14, alignItems: "center", flexWrap: "wrap", justifyContent: "space-between" }}>
+                    <div style={{ display: "flex", gap: 8 }}>
+                      <button className="btn" style={{ fontSize: 12.5, padding: "5px 12px", background: attendanceSubView === "grid" ? "#B8860B" : "#FFFFFF", color: attendanceSubView === "grid" ? "#FFFFFF" : "#0F172A", borderColor: attendanceSubView === "grid" ? "#B8860B" : "#CBD5E1", fontWeight: 600 }} onClick={() => setAttendanceSubView("grid")}>
+                        📊 Day-Wise Monthly Sheet (Grid)
+                      </button>
+                      <button className="btn" style={{ fontSize: 12.5, padding: "5px 12px", background: attendanceSubView === "today" ? "#B8860B" : "#FFFFFF", color: attendanceSubView === "today" ? "#FFFFFF" : "#0F172A", borderColor: attendanceSubView === "today" ? "#B8860B" : "#CBD5E1", fontWeight: 600 }} onClick={() => setAttendanceSubView("today")}>
+                        ⚡ Today's Quick Mark
+                      </button>
+                      <button className="btn" style={{ fontSize: 12.5, padding: "5px 12px", background: attendanceSubView === "deductions" ? "#B8860B" : "#FFFFFF", color: attendanceSubView === "deductions" ? "#FFFFFF" : "#0F172A", borderColor: attendanceSubView === "deductions" ? "#B8860B" : "#CBD5E1", fontWeight: 600 }} onClick={() => setAttendanceSubView("deductions")}>
+                        💰 Salary Deductions Summary
+                      </button>
+                    </div>
+
+                    <div style={{ fontSize: 13, fontWeight: 700, color: "var(--gold)" }}>
+                      Month: July 2026
+                    </div>
                   </div>
-                </div>
+
+                  {attendanceSubView === "grid" && (
+                    <div className="card" style={{ padding: 14 }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12, flexWrap: "wrap", gap: 8 }}>
+                        <div style={{ fontSize: 13.5, fontWeight: 700, color: "var(--ink)" }}>
+                          Day-Wise Monthly Attendance Sheet (July 2026)
+                        </div>
+                        <div style={{ display: "flex", gap: 10, alignItems: "center", fontSize: 11.5 }}>
+                          <span style={{ display: "flex", alignItems: "center", gap: 4 }}><span style={{ width: 10, height: 10, borderRadius: 2, background: "#059669" }}></span> P = Present</span>
+                          <span style={{ display: "flex", alignItems: "center", gap: 4 }}><span style={{ width: 10, height: 10, borderRadius: 2, background: "#DC2626" }}></span> A = Absent (Unpaid)</span>
+                          <span style={{ display: "flex", alignItems: "center", gap: 4 }}><span style={{ width: 10, height: 10, borderRadius: 2, background: "#D97706" }}></span> L = Leave</span>
+                          <span style={{ display: "flex", alignItems: "center", gap: 4 }}><span style={{ width: 10, height: 10, borderRadius: 2, background: "#64748B" }}></span> OFF = Rest</span>
+                        </div>
+                      </div>
+                      
+                      <div className="table-responsive" style={{ overflowX: "auto" }}>
+                        <table style={{ fontSize: 11.5, borderCollapse: "collapse", width: "100%", minWidth: 1100 }}>
+                          <thead>
+                            <tr style={{ background: "var(--bg)" }}>
+                              <th style={{ padding: "8px 10px", border: "1px solid var(--rule)", position: "sticky", left: 0, background: "#1E293B", color: "#FFF", zIndex: 2, textAlign: "left" }}>Staff Member</th>
+                              <th style={{ padding: "8px 10px", border: "1px solid var(--rule)", textAlign: "right" }}>Gross Salary</th>
+                              {Array.from({ length: 31 }, (_, i) => i + 1).map(day => (
+                                <th key={day} style={{ padding: "4px 2px", border: "1px solid var(--rule)", textAlign: "center", minWidth: 24, fontSize: 10.5 }}>{day}</th>
+                              ))}
+                              <th style={{ padding: "8px", border: "1px solid var(--rule)", color: "#059669", textAlign: "center" }}>P</th>
+                              <th style={{ padding: "8px", border: "1px solid var(--rule)", color: "#DC2626", textAlign: "center" }}>A</th>
+                              <th style={{ padding: "8px", border: "1px solid var(--rule)", color: "#D97706", textAlign: "center" }}>L</th>
+                              <th style={{ padding: "8px 10px", border: "1px solid var(--rule)", color: "#DC2626", textAlign: "right" }}>Auto Deduction</th>
+                              <th style={{ padding: "8px 10px", border: "1px solid var(--rule)", color: "#059669", textAlign: "right" }}>Net Salary</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {employees.filter(e => e.status !== "Terminated").map(e => {
+                              const empAtt = monthlyAttendance[e.id] || {};
+                              const presentCount = Object.keys(empAtt).length > 0 ? Object.values(empAtt).filter(v => v === "P").length : 22;
+                              const absentCount = Object.keys(empAtt).length > 0 ? Object.values(empAtt).filter(v => v === "A").length : 0;
+                              const leaveCount = Object.keys(empAtt).length > 0 ? Object.values(empAtt).filter(v => v === "L").length : 0;
+                              const dailyRate = Math.round(e.salary / 30);
+                              const deductionAmt = absentCount * dailyRate;
+                              const netSalary = e.salary - deductionAmt;
+
+                              return (
+                                <tr key={e.id}>
+                                  <td style={{ padding: "6px 10px", border: "1px solid var(--rule)", fontWeight: 700, position: "sticky", left: 0, background: "var(--card-bg)", zIndex: 1, whiteSpace: "nowrap" }}>
+                                    {e.name}
+                                    <div style={{ fontSize: 10, color: "var(--ink-muted)", fontWeight: 400 }}>{e.code} &middot; {e.department}</div>
+                                  </td>
+                                  <td className="mono" style={{ padding: "6px 10px", border: "1px solid var(--rule)", textAlign: "right", fontSize: 11 }}>{pkr(e.salary)}</td>
+                                  {Array.from({ length: 31 }, (_, i) => i + 1).map(day => {
+                                    const isSun = (day === 5 || day === 12 || day === 19 || day === 26);
+                                    const status = empAtt[day] || (isSun ? "OFF" : "P");
+                                    const bg = status === "P" ? "#059669" : status === "A" ? "#DC2626" : status === "L" ? "#D97706" : "#64748B";
+                                    return (
+                                      <td key={day} style={{ padding: "2px", border: "1px solid var(--rule)", textAlign: "center", cursor: "pointer" }}
+                                        onClick={() => toggleDayAttendance(e.id, day)} title={`Day ${day}: Click to toggle (${status})`}>
+                                        <span style={{ display: "inline-block", width: 20, height: 20, lineHeight: "20px", borderRadius: 3, background: bg, color: "#FFF", fontWeight: 700, fontSize: 9.5 }}>
+                                          {status}
+                                        </span>
+                                      </td>
+                                    );
+                                  })}
+                                  <td className="mono" style={{ padding: "6px", border: "1px solid var(--rule)", textAlign: "center", fontWeight: 700, color: "#059669" }}>{presentCount}</td>
+                                  <td className="mono" style={{ padding: "6px", border: "1px solid var(--rule)", textAlign: "center", fontWeight: 700, color: "#DC2626" }}>{absentCount}</td>
+                                  <td className="mono" style={{ padding: "6px", border: "1px solid var(--rule)", textAlign: "center", fontWeight: 700, color: "#D97706" }}>{leaveCount}</td>
+                                  <td className="mono" style={{ padding: "6px 10px", border: "1px solid var(--rule)", textAlign: "right", color: deductionAmt > 0 ? "#DC2626" : "var(--ink-muted)", fontWeight: 700 }}>
+                                    {deductionAmt > 0 ? `- ${pkr(deductionAmt)}` : "Rs 0"}
+                                  </td>
+                                  <td className="mono" style={{ padding: "6px 10px", border: "1px solid var(--rule)", textAlign: "right", color: "#059669", fontWeight: 800 }}>
+                                    {pkr(netSalary)}
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )}
+
+                  {attendanceSubView === "today" && (
+                    <div className="card">
+                      <div className="table-responsive">
+                        <table>
+                          <thead><tr><th>Code</th><th>Name</th><th>Department</th><th>Today Status</th><th>Quick Toggle</th></tr></thead>
+                          <tbody>
+                            {employees.filter(e => e.status !== "Terminated").map(e => (
+                              <tr key={e.id}>
+                                <td className="mono" style={{ fontSize: 12.5, color: "var(--ink-muted)" }}>{e.code}</td>
+                                <td style={{ fontWeight: 600 }}>{e.name}</td>
+                                <td><DepartmentBadge department={e.department} /></td>
+                                <td>
+                                  <span className="badge-mini" style={{
+                                    color: attendanceToday[e.id] === "Present" ? "var(--jade)" : attendanceToday[e.id] === "Absent" ? "var(--rose)" : "var(--amber)",
+                                    background: "transparent", fontWeight: 700
+                                  }}>{attendanceToday[e.id]}</span>
+                                </td>
+                                <td style={{ display: "flex", gap: 6 }}>
+                                  <button className="btn" style={{ padding: "4px 9px", fontSize: 12 }} onClick={() => markAttendance(e.id, "Present")}>Present</button>
+                                  <button className="btn" style={{ padding: "4px 9px", fontSize: 12 }} onClick={() => markAttendance(e.id, "Absent")}>Absent</button>
+                                  <button className="btn" style={{ padding: "4px 9px", fontSize: 12 }} onClick={() => markAttendance(e.id, "Leave")}>Leave</button>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )}
+
+                  {attendanceSubView === "deductions" && (
+                    <div className="card" style={{ padding: 16 }}>
+                      <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 12, color: "var(--gold)" }}>
+                        💰 Auto Attendance &amp; Leave Salary Deductions Breakdown (July 2026)
+                      </div>
+                      <div className="table-responsive">
+                        <table>
+                          <thead>
+                            <tr>
+                              <th>Emp Code</th><th>Employee Name</th><th>Department</th>
+                              <th style={{ textAlign: "right" }}>Gross Salary</th>
+                              <th style={{ textAlign: "center" }}>Daily Rate</th>
+                              <th style={{ textAlign: "center" }}>Absents</th>
+                              <th style={{ textAlign: "right", color: "var(--rose)" }}>Deduction Amount</th>
+                              <th style={{ textAlign: "right", color: "var(--jade)" }}>Net Payable Salary</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {employees.filter(e => e.status !== "Terminated").map(e => {
+                              const empAtt = monthlyAttendance[e.id] || {};
+                              const absentCount = Object.keys(empAtt).length > 0 ? Object.values(empAtt).filter(v => v === "A").length : 0;
+                              const dailyRate = Math.round(e.salary / 30);
+                              const deductionAmt = absentCount * dailyRate;
+                              const netSalary = e.salary - deductionAmt;
+                              return (
+                                <tr key={e.id}>
+                                  <td className="mono" style={{ fontSize: 12.5, color: "var(--ink-muted)" }}>{e.code}</td>
+                                  <td style={{ fontWeight: 600 }}>{e.name}</td>
+                                  <td><DepartmentBadge department={e.department} /></td>
+                                  <td className="mono" style={{ textAlign: "right" }}>{pkr(e.salary)}</td>
+                                  <td className="mono" style={{ textAlign: "center", color: "var(--ink-muted)" }}>{pkr(dailyRate)}/day</td>
+                                  <td className="mono" style={{ textAlign: "center", fontWeight: 700, color: absentCount > 0 ? "var(--rose)" : "var(--ink-muted)" }}>{absentCount} Days</td>
+                                  <td className="mono" style={{ textAlign: "right", fontWeight: 700, color: "var(--rose)" }}>
+                                    {deductionAmt > 0 ? `- ${pkr(deductionAmt)}` : "Rs 0"}
+                                  </td>
+                                  <td className="mono" style={{ textAlign: "right", fontWeight: 800, color: "var(--jade)", fontSize: 14 }}>
+                                    {pkr(netSalary)}
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
 
               {hrView === "leaves" && (
@@ -3912,12 +4103,13 @@ export default function App() {
       )}
       {payrollConfirm && (
         <PayrollConfirmModal
-          activeCount={employees.filter(e => e.status !== "Terminated").length}
-          totalCost={hrStats.monthlyPayrollCost}
+          activeEmployees={employees.filter(e => e.status !== "Terminated")}
+          monthlyAttendance={monthlyAttendance}
           onClose={() => setPayrollConfirm(false)}
           onConfirm={runPayroll}
         />
       )}
+
       {showInventoryItemModal && (
         <InventoryItemModal
           initialData={editingInventoryItem}
@@ -5516,19 +5708,67 @@ function EmployeeDetailModal({ employee, leaveHistory, onClose, onStatusChange }
   );
 }
 
-function PayrollConfirmModal({ activeCount, totalCost, onClose, onConfirm }) {
+function PayrollConfirmModal({ activeEmployees = [], monthlyAttendance = {}, onClose, onConfirm }) {
+  const entries = activeEmployees.map(e => {
+    const empAtt = monthlyAttendance[e.id] || {};
+    const absentCount = Object.keys(empAtt).length > 0 ? Object.values(empAtt).filter(v => v === "A").length : 0;
+    const dailyRate = Math.round(e.salary / 30);
+    const deductionAmt = absentCount * dailyRate;
+    const netSalary = e.salary - deductionAmt;
+    return { ...e, absentCount, deductionAmt, netSalary };
+  });
+
+  const totalGross = entries.reduce((s, e) => s + e.salary, 0);
+  const totalDeductions = entries.reduce((s, e) => s + e.deductionAmt, 0);
+  const totalNet = entries.reduce((s, e) => s + e.netSalary, 0);
+
   return (
     <ModalShell title="Run Monthly Payroll Disbursal" onClose={onClose}>
-<div style={{ fontSize: 14, color: "var(--ink-muted)", marginBottom: 16 }}>
-        This action will generate staff payslips for <b>{activeCount} active employees</b> and automatically post the consolidated payroll expense entry (Total: <b className="mono" style={{ color: "var(--gold)" }}>{pkr(totalCost)}</b>) directly to the General Ledger &amp; P&amp;L.
+      <div style={{ fontSize: 13.5, color: "var(--ink-muted)", marginBottom: 14 }}>
+        Monthly Payroll calculation based on <b>Day-Wise Attendance &amp; Leave Deductions</b> for <b>{entries.length} active staff members</b>:
       </div>
+
+      <div style={{ background: "var(--bg)", padding: 12, borderRadius: 8, marginBottom: 14, fontSize: 13 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+          <span>Total Gross Payroll:</span> <span className="mono" style={{ fontWeight: 700 }}>{pkr(totalGross)}</span>
+        </div>
+        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4, color: "var(--rose)" }}>
+          <span>Total Attendance Deductions:</span> <span className="mono" style={{ fontWeight: 700 }}>- {pkr(totalDeductions)}</span>
+        </div>
+        <div style={{ display: "flex", justifyContent: "space-between", paddingTop: 6, borderTop: "1px solid var(--rule)", fontWeight: 800, fontSize: 14, color: "var(--gold)" }}>
+          <span>Net Payroll Payable (Bank Disbursal):</span> <span className="mono">{pkr(totalNet)}</span>
+        </div>
+      </div>
+
+      <div className="table-responsive" style={{ maxHeight: 200, overflowY: "auto", marginBottom: 16 }}>
+        <table style={{ fontSize: 12 }}>
+          <thead>
+            <tr>
+              <th>Employee</th><th>Gross</th><th>Absents</th><th>Deduction</th><th>Net Disbursed</th>
+            </tr>
+          </thead>
+          <tbody>
+            {entries.map(e => (
+              <tr key={e.id}>
+                <td style={{ fontWeight: 600 }}>{e.name}</td>
+                <td className="mono">{pkr(e.salary)}</td>
+                <td className="mono" style={{ textAlign: "center", color: e.absentCount > 0 ? "var(--rose)" : "inherit" }}>{e.absentCount} d</td>
+                <td className="mono" style={{ color: "var(--rose)" }}>{e.deductionAmt > 0 ? `- ${pkr(e.deductionAmt)}` : "—"}</td>
+                <td className="mono" style={{ fontWeight: 700, color: "var(--jade)" }}>{pkr(e.netSalary)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
       <div style={{ display: "flex", gap: 10 }}>
         <button className="btn" style={{ flex: 1, justifyContent: "center" }} onClick={onClose}>Cancel</button>
-        <button className="btn btn-primary" style={{ flex: 1.5, justifyContent: "center" }} onClick={onConfirm}>Confirm &amp; Post Payroll</button>
+        <button className="btn btn-primary" style={{ flex: 1.5, justifyContent: "center" }} onClick={onConfirm}>Confirm &amp; Post Payroll ({pkr(totalNet)})</button>
       </div>
     </ModalShell>
   );
 }
+
 
 function PrintPreviewModal({ doc, onClose }) {
   const [pageSize, setPageSize] = useState("A4");
