@@ -116,7 +116,9 @@ const VOUCHER_TYPES = {
   PV: "Payment Voucher",
   RV: "Receipt Voucher",
   SV: "Sales Voucher",
+  CV: "Client-to-Vendor Direct Settlement",
 };
+
 
 const PAGE_SIZES = {
   A4: "210mm 297mm",
@@ -1477,12 +1479,19 @@ export default function App() {
         { account: "ar", debit: amount, credit: 0 },
         { account: "revenue", debit: 0, credit: amount },
       ];
+    } else if (type === "CV") {
+      // Direct Client to Vendor Settlement: Debit Accounts Payable (Vendor), Credit Accounts Receivable (Client)
+      journalLines = [
+        { account: "ap", debit: amount, credit: 0 },
+        { account: "ar", debit: 0, credit: amount },
+      ];
     }
-    postEntry(date, projectId ? `[Project] ${description}` : description, journalLines, voucherNo);
+    postEntry(date, projectId ? `[Project Direct Settle] ${description}` : `[Direct Settle] ${description}`, journalLines, voucherNo);
     setVouchers(v => [{ id: uid(), voucherNo, type, projectId: projectId || null, date, party, description, amount }, ...v]);
     setShowVoucherForm(false);
     return voucherNo;
   }
+
 
 
   function addHoarding(siteData) {
@@ -2994,8 +3003,11 @@ export default function App() {
         {tab === "vouchers" && (
           <>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-              <div className="section-title" style={{ margin: 0 }}>Voucher Engine</div>
-              <button className="btn btn-primary" onClick={() => { setVoucherDefaultType("JV"); setShowVoucherForm(true); }}><Plus size={14} /> New Voucher</button>
+              <div style={{ display: "flex", gap: 8 }}>
+                <button className="btn" style={{ background: "rgba(14, 165, 233, 0.12)", color: "#0284C7", borderColor: "#38BDF8", fontWeight: 600 }} onClick={() => { setVoucherDefaultType("CV"); setShowVoucherForm(true); }}>⚡ Direct Client ➔ Vendor Settlement</button>
+                <button className="btn btn-primary" onClick={() => { setVoucherDefaultType("JV"); setShowVoucherForm(true); }}><Plus size={14} /> New Voucher</button>
+              </div>
+
             </div>
 
             <div className="card">
@@ -4921,6 +4933,18 @@ function VoucherModal({ defaultType, projects = [], onClose, onSubmit }) {
       {type === "SV" && (
         <div className="field"><label>Amount (PKR)</label><input type="number" value={amount} onChange={e => setAmount(e.target.value)} /></div>
       )}
+      {type === "CV" && (
+        <>
+          <div className="field"><label>Vendor Name (Payee / Accounts Payable Settle)</label>
+            <input value={category} onChange={e => setCategory(e.target.value)} placeholder="e.g. Meta Ads / Outdoor Printing Vendor" /></div>
+          <div className="field"><label>Amount (PKR)</label>
+            <input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="0" /></div>
+          <div style={{ background: "rgba(14, 165, 233, 0.08)", padding: "10px 14px", borderRadius: 8, fontSize: 13, color: "#0284C7", marginBottom: 14 }}>
+            💡 <b>Direct Settlement Rule:</b> Debits Accounts Payable (Vendor) &amp; Credits Accounts Receivable (Client: <b>{party || "Client"}</b>). Neither Bank nor Cash balance is touched!
+          </div>
+        </>
+      )}
+
 
       {type === "JV" && (
         <>
