@@ -6223,10 +6223,14 @@ function PayrollConfirmModal({ activeEmployees = [], monthlyAttendance = {}, onC
   );
 }
 
-
 function PrintPreviewModal({ doc, onClose }) {
+
   const [pageSize, setPageSize] = useState("A4");
   const [template, setTemplate] = useState(doc.invoiceType || "GENERAL");
+  const [specialNote, setSpecialNote] = useState(
+    doc.specialNote || doc.note ||
+    `• ABOVE MENTIONED AMOUNT IS BASED ON NET. ALL TAXES WOULD BE CHARGED OVER & ABOVE.\n• PAYMENT TO BE MADE IN THE FAVOR OF "ADPULSE IMC (PRIVATE) LTD"\n• NTN: A0654656-8 / STRN: SA054896-8`
+  );
 
   const totalAmt = doc.totalAmount || doc.amount || 0;
   const sstAmt = doc.sstAmount || 0;
@@ -6245,24 +6249,35 @@ function PrintPreviewModal({ doc, onClose }) {
         }
       `}</style>
       <div className="modal" style={{ width: 840, maxWidth: "95vw", maxHeight: "90vh", overflowY: "auto" }} onClick={e => e.stopPropagation()}>
-        <div className="no-print-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14, background: "#1E293B", padding: "10px 16px", borderRadius: 8, color: "#fff" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <span style={{ fontWeight: 700, fontSize: 13.5 }}>Document Layout:</span>
-            <select value={template} onChange={e => setTemplate(e.target.value)} style={{ background: "#0F172A", color: "#fff", border: "1px solid #475569", borderRadius: 6, padding: "5px 10px", fontSize: 13 }}>
-              <option value="GENERAL">General / Standard Agency Invoice</option>
-              <option value="PRINTING">OOH Printing & Installation Invoice</option>
-              <option value="OOH">OOH Billboards Sales Tax Invoice</option>
-              <option value="PRINT_MEDIA">Print Media Sales Tax Invoice</option>
-              <option value="EVENT">Sales Tax Event Invoice</option>
-              <option value="BRANDING">Project Branding Invoice</option>
-            </select>
+        <div className="no-print-header" style={{ marginBottom: 14, background: "#1E293B", padding: "12px 16px", borderRadius: 8, color: "#fff" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <span style={{ fontWeight: 700, fontSize: 13.5 }}>Document Layout:</span>
+              <select value={template} onChange={e => setTemplate(e.target.value)} style={{ background: "#0F172A", color: "#fff", border: "1px solid #475569", borderRadius: 6, padding: "5px 10px", fontSize: 13 }}>
+                <option value="GENERAL">General / Standard Agency Invoice</option>
+                <option value="PRINTING">OOH Printing &amp; Installation Invoice</option>
+                <option value="OOH">OOH Billboards Sales Tax Invoice</option>
+                <option value="PRINT_MEDIA">Print Media Sales Tax Invoice</option>
+                <option value="EVENT">Sales Tax Event Invoice</option>
+                <option value="BRANDING">Project Branding Invoice</option>
+              </select>
+            </div>
+            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+              <select value={pageSize} onChange={e => setPageSize(e.target.value)} style={{ background: "#0F172A", border: "1px solid #475569", borderRadius: 6, color: "#FFF", fontSize: 13, padding: "5px 10px" }}>
+                {Object.keys(PAGE_SIZES).map(p => <option key={p}>{p}</option>)}
+              </select>
+              <button className="btn btn-primary" style={{ padding: "6px 14px", fontSize: 13 }} onClick={() => window.print()}><Printer size={14} /> Print / Save PDF</button>
+              <button className="btn" style={{ padding: 6, color: "#fff" }} onClick={onClose}><X size={16} /></button>
+            </div>
           </div>
-          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-            <select value={pageSize} onChange={e => setPageSize(e.target.value)} style={{ background: "#0F172A", border: "1px solid #475569", borderRadius: 6, color: "#FFF", fontSize: 13, padding: "5px 10px" }}>
-              {Object.keys(PAGE_SIZES).map(p => <option key={p}>{p}</option>)}
-            </select>
-            <button className="btn btn-primary" style={{ padding: "6px 14px", fontSize: 13 }} onClick={() => window.print()}><Printer size={14} /> Print / Save PDF</button>
-            <button className="btn" style={{ padding: 6, color: "#fff" }} onClick={onClose}><X size={16} /></button>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <span style={{ fontSize: 12, color: "#94A3B8", fontWeight: 600 }}>Special Note / Terms:</span>
+            <input
+              style={{ flex: 1, background: "#0F172A", color: "#F8FAFC", border: "1px solid #475569", borderRadius: 4, padding: "4px 8px", fontSize: 12 }}
+              value={specialNote}
+              onChange={e => setSpecialNote(e.target.value)}
+              placeholder="Custom invoice notes, payment terms..."
+            />
           </div>
         </div>
 
@@ -6283,9 +6298,12 @@ function PrintPreviewModal({ doc, onClose }) {
 
             {/* Center Heading */}
             <div style={{ textAlign: "center", paddingTop: 10 }}>
-              <h2 style={{ margin: 0, fontSize: 20, fontWeight: 800, textDecoration: "underline", letterSpacing: "1px", textTransform: "uppercase", color: "#000" }}>
-                {doc.applySst ? "SALES TAX INVOICE" : "INVOICE"}
+              <h2 style={{ margin: 0, fontSize: 20, fontWeight: 800, textDecoration: "underline", letterSpacing: "1px", textTransform: "uppercase", color: doc.applySst ? "#A81C1C" : "#0F172A" }}>
+                {doc.applySst ? "SALES TAX INVOICE (15% SST INCLUDED)" : "COMMERCIAL INVOICE (TAX EXEMPT)"}
               </h2>
+              <div style={{ fontSize: 11, fontWeight: 600, color: "#475569", marginTop: 2 }}>
+                {doc.applySst ? "Sindh Revenue Board (SRB) Regn. # SA054896-8" : "Without Sales Tax / Tax Exempt Invoice"}
+              </div>
             </div>
 
             {/* Right Meta Info */}
@@ -6404,8 +6422,7 @@ function PrintPreviewModal({ doc, onClose }) {
                 </tr>
               </tbody>
             </table>
-          ) :
- (
+          ) : (
             <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 20, border: "2px solid #000", fontSize: 13 }}>
               <thead>
                 <tr style={{ background: "#F8FAFC" }}>
@@ -6433,23 +6450,24 @@ function PrintPreviewModal({ doc, onClose }) {
 
           {/* TOTALS & TAX BREAKDOWN BLOCK */}
           <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 20 }}>
-            <table style={{ borderCollapse: "collapse", minWidth: 320, fontSize: 13, border: "2px solid #000" }}>
+            <table style={{ borderCollapse: "collapse", minWidth: 340, fontSize: 13, border: "2px solid #000" }}>
               <tbody>
                 <tr>
                   <td style={{ border: "1px solid #000", padding: "6px 12px", fontWeight: 700 }}>Total Net Amount</td>
                   <td style={{ border: "1px solid #000", padding: "6px 12px", textAlign: "right", fontWeight: 700 }}>{pkr(netAmt)}</td>
                 </tr>
-                {doc.applySst && (
+                {doc.applySst ? (
                   <>
                     <tr>
-                      <td style={{ border: "1px solid #000", padding: "6px 12px" }}>15% Agency Commission</td>
-                      <td style={{ border: "1px solid #000", padding: "6px 12px", textAlign: "right" }}>{pkr(netAmt * 0.15)}</td>
-                    </tr>
-                    <tr>
-                      <td style={{ border: "1px solid #000", padding: "6px 12px" }}>15% SST on Agency Commission</td>
-                      <td style={{ border: "1px solid #000", padding: "6px 12px", textAlign: "right" }}>{pkr(sstAmt || (netAmt * 0.15 * 0.15))}</td>
+                      <td style={{ border: "1px solid #000", padding: "6px 12px" }}>15% Sindh Sales Tax (SRB)</td>
+                      <td style={{ border: "1px solid #000", padding: "6px 12px", textAlign: "right", fontWeight: 600 }}>{pkr(sstAmt || (netAmt * 0.15))}</td>
                     </tr>
                   </>
+                ) : (
+                  <tr>
+                    <td style={{ border: "1px solid #000", padding: "6px 12px", color: "#64748B", fontStyle: "italic" }}>Sales Tax (SST Status)</td>
+                    <td style={{ border: "1px solid #000", padding: "6px 12px", textAlign: "right", color: "#64748B", fontStyle: "italic" }}>EXEMPT (0%)</td>
+                  </tr>
                 )}
                 {doc.applyWht && (
                   <tr>
@@ -6470,12 +6488,24 @@ function PrintPreviewModal({ doc, onClose }) {
             Amount in words: <b style={{ fontStyle: "normal", color: "#000" }}>{amountInWords(totalAmt)}</b>
           </div>
 
-          {/* OFFICIAL NOTES */}
-          <div style={{ fontSize: 11.5, lineHeight: 1.6, marginBottom: 36, color: "#333" }}>
-            <div style={{ fontWeight: 700, textDecoration: "underline", marginBottom: 4 }}>Note:</div>
-            <div>• ABOVE MENTIONED AMOUNT IS BASED ON NET. ALL TAXES WOULD BE CHARGED OVER & ABOVE.</div>
-            <div>• PAYMENT TO BE MADE IN THE FAVOR OF <b>"ADPULSE IMC (PRIVATE) LTD"</b></div>
-            <div>• NTN: <b>A0654656-8</b> / STRN: <b>SA054896-8</b></div>
+          {/* SPECIAL NOTES & TERMS SECTION */}
+          <div style={{ fontSize: 11.5, lineHeight: 1.6, marginBottom: 28, color: "#1E293B", background: "#F8FAFC", padding: "10px 14px", border: "1px solid #CBD5E1", borderRadius: 6 }}>
+            <div style={{ fontWeight: 800, textDecoration: "underline", marginBottom: 4, color: "#0F172A", textTransform: "uppercase", fontSize: 11 }}>
+              Special Notes &amp; Terms:
+            </div>
+            {specialNote ? (
+              specialNote.split("\n").map((line, idx) => (
+                <div key={idx} style={{ fontWeight: line.startsWith("•") || line.startsWith("-") ? 500 : 600 }}>
+                  {line}
+                </div>
+              ))
+            ) : (
+              <>
+                <div>• ABOVE MENTIONED AMOUNT IS BASED ON NET. ALL TAXES WOULD BE CHARGED OVER &amp; ABOVE.</div>
+                <div>• PAYMENT TO BE MADE IN THE FAVOR OF <b>"ADPULSE IMC (PRIVATE) LTD"</b></div>
+                <div>• NTN: <b>A0654656-8</b> / STRN: <b>SA054896-8</b></div>
+              </>
+            )}
           </div>
 
           {/* SIGNATURES */}
@@ -6500,6 +6530,8 @@ function PrintPreviewModal({ doc, onClose }) {
     </div>
   );
 }
+
+
 
 
 function ClientStatementPrintModal({ clientName, invoices, projects, onClose }) {
