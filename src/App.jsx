@@ -171,10 +171,12 @@ const PROJECT_TYPES = [
   { key: "TVC Production", label: "TVC Production", icon: Video, color: "#B8860B" },
   { key: "Events", label: "Events", icon: PartyPopper, color: "#E11D48" },
   { key: "OOH Advertising", label: "OOH Advertising", icon: Building2, color: "#059669" },
+  { key: "Printing & Installations", label: "Printing & Installations", icon: Printer, color: "#2563EB" },
   { key: "Digital Marketing", label: "Digital Marketing", icon: Megaphone, color: "#0284C7" },
   { key: "BTL Marketing", label: "BTL Marketing", icon: Users, color: "#D97706" },
   { key: "Print Media", label: "Print Media", icon: Newspaper, color: "#7C3AED" },
 ];
+
 
 const PROJECT_STATUSES = ["Planning", "Ongoing", "Completed", "On Hold"];
 
@@ -421,29 +423,40 @@ function seedProjects() {
     { id: uid(), projectCode: "PRJ-005", client: "North Town Residency", type: "Digital Marketing", name: "Commercial Units Digital Push", description: "FB/Insta lead generation campaign & ad management", startDate: "2026-07-15", endDate: "2026-08-15", status: "Ongoing" },
     { id: uid(), projectCode: "PRJ-006", client: "Magnitude", type: "BTL Marketing", name: "Retail Activation Drive", description: "In-store BTL brand activation & promotional sampling", startDate: "2026-06-20", endDate: "2026-07-10", status: "Completed" },
     { id: uid(), projectCode: "PRJ-007", client: "Kinza Beverages", type: "Print Media", name: "Newspaper Insert Campaign", description: "Print ad insertions - Dawn & Jang Sunday editions", startDate: "2026-07-05", endDate: "2026-07-25", status: "Planning" },
+    {
+      id: uid(), projectCode: "PRJ-008", client: "Imtiaz Retail", type: "Printing & Installations", name: "Flagship Store Frontlit Vinyl Branding", description: "Large format frontlit printing & metal frame installation", startDate: "2026-07-10", endDate: "2026-07-28", status: "Ongoing",
+      totalSqft: 346, budget: 56800,
+      printingItems: [
+        { width: 10, height: 20, sqft: 200, rate: 150, amount: 30000 },
+        { width: 5, height: 10, sqft: 50, rate: 200, amount: 10000 },
+        { width: 8, height: 12, sqft: 96, rate: 175, amount: 16800 }
+      ]
+    },
   ];
 }
 
 function seedProjectInvoices(projects) {
   const billAmount = {
     "TVC Production": 480000, "Events": 350000, "OOH Advertising": 600000,
-    "Digital Marketing": 300000, "BTL Marketing": 220000, "Print Media": 150000,
+    "Printing & Installations": 56800, "Digital Marketing": 300000, "BTL Marketing": 220000, "Print Media": 150000,
   };
   return projects.map(p => ({
-    id: uid(), client: p.client, description: `${p.type} — ${p.name}`, amount: billAmount[p.type],
-    applySst: true, sstAmount: billAmount[p.type] * 0.15, totalAmount: billAmount[p.type] * 1.15,
+    id: uid(), client: p.client, description: `${p.type} — ${p.name}`, amount: p.budget || billAmount[p.type] || 100000,
+    applySst: true, sstAmount: (p.budget || billAmount[p.type] || 100000) * 0.15, totalAmount: (p.budget || billAmount[p.type] || 100000) * 1.15,
     issueDate: p.startDate, dueDate: p.endDate,
     paid: p.status === "Completed", paidVia: p.status === "Completed" ? "Bank" : null,
     projectId: p.id,
+    printingItems: p.printingItems || null
   }));
 }
 
 function seedProjectExpenses(projects) {
   const costAmount = {
     "TVC Production": 220000, "Events": 180000, "OOH Advertising": 210000,
-    "Digital Marketing": 90000, "BTL Marketing": 95000,
+    "Printing & Installations": 24000, "Digital Marketing": 90000, "BTL Marketing": 95000, "Print Media": 60000,
   };
   return projects.filter(p => costAmount[p.type]).map(p => ({
+
     id: uid(), vendor: `${p.type} — Production Vendor`, description: `Cost for ${p.name}`,
     category: p.type, amount: costAmount[p.type], date: p.startDate, paidVia: "Bank",
     projectId: p.id,
@@ -1598,10 +1611,26 @@ export default function App() {
       : h));
   }
 
-  function createProject({ client, type, name, description, startDate, endDate, oohSites }) {
+  function createProject({ client, type, name, description, startDate, endDate, oohSites, printingItems, totalSqft, budget }) {
     const nextNum = projects.length > 0 ? Math.max(...projects.map(p => parseInt((p.projectCode || "PRJ-000").split("-")[1] || 0))) + 1 : 1;
     const projectCode = "PRJ-" + String(nextNum).padStart(3, '0');
-    const proj = { id: uid(), projectCode, client, type, name, description, startDate, endDate, status: "Planning" };
+
+    const isPrintingType = type === "Printing & Installations" || type === "printing";
+
+    const proj = {
+      id: uid(),
+      projectCode,
+      client,
+      type,
+      name,
+      description,
+      startDate,
+      endDate,
+      status: "Planning",
+      printingItems: isPrintingType ? (printingItems || []) : [],
+      totalSqft: isPrintingType ? (totalSqft || 0) : 0,
+      budget: budget || 0
+    };
     setProjects(list => [proj, ...list]);
     
     const isOohType = type === "OOH Advertising" || type === "ooh";
@@ -1635,10 +1664,37 @@ export default function App() {
       }
     }
 
+    if (isPrintingType && printingItems && printingItems.length > 0 && budget > 0) {
+      const sst = Math.round(budget * 0.15);
+      const inv = {
+        id: uid(),
+        client: proj.client,
+        invoiceType: "PRINTING",
+        description: `Printing & Installations — ${proj.name} (${(totalSqft || 0).toFixed(2)} Sq. Ft.)`,
+        amount: budget,
+        applySst: true,
+        sstAmount: sst,
+        totalAmount: budget + sst,
+        issueDate: proj.startDate,
+        dueDate: proj.endDate,
+        paid: false,
+        paidVia: null,
+        projectId: proj.id,
+        printingItems: printingItems
+      };
+      setInvoices(list => [inv, ...list]);
+      postEntry(proj.startDate, `Printing & Installations Billing - ${proj.name} (${proj.client})`, [
+        { account: "ar", debit: budget + sst, credit: 0 },
+        { account: "revenue", debit: 0, credit: budget },
+        { account: "srb_payable", debit: 0, credit: sst },
+      ], "INV-" + inv.id.toUpperCase());
+    }
+
     setShowProjectForm(false);
     setSelectedProjectId(proj.id);
     return proj;
   }
+
 
   function updateProject(updated) {
     setProjects(list => list.map(p => p.id === updated.id ? updated : p));
@@ -5314,7 +5370,16 @@ function ProjectModal({ initialData, onClose, onSubmit }) {
   // OOH specific state (Multiple Sites: Area wise, Size wise, Rate wise)
   const [oohSites, setOohSites] = useState([{ name: "", area: "", size: "", pricePerMonth: "" }]);
 
+  // Printing & Installations specific state
+  const [printingItems, setPrintingItems] = useState(() => {
+    if (initialData?.printingItems && Array.isArray(initialData.printingItems) && initialData.printingItems.length > 0) {
+      return initialData.printingItems;
+    }
+    return [{ width: "", height: "", sqft: 0, rate: "", amount: 0 }];
+  });
+
   const isOoh = type === "OOH Advertising" || type === "ooh";
+  const isPrinting = type === "Printing & Installations" || type === "printing";
 
   const addOohSite = () => setOohSites([...oohSites, { name: "", area: "", size: "", pricePerMonth: "" }]);
   const updateOohSite = (index, field, value) => {
@@ -5324,7 +5389,43 @@ function ProjectModal({ initialData, onClose, onSubmit }) {
   };
   const removeOohSite = (index) => setOohSites(oohSites.filter((_, i) => i !== index));
 
-  const valid = client && name && startDate && endDate && (!isOoh || oohSites.every(s => s.name && s.area));
+  const addPrintingItem = () => setPrintingItems([...printingItems, { width: "", height: "", sqft: 0, rate: "", amount: 0 }]);
+
+  const updatePrintingItem = (index, field, value) => {
+    const updated = [...printingItems];
+    const item = { ...updated[index], [field]: value };
+    
+    const w = parseFloat(item.width) || 0;
+    const h = parseFloat(item.height) || 0;
+    const r = parseFloat(item.rate) || 0;
+
+    const sqft = Math.round(w * h * 100) / 100;
+    const amount = Math.round(sqft * r * 100) / 100;
+
+    item.sqft = sqft;
+    item.amount = amount;
+
+    updated[index] = item;
+    setPrintingItems(updated);
+  };
+
+  const removePrintingItem = (index) => {
+    if (printingItems.length > 1) {
+      setPrintingItems(printingItems.filter((_, i) => i !== index));
+    } else {
+      setPrintingItems([{ width: "", height: "", sqft: 0, rate: "", amount: 0 }]);
+    }
+  };
+
+  const totalPrintingSqft = printingItems.reduce((sum, item) => sum + (Number(item.sqft) || 0), 0);
+  const grandTotalPrintingAmount = printingItems.reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
+
+  const printingValid = !isPrinting || (
+    printingItems.length > 0 && 
+    printingItems.every(i => Number(i.width) > 0 && Number(i.height) > 0 && Number(i.rate) >= 0)
+  );
+
+  const valid = client && name && startDate && endDate && (!isOoh || oohSites.every(s => s.name && s.area)) && printingValid;
 
   return (
     <ModalShell title={initialData ? "Edit Project Details" : "Create New Agency Project"} onClose={onClose}>
@@ -5342,7 +5443,7 @@ function ProjectModal({ initialData, onClose, onSubmit }) {
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
             <div>
               <div style={{ fontWeight: 700, fontSize: 13, color: "var(--ink)" }}>Outdoor Billboard Sites (Multiple Add)</div>
-              <div style={{ fontSize: 11.5, color: "var(--ink-muted)" }}>Add client OOH sites by Area, Size & Monthly Rate</div>
+              <div style={{ fontSize: 11.5, color: "var(--ink-muted)" }}>Add client OOH sites by Area, Size &amp; Monthly Rate</div>
             </div>
             <button className="btn btn-primary" style={{ fontSize: 11.5, padding: "3px 8px" }} onClick={addOohSite} type="button">
               <Plus size={13} /> Add Site
@@ -5382,17 +5483,136 @@ function ProjectModal({ initialData, onClose, onSubmit }) {
         </div>
       )}
 
+      {isPrinting && (
+        <div style={{ background: "var(--bg)", padding: 14, borderRadius: 8, marginBottom: 14, border: "1.5px solid var(--rule)" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+            <div>
+              <div style={{ fontWeight: 700, fontSize: 13, color: "var(--ink)" }}>Printing &amp; Installations Items (Multiple Add)</div>
+              <div style={{ fontSize: 11.5, color: "var(--ink-muted)" }}>Enter Width, Height &amp; Rate per Sq. Ft. for automatic area &amp; price calculation</div>
+            </div>
+            <button className="btn btn-primary" style={{ fontSize: 11.5, padding: "4px 9px" }} onClick={addPrintingItem} type="button">
+              <Plus size={13} /> Add Item
+            </button>
+          </div>
+
+          <div className="table-responsive" style={{ marginBottom: 10 }}>
+            <table style={{ width: "100%", fontSize: 12, borderCollapse: "collapse", background: "#FFFFFF", borderRadius: 6, overflow: "hidden", border: "1px solid #CBD5E1" }}>
+              <thead>
+                <tr style={{ background: "#F8FAFC", borderBottom: "1px solid #CBD5E1", color: "#334155" }}>
+                  <th style={{ padding: "7px 8px", textAlign: "left", width: "18%" }}>Width (ft)</th>
+                  <th style={{ padding: "7px 8px", textAlign: "left", width: "18%" }}>Height (ft)</th>
+                  <th style={{ padding: "7px 8px", textAlign: "right", width: "20%", color: "#0284C7" }}>Total Sq. Ft.</th>
+                  <th style={{ padding: "7px 8px", textAlign: "left", width: "20%" }}>Rate / Sq. Ft. (PKR)</th>
+                  <th style={{ padding: "7px 8px", textAlign: "right", width: "20%", color: "#059669" }}>Amount (PKR)</th>
+                  <th style={{ padding: "7px 4px", textAlign: "center", width: "4%" }}></th>
+                </tr>
+              </thead>
+              <tbody>
+                {printingItems.map((item, idx) => (
+                  <tr key={idx} style={{ borderBottom: "1px solid #F1F5F9" }}>
+                    <td style={{ padding: "6px 8px" }}>
+                      <input
+                        type="number"
+                        min="0.01"
+                        step="0.01"
+                        style={{ width: "100%", padding: "5px 7px", fontSize: 12, borderRadius: 5, border: "1px solid #CBD5E1" }}
+                        value={item.width}
+                        onChange={e => updatePrintingItem(idx, "width", e.target.value)}
+                        placeholder="Width"
+                      />
+                    </td>
+                    <td style={{ padding: "6px 8px" }}>
+                      <input
+                        type="number"
+                        min="0.01"
+                        step="0.01"
+                        style={{ width: "100%", padding: "5px 7px", fontSize: 12, borderRadius: 5, border: "1px solid #CBD5E1" }}
+                        value={item.height}
+                        onChange={e => updatePrintingItem(idx, "height", e.target.value)}
+                        placeholder="Height"
+                      />
+                    </td>
+                    <td style={{ padding: "6px 8px", textAlign: "right" }}>
+                      <input
+                        type="text"
+                        readOnly
+                        disabled
+                        style={{ width: "100%", padding: "5px 7px", fontSize: 12, borderRadius: 5, border: "1px solid #E2E8F0", background: "#F1F5F9", textAlign: "right", fontWeight: 700, color: "#0284C7" }}
+                        value={(Number(item.sqft) || 0).toFixed(2)}
+                      />
+                    </td>
+                    <td style={{ padding: "6px 8px" }}>
+                      <input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        style={{ width: "100%", padding: "5px 7px", fontSize: 12, borderRadius: 5, border: "1px solid #CBD5E1" }}
+                        value={item.rate}
+                        onChange={e => updatePrintingItem(idx, "rate", e.target.value)}
+                        placeholder="Rate"
+                      />
+                    </td>
+                    <td style={{ padding: "6px 8px", textAlign: "right" }}>
+                      <input
+                        type="text"
+                        readOnly
+                        disabled
+                        style={{ width: "100%", padding: "5px 7px", fontSize: 12, borderRadius: 5, border: "1px solid #E2E8F0", background: "#F1F5F9", textAlign: "right", fontWeight: 700, color: "#059669" }}
+                        value={pkr(item.amount)}
+                      />
+                    </td>
+                    <td style={{ padding: "6px 4px", textAlign: "center" }}>
+                      {printingItems.length > 1 && (
+                        <button className="btn" type="button" style={{ padding: "4px 6px", color: "var(--rose)", borderColor: "#FCA5A5" }} onClick={() => removePrintingItem(idx)}>
+                          <Trash2 size={13} />
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "#FFFFFF", padding: "10px 14px", borderRadius: 6, border: "1px solid #CBD5E1" }}>
+            <div>
+              <span style={{ fontSize: 12, color: "var(--ink-muted)" }}>Total Area: </span>
+              <span className="mono" style={{ fontWeight: 800, fontSize: 13, color: "#0284C7" }}>
+                {totalPrintingSqft.toFixed(2)} Sq. Ft.
+              </span>
+            </div>
+            <div>
+              <span style={{ fontSize: 12, color: "var(--ink-muted)" }}>Grand Total Amount: </span>
+              <span className="mono" style={{ fontWeight: 800, fontSize: 15, color: "#059669" }}>
+                {pkr(grandTotalPrintingAmount)}
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div style={{ display: "flex", gap: 10 }}>
         <div className="field" style={{ flex: 1 }}><label>Start Date</label><input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} /></div>
         <div className="field" style={{ flex: 1 }}><label>End Date</label><input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} /></div>
       </div>
       <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 6 }} disabled={!valid}
-        onClick={() => valid && onSubmit(initialData ? { ...initialData, client, type, name, description, startDate, endDate } : { client, type, name, description, startDate, endDate, oohSites })}>
+        onClick={() => valid && onSubmit(initialData ? {
+          ...initialData, client, type, name, description, startDate, endDate,
+          printingItems: isPrinting ? printingItems : (initialData?.printingItems || []),
+          totalSqft: isPrinting ? totalPrintingSqft : (initialData?.totalSqft || 0),
+          budget: isPrinting ? grandTotalPrintingAmount : (initialData?.budget || 0)
+        } : {
+          client, type, name, description, startDate, endDate, oohSites,
+          printingItems: isPrinting ? printingItems : [],
+          totalSqft: isPrinting ? totalPrintingSqft : 0,
+          budget: isPrinting ? grandTotalPrintingAmount : 0
+        })}>
         {initialData ? "Save Project Changes" : "Initialize Project"}
       </button>
     </ModalShell>
   );
 }
+
 
 function ProjectBillingModal({ project, onClose, onSubmit }) {
   const [description, setDescription] = useState("");
@@ -5518,6 +5738,51 @@ function ProjectDetailModal({ project, invoices, expenses, sites, onClose, onSta
             </div>
           </>
         )}
+
+        {project.printingItems && project.printingItems.length > 0 && (
+          <>
+            <div className="section-title" style={{ margin: "14px 0 8px", fontSize: 15 }}>
+              <Printer size={16} color="var(--gold)" /> Printing &amp; Installations Specs ({project.printingItems.length} items)
+            </div>
+            <div className="card" style={{ marginBottom: 16 }}>
+              <div className="table-responsive">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th style={{ textAlign: "right" }}>Width (ft)</th>
+                      <th style={{ textAlign: "right" }}>Height (ft)</th>
+                      <th style={{ textAlign: "right", color: "#0284C7" }}>Total Sq. Ft.</th>
+                      <th style={{ textAlign: "right" }}>Rate / Sq. Ft.</th>
+                      <th style={{ textAlign: "right", color: "#059669" }}>Amount (PKR)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {project.printingItems.map((item, idx) => (
+                      <tr key={idx}>
+                        <td className="mono" style={{ fontSize: 12, color: "var(--ink-muted)" }}>Item #{idx + 1}</td>
+                        <td className="mono" style={{ textAlign: "right" }}>{Number(item.width).toFixed(2)}</td>
+                        <td className="mono" style={{ textAlign: "right" }}>{Number(item.height).toFixed(2)}</td>
+                        <td className="mono" style={{ textAlign: "right", fontWeight: 700, color: "#0284C7" }}>{Number(item.sqft).toFixed(2)}</td>
+                        <td className="mono" style={{ textAlign: "right" }}>{pkr(item.rate)}</td>
+                        <td className="mono" style={{ textAlign: "right", fontWeight: 700, color: "#059669" }}>{pkr(item.amount)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot>
+                    <tr style={{ background: "var(--bg)", fontWeight: 800 }}>
+                      <td colSpan={3}>Grand Totals</td>
+                      <td className="mono" style={{ textAlign: "right", color: "#0284C7" }}>{(project.totalSqft || project.printingItems.reduce((s, i) => s + (Number(i.sqft) || 0), 0)).toFixed(2)} Sq. Ft.</td>
+                      <td></td>
+                      <td className="mono" style={{ textAlign: "right", color: "#059669", fontSize: 14 }}>{pkr(project.budget || project.printingItems.reduce((s, i) => s + (Number(i.amount) || 0), 0))}</td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+          </>
+        )}
+
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
           <div className="section-title" style={{ margin: 0, fontSize: 15 }}><FileText size={16} color="var(--gold)" /> Client Billings</div>
@@ -5851,32 +6116,48 @@ function PrintPreviewModal({ doc, onClose }) {
 
           {/* DYNAMIC DATA TABLE BASED ON TEMPLATE */}
           {template === "PRINTING" ? (
-            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 20, border: "2px solid #000", fontSize: 12 }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 20, border: "2px solid #000", fontSize: 11.5 }}>
               <thead>
                 <tr style={{ background: "#F1F5F9" }}>
                   <th style={{ border: "1px solid #000", padding: "6px", textAlign: "center", width: 45 }}>S. NO.</th>
-                  <th style={{ border: "1px solid #000", padding: "6px", textAlign: "left" }}>LOCATION</th>
-                  <th style={{ border: "1px solid #000", padding: "6px", textAlign: "center", width: 45 }}>W</th>
-                  <th style={{ border: "1px solid #000", padding: "6px", textAlign: "center", width: 45 }}>H</th>
-                  <th style={{ border: "1px solid #000", padding: "6px", textAlign: "center", width: 65 }}>SQFT</th>
-                  <th style={{ border: "1px solid #000", padding: "6px", textAlign: "right", width: 75 }}>RATE</th>
+                  <th style={{ border: "1px solid #000", padding: "6px", textAlign: "left" }}>LOCATION / ITEM</th>
+                  <th style={{ border: "1px solid #000", padding: "6px", textAlign: "center", width: 55 }}>W (FT)</th>
+                  <th style={{ border: "1px solid #000", padding: "6px", textAlign: "center", width: 55 }}>H (FT)</th>
+                  <th style={{ border: "1px solid #000", padding: "6px", textAlign: "center", width: 75 }}>SQFT</th>
+                  <th style={{ border: "1px solid #000", padding: "6px", textAlign: "right", width: 85 }}>RATE</th>
                   <th style={{ border: "1px solid #000", padding: "6px", textAlign: "right", width: 100 }}>AMOUNT</th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td style={{ border: "1px solid #000", padding: "6px", textAlign: "center" }}>1</td>
-                  <td style={{ border: "1px solid #000", padding: "6px" }}>{doc.description || "SHAFIQ MOR TGT LUCKYONE"}</td>
-                  <td style={{ border: "1px solid #000", padding: "6px", textAlign: "center" }}>45</td>
-                  <td style={{ border: "1px solid #000", padding: "6px", textAlign: "center" }}>15</td>
-                  <td style={{ border: "1px solid #000", padding: "6px", textAlign: "center" }}>675</td>
-                  <td style={{ border: "1px solid #000", padding: "6px", textAlign: "right" }}>35</td>
-                  <td style={{ border: "1px solid #000", padding: "6px", textAlign: "right", fontWeight: 700 }}>{pkr(netAmt)}</td>
-                </tr>
+                {doc.printingItems && doc.printingItems.length > 0 ? (
+                  doc.printingItems.map((item, idx) => (
+                    <tr key={idx}>
+                      <td style={{ border: "1px solid #000", padding: "6px", textAlign: "center" }}>{idx + 1}</td>
+                      <td style={{ border: "1px solid #000", padding: "6px" }}>{doc.description || `Printing Item #${idx + 1}`}</td>
+                      <td style={{ border: "1px solid #000", padding: "6px", textAlign: "center" }}>{Number(item.width).toFixed(2)}</td>
+                      <td style={{ border: "1px solid #000", padding: "6px", textAlign: "center" }}>{Number(item.height).toFixed(2)}</td>
+                      <td style={{ border: "1px solid #000", padding: "6px", textAlign: "center" }}>{Number(item.sqft).toFixed(2)}</td>
+                      <td style={{ border: "1px solid #000", padding: "6px", textAlign: "right" }}>{pkr(item.rate)}</td>
+                      <td style={{ border: "1px solid #000", padding: "6px", textAlign: "right", fontWeight: 700 }}>{pkr(item.amount)}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td style={{ border: "1px solid #000", padding: "6px", textAlign: "center" }}>1</td>
+                    <td style={{ border: "1px solid #000", padding: "6px" }}>{doc.description || "PRINTING & INSTALLATION WORK"}</td>
+                    <td style={{ border: "1px solid #000", padding: "6px", textAlign: "center" }}>45</td>
+                    <td style={{ border: "1px solid #000", padding: "6px", textAlign: "center" }}>15</td>
+                    <td style={{ border: "1px solid #000", padding: "6px", textAlign: "center" }}>675</td>
+                    <td style={{ border: "1px solid #000", padding: "6px", textAlign: "right" }}>35</td>
+                    <td style={{ border: "1px solid #000", padding: "6px", textAlign: "right", fontWeight: 700 }}>{pkr(netAmt)}</td>
+                  </tr>
+                )}
                 <tr style={{ fontWeight: 800, background: "#F8FAFC" }}>
                   <td colSpan={4} style={{ border: "1px solid #000", padding: "8px", textAlign: "center" }}>TOTAL AMOUNT</td>
-                  <td style={{ border: "1px solid #000", padding: "8px", textAlign: "center" }}>675</td>
-                  <td style={{ border: "1px solid #000", padding: "8px", textAlign: "right" }}>35</td>
+                  <td style={{ border: "1px solid #000", padding: "8px", textAlign: "center" }}>
+                    {doc.printingItems && doc.printingItems.length > 0 ? doc.printingItems.reduce((s, i) => s + Number(i.sqft), 0).toFixed(2) : "675"}
+                  </td>
+                  <td style={{ border: "1px solid #000", padding: "8px", textAlign: "right" }}>—</td>
                   <td style={{ border: "1px solid #000", padding: "8px", textAlign: "right" }}>{pkr(netAmt)}</td>
                 </tr>
               </tbody>
