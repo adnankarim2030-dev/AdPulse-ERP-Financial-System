@@ -3246,6 +3246,8 @@ export default function App() {
                     if (todayCollected > 0) alertsPositive.push(`Client Payment Collected Today: PKR ${pkr(todayCollected)}.`);
                     if (projCompleted > 0) alertsPositive.push(`${projCompleted} Project(s) marked Completed.`);
 
+                    const riskAlerts = { critical: alertsCritical, warning: alertsWarning, positive: alertsPositive };
+
                     return (
                       <>
                         {/* SECTION 3: FINANCIAL SNAPSHOT 9 KPI CARDS (DRILL-DOWN ENABLED) */}
