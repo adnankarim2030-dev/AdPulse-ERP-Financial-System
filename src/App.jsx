@@ -466,30 +466,30 @@ const ALL_MODULE_TABS = [
 const SEED_USERS = [
   {
     id: "u-ceo",
-    name: "AdPulse CEO",
+    name: "AdPulseCEO",
     email: "ceo@adpulse.pk",
-    password: "admin123",
+    password: "7890",
     role: "CEO",
     department: "Executive Board",
     allowedTabs: ALL_MODULE_TABS.map(t => t.key),
   },
   {
-    id: "u-admin",
-    name: "AdPulse Admin",
-    email: "admin@adpulse.pk",
-    password: "admin123",
-    role: "Admin",
-    department: "Executive Management",
-    allowedTabs: ALL_MODULE_TABS.map(t => t.key),
+    id: "u-shawal",
+    name: "Adpulseshawal",
+    email: "shawal@adpulse.pk",
+    password: "shawal4548",
+    role: "Staff",
+    department: "Digital Operations",
+    allowedTabs: ["dashboard", "projects", "invoices", "expenses", "ooh", "documents"],
   },
   {
-    id: "u-staff",
-    name: "Digital Team Staff",
-    email: "staff@adpulse.pk",
-    password: "staff123",
+    id: "u-wahab",
+    name: "Adpulsewahab",
+    email: "wahab@adpulse.pk",
+    password: "wahab5458",
     role: "Staff",
-    department: "Digital Marketing",
-    allowedTabs: ["dashboard", "projects", "invoices", "ooh", "documents"],
+    department: "Finance & Accounts",
+    allowedTabs: ["dashboard", "projects", "invoices", "expenses", "ooh", "documents"],
   },
 ];
 
@@ -6246,43 +6246,31 @@ function SupabaseConfigCard({ config, onSaveConfig, onPushToCloud, onPullFromClo
 /* ---------- WELCOME GATEWAY & AUTHENTICATION COMPONENTS ---------- */
 
 function WelcomeGateway({ usersList, onLogin, onOpenForgot, children }) {
-  const [activeTab, setActiveTab] = useState("ceo"); // 'ceo' | 'admin' | 'staff'
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const [showPass, setShowPass] = useState(false);
 
-  function switchTab(mode) {
-    setActiveTab(mode);
-    setErrorMsg("");
-    setEmail("");
-    setPassword("");
-  }
-
   function submitLogin(e) {
     e.preventDefault();
     const inputClean = email.trim().toLowerCase();
     const found = usersList.find(u => 
-      u.email.toLowerCase() === inputClean ||
       u.name.toLowerCase() === inputClean ||
-      (inputClean === "ceo" && (u.role === "CEO" || u.role === "Admin" || u.email === "ceo@adpulse.pk" || u.email === "admin@adpulse.pk")) ||
-      (inputClean === "admin" && (u.role === "Admin" || u.role === "CEO" || u.email === "admin@adpulse.pk")) ||
+      u.email.toLowerCase() === inputClean ||
+      (inputClean === "adpulseceo" && (u.role === "CEO" || u.role === "Admin")) ||
+      (inputClean === "adpulseshawal" && u.name.toLowerCase() === "adpulseshawal") ||
+      (inputClean === "adpulsewahab" && u.name.toLowerCase() === "adpulsewahab") ||
+      (inputClean === "admin" && (u.role === "Admin" || u.role === "CEO")) ||
+      (inputClean === "ceo" && (u.role === "CEO" || u.role === "Admin")) ||
       (inputClean === "staff" && u.role === "Staff")
     );
     if (!found || found.password !== password) {
-      setErrorMsg("Invalid Username/Email or Password. Please try again.");
-      return;
-    }
-    if (activeTab === "ceo" && found.role !== "CEO" && found.role !== "Admin") {
-      setErrorMsg("Access Denied. This account does not have CEO Executive privileges.");
-      return;
-    }
-    if (activeTab === "admin" && found.role !== "Admin" && found.role !== "CEO") {
-      setErrorMsg("Access Denied. This account does not have Admin privileges.");
+      setErrorMsg("Invalid User Name or Password. Please check your credentials.");
       return;
     }
     setErrorMsg("");
-    onLogin(found, activeTab === "ceo" ? "ceo-dashboard" : null);
+    const isExecutive = found.role === "CEO" || found.role === "Admin";
+    onLogin(found, isExecutive ? "ceo-dashboard" : "dashboard");
   }
 
   return (
@@ -6290,21 +6278,9 @@ function WelcomeGateway({ usersList, onLogin, onOpenForgot, children }) {
       <div className="gateway-card">
         <img src="./logo.png" alt="AdPulse Logo" className="gateway-logo" onError={(e) => { e.target.style.display = 'none'; }} />
         <div className="gateway-title">AdPulse IMC PVT LTD</div>
-        <div className="gateway-subtitle">Enterprise ERP &amp; Financial Gateway</div>
+        <div className="gateway-subtitle">Enterprise Financial &amp; ERP Gateway</div>
 
-        <div className="gateway-tabs">
-          <button className={"gateway-tab-btn" + (activeTab === "ceo" ? " active" : "")} onClick={() => switchTab("ceo")}>
-            <Crown size={16} color={activeTab === "ceo" ? "#D4AF37" : "#475569"} /> CEO Portal
-          </button>
-          <button className={"gateway-tab-btn" + (activeTab === "admin" ? " active" : "")} onClick={() => switchTab("admin")}>
-            <ShieldCheck size={16} color={activeTab === "admin" ? "#B8860B" : "#475569"} /> Admin Portal
-          </button>
-          <button className={"gateway-tab-btn" + (activeTab === "staff" ? " active" : "")} onClick={() => switchTab("staff")}>
-            <User size={16} color={activeTab === "staff" ? "#0284C7" : "#475569"} /> Staff Portal
-          </button>
-        </div>
-
-        <form onSubmit={submitLogin} autoComplete="off">
+        <form onSubmit={submitLogin} autoComplete="off" style={{ marginTop: 12 }}>
           {errorMsg && (
             <div style={{ background: "#FEF2F2", color: "#991B1B", border: "1px solid #FCA5A5", borderRadius: 9, padding: "8px 12px", fontSize: 13, marginBottom: 14 }}>
               {errorMsg}
@@ -6312,13 +6288,13 @@ function WelcomeGateway({ usersList, onLogin, onOpenForgot, children }) {
           )}
 
           <div className="field" style={{ textAlign: "left" }}>
-            <label>User Name / Email</label>
+            <label>User Name</label>
             <input
               type="text"
               required
               value={email}
               onChange={e => setEmail(e.target.value)}
-              placeholder={activeTab === "ceo" ? "ceo or ceo@adpulse.pk" : activeTab === "admin" ? "admin or admin@adpulse.pk" : "staff or staff@adpulse.pk"}
+              placeholder="e.g. AdPulseCEO, Adpulseshawal"
               autoComplete="off"
             />
           </div>
@@ -6338,13 +6314,13 @@ function WelcomeGateway({ usersList, onLogin, onOpenForgot, children }) {
             </div>
           </div>
 
-          <button type="submit" className="btn btn-primary" style={{ width: "100%", justifyContent: "center", padding: "12px", fontSize: 15, marginTop: 8 }}>
-            Sign In to {activeTab === "ceo" ? "CEO Executive Suite" : activeTab === "admin" ? "Admin Portal" : "Staff Portal"}
+          <button type="submit" className="btn btn-primary" style={{ width: "100%", justifyContent: "center", padding: "12px", fontSize: 15, marginTop: 10, background: "linear-gradient(135deg, #059669 0%, #047857 100%)", fontWeight: 700 }}>
+            Sign In to AdPulse ERP System
           </button>
         </form>
 
         <div style={{ marginTop: 22, fontSize: 12.5, color: "#64748B", borderTop: "1px solid #E2E8F0", paddingTop: 14 }}>
-          Karachi Agency Hub &middot; Secure System Access
+          Karachi Agency Hub &middot; Secure Executive Access
         </div>
       </div>
       {children}
