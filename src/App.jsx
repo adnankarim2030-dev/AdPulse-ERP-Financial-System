@@ -954,11 +954,17 @@ export default function App() {
 
   const [showExpenseForm, setShowExpenseForm] = useState(false);
   const [editingExpense, setEditingExpense] = useState(null);
-  const [payingExpenseId, setPayingExpenseId] = useState(null);
   const [expenseCategoryFilter, setExpenseCategoryFilter] = useState("all");
   const [expenseStatusFilter, setExpenseStatusFilter] = useState("all");
+  const [expenseVendorFilter, setExpenseVendorFilter] = useState("all");
   const [expenseSearchQuery, setExpenseSearchQuery] = useState("");
   const [showCategoryManager, setShowCategoryManager] = useState(false);
+
+  const uniqueVendorsList = useMemo(() => {
+    return [...new Set(expenses.map(e => e.vendor))].filter(Boolean).sort();
+  }, [expenses]);
+
+
 
 
   const [showPOForm, setShowPOForm] = useState(false);
@@ -3102,6 +3108,7 @@ export default function App() {
             <>
               {(() => {
                 const filteredExps = expenses.filter(exp => {
+                  const matchVendor = expenseVendorFilter === "all" || (exp.vendor && exp.vendor.toLowerCase() === expenseVendorFilter.toLowerCase());
                   const matchCat = expenseCategoryFilter === "all" || exp.category === expenseCategoryFilter;
                   const matchStatus = expenseStatusFilter === "all" || exp.status === expenseStatusFilter;
                   const q = expenseSearchQuery.toLowerCase().trim();
@@ -3112,7 +3119,7 @@ export default function App() {
                     (exp.description && exp.description.toLowerCase().includes(q)) ||
                     (exp.refNo && exp.refNo.toLowerCase().includes(q))
                   );
-                  return matchCat && matchStatus && matchQuery;
+                  return matchVendor && matchCat && matchStatus && matchQuery;
                 });
 
                 const totalExpAmount = expenses.reduce((s, e) => s + (e.amount || 0), 0);
@@ -3123,12 +3130,12 @@ export default function App() {
                   <>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, flexWrap: "wrap", gap: 10 }}>
                       <div>
-                        <div className="section-title" style={{ margin: 0 }}>Operating Expenses & Classification</div>
+                        <div className="section-title" style={{ margin: 0 }}>Operating Expenses &amp; Classification</div>
                         <div style={{ fontSize: 13, color: "var(--ink-muted)", marginTop: 2 }}>Hierarchical Category → Subcategory → Chart of Accounts (GL) Mapping</div>
                       </div>
                       <div style={{ display: "flex", gap: 10 }}>
                         <button className="btn" style={{ background: "var(--card-bg)", border: "1px solid var(--rule)" }} onClick={() => setShowCategoryManager(true)}>
-                          <BookOpenText size={14} style={{ marginRight: 4 }} /> Category & GL Catalog (16 Categories)
+                          <BookOpenText size={14} style={{ marginRight: 4 }} /> Category &amp; GL Catalog (16 Categories)
                         </button>
                         <button className="btn btn-primary" onClick={() => setShowExpenseForm(true)}>
                           <Plus size={14} /> Record Operating Expense
@@ -3158,15 +3165,22 @@ export default function App() {
 
                     {/* Filter & Search Toolbar */}
                     <div className="card" style={{ padding: "12px 16px", marginBottom: 16, display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
-                      <div className="field" style={{ margin: 0, flex: 1.5, minWidth: 200 }}>
-                        <label>Search Vendor / Description / Subcategory</label>
+                      <div className="field" style={{ margin: 0, flex: 1.5, minWidth: 160 }}>
+                        <label>Filter Vendor Summary</label>
+                        <select value={expenseVendorFilter} onChange={e => setExpenseVendorFilter(e.target.value)}>
+                          <option value="all">-- All Vendors ({uniqueVendorsList.length}) --</option>
+                          {uniqueVendorsList.map(v => <option key={v} value={v}>{v}</option>)}
+                        </select>
+                      </div>
+                      <div className="field" style={{ margin: 0, flex: 1.5, minWidth: 180 }}>
+                        <label>Search Keyword</label>
                         <input
                           value={expenseSearchQuery}
                           onChange={e => setExpenseSearchQuery(e.target.value)}
-                          placeholder="Type keyword e.g. Meta, K-Electric, Rent, Fuel..."
+                          placeholder="Type keyword e.g. Meta, K-Electric, Rent..."
                         />
                       </div>
-                      <div className="field" style={{ margin: 0, flex: 1, minWidth: 180 }}>
+                      <div className="field" style={{ margin: 0, flex: 1, minWidth: 160 }}>
                         <label>Filter Category</label>
                         <select value={expenseCategoryFilter} onChange={e => setExpenseCategoryFilter(e.target.value)}>
                           <option value="all">All 16 Categories</option>
@@ -3175,7 +3189,7 @@ export default function App() {
                           ))}
                         </select>
                       </div>
-                      <div className="field" style={{ margin: 0, flex: 1, minWidth: 140 }}>
+                      <div className="field" style={{ margin: 0, flex: 1, minWidth: 130 }}>
                         <label>Payment Status</label>
                         <select value={expenseStatusFilter} onChange={e => setExpenseStatusFilter(e.target.value)}>
                           <option value="all">All Statuses</option>
@@ -3183,11 +3197,12 @@ export default function App() {
                           <option value="unpaid">Unpaid (AP) Only</option>
                         </select>
                       </div>
-                      {(expenseCategoryFilter !== "all" || expenseStatusFilter !== "all" || expenseSearchQuery) && (
+                      {(expenseVendorFilter !== "all" || expenseCategoryFilter !== "all" || expenseStatusFilter !== "all" || expenseSearchQuery) && (
                         <button
                           className="btn"
                           style={{ marginTop: 22, height: 38 }}
                           onClick={() => {
+                            setExpenseVendorFilter("all");
                             setExpenseCategoryFilter("all");
                             setExpenseStatusFilter("all");
                             setExpenseSearchQuery("");
@@ -3197,6 +3212,61 @@ export default function App() {
                         </button>
                       )}
                     </div>
+
+                    {/* CONSOLIDATED VENDOR PAYABLE & COST SUMMARY CARD */}
+                    {expenseVendorFilter !== "all" && (() => {
+                      const vendorName = expenseVendorFilter;
+                      const vendorExpenses = expenses.filter(e => e.vendor && e.vendor.toLowerCase() === vendorName.toLowerCase());
+                      const totalVendorCost = vendorExpenses.reduce((s, e) => s + (e.amount || 0), 0);
+                      const paidVendorAmount = vendorExpenses.filter(e => e.status !== "unpaid").reduce((s, e) => s + (e.amount || 0), 0);
+                      const apVendorAmount = vendorExpenses.filter(e => e.status === "unpaid").reduce((s, e) => s + (e.amount || 0), 0);
+                      
+                      const vendorProjectIds = [...new Set(vendorExpenses.map(e => e.projectId).filter(Boolean))];
+                      const vendorProjects = projects.filter(p => vendorProjectIds.includes(p.id));
+
+                      return (
+                        <div className="card" style={{ padding: "16px 20px", marginBottom: 16, background: "linear-gradient(135deg, rgba(220, 38, 38, 0.06), rgba(2, 132, 199, 0.06))", border: "1px solid rgba(220, 38, 38, 0.2)" }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 14 }}>
+                            <div>
+                              <div style={{ fontSize: 11.5, fontWeight: 700, color: "#DC2626", textTransform: "uppercase", letterSpacing: 0.5 }}>
+                                🏬 CONSOLIDATED VENDOR PAYABLE &amp; COST SUMMARY
+                              </div>
+                              <div style={{ fontSize: 20, fontWeight: 800, color: "var(--ink)", marginTop: 2 }}>
+                                {vendorName}
+                              </div>
+                              <div style={{ fontSize: 12.5, color: "var(--ink-muted)", marginTop: 2 }}>
+                                Total Outlays Logged: <strong style={{ color: "var(--ink)" }}>{vendorExpenses.length} Expense Transactions</strong> ({vendorProjects.length} Projects Linked)
+                              </div>
+                              {vendorProjects.length > 0 && (
+                                <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 6 }}>
+                                  {vendorProjects.map(p => (
+                                    <span key={p.id} className="badge-mini" style={{ background: "#F1F5F9", color: "#334155" }}>
+                                      {p.projectCode} — {p.name}
+                                    </span>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+
+                            <div style={{ display: "flex", gap: 24, flexWrap: "wrap", alignItems: "center" }}>
+                              <div>
+                                <div style={{ fontSize: 11.5, color: "var(--ink-muted)" }}>Total Vendor Outlays</div>
+                                <div className="mono" style={{ fontSize: 16, fontWeight: 700, color: "var(--ink)" }}>{pkr(totalVendorCost)}</div>
+                              </div>
+                              <div>
+                                <div style={{ fontSize: 11.5, color: "var(--ink-muted)" }}>Disbursed (Paid Out)</div>
+                                <div className="mono" style={{ fontSize: 16, fontWeight: 700, color: "#059669" }}>{pkr(paidVendorAmount)}</div>
+                              </div>
+                              <div>
+                                <div style={{ fontSize: 11.5, color: "var(--ink-muted)" }}>Outstanding AP Balance</div>
+                                <div className="mono" style={{ fontSize: 17, fontWeight: 800, color: apVendorAmount > 0 ? "#DC2626" : "#059669" }}>{pkr(apVendorAmount)}</div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })()}
+
 
                     {/* Expenses Table */}
                     <div className="card">
