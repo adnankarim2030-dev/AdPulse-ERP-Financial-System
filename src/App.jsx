@@ -9,7 +9,8 @@ import {
   CalendarX, Banknote, Contact, Phone, Mail, Edit, Trash2, Settings,
   Lock, KeyRound, ShieldCheck, LogOut, User, Check, Eye, EyeOff,
   Package, Boxes, ArrowUpRight, ArrowDownLeft, Layers, SlidersHorizontal, AlertTriangle,
-  Download, Upload, HardDrive, RefreshCw, FileJson, Cloud, CloudOff, Database, Save, Search
+  Download, Upload, HardDrive, RefreshCw, FileJson, Cloud, CloudOff, Database, Save, Search,
+  Crown, ShieldAlert, LockKeyhole, Sparkles, Award
 } from "lucide-react";
 import {
   getSupabaseConfig, saveSupabaseConfig, isSupabaseConfigured,
@@ -445,6 +446,7 @@ const INVENTORY_CATEGORIES = [
 ];
 
 const ALL_MODULE_TABS = [
+  { key: "ceo-dashboard", label: "CEO Executive Suite" },
   { key: "dashboard", label: "Dashboard" },
   { key: "projects", label: "Projects" },
   { key: "invoices", label: "Invoices" },
@@ -955,6 +957,12 @@ export default function App() {
   const [showExpenseForm, setShowExpenseForm] = useState(false);
   const [editingExpense, setEditingExpense] = useState(null);
   const [payingExpenseId, setPayingExpenseId] = useState(null);
+  const [isCeoLocked, setIsCeoLocked] = useState(false);
+  const [ceoPinInput, setCeoPinInput] = useState("");
+  const [savedCeoPin, setSavedCeoPin] = useState("7890");
+  const [showPinChangeModal, setShowPinChangeModal] = useState(false);
+  const [newPinInput, setNewPinInput] = useState("");
+  const [pinErrorMessage, setPinErrorMessage] = useState("");
   const [expenseCategoryFilter, setExpenseCategoryFilter] = useState("all");
 
   const [expenseStatusFilter, setExpenseStatusFilter] = useState("all");
@@ -2681,6 +2689,7 @@ export default function App() {
 
   /* Build Navigation items filtered by currentUser permissions */
   const ALL_NAV_ITEMS = [
+    { key: "ceo-dashboard", label: "CEO Suite", icon: Crown },
     { key: "dashboard", label: "Dashboard", icon: LayoutDashboard },
     { key: "projects", label: "Projects", icon: Briefcase },
     { key: "invoices", label: "Invoices", icon: FileText },
@@ -2700,6 +2709,13 @@ export default function App() {
     if (!currentUser) return [];
     const allowed = Array.isArray(currentUser.allowedTabs) ? currentUser.allowedTabs : ALL_MODULE_TABS.map(t => t.key);
     let items = ALL_NAV_ITEMS.filter(n => allowed.includes(n.key));
+    
+    // Privacy Guard: Only Admin or CEO role can view CEO Executive Suite!
+    const isCeoUser = currentUser.role === "Admin" || currentUser.role === "CEO" || currentUser.email === "admin@adpulse.pk";
+    if (!isCeoUser) {
+      items = items.filter(n => n.key !== "ceo-dashboard");
+    }
+
     if (currentUser.role === "Admin" && !items.some(i => i.key === "settings")) {
       items.push({ key: "settings", label: "Admin Settings", icon: Settings });
     }
@@ -2741,11 +2757,46 @@ export default function App() {
             <div className="brand-sub">IMC PVT LTD</div>
           </div>
         </div>
-        {NAV.map(n => (
-          <button key={n.key} className={"nav-item" + (tab === n.key ? " active" : "")} onClick={() => { setTab(n.key); setMobileNavOpen(false); }}>
-            <n.icon size={17} /> {n.label}
-          </button>
-        ))}
+        {NAV.map(n => {
+          if (n.key === "ceo-dashboard") {
+            const isActive = tab === "ceo-dashboard";
+            return (
+              <button
+                key={n.key}
+                className={"nav-item" + (isActive ? " active" : "")}
+                style={{
+                  background: isActive
+                    ? "linear-gradient(135deg, #D4AF37 0%, #B8860B 100%)"
+                    : "linear-gradient(135deg, rgba(212, 175, 55, 0.16) 0%, rgba(184, 134, 11, 0.08) 100%)",
+                  color: isActive ? "#FFFFFF" : "#F59E0B",
+                  border: isActive ? "1.5px solid #F59E0B" : "1px solid rgba(245, 158, 11, 0.35)",
+                  boxShadow: isActive ? "0 4px 12px rgba(245, 158, 11, 0.35)" : "0 2px 6px rgba(0,0,0,0.02)",
+                  fontWeight: 750,
+                  marginTop: 6,
+                  marginBottom: 8,
+                  borderRadius: 10,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 9,
+                  padding: "10px 14px",
+                  transition: "all 0.2s ease"
+                }}
+                onClick={() => { setTab(n.key); setMobileNavOpen(false); }}
+              >
+                <Crown size={18} color={isActive ? "#FFFFFF" : "#F59E0B"} style={{ filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.2))" }} />
+                <span style={{ flex: 1, letterSpacing: 0.2 }}>CEO Executive Suite</span>
+                <span style={{ fontSize: 9.5, background: isActive ? "#FFFFFF" : "#F59E0B", color: isActive ? "#78350F" : "#FFFFFF", padding: "2px 6px", borderRadius: 12, fontWeight: 900, textTransform: "uppercase" }}>VIP</span>
+              </button>
+            );
+          }
+
+          return (
+            <button key={n.key} className={"nav-item" + (tab === n.key ? " active" : "")} onClick={() => { setTab(n.key); setMobileNavOpen(false); }}>
+              <n.icon size={17} /> {n.label}
+            </button>
+          );
+        })}
+
         <div style={{ marginTop: "auto", padding: "14px 10px", borderTop: "1px solid var(--rule)", fontSize: 12, color: "var(--ink-muted)" }}>
           AdPulse IMC &middot; {hrStats.active} Staff Active
         </div>
@@ -2855,6 +2906,358 @@ export default function App() {
         </div>
 
         <div className="content">
+          {tab === "ceo-dashboard" && (
+            <>
+              {/* PRIVACY GUARD FOR CEO DASHBOARD */}
+              {currentUser.role !== "Admin" && currentUser.role !== "CEO" && currentUser.email !== "admin@adpulse.pk" ? (
+                <div className="card" style={{ padding: 40, textAlign: "center", background: "#FEF2F2", border: "1px solid #FCA5A5" }}>
+                  <ShieldAlert size={48} color="#DC2626" style={{ margin: "0 auto 16px" }} />
+                  <h2 style={{ color: "#991B1B", margin: "0 0 8px" }}>Executive Access Restricted</h2>
+                  <p style={{ color: "#7F1D1D", maxWidth: 460, margin: "0 auto 20px", fontSize: 14 }}>
+                    The CEO Executive Suite contains sensitive agency profitability, bank liquidity, and confidential financial reserves. Your user account ({currentUser.name}) does not have Executive Authorization.
+                  </p>
+                  <button className="btn btn-primary" onClick={() => setTab("dashboard")}>Return to Main Dashboard</button>
+                </div>
+              ) : isCeoLocked ? (
+                /* CEO 4-DIGIT QUICK LOCK SCREEN */
+                <div className="card" style={{ padding: "48px 24px", maxWidth: 440, margin: "40px auto", textAlign: "center", background: "linear-gradient(135deg, #0F172A, #1E293B)", color: "#FFFFFF", borderRadius: 16, boxShadow: "0 20px 40px rgba(0,0,0,0.3)", border: "1px solid rgba(212, 175, 55, 0.4)" }}>
+                  <div style={{ width: 64, height: 64, borderRadius: "50%", background: "linear-gradient(135deg, #D4AF37, #B8860B)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px", boxShadow: "0 4px 14px rgba(212, 175, 55, 0.4)" }}>
+                    <LockKeyhole size={32} color="#FFFFFF" />
+                  </div>
+                  <h2 style={{ fontSize: 22, fontWeight: 800, color: "#F59E0B", margin: "0 0 6px" }}>CEO Executive Suite Locked</h2>
+                  <p style={{ fontSize: 13, color: "#94A3B8", margin: "0 0 24px" }}>Enter 4-Digit Security PIN to Unlock Dashboard</p>
+
+                  {pinErrorMessage && (
+                    <div style={{ padding: "8px 12px", background: "rgba(220, 38, 38, 0.2)", border: "1px solid #DC2626", color: "#FCA5A5", borderRadius: 8, fontSize: 12.5, marginBottom: 16 }}>
+                      {pinErrorMessage}
+                    </div>
+                  )}
+
+                  <div className="field" style={{ marginBottom: 20 }}>
+                    <input
+                      type="password"
+                      maxLength={4}
+                      value={ceoPinInput}
+                      onChange={e => {
+                        setCeoPinInput(e.target.value);
+                        setPinErrorMessage("");
+                      }}
+                      onKeyDown={e => {
+                        if (e.key === "Enter") {
+                          if (ceoPinInput === savedCeoPin) {
+                            setIsCeoLocked(false);
+                            setCeoPinInput("");
+                          } else {
+                            setPinErrorMessage("Invalid PIN Code! Try again.");
+                          }
+                        }
+                      }}
+                      placeholder="••••"
+                      style={{ fontSize: 28, textAlign: "center", letterSpacing: 12, padding: "10px", background: "#020617", color: "#F59E0B", border: "1.5px solid #F59E0B", borderRadius: 10, width: 180, margin: "0 auto" }}
+                    />
+                  </div>
+
+                  <button
+                    className="btn"
+                    style={{ background: "linear-gradient(135deg, #D4AF37, #B8860B)", color: "#FFFFFF", fontWeight: 700, padding: "10px 24px", width: "100%", borderRadius: 10, fontSize: 14 }}
+                    onClick={() => {
+                      if (ceoPinInput === savedCeoPin) {
+                        setIsCeoLocked(false);
+                        setCeoPinInput("");
+                      } else {
+                        setPinErrorMessage("Invalid Security PIN Code!");
+                      }
+                    }}
+                  >
+                    Unlock Executive Suite
+                  </button>
+                  <div style={{ marginTop: 16, fontSize: 11.5, color: "#64748B" }}>
+                    Default PIN: <strong>7890</strong> (Can be changed anytime)
+                  </div>
+                </div>
+              ) : (
+                /* MAIN CEO EXECUTIVE DASHBOARD */
+                <>
+                  {/* CEO HEADER BANNER */}
+                  <div className="card" style={{ padding: "20px 24px", marginBottom: 20, background: "linear-gradient(135deg, #0F172A 0%, #1E293B 100%)", color: "#FFFFFF", border: "1px solid rgba(212, 175, 55, 0.4)", borderRadius: 14, boxShadow: "0 10px 25px rgba(0,0,0,0.15)" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+                        <div style={{ width: 52, height: 52, borderRadius: 12, background: "linear-gradient(135deg, #D4AF37, #B8860B)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 14px rgba(212, 175, 55, 0.4)" }}>
+                          <Crown size={28} color="#FFFFFF" />
+                        </div>
+                        <div>
+                          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                            <h2 style={{ fontSize: 22, fontWeight: 800, color: "#F59E0B", margin: 0 }}>CEO Executive Overview</h2>
+                            <span style={{ fontSize: 10, background: "#D4AF37", color: "#000", padding: "2px 8px", borderRadius: 10, fontWeight: 900, textTransform: "uppercase" }}>CONFIDENTIAL</span>
+                          </div>
+                          <p style={{ fontSize: 13, color: "#94A3B8", margin: "2px 0 0" }}>AdPulse IMC PVT LTD &middot; High-Level Financial Performance &amp; Agency Metrics</p>
+                        </div>
+                      </div>
+
+                      <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                        <button
+                          className="btn"
+                          style={{ background: "rgba(255,255,255,0.1)", color: "#FFFFFF", border: "1px solid rgba(255,255,255,0.2)", fontSize: 12.5 }}
+                          onClick={() => setShowPinChangeModal(true)}
+                        >
+                          <KeyRound size={14} style={{ marginRight: 4 }} /> Change PIN
+                        </button>
+                        <button
+                          className="btn"
+                          style={{ background: "linear-gradient(135deg, #DC2626, #991B1B)", color: "#FFFFFF", border: "none", fontWeight: 700, fontSize: 12.5 }}
+                          onClick={() => setIsCeoLocked(true)}
+                        >
+                          <LockKeyhole size={14} style={{ marginRight: 4 }} /> Lock Suite
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 1. EXECUTIVE KPI CARDS */}
+                  {(() => {
+                    const ceoBilledTotal = invoices.reduce((s, i) => s + (i.totalAmount || i.amount || 0), 0);
+                    const ceoBilledPaid = invoices.filter(i => i.paid).reduce((s, i) => s + (i.totalAmount || i.amount || 0), 0);
+                    const ceoBilledUnpaid = invoices.filter(i => !i.paid).reduce((s, i) => s + (i.totalAmount || i.amount || 0), 0);
+
+                    const ceoExpensesTotal = expenses.reduce((s, e) => s + (e.amount || 0), 0);
+
+                    const ceoNetProfit = ceoBilledTotal - ceoExpensesTotal;
+                    const ceoNetMarginPct = ceoBilledTotal > 0 ? ((ceoNetProfit / ceoBilledTotal) * 100).toFixed(1) : "0.0";
+
+                    const totalLiquidReserves = bankAccounts.reduce((s, b) => s + (b.balance || 0), 0) + pettyCashVault.balance;
+
+                    const activeProjectsCount = projects.filter(p => p.status !== "Completed").length;
+                    const completedProjectsCount = projects.filter(p => p.status === "Completed").length;
+
+                    const topClientsList = (() => {
+                      const map = {};
+                      invoices.forEach(i => {
+                        if (!i.client) return;
+                        map[i.client] = (map[i.client] || 0) + (i.totalAmount || i.amount || 0);
+                      });
+                      return Object.entries(map).map(([client, amount]) => ({ client, amount })).sort((a, b) => b.amount - a.amount).slice(0, 5);
+                    })();
+
+                    const topVendorsList = (() => {
+                      const map = {};
+                      expenses.forEach(e => {
+                        if (!e.vendor) return;
+                        map[e.vendor] = (map[e.vendor] || 0) + (e.amount || 0);
+                      });
+                      return Object.entries(map).map(([vendor, amount]) => ({ vendor, amount })).sort((a, b) => b.amount - a.amount).slice(0, 5);
+                    })();
+
+                    return (
+                      <>
+                        <div className="grid-kpi" style={{ marginBottom: 20 }}>
+                          <KpiCard
+                            label="Total Billed Revenue"
+                            value={pkr(ceoBilledTotal)}
+                            sub={`${((ceoBilledPaid / (ceoBilledTotal || 1)) * 100).toFixed(0)}% Billed Collected (${pkr(ceoBilledUnpaid)} Pending AR)`}
+                            icon={TrendingUp}
+                            accent="var(--jade)"
+                          />
+                          <KpiCard
+                            label="Net Profit Margin"
+                            value={pkr(ceoNetProfit)}
+                            sub={`${ceoNetMarginPct}% Net Agency Profit Margin`}
+                            icon={Award}
+                            accent={ceoNetProfit >= 0 ? "var(--jade)" : "var(--rose)"}
+                          />
+                          <KpiCard
+                            label="Liquid Cash & Bank Reserves"
+                            value={pkr(totalLiquidReserves)}
+                            sub={`Vault: ${pkr(pettyCashVault.balance)} | Banks: ${pkr(totalLiquidReserves - pettyCashVault.balance)}`}
+                            icon={Landmark}
+                            accent="var(--brand-teal)"
+                          />
+                          <KpiCard
+                            label="Project Portfolio Status"
+                            value={`${projects.length} Total`}
+                            sub={`${activeProjectsCount} Active | ${completedProjectsCount} Completed`}
+                            icon={Briefcase}
+                            accent="var(--gold)"
+                          />
+                        </div>
+
+                        {/* 2. EXECUTIVE CHARTS ROW */}
+                        <div className="grid-2col" style={{ marginBottom: 20 }}>
+                          <div className="card" style={{ padding: 18 }}>
+                            <div className="section-title" style={{ fontSize: 15, marginBottom: 12, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                              <span>📊 Revenue vs Operating Expenses</span>
+                              <span style={{ fontSize: 11, color: "var(--ink-muted)", fontWeight: 500 }}>Overall Portfolio Comparison</span>
+                            </div>
+                            <div style={{ height: 260 }}>
+                              <ResponsiveContainer width="100%" height="100%">
+                                <BarChart data={[
+                                  { name: "Total Billed Revenue", amount: ceoBilledTotal, fill: "#059669" },
+                                  { name: "Vendor Expenses & Outlays", amount: ceoExpensesTotal, fill: "#DC2626" },
+                                  { name: "Net Profit Margin", amount: ceoNetProfit, fill: "#0284C7" }
+                                ]}>
+                                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
+                                  <XAxis dataKey="name" stroke="#64748B" fontSize={11} />
+                                  <YAxis stroke="#64748B" fontSize={11} tickFormatter={v => `PKR ${(v / 1000).toFixed(0)}k`} />
+                                  <Tooltip formatter={(value) => [pkr(value), "Amount"]} />
+                                  <Bar dataKey="amount" radius={[6, 6, 0, 0]} barSize={50} />
+                                </BarChart>
+                              </ResponsiveContainer>
+                            </div>
+                          </div>
+
+                          {/* SERVICE LINE REVENUE BREAKDOWN */}
+                          <div className="card" style={{ padding: 18 }}>
+                            <div className="section-title" style={{ fontSize: 15, marginBottom: 12, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                              <span>🎯 Service Line Revenue Split</span>
+                              <span style={{ fontSize: 11, color: "var(--ink-muted)", fontWeight: 500 }}>Billed Revenue by Vertical</span>
+                            </div>
+                            <div style={{ height: 260 }}>
+                              <ResponsiveContainer width="100%" height="100%">
+                                <BarChart data={PROJECT_TYPES.map(t => {
+                                  const typeProjects = projects.filter(p => p.type === t.key);
+                                  const billed = invoices.filter(i => typeProjects.some(tp => tp.id === i.projectId)).reduce((s, i) => s + (i.totalAmount || i.amount || 0), 0);
+                                  return { service: t.key.split(" ")[0], billed, fill: t.color || "#0284C7" };
+                                })}>
+                                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
+                                  <XAxis dataKey="service" stroke="#64748B" fontSize={11} />
+                                  <YAxis stroke="#64748B" fontSize={11} tickFormatter={v => `PKR ${(v / 1000).toFixed(0)}k`} />
+                                  <Tooltip formatter={(val) => [pkr(val), "Billed"]} />
+                                  <Bar dataKey="billed" radius={[6, 6, 0, 0]} barSize={35} />
+                                </BarChart>
+                              </ResponsiveContainer>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* 3. TOP CLIENTS & TOP VENDORS LEADERBOARD */}
+                        <div className="grid-2col" style={{ marginBottom: 20 }}>
+                          {/* TOP CLIENTS */}
+                          <div className="card" style={{ padding: 18 }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+                              <div style={{ fontWeight: 700, color: "var(--ink)", fontSize: 15, display: "flex", alignItems: "center", gap: 6 }}>
+                                <Sparkles size={16} color="#059669" /> Top 5 Revenue Clients
+                              </div>
+                              <span className="badge-mini" style={{ background: "rgba(5, 150, 105, 0.1)", color: "#059669" }}>Leaderboard</span>
+                            </div>
+                            <table style={{ width: "100%", fontSize: 13 }}>
+                              <thead>
+                                <tr style={{ borderBottom: "1px solid var(--rule)", color: "var(--ink-muted)", textAlign: "left" }}>
+                                  <th style={{ padding: "6px 0" }}>Client Name</th>
+                                  <th style={{ padding: "6px 0", textAlign: "right" }}>Total Billed</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {topClientsList.map((c, i) => (
+                                  <tr key={i} style={{ borderBottom: "1px solid var(--rule)" }}>
+                                    <td style={{ padding: "10px 0", fontWeight: 600 }}>
+                                      <span style={{ color: "var(--ink-muted)", fontSize: 11, marginRight: 8 }}>#{i + 1}</span>
+                                      {c.client}
+                                    </td>
+                                    <td className="mono" style={{ padding: "10px 0", textAlign: "right", fontWeight: 700, color: "#059669" }}>
+                                      {pkr(c.amount)}
+                                    </td>
+                                  </tr>
+                                ))}
+                                {topClientsList.length === 0 && (
+                                  <tr><td colSpan={2} style={{ padding: 16, textAlign: "center", color: "var(--ink-muted)" }}>No client billing records available.</td></tr>
+                                )}
+                              </tbody>
+                            </table>
+                          </div>
+
+                          {/* TOP VENDORS */}
+                          <div className="card" style={{ padding: 18 }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+                              <div style={{ fontWeight: 700, color: "var(--ink)", fontSize: 15, display: "flex", alignItems: "center", gap: 6 }}>
+                                <Coins size={16} color="#DC2626" /> Top 5 Vendor Outlays
+                              </div>
+                              <span className="badge-mini" style={{ background: "rgba(220, 38, 38, 0.1)", color: "#DC2626" }}>Production Costs</span>
+                            </div>
+                            <table style={{ width: "100%", fontSize: 13 }}>
+                              <thead>
+                                <tr style={{ borderBottom: "1px solid var(--rule)", color: "var(--ink-muted)", textAlign: "left" }}>
+                                  <th style={{ padding: "6px 0" }}>Vendor Name</th>
+                                  <th style={{ padding: "6px 0", textAlign: "right" }}>Total Outlays</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {topVendorsList.map((v, i) => (
+                                  <tr key={i} style={{ borderBottom: "1px solid var(--rule)" }}>
+                                    <td style={{ padding: "10px 0", fontWeight: 600 }}>
+                                      <span style={{ color: "var(--ink-muted)", fontSize: 11, marginRight: 8 }}>#{i + 1}</span>
+                                      {v.vendor}
+                                    </td>
+                                    <td className="mono" style={{ padding: "10px 0", textAlign: "right", fontWeight: 700, color: "#DC2626" }}>
+                                      {pkr(v.amount)}
+                                    </td>
+                                  </tr>
+                                ))}
+                                {topVendorsList.length === 0 && (
+                                  <tr><td colSpan={2} style={{ padding: 16, textAlign: "center", color: "var(--ink-muted)" }}>No vendor expense records available.</td></tr>
+                                )}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+
+                        {/* 4. REAL-TIME HIGH-VALUE TRANSACTION STREAM */}
+                        <div className="card" style={{ padding: 18 }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+                            <div style={{ fontWeight: 700, color: "var(--ink)", fontSize: 15 }}>
+                              ⚡ Real-Time High-Value Executive Stream
+                            </div>
+                            <span style={{ fontSize: 12, color: "var(--ink-muted)" }}>Latest Invoices &amp; Expenses Posted</span>
+                          </div>
+
+                          <div className="table-responsive">
+                            <table>
+                              <thead>
+                                <tr>
+                                  <th>Type</th>
+                                  <th>Ref / Invoice #</th>
+                                  <th>Party / Payee</th>
+                                  <th>Associated Project</th>
+                                  <th>Date</th>
+                                  <th style={{ textAlign: "right" }}>Amount</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {[
+                                  ...invoices.map(i => ({ type: "Client Invoice", ref: "INV-" + i.id.toUpperCase(), party: i.client, projId: i.projectId, date: i.issueDate, amount: i.totalAmount || i.amount, isInc: true })),
+                                  ...expenses.map(e => ({ type: "Operating Expense", ref: e.refNo || "EXP-" + e.id.toUpperCase(), party: e.vendor, projId: e.projectId, date: e.date, amount: e.amount, isInc: false }))
+                                ]
+                                  .sort((a, b) => new Date(b.date) - new Date(a.date))
+                                  .slice(0, 5)
+                                  .map((t, idx) => {
+                                    const proj = projects.find(p => p.id === t.projId);
+                                    return (
+                                      <tr key={idx}>
+                                        <td>
+                                          <span className="badge-mini" style={{ background: t.isInc ? "rgba(5, 150, 105, 0.1)" : "rgba(220, 38, 38, 0.1)", color: t.isInc ? "#059669" : "#DC2626" }}>
+                                            {t.type}
+                                          </span>
+                                        </td>
+                                        <td className="mono" style={{ fontWeight: 600 }}>{t.ref}</td>
+                                        <td style={{ fontWeight: 600 }}>{t.party}</td>
+                                        <td style={{ color: "var(--ink-muted)", fontSize: 12 }}>{proj ? `${proj.projectCode} (${proj.name})` : "General Operating"}</td>
+                                        <td className="mono">{fmtDate(t.date)}</td>
+                                        <td className="mono" style={{ textAlign: "right", fontWeight: 700, color: t.isInc ? "#059669" : "#DC2626" }}>
+                                          {t.isInc ? "+" : "-"}{pkr(t.amount)}
+                                        </td>
+                                      </tr>
+                                    );
+                                  })}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </>
+                    );
+                  })()}
+                </>
+              )}
+            </>
+          )}
+
           {tab === "dashboard" && (
             <>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
@@ -5033,6 +5436,43 @@ export default function App() {
       {/* ALL SYSTEM MODALS */}
       {showForgotPassword && <ForgotPasswordModal usersList={usersList} onClose={() => setShowForgotPassword(false)} onResetPassword={handleResetPassword} />}
       {showChangePassword && <ChangePasswordModal currentUser={currentUser} onClose={() => setShowChangePassword(false)} onUpdatePassword={(newP) => handleResetPassword(currentUser.email, newP)} />}
+      {showPinChangeModal && (
+        <div className="modal-backdrop">
+          <div className="modal-content" style={{ maxWidth: 400, padding: 24, textAlign: "center" }}>
+            <h3 style={{ margin: "0 0 8px", color: "var(--ink)" }}>🔑 Change CEO Security PIN</h3>
+            <p style={{ fontSize: 13, color: "var(--ink-muted)", margin: "0 0 20px" }}>Set a new 4-digit PIN code to lock/unlock your Executive Suite.</p>
+            <div className="field" style={{ marginBottom: 20 }}>
+              <label>New 4-Digit PIN</label>
+              <input
+                type="password"
+                maxLength={4}
+                value={newPinInput}
+                onChange={e => setNewPinInput(e.target.value)}
+                placeholder="••••"
+                style={{ fontSize: 24, textAlign: "center", letterSpacing: 8 }}
+              />
+            </div>
+            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
+              <button className="btn" onClick={() => { setShowPinChangeModal(false); setNewPinInput(""); }}>Cancel</button>
+              <button
+                className="btn btn-primary"
+                onClick={() => {
+                  if (newPinInput.length === 4 && /^\d+$/.test(newPinInput)) {
+                    setSavedCeoPin(newPinInput);
+                    setShowPinChangeModal(false);
+                    setNewPinInput("");
+                    alert("CEO Security PIN updated successfully!");
+                  } else {
+                    alert("PIN must be exactly 4 numeric digits!");
+                  }
+                }}
+              >
+                Save New PIN
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showAddUserForm && <UserModal onClose={() => setShowAddUserForm(false)} onSubmit={handleAddUser} />}
       {editingUser && <UserModal initialData={editingUser} onClose={() => setEditingUser(null)} onSubmit={handleUpdateUser} />}
