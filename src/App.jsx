@@ -997,7 +997,12 @@ export default function App() {
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [billingModalProject, setBillingModalProject] = useState(null);
   const [costModalProject, setCostModalProject] = useState(null);
-  const [projectFilters, setProjectFilters] = useState({ type: "All", status: "All", client: "" });
+  const [projectFilters, setProjectFilters] = useState({ type: "All", status: "All", client: "", selectedClient: "All" });
+
+  const uniqueClientsList = useMemo(() => {
+    return [...new Set(projects.map(p => p.client))].filter(Boolean).sort();
+  }, [projects]);
+
 
   const [showHoardingForm, setShowHoardingForm] = useState(false);
   const [editingHoarding, setEditingHoarding] = useState(null);
@@ -2902,6 +2907,13 @@ export default function App() {
               </div>
 
               <div className="card" style={{ padding: "12px 16px", marginBottom: 16, display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
+                <div className="field" style={{ margin: 0, flex: 1.5, minWidth: 160 }}>
+                  <label>Filter Client Summary</label>
+                  <select value={projectFilters.selectedClient || "All"} onChange={e => setProjectFilters(f => ({ ...f, selectedClient: e.target.value }))}>
+                    <option value="All">-- All Clients ({uniqueClientsList.length}) --</option>
+                    {uniqueClientsList.map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                </div>
                 <div className="field" style={{ margin: 0, flex: 1, minWidth: 140 }}>
                   <label>Service Line</label>
                   <select value={projectFilters.type} onChange={e => setProjectFilters(f => ({ ...f, type: e.target.value }))}>
@@ -2923,6 +2935,52 @@ export default function App() {
                 <button className="btn btn-primary" style={{ marginTop: 18 }} onClick={() => setShowProjectForm(true)}><Plus size={14} /> New Project</button>
               </div>
 
+              {/* CONSOLIDATED CLIENT PORTFOLIO SUMMARY CARD */}
+              {projectFilters.selectedClient && projectFilters.selectedClient !== "All" && (() => {
+                const clientName = projectFilters.selectedClient;
+                const clientProjects = projectsWithStats.filter(p => p.client.toLowerCase() === clientName.toLowerCase());
+                const totalClientBilled = clientProjects.reduce((s, p) => s + p.billed, 0);
+                const totalClientCost = clientProjects.reduce((s, p) => s + p.cost, 0);
+                const totalClientMargin = totalClientBilled - totalClientCost;
+                const activeCount = clientProjects.filter(p => p.status !== "Completed").length;
+
+                return (
+                  <div className="card" style={{ padding: "16px 20px", marginBottom: 16, background: "linear-gradient(135deg, rgba(2, 132, 199, 0.06), rgba(5, 150, 105, 0.06))", border: "1px solid rgba(2, 132, 199, 0.2)" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 14 }}>
+                      <div>
+                        <div style={{ fontSize: 11.5, fontWeight: 700, color: "#0284C7", textTransform: "uppercase", letterSpacing: 0.5 }}>
+                          📊 CONSOLIDATED CLIENT PORTFOLIO SUMMARY
+                        </div>
+                        <div style={{ fontSize: 20, fontWeight: 800, color: "var(--ink)", marginTop: 2 }}>
+                          {clientName}
+                        </div>
+                        <div style={{ fontSize: 12.5, color: "var(--ink-muted)", marginTop: 2 }}>
+                          Total Client Portfolio: <strong style={{ color: "var(--ink)" }}>{clientProjects.length} Projects</strong> ({activeCount} Active, {clientProjects.length - activeCount} Completed)
+                        </div>
+                      </div>
+
+                      <div style={{ display: "flex", gap: 24, flexWrap: "wrap", alignItems: "center" }}>
+                        <div>
+                          <div style={{ fontSize: 11.5, color: "var(--ink-muted)" }}>Total Client Billed</div>
+                          <div className="mono" style={{ fontSize: 16, fontWeight: 700, color: "var(--ink)" }}>{pkr(totalClientBilled)}</div>
+                        </div>
+                        <div>
+                          <div style={{ fontSize: 11.5, color: "var(--ink-muted)" }}>Total Production Cost</div>
+                          <div className="mono" style={{ fontSize: 16, fontWeight: 700, color: "var(--rose)" }}>{pkr(totalClientCost)}</div>
+                        </div>
+                        <div>
+                          <div style={{ fontSize: 11.5, color: "var(--ink-muted)" }}>Net Portfolio Margin</div>
+                          <div className="mono" style={{ fontSize: 17, fontWeight: 800, color: totalClientMargin >= 0 ? "#059669" : "#DC2626" }}>{pkr(totalClientMargin)}</div>
+                        </div>
+                        <button className="btn btn-primary" style={{ padding: "8px 16px", fontSize: 13 }} onClick={() => setClientStatementClient(clientName)}>
+                          <Printer size={14} /> Print Client Statement
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
+
               <div className="card">
                 <div className="table-responsive">
                   <table>
@@ -2935,6 +2993,7 @@ export default function App() {
                     </thead>
                     <tbody>
                       {projectsWithStats
+                        .filter(p => !projectFilters.selectedClient || projectFilters.selectedClient === "All" || p.client.toLowerCase() === projectFilters.selectedClient.toLowerCase())
                         .filter(p => projectFilters.type === "All" || p.type === projectFilters.type)
                         .filter(p => projectFilters.status === "All" || p.status === projectFilters.status)
                         .filter(p => !projectFilters.client || p.client.toLowerCase().includes(projectFilters.client.toLowerCase()) || p.name.toLowerCase().includes(projectFilters.client.toLowerCase()))
@@ -2971,6 +3030,7 @@ export default function App() {
                   </table>
                 </div>
               </div>
+
             </>
           )}
 
