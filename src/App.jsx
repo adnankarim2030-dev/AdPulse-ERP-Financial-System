@@ -5658,6 +5658,22 @@ function ExpenseModal({ initialData, projects = [], onClose, onSubmit }) {
     }
   };
 
+  const handleProjectChange = (selectedId) => {
+    setProjectId(selectedId);
+    if (selectedId) {
+      const selectedProj = projects.find(p => p.id === selectedId);
+      if (selectedProj) {
+        const pCode = selectedProj.projectCode || ("PRJ-" + selectedProj.id.toUpperCase().slice(0, 4));
+        const autoRefNo = `EXP-${pCode}-${Math.floor(Math.random() * 899 + 100)}`;
+        setRefNo(autoRefNo);
+
+        if (!vendor.trim()) {
+          setVendor(selectedProj.client);
+        }
+      }
+    }
+  };
+
   const handleSelectSearchResult = (item) => {
     setCategory(item.category);
     setSubcategory(item.subcategory);
@@ -5729,7 +5745,7 @@ function ExpenseModal({ initialData, projects = [], onClose, onSubmit }) {
       {projects.length > 0 && (
         <div className="field">
           <label>Link to Project Cost Center (Optional)</label>
-          <select value={projectId} onChange={e => setProjectId(e.target.value)}>
+          <select value={projectId} onChange={e => handleProjectChange(e.target.value)}>
             <option value="">— General Operational Expense —</option>
             {projects.map(p => (
               <option key={p.id} value={p.id}>{p.name} ({p.client})</option>
@@ -5749,8 +5765,11 @@ function ExpenseModal({ initialData, projects = [], onClose, onSubmit }) {
           <input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="0" />
         </div>
         <div className="field">
-          <label>Ref / Invoice No.</label>
-          <input value={refNo} onChange={e => setRefNo(e.target.value)} placeholder="e.g. INV-9902" />
+          <label style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <span>Ref / Invoice No.</span>
+            {projectId && <span style={{ fontSize: 10.5, color: "#0284C7", fontWeight: 700 }}>AUTO-FILLED</span>}
+          </label>
+          <input value={refNo} onChange={e => setRefNo(e.target.value)} placeholder="e.g. EXP-PRJ-003-492" />
         </div>
       </div>
 
