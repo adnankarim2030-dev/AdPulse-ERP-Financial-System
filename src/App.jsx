@@ -1732,6 +1732,22 @@ export default function App() {
 
   function updateProject(updated) {
     setProjects(list => list.map(p => p.id === updated.id ? updated : p));
+    setInvoices(list => list.map(inv => {
+      if (inv.projectId === updated.id) {
+        const amt = updated.budget || inv.amount;
+        const sst = inv.applySst ? Math.round(amt * 0.15) : 0;
+        return {
+          ...inv,
+          client: updated.client,
+          amount: amt,
+          sstAmount: sst,
+          totalAmount: amt + sst,
+          printingItems: updated.printingItems || inv.printingItems,
+          oohSites: updated.oohSites || inv.oohSites,
+        };
+      }
+      return inv;
+    }));
     setEditingProject(null);
   }
 
@@ -1847,18 +1863,22 @@ export default function App() {
   }
 
   function addProjectBilling(project, { description, amount, issueDate, dueDate }) {
+    const sst = Math.round(amount * 0.15);
     const inv = {
       id: uid(), client: project.client,
       description: `${project.type} — ${project.name}${description ? ": " + description : ""}`,
-      amount, issueDate, dueDate, paid: false, paidVia: null, projectId: project.id,
+      amount, applySst: true, sstAmount: sst, totalAmount: amount + sst,
+      issueDate, dueDate, paid: false, paidVia: null, projectId: project.id,
     };
     setInvoices(list => [inv, ...list]);
     postEntry(issueDate, `Invoice - ${project.client} (${project.type} — ${project.name})`, [
-      { account: "ar", debit: amount, credit: 0 },
+      { account: "ar", debit: amount + sst, credit: 0 },
       { account: "revenue", debit: 0, credit: amount },
+      { account: "srb_payable", debit: 0, credit: sst },
     ], "INV-" + inv.id.toUpperCase());
     setBillingModalProject(null);
   }
+
 
   function addProjectCost(project, { vendor, description, amount, date, paidVia }) {
     const exp = {
