@@ -1611,11 +1611,12 @@ export default function App() {
       : h));
   }
 
-  function createProject({ client, type, name, description, startDate, endDate, oohSites, printingItems, totalSqft, budget }) {
+  function createProject({ client, type, name, description, startDate, endDate, oohSites, totalOohSqft, printingItems, totalSqft, budget }) {
     const nextNum = projects.length > 0 ? Math.max(...projects.map(p => parseInt((p.projectCode || "PRJ-000").split("-")[1] || 0))) + 1 : 1;
     const projectCode = "PRJ-" + String(nextNum).padStart(3, '0');
 
     const isPrintingType = type === "Printing & Installations" || type === "printing";
+    const isOohType = type === "OOH Advertising" || type === "ooh";
 
     const proj = {
       id: uid(),
@@ -1627,42 +1628,75 @@ export default function App() {
       startDate,
       endDate,
       status: "Planning",
+      oohSites: isOohType ? (oohSites || []) : [],
+      totalOohSqft: isOohType ? (totalOohSqft || 0) : 0,
       printingItems: isPrintingType ? (printingItems || []) : [],
       totalSqft: isPrintingType ? (totalSqft || 0) : 0,
       budget: budget || 0
     };
     setProjects(list => [proj, ...list]);
     
-    const isOohType = type === "OOH Advertising" || type === "ooh";
     if (isOohType && oohSites && oohSites.length > 0) {
       const newHoardings = [];
-      const newInvoices = [];
+      let totalOohRent = 0;
       oohSites.forEach(site => {
-        if (site.name && site.area) {
-          const price = Number(site.pricePerMonth) || 0;
-          const h = {
-            id: uid(), name: site.name, area: site.area, size: site.size || "Standard", pricePerMonth: price,
-            status: "Booked", client: proj.client, project: proj.name, projectId: proj.id,
-            bookedFrom: proj.startDate, bookedTo: proj.endDate
+        const loc = site.location || site.name || site.area || "";
+        const w = Number(site.width) || (site.size ? parseFloat(site.size.split("x")[0]) : 0) || 0;
+        const h = Number(site.height) || (site.size ? parseFloat(site.size.split("x")[1]) : 0) || 0;
+        const price = Number(site.rate) !== undefined && Number(site.rate) > 0 ? Number(site.rate) : (Number(site.pricePerMonth) || 0);
+        if (loc) {
+          totalOohRent += price;
+          const sqft = site.sqft || (w * h);
+          const hoardingObj = {
+            id: uid(),
+            name: loc,
+            area: loc,
+            size: `${w}x${h} ft`,
+            width: w,
+            height: h,
+            sqft: sqft,
+            pricePerMonth: price,
+            status: "Booked",
+            client: proj.client,
+            project: proj.name,
+            projectId: proj.id,
+            bookedFrom: proj.startDate,
+            bookedTo: proj.endDate
           };
-          newHoardings.push(h);
-          if (price > 0) {
-            newInvoices.push({
-              id: uid(), client: proj.client, description: `OOH Advertising — ${proj.name}: ${h.name} rental`,
-              amount: price, applySst: true, sstAmount: price * 0.15, totalAmount: price * 1.15, 
-              issueDate: proj.startDate, dueDate: proj.endDate,
-              paid: false, paidVia: null, projectId: proj.id,
-            });
-          }
+          newHoardings.push(hoardingObj);
         }
       });
+
       if (newHoardings.length > 0) {
         setHoardings(list => [...newHoardings, ...list]);
-      }
-      if (newInvoices.length > 0) {
-        setInvoices(list => [...newInvoices, ...list]);
+        if (totalOohRent > 0) {
+          const sst = Math.round(totalOohRent * 0.15);
+          const inv = {
+            id: uid(),
+            client: proj.client,
+            invoiceType: "OOH",
+            description: `OOH Advertising — ${proj.name} (${newHoardings.length} sites)`,
+            amount: totalOohRent,
+            applySst: true,
+            sstAmount: sst,
+            totalAmount: totalOohRent + sst,
+            issueDate: proj.startDate,
+            dueDate: proj.endDate,
+            paid: false,
+            paidVia: null,
+            projectId: proj.id,
+            oohSites: oohSites
+          };
+          setInvoices(list => [inv, ...list]);
+          postEntry(proj.startDate, `OOH Advertising Campaign - ${proj.name} (${proj.client})`, [
+            { account: "ar", debit: totalOohRent + sst, credit: 0 },
+            { account: "revenue", debit: 0, credit: totalOohRent },
+            { account: "srb_payable", debit: 0, credit: sst },
+          ], "INV-" + inv.id.toUpperCase());
+        }
       }
     }
+
 
     if (isPrintingType && printingItems && printingItems.length > 0 && budget > 0) {
       const sst = Math.round(budget * 0.15);
@@ -5367,8 +5401,24 @@ function ProjectModal({ initialData, onClose, onSubmit }) {
   const [startDate, setStartDate] = useState(initialData?.startDate || "2026-07-21");
   const [endDate, setEndDate] = useState(initialData?.endDate || "2026-08-05");
   
-  // OOH specific state (Multiple Sites: Area wise, Size wise, Rate wise)
-  const [oohSites, setOohSites] = useState([{ name: "", area: "", size: "", pricePerMonth: "" }]);
+  // OOH specific state (Multiple Locations: Location/Area, Width, Height, Auto Sq. Ft., Rate)
+  const [oohSites, setOohSites] = useState(() => {
+    if (initialData?.oohSites && Array.isArray(initialData.oohSites) && initialData.oohSites.length > 0) {
+      return initialData.oohSites.map(s => {
+        const w = parseFloat(s.width) || (s.size ? parseFloat(s.size.split("x")[0]) : 0) || 0;
+        const h = parseFloat(s.height) || (s.size ? parseFloat(s.size.split("x")[1]) : 0) || 0;
+        const sqft = s.sqft || (w > 0 && h > 0 ? Math.round(w * h * 100) / 100 : 0);
+        return {
+          location: s.location || s.name || s.area || "",
+          width: s.width || (w > 0 ? w : ""),
+          height: s.height || (h > 0 ? h : ""),
+          sqft: sqft,
+          rate: s.rate !== undefined && s.rate !== "" ? s.rate : (s.pricePerMonth || "")
+        };
+      });
+    }
+    return [{ location: "", width: "", height: "", sqft: 0, rate: "" }];
+  });
 
   // Printing & Installations specific state
   const [printingItems, setPrintingItems] = useState(() => {
@@ -5381,13 +5431,36 @@ function ProjectModal({ initialData, onClose, onSubmit }) {
   const isOoh = type === "OOH Advertising" || type === "ooh";
   const isPrinting = type === "Printing & Installations" || type === "printing";
 
-  const addOohSite = () => setOohSites([...oohSites, { name: "", area: "", size: "", pricePerMonth: "" }]);
+  const addOohSite = () => setOohSites([...oohSites, { location: "", width: "", height: "", sqft: 0, rate: "" }]);
+
   const updateOohSite = (index, field, value) => {
     const updated = [...oohSites];
-    updated[index][field] = value;
+    const item = { ...updated[index], [field]: value };
+
+    const w = parseFloat(item.width) || 0;
+    const h = parseFloat(item.height) || 0;
+    const sqft = Math.round(w * h * 100) / 100;
+
+    item.sqft = sqft;
+    updated[index] = item;
     setOohSites(updated);
   };
-  const removeOohSite = (index) => setOohSites(oohSites.filter((_, i) => i !== index));
+
+  const removeOohSite = (index) => {
+    if (oohSites.length > 1) {
+      setOohSites(oohSites.filter((_, i) => i !== index));
+    } else {
+      setOohSites([{ location: "", width: "", height: "", sqft: 0, rate: "" }]);
+    }
+  };
+
+  const totalOohSqft = oohSites.reduce((sum, item) => sum + (Number(item.sqft) || 0), 0);
+  const totalOohAmount = oohSites.reduce((sum, item) => sum + (Number(item.rate) || 0), 0);
+
+  const oohValid = !isOoh || (
+    oohSites.length > 0 &&
+    oohSites.every(s => s.location && Number(s.width) > 0 && Number(s.height) > 0 && Number(s.rate) >= 0)
+  );
 
   const addPrintingItem = () => setPrintingItems([...printingItems, { width: "", height: "", sqft: 0, rate: "", amount: 0 }]);
 
@@ -5425,7 +5498,7 @@ function ProjectModal({ initialData, onClose, onSubmit }) {
     printingItems.every(i => Number(i.width) > 0 && Number(i.height) > 0 && Number(i.rate) >= 0)
   );
 
-  const valid = client && name && startDate && endDate && (!isOoh || oohSites.every(s => s.name && s.area)) && printingValid;
+  const valid = client && name && startDate && endDate && oohValid && printingValid;
 
   return (
     <ModalShell title={initialData ? "Edit Project Details" : "Create New Agency Project"} onClose={onClose}>
@@ -5438,50 +5511,113 @@ function ProjectModal({ initialData, onClose, onSubmit }) {
       <div className="field"><label>Project Title</label><input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Q3 Brand Campaign" /></div>
       <div className="field"><label>Scope Note</label><input value={description} onChange={e => setDescription(e.target.value)} placeholder="Brief summary of creative scope" /></div>
       
-      {isOoh && !initialData && (
+      {isOoh && (
         <div style={{ background: "var(--bg)", padding: 14, borderRadius: 8, marginBottom: 14, border: "1.5px solid var(--rule)" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
             <div>
-              <div style={{ fontWeight: 700, fontSize: 13, color: "var(--ink)" }}>Outdoor Billboard Sites (Multiple Add)</div>
-              <div style={{ fontSize: 11.5, color: "var(--ink-muted)" }}>Add client OOH sites by Area, Size &amp; Monthly Rate</div>
+              <div style={{ fontWeight: 700, fontSize: 13, color: "var(--ink)" }}>OOH Advertising Sites (Multiple Add)</div>
+              <div style={{ fontSize: 11.5, color: "var(--ink-muted)" }}>Enter Location, Width &amp; Height for automatic Sq. Ft. calculation</div>
             </div>
-            <button className="btn btn-primary" style={{ fontSize: 11.5, padding: "3px 8px" }} onClick={addOohSite} type="button">
-              <Plus size={13} /> Add Site
+            <button className="btn btn-primary" style={{ fontSize: 11.5, padding: "4px 9px" }} onClick={addOohSite} type="button">
+              <Plus size={13} /> Add OOH Location
             </button>
           </div>
 
-          {oohSites.map((site, idx) => (
-            <div key={idx} style={{ background: "#FFFFFF", padding: 10, borderRadius: 6, border: "1px solid #E2E8F0", marginBottom: 8 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: "var(--gold)", marginBottom: 6 }}>Site #{idx + 1} Details</div>
-              <div style={{ display: "grid", gridTemplateColumns: "2fr 1.5fr 1fr 1.5fr auto", gap: 8, alignItems: "center" }}>
-                <div className="field" style={{ margin: 0 }}>
-                  <label style={{ fontSize: 10.5 }}>Location / Site Name</label>
-                  <input style={{ padding: "5px 8px", fontSize: 12 }} value={site.name} onChange={e => updateOohSite(idx, "name", e.target.value)} placeholder="e.g. Tariq Road Junction Site 1" />
-                </div>
-                <div className="field" style={{ margin: 0 }}>
-                  <label style={{ fontSize: 10.5 }}>Area / Zone</label>
-                  <input style={{ padding: "5px 8px", fontSize: 12 }} value={site.area} onChange={e => updateOohSite(idx, "area", e.target.value)} placeholder="e.g. Tariq Road" />
-                </div>
-                <div className="field" style={{ margin: 0 }}>
-                  <label style={{ fontSize: 10.5 }}>Size</label>
-                  <input style={{ padding: "5px 8px", fontSize: 12 }} value={site.size} onChange={e => updateOohSite(idx, "size", e.target.value)} placeholder="20x40 ft" />
-                </div>
-                <div className="field" style={{ margin: 0 }}>
-                  <label style={{ fontSize: 10.5 }}>Monthly Rate (PKR)</label>
-                  <input type="number" style={{ padding: "5px 8px", fontSize: 12 }} value={site.pricePerMonth} onChange={e => updateOohSite(idx, "pricePerMonth", e.target.value)} placeholder="0" />
-                </div>
-                <div>
-                  {oohSites.length > 1 && (
-                    <button className="btn" type="button" style={{ padding: "5px 7px", color: "var(--rose)", borderColor: "#FCA5A5", marginTop: 14 }} onClick={() => removeOohSite(idx)}>
-                      <Trash2 size={13} />
-                    </button>
-                  )}
-                </div>
-              </div>
+          <div className="table-responsive" style={{ marginBottom: 10 }}>
+            <table style={{ width: "100%", fontSize: 12, borderCollapse: "collapse", background: "#FFFFFF", borderRadius: 6, overflow: "hidden", border: "1px solid #CBD5E1" }}>
+              <thead>
+                <tr style={{ background: "#F8FAFC", borderBottom: "1px solid #CBD5E1", color: "#334155" }}>
+                  <th style={{ padding: "7px 8px", textAlign: "left", width: "32%" }}>Location / Area</th>
+                  <th style={{ padding: "7px 8px", textAlign: "left", width: "16%" }}>Width (ft)</th>
+                  <th style={{ padding: "7px 8px", textAlign: "left", width: "16%" }}>Height (ft)</th>
+                  <th style={{ padding: "7px 8px", textAlign: "right", width: "16%", color: "#0284C7" }}>Total Sq. Ft.</th>
+                  <th style={{ padding: "7px 8px", textAlign: "right", width: "16%" }}>Rate (PKR)</th>
+                  <th style={{ padding: "7px 4px", textAlign: "center", width: "4%" }}></th>
+                </tr>
+              </thead>
+              <tbody>
+                {oohSites.map((site, idx) => (
+                  <tr key={idx} style={{ borderBottom: "1px solid #F1F5F9" }}>
+                    <td style={{ padding: "6px 8px" }}>
+                      <input
+                        style={{ width: "100%", padding: "5px 7px", fontSize: 12, borderRadius: 5, border: "1px solid #CBD5E1" }}
+                        value={site.location}
+                        onChange={e => updateOohSite(idx, "location", e.target.value)}
+                        placeholder="e.g. Shahrah-e-Faisal / Clifton"
+                      />
+                    </td>
+                    <td style={{ padding: "6px 8px" }}>
+                      <input
+                        type="number"
+                        min="0.01"
+                        step="0.01"
+                        style={{ width: "100%", padding: "5px 7px", fontSize: 12, borderRadius: 5, border: "1px solid #CBD5E1" }}
+                        value={site.width}
+                        onChange={e => updateOohSite(idx, "width", e.target.value)}
+                        placeholder="Width"
+                      />
+                    </td>
+                    <td style={{ padding: "6px 8px" }}>
+                      <input
+                        type="number"
+                        min="0.01"
+                        step="0.01"
+                        style={{ width: "100%", padding: "5px 7px", fontSize: 12, borderRadius: 5, border: "1px solid #CBD5E1" }}
+                        value={site.height}
+                        onChange={e => updateOohSite(idx, "height", e.target.value)}
+                        placeholder="Height"
+                      />
+                    </td>
+                    <td style={{ padding: "6px 8px", textAlign: "right" }}>
+                      <input
+                        type="text"
+                        readOnly
+                        disabled
+                        style={{ width: "100%", padding: "5px 7px", fontSize: 12, borderRadius: 5, border: "1px solid #E2E8F0", background: "#F1F5F9", textAlign: "right", fontWeight: 700, color: "#0284C7" }}
+                        value={(Number(site.sqft) || 0).toFixed(2)}
+                      />
+                    </td>
+                    <td style={{ padding: "6px 8px" }}>
+                      <input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        style={{ width: "100%", padding: "5px 7px", fontSize: 12, borderRadius: 5, border: "1px solid #CBD5E1" }}
+                        value={site.rate}
+                        onChange={e => updateOohSite(idx, "rate", e.target.value)}
+                        placeholder="Rate"
+                      />
+                    </td>
+                    <td style={{ padding: "6px 4px", textAlign: "center" }}>
+                      {oohSites.length > 1 && (
+                        <button className="btn" type="button" style={{ padding: "4px 6px", color: "var(--rose)", borderColor: "#FCA5A5" }} onClick={() => removeOohSite(idx)}>
+                          <Trash2 size={13} />
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "#FFFFFF", padding: "10px 14px", borderRadius: 6, border: "1px solid #CBD5E1" }}>
+            <div>
+              <span style={{ fontSize: 12, color: "var(--ink-muted)" }}>Total OOH Sq. Ft.: </span>
+              <span className="mono" style={{ fontWeight: 800, fontSize: 13, color: "#0284C7" }}>
+                {totalOohSqft.toFixed(2)} Sq. Ft.
+              </span>
             </div>
-          ))}
+            <div>
+              <span style={{ fontSize: 12, color: "var(--ink-muted)" }}>Total OOH Campaign Rate: </span>
+              <span className="mono" style={{ fontWeight: 800, fontSize: 15, color: "#059669" }}>
+                {pkr(totalOohAmount)}
+              </span>
+            </div>
+          </div>
         </div>
       )}
+
 
       {isPrinting && (
         <div style={{ background: "var(--bg)", padding: 14, borderRadius: 8, marginBottom: 14, border: "1.5px solid var(--rule)" }}>
@@ -5598,17 +5734,22 @@ function ProjectModal({ initialData, onClose, onSubmit }) {
       <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 6 }} disabled={!valid}
         onClick={() => valid && onSubmit(initialData ? {
           ...initialData, client, type, name, description, startDate, endDate,
+          oohSites: isOoh ? oohSites : (initialData?.oohSites || []),
+          totalOohSqft: isOoh ? totalOohSqft : (initialData?.totalOohSqft || 0),
+          budget: isOoh ? totalOohAmount : (isPrinting ? grandTotalPrintingAmount : (initialData?.budget || 0)),
           printingItems: isPrinting ? printingItems : (initialData?.printingItems || []),
           totalSqft: isPrinting ? totalPrintingSqft : (initialData?.totalSqft || 0),
-          budget: isPrinting ? grandTotalPrintingAmount : (initialData?.budget || 0)
         } : {
-          client, type, name, description, startDate, endDate, oohSites,
+          client, type, name, description, startDate, endDate,
+          oohSites: isOoh ? oohSites : [],
+          totalOohSqft: isOoh ? totalOohSqft : 0,
+          budget: isOoh ? totalOohAmount : (isPrinting ? grandTotalPrintingAmount : 0),
           printingItems: isPrinting ? printingItems : [],
           totalSqft: isPrinting ? totalPrintingSqft : 0,
-          budget: isPrinting ? grandTotalPrintingAmount : 0
         })}>
         {initialData ? "Save Project Changes" : "Initialize Project"}
       </button>
+
     </ModalShell>
   );
 }
@@ -5738,6 +5879,54 @@ function ProjectDetailModal({ project, invoices, expenses, sites, onClose, onSta
             </div>
           </>
         )}
+
+        {project.oohSites && project.oohSites.length > 0 && (
+          <>
+            <div className="section-title" style={{ margin: "14px 0 8px", fontSize: 15 }}>
+              <Building2 size={16} color="var(--gold)" /> OOH Advertising Locations Breakdown ({project.oohSites.length} locations)
+            </div>
+            <div className="card" style={{ marginBottom: 16 }}>
+              <div className="table-responsive">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Location / Area</th>
+                      <th style={{ textAlign: "right" }}>Width (ft)</th>
+                      <th style={{ textAlign: "right" }}>Height (ft)</th>
+                      <th style={{ textAlign: "right", color: "#0284C7" }}>Total Sq. Ft.</th>
+                      <th style={{ textAlign: "right", color: "#059669" }}>Rate (PKR)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {project.oohSites.map((site, idx) => (
+                      <tr key={idx}>
+                        <td className="mono" style={{ fontSize: 12, color: "var(--ink-muted)" }}>Site #{idx + 1}</td>
+                        <td style={{ fontWeight: 600 }}>{site.location || site.name || site.area}</td>
+                        <td className="mono" style={{ textAlign: "right" }}>{Number(site.width || (site.size ? site.size.split("x")[0] : 0)).toFixed(2)}</td>
+                        <td className="mono" style={{ textAlign: "right" }}>{Number(site.height || (site.size ? site.size.split("x")[1] : 0)).toFixed(2)}</td>
+                        <td className="mono" style={{ textAlign: "right", fontWeight: 700, color: "#0284C7" }}>{Number(site.sqft || 0).toFixed(2)}</td>
+                        <td className="mono" style={{ textAlign: "right", fontWeight: 700, color: "#059669" }}>{pkr(site.rate || site.pricePerMonth)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot>
+                    <tr style={{ background: "var(--bg)", fontWeight: 800 }}>
+                      <td colSpan={4}>Total OOH Sq. Ft. &amp; Rate</td>
+                      <td className="mono" style={{ textAlign: "right", color: "#0284C7" }}>
+                        {(project.totalOohSqft || project.oohSites.reduce((s, i) => s + (Number(i.sqft) || 0), 0)).toFixed(2)} Sq. Ft.
+                      </td>
+                      <td className="mono" style={{ textAlign: "right", color: "#059669", fontSize: 14 }}>
+                        {pkr(project.budget || project.oohSites.reduce((s, i) => s + (Number(i.rate || i.pricePerMonth) || 0), 0))}
+                      </td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+          </>
+        )}
+
 
         {project.printingItems && project.printingItems.length > 0 && (
           <>
@@ -6167,31 +6356,56 @@ function PrintPreviewModal({ doc, onClose }) {
               <thead>
                 <tr style={{ background: "#F1F5F9" }}>
                   <th style={{ border: "1px solid #000", padding: "6px", width: 35 }}>SR.#</th>
-                  <th style={{ border: "1px solid #000", padding: "6px", textAlign: "left" }}>LOCATIONS</th>
-                  <th style={{ border: "1px solid #000", padding: "6px", width: 90 }}>TYPE</th>
-                  <th style={{ border: "1px solid #000", padding: "6px", width: 60 }}>SIZE</th>
-                  <th style={{ border: "1px solid #000", padding: "6px", width: 45 }}>DAYS</th>
-                  <th style={{ border: "1px solid #000", padding: "6px", width: 85 }}>START DATE</th>
-                  <th style={{ border: "1px solid #000", padding: "6px", width: 85 }}>END DATE</th>
-                  <th style={{ border: "1px solid #000", padding: "6px", width: 80, textAlign: "right" }}>PER MONTH</th>
-                  <th style={{ border: "1px solid #000", padding: "6px", width: 90, textAlign: "right" }}>TOTAL AMOUNT</th>
+                  <th style={{ border: "1px solid #000", padding: "6px", textAlign: "left" }}>LOCATIONS / AREA</th>
+                  <th style={{ border: "1px solid #000", padding: "6px", width: 70 }}>W (FT)</th>
+                  <th style={{ border: "1px solid #000", padding: "6px", width: 70 }}>H (FT)</th>
+                  <th style={{ border: "1px solid #000", padding: "6px", width: 80 }}>SQFT</th>
+                  <th style={{ border: "1px solid #000", padding: "6px", width: 85, textAlign: "right" }}>RATE (PKR)</th>
+                  <th style={{ border: "1px solid #000", padding: "6px", width: 90, textAlign: "right" }}>AMOUNT</th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td style={{ border: "1px solid #000", padding: "6px", textAlign: "center" }}>1</td>
-                  <td style={{ border: "1px solid #000", padding: "6px" }}>{doc.description || "GULSHAN CHOWRANGI TGT LUCKYONE"}</td>
-                  <td style={{ border: "1px solid #000", padding: "6px" }}>PEDESTRIAN BRIDGE</td>
-                  <td style={{ border: "1px solid #000", padding: "6px", textAlign: "center" }}>70X10</td>
-                  <td style={{ border: "1px solid #000", padding: "6px", textAlign: "center" }}>30</td>
-                  <td style={{ border: "1px solid #000", padding: "6px", textAlign: "center" }}>20-Dec-2024</td>
-                  <td style={{ border: "1px solid #000", padding: "6px", textAlign: "center" }}>19-Jan-2025</td>
-                  <td style={{ border: "1px solid #000", padding: "6px", textAlign: "right" }}>{pkr(netAmt)}</td>
-                  <td style={{ border: "1px solid #000", padding: "6px", textAlign: "right", fontWeight: 700 }}>{pkr(netAmt)}</td>
+                {doc.oohSites && doc.oohSites.length > 0 ? (
+                  doc.oohSites.map((site, idx) => {
+                    const w = Number(site.width || (site.size ? site.size.split("x")[0] : 0)) || 0;
+                    const h = Number(site.height || (site.size ? site.size.split("x")[1] : 0)) || 0;
+                    const sqft = Number(site.sqft) || (w * h);
+                    const rate = Number(site.rate !== undefined && site.rate !== "" ? site.rate : site.pricePerMonth) || 0;
+                    return (
+                      <tr key={idx}>
+                        <td style={{ border: "1px solid #000", padding: "6px", textAlign: "center" }}>{idx + 1}</td>
+                        <td style={{ border: "1px solid #000", padding: "6px", fontWeight: 600 }}>{site.location || site.name || site.area}</td>
+                        <td style={{ border: "1px solid #000", padding: "6px", textAlign: "center" }}>{w.toFixed(2)}</td>
+                        <td style={{ border: "1px solid #000", padding: "6px", textAlign: "center" }}>{h.toFixed(2)}</td>
+                        <td style={{ border: "1px solid #000", padding: "6px", textAlign: "center", fontWeight: 700 }}>{sqft.toFixed(2)}</td>
+                        <td style={{ border: "1px solid #000", padding: "6px", textAlign: "right" }}>{pkr(rate)}</td>
+                        <td style={{ border: "1px solid #000", padding: "6px", textAlign: "right", fontWeight: 700 }}>{pkr(rate)}</td>
+                      </tr>
+                    );
+                  })
+                ) : (
+                  <tr>
+                    <td style={{ border: "1px solid #000", padding: "6px", textAlign: "center" }}>1</td>
+                    <td style={{ border: "1px solid #000", padding: "6px" }}>{doc.description || "OOH BILLBOARD ADVERTISING LOCATION"}</td>
+                    <td style={{ border: "1px solid #000", padding: "6px", textAlign: "center" }}>20.00</td>
+                    <td style={{ border: "1px solid #000", padding: "6px", textAlign: "center" }}>10.00</td>
+                    <td style={{ border: "1px solid #000", padding: "6px", textAlign: "center" }}>200.00</td>
+                    <td style={{ border: "1px solid #000", padding: "6px", textAlign: "right" }}>{pkr(netAmt)}</td>
+                    <td style={{ border: "1px solid #000", padding: "6px", textAlign: "right", fontWeight: 700 }}>{pkr(netAmt)}</td>
+                  </tr>
+                )}
+                <tr style={{ fontWeight: 800, background: "#F8FAFC" }}>
+                  <td colSpan={4} style={{ border: "1px solid #000", padding: "8px", textAlign: "center" }}>TOTAL OOH SQ. FT. &amp; AMOUNT</td>
+                  <td style={{ border: "1px solid #000", padding: "8px", textAlign: "center" }}>
+                    {doc.oohSites && doc.oohSites.length > 0 ? doc.oohSites.reduce((s, i) => s + (Number(i.sqft) || 0), 0).toFixed(2) : "200.00"}
+                  </td>
+                  <td style={{ border: "1px solid #000", padding: "8px", textAlign: "right" }}>—</td>
+                  <td style={{ border: "1px solid #000", padding: "8px", textAlign: "right" }}>{pkr(netAmt)}</td>
                 </tr>
               </tbody>
             </table>
-          ) : (
+          ) :
+ (
             <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 20, border: "2px solid #000", fontSize: 13 }}>
               <thead>
                 <tr style={{ background: "#F8FAFC" }}>
