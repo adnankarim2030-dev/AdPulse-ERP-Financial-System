@@ -6252,9 +6252,15 @@ function WelcomeGateway({ usersList, onLogin, onOpenForgot, children }) {
 
   function submitLogin(e) {
     e.preventDefault();
-    const found = usersList.find(u => u.email.toLowerCase() === email.trim().toLowerCase() && u.password === password);
-    if (!found) {
-      setErrorMsg("Invalid email or password. Please try again.");
+    const inputClean = email.trim().toLowerCase();
+    const found = usersList.find(u => 
+      u.email.toLowerCase() === inputClean ||
+      u.name.toLowerCase() === inputClean ||
+      (inputClean === "admin" && (u.role === "Admin" || u.email === "admin@adpulse.pk")) ||
+      (inputClean === "staff" && u.role === "Staff")
+    );
+    if (!found || found.password !== password) {
+      setErrorMsg("Invalid Username/Email or Password. Please try again.");
       return;
     }
     if (activeTab === "admin" && found.role !== "Admin") {
@@ -6289,8 +6295,8 @@ function WelcomeGateway({ usersList, onLogin, onOpenForgot, children }) {
           )}
 
           <div className="field" style={{ textAlign: "left" }}>
-            <label>Email Address</label>
-            <input type="email" required value={email} onChange={e => setEmail(e.target.value)} placeholder="name@adpulse.pk" autoComplete="off" />
+            <label>User Name / Email</label>
+            <input type="text" required value={email} onChange={e => setEmail(e.target.value)} placeholder="admin or admin@adpulse.pk" autoComplete="off" />
           </div>
 
           <div className="field" style={{ textAlign: "left" }}>
