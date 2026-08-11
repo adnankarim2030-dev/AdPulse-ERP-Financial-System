@@ -1630,9 +1630,14 @@ export default function App() {
   /* User & Password Actions */
   function handleLogin(userObj) {
     if (!userObj) return;
-    const allowed = Array.isArray(userObj.allowedTabs) && userObj.allowedTabs.length > 0
-      ? userObj.allowedTabs
+    let allowed = Array.isArray(userObj.allowedTabs) && userObj.allowedTabs.length > 0
+      ? [...userObj.allowedTabs]
       : ALL_MODULE_TABS.map(t => t.key);
+
+    const isCeoUser = (userObj.role === "Admin" || userObj.role === "CEO" || userObj.email === "admin@adpulse.pk");
+    if (isCeoUser && !allowed.includes("ceo-dashboard")) {
+      allowed.unshift("ceo-dashboard");
+    }
 
     const safeUser = {
       ...userObj,
@@ -1642,7 +1647,7 @@ export default function App() {
       allowedTabs: allowed
     };
     setCurrentUser(safeUser);
-    const firstAllowed = allowed[0] || "dashboard";
+    const firstAllowed = isCeoUser ? "ceo-dashboard" : (allowed[0] || "dashboard");
     setTab(firstAllowed);
   }
 
@@ -2707,13 +2712,20 @@ export default function App() {
 
   const NAV = useMemo(() => {
     if (!currentUser) return [];
+    const isCeoUser = currentUser.role === "Admin" || currentUser.role === "CEO" || currentUser.email === "admin@adpulse.pk";
+    
     const allowed = Array.isArray(currentUser.allowedTabs) ? currentUser.allowedTabs : ALL_MODULE_TABS.map(t => t.key);
-    let items = ALL_NAV_ITEMS.filter(n => allowed.includes(n.key));
+    let items = ALL_NAV_ITEMS.filter(n => allowed.includes(n.key) || (isCeoUser && n.key === "ceo-dashboard"));
     
     // Privacy Guard: Only Admin or CEO role can view CEO Executive Suite!
-    const isCeoUser = currentUser.role === "Admin" || currentUser.role === "CEO" || currentUser.email === "admin@adpulse.pk";
     if (!isCeoUser) {
       items = items.filter(n => n.key !== "ceo-dashboard");
+    }
+
+    // Ensure ceo-dashboard is present at the very top for CEO / Admin users
+    if (isCeoUser && !items.some(i => i.key === "ceo-dashboard")) {
+      const ceoItem = ALL_NAV_ITEMS.find(n => n.key === "ceo-dashboard");
+      if (ceoItem) items.unshift(ceoItem);
     }
 
     if (currentUser.role === "Admin" && !items.some(i => i.key === "settings")) {
