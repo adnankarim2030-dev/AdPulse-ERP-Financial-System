@@ -957,7 +957,7 @@ export default function App() {
   const [showExpenseForm, setShowExpenseForm] = useState(false);
   const [editingExpense, setEditingExpense] = useState(null);
   const [payingExpenseId, setPayingExpenseId] = useState(null);
-  const [isCeoLocked, setIsCeoLocked] = useState(false);
+  const [isCeoLocked, setIsCeoLocked] = useState(true);
   const [ceoPinInput, setCeoPinInput] = useState("");
   const [savedCeoPin, setSavedCeoPin] = useState("7890");
   const [showPinChangeModal, setShowPinChangeModal] = useState(false);
@@ -1652,12 +1652,18 @@ export default function App() {
       allowedTabs: allowed
     };
     setCurrentUser(safeUser);
+    setIsCeoLocked(true);
+    setCeoPinInput("");
+    setPinErrorMessage("");
     const firstAllowed = isCeoUser ? "ceo-dashboard" : (allowed[0] || "dashboard");
     setTab(firstAllowed);
   }
 
   function handleLogout() {
     setCurrentUser(null);
+    setIsCeoLocked(true);
+    setCeoPinInput("");
+    setPinErrorMessage("");
   }
 
   function handleResetPassword(email, newPass) {
@@ -2798,7 +2804,13 @@ export default function App() {
                   padding: "10px 14px",
                   transition: "all 0.2s ease"
                 }}
-                onClick={() => { setTab(n.key); setMobileNavOpen(false); }}
+                onClick={() => {
+                  setIsCeoLocked(true);
+                  setCeoPinInput("");
+                  setPinErrorMessage("");
+                  setTab(n.key);
+                  setMobileNavOpen(false);
+                }}
               >
                 <Crown size={18} color={isActive ? "#FFFFFF" : "#F59E0B"} style={{ filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.2))" }} />
                 <span style={{ flex: 1, letterSpacing: 0.2 }}>CEO Executive Suite</span>
@@ -6226,21 +6238,16 @@ function SupabaseConfigCard({ config, onSaveConfig, onPushToCloud, onPullFromClo
 
 function WelcomeGateway({ usersList, onLogin, onOpenForgot, children }) {
   const [activeTab, setActiveTab] = useState("admin"); // 'admin' | 'staff'
-  const [email, setEmail] = useState("admin@adpulse.pk");
-  const [password, setPassword] = useState("admin123");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const [showPass, setShowPass] = useState(false);
 
   function switchTab(mode) {
     setActiveTab(mode);
     setErrorMsg("");
-    if (mode === "admin") {
-      setEmail("admin@adpulse.pk");
-      setPassword("admin123");
-    } else {
-      setEmail("staff@adpulse.pk");
-      setPassword("staff123");
-    }
+    setEmail("");
+    setPassword("");
   }
 
   function submitLogin(e) {
@@ -6274,7 +6281,7 @@ function WelcomeGateway({ usersList, onLogin, onOpenForgot, children }) {
           </button>
         </div>
 
-        <form onSubmit={submitLogin}>
+        <form onSubmit={submitLogin} autoComplete="off">
           {errorMsg && (
             <div style={{ background: "#FEF2F2", color: "#991B1B", border: "1px solid #FCA5A5", borderRadius: 9, padding: "8px 12px", fontSize: 13, marginBottom: 14 }}>
               {errorMsg}
@@ -6283,7 +6290,7 @@ function WelcomeGateway({ usersList, onLogin, onOpenForgot, children }) {
 
           <div className="field" style={{ textAlign: "left" }}>
             <label>Email Address</label>
-            <input type="email" required value={email} onChange={e => setEmail(e.target.value)} placeholder="name@adpulse.pk" />
+            <input type="email" required value={email} onChange={e => setEmail(e.target.value)} placeholder="name@adpulse.pk" autoComplete="off" />
           </div>
 
           <div className="field" style={{ textAlign: "left" }}>
@@ -6294,7 +6301,7 @@ function WelcomeGateway({ usersList, onLogin, onOpenForgot, children }) {
               </button>
             </div>
             <div style={{ position: "relative" }}>
-              <input type={showPass ? "text" : "password"} required value={password} onChange={e => setPassword(e.target.value)} placeholder="Enter password" style={{ paddingRight: 38 }} />
+              <input type={showPass ? "text" : "password"} required value={password} onChange={e => setPassword(e.target.value)} placeholder="Enter password" style={{ paddingRight: 38 }} autoComplete="new-password" />
               <button type="button" onClick={() => setShowPass(!showPass)} style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", color: "#64748B", cursor: "pointer" }}>
                 {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
