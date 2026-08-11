@@ -3000,8 +3000,8 @@ export default function App() {
                   >
                     Unlock Executive Suite
                   </button>
-                  <div style={{ marginTop: 16, fontSize: 11.5, color: "#64748B" }}>
-                    Default PIN: <strong>7890</strong> (Can be changed anytime)
+                  <div style={{ marginTop: 16, fontSize: 11.5, color: "#94A3B8", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+                    <ShieldCheck size={14} color="#D4AF37" /> Executive Authorization Required &middot; Confidential
                   </div>
                 </div>
               ) : (
