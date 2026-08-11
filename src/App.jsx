@@ -465,6 +465,15 @@ const ALL_MODULE_TABS = [
 /* ---------- SEED USERS ---------- */
 const SEED_USERS = [
   {
+    id: "u-ceo",
+    name: "AdPulse CEO",
+    email: "ceo@adpulse.pk",
+    password: "admin123",
+    role: "CEO",
+    department: "Executive Board",
+    allowedTabs: ALL_MODULE_TABS.map(t => t.key),
+  },
+  {
     id: "u-admin",
     name: "AdPulse Admin",
     email: "admin@adpulse.pk",
@@ -6237,7 +6246,7 @@ function SupabaseConfigCard({ config, onSaveConfig, onPushToCloud, onPullFromClo
 /* ---------- WELCOME GATEWAY & AUTHENTICATION COMPONENTS ---------- */
 
 function WelcomeGateway({ usersList, onLogin, onOpenForgot, children }) {
-  const [activeTab, setActiveTab] = useState("admin"); // 'admin' | 'staff'
+  const [activeTab, setActiveTab] = useState("ceo"); // 'ceo' | 'admin' | 'staff'
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
@@ -6256,19 +6265,24 @@ function WelcomeGateway({ usersList, onLogin, onOpenForgot, children }) {
     const found = usersList.find(u => 
       u.email.toLowerCase() === inputClean ||
       u.name.toLowerCase() === inputClean ||
-      (inputClean === "admin" && (u.role === "Admin" || u.email === "admin@adpulse.pk")) ||
+      (inputClean === "ceo" && (u.role === "CEO" || u.role === "Admin" || u.email === "ceo@adpulse.pk" || u.email === "admin@adpulse.pk")) ||
+      (inputClean === "admin" && (u.role === "Admin" || u.role === "CEO" || u.email === "admin@adpulse.pk")) ||
       (inputClean === "staff" && u.role === "Staff")
     );
     if (!found || found.password !== password) {
       setErrorMsg("Invalid Username/Email or Password. Please try again.");
       return;
     }
-    if (activeTab === "admin" && found.role !== "Admin") {
+    if (activeTab === "ceo" && found.role !== "CEO" && found.role !== "Admin") {
+      setErrorMsg("Access Denied. This account does not have CEO Executive privileges.");
+      return;
+    }
+    if (activeTab === "admin" && found.role !== "Admin" && found.role !== "CEO") {
       setErrorMsg("Access Denied. This account does not have Admin privileges.");
       return;
     }
     setErrorMsg("");
-    onLogin(found);
+    onLogin(found, activeTab === "ceo" ? "ceo-dashboard" : null);
   }
 
   return (
@@ -6279,11 +6293,14 @@ function WelcomeGateway({ usersList, onLogin, onOpenForgot, children }) {
         <div className="gateway-subtitle">Enterprise ERP &amp; Financial Gateway</div>
 
         <div className="gateway-tabs">
+          <button className={"gateway-tab-btn" + (activeTab === "ceo" ? " active" : "")} onClick={() => switchTab("ceo")}>
+            <Crown size={16} color={activeTab === "ceo" ? "#D4AF37" : "#475569"} /> CEO Portal
+          </button>
           <button className={"gateway-tab-btn" + (activeTab === "admin" ? " active" : "")} onClick={() => switchTab("admin")}>
-            <ShieldCheck size={17} color={activeTab === "admin" ? "#B8860B" : "#475569"} /> Admin Portal
+            <ShieldCheck size={16} color={activeTab === "admin" ? "#B8860B" : "#475569"} /> Admin Portal
           </button>
           <button className={"gateway-tab-btn" + (activeTab === "staff" ? " active" : "")} onClick={() => switchTab("staff")}>
-            <User size={17} color={activeTab === "staff" ? "#0284C7" : "#475569"} /> Staff Portal
+            <User size={16} color={activeTab === "staff" ? "#0284C7" : "#475569"} /> Staff Portal
           </button>
         </div>
 
@@ -6296,7 +6313,14 @@ function WelcomeGateway({ usersList, onLogin, onOpenForgot, children }) {
 
           <div className="field" style={{ textAlign: "left" }}>
             <label>User Name / Email</label>
-            <input type="text" required value={email} onChange={e => setEmail(e.target.value)} placeholder="admin or admin@adpulse.pk" autoComplete="off" />
+            <input
+              type="text"
+              required
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              placeholder={activeTab === "ceo" ? "ceo or ceo@adpulse.pk" : activeTab === "admin" ? "admin or admin@adpulse.pk" : "staff or staff@adpulse.pk"}
+              autoComplete="off"
+            />
           </div>
 
           <div className="field" style={{ textAlign: "left" }}>
@@ -6314,8 +6338,8 @@ function WelcomeGateway({ usersList, onLogin, onOpenForgot, children }) {
             </div>
           </div>
 
-          <button type="submit" className="btn btn-primary" style={{ width: "100%", justifyContent: "center", padding: "12px", fontSize: 15.5, marginTop: 8 }}>
-            Sign In to {activeTab === "admin" ? "Admin Portal" : "Staff Portal"}
+          <button type="submit" className="btn btn-primary" style={{ width: "100%", justifyContent: "center", padding: "12px", fontSize: 15, marginTop: 8 }}>
+            Sign In to {activeTab === "ceo" ? "CEO Executive Suite" : activeTab === "admin" ? "Admin Portal" : "Staff Portal"}
           </button>
         </form>
 
