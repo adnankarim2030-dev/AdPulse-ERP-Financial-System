@@ -63,6 +63,16 @@ const ACCOUNTS = {
   software: { code: "5240", name: "Software & Subscriptions", type: "expense", category: "Operating Expenses" },
   contractor: { code: "5250", name: "Contractor Fees", type: "expense", category: "Operating Expenses" },
   expense: { code: "5260", name: "General Operating Expense", type: "expense", category: "Operating Expenses" },
+  office_maint: { code: "5270", name: "Office Repairs & Maintenance", type: "expense", category: "Operating Expenses" },
+  office_supplies: { code: "5280", name: "Office Supplies & Stationery", type: "expense", category: "Operating Expenses" },
+  courier_exp: { code: "5290", name: "Courier & Postage Expense", type: "expense", category: "Operating Expenses" },
+  travel_exp: { code: "5310", name: "Vehicle & Travel Expenses", type: "expense", category: "Operating Expenses" },
+  insurance_exp: { code: "5320", name: "Insurance Expense", type: "expense", category: "Operating Expenses" },
+  gov_tax_exp: { code: "5330", name: "Government Fees & Taxes Expense", type: "expense", category: "Operating Expenses" },
+  prof_fees: { code: "5340", name: "Legal & Professional Fees", type: "expense", category: "Operating Expenses" },
+  bank_charges: { code: "5350", name: "Bank & Financial Charges", type: "expense", category: "Operating Expenses" },
+  depr_exp: { code: "5360", name: "Depreciation & Amortization", type: "expense", category: "Operating Expenses" },
+  sales_exp: { code: "5370", name: "Sales & Business Development", type: "expense", category: "Operating Expenses" },
 };
 
 const COA_STRUCTURE = [
@@ -105,10 +115,11 @@ const COA_STRUCTURE = [
     type: "expense",
     subcategories: [
       { code: "5100", name: "5100 — Direct Costs (COGS)", accounts: ["direct_vendor", "ad_spend"] },
-      { code: "5200", name: "5200 — Operating Expenses", accounts: ["payroll", "rent", "utilities", "software", "contractor", "expense"] },
+      { code: "5200", name: "5200 — Operating Expenses", accounts: ["payroll", "rent", "utilities", "software", "contractor", "expense", "office_maint", "office_supplies", "courier_exp", "travel_exp", "insurance_exp", "gov_tax_exp", "prof_fees", "bank_charges", "depr_exp", "sales_exp"] },
     ]
   }
 ];
+
 
 
 const VOUCHER_TYPES = {
@@ -159,7 +170,246 @@ function amountInWords(num) {
   return parts.join(" ") + " Rupees Only";
 }
 
-const EXPENSE_CATEGORIES = ["Ad Spend", "Software", "Rent", "Contractor", "Utilities", "Payroll", "Production Vendor", "Other"];
+const EXPENSE_CLASSIFICATION = {
+  "Salaries & Employee Costs": {
+    code: "A",
+    subcategories: [
+      { name: "Salaries & Wages", accountKey: "payroll" },
+      { name: "Overtime", accountKey: "payroll" },
+      { name: "Employee Bonuses", accountKey: "payroll" },
+      { name: "Employee Allowances", accountKey: "payroll" },
+      { name: "Staff Benefits", accountKey: "payroll" },
+      { name: "Employer Contributions", accountKey: "payroll" },
+      { name: "Recruitment & Hiring", accountKey: "contractor" },
+      { name: "Employee Training", accountKey: "expense" },
+      { name: "Staff Welfare", accountKey: "expense" }
+    ]
+  },
+  "Office & Administration": {
+    code: "B",
+    subcategories: [
+      { name: "Office Rent", accountKey: "rent" },
+      { name: "Office Maintenance", accountKey: "office_maint" },
+      { name: "Office Supplies", accountKey: "office_supplies" },
+      { name: "Stationery", accountKey: "office_supplies" },
+      { name: "Printing & Photocopying", accountKey: "office_supplies" },
+      { name: "Cleaning & Janitorial", accountKey: "office_maint" },
+      { name: "Security Services", accountKey: "office_maint" },
+      { name: "Office Furniture", accountKey: "equipment" },
+      { name: "Office Equipment", accountKey: "equipment" },
+      { name: "Pantry / Refreshments", accountKey: "expense" },
+      { name: "Courier & Postage", accountKey: "courier_exp" }
+    ]
+  },
+  "Utilities": {
+    code: "C",
+    subcategories: [
+      { name: "Electricity", accountKey: "utilities" },
+      { name: "Gas", accountKey: "utilities" },
+      { name: "Water", accountKey: "utilities" },
+      { name: "Internet", accountKey: "utilities" },
+      { name: "Telephone", accountKey: "utilities" },
+      { name: "Mobile / Communication", accountKey: "utilities" },
+      { name: "Generator / Fuel", accountKey: "utilities" },
+      { name: "Utility Charges", accountKey: "utilities" }
+    ]
+  },
+  "Marketing & Advertising": {
+    code: "D",
+    subcategories: [
+      { name: "Digital Marketing", accountKey: "ad_spend" },
+      { name: "Social Media Advertising", accountKey: "ad_spend" },
+      { name: "Google Ads", accountKey: "ad_spend" },
+      { name: "Meta / Facebook Ads", accountKey: "ad_spend" },
+      { name: "Outdoor Advertising", accountKey: "ad_spend" },
+      { name: "Printing & Branding", accountKey: "ad_spend" },
+      { name: "Promotional Materials", accountKey: "ad_spend" },
+      { name: "Events & Activations", accountKey: "ad_spend" },
+      { name: "Public Relations", accountKey: "ad_spend" },
+      { name: "Media Buying", accountKey: "ad_spend" },
+      { name: "Content Production", accountKey: "direct_vendor" },
+      { name: "Photography / Videography", accountKey: "direct_vendor" }
+    ]
+  },
+  "Transportation & Travel": {
+    code: "E",
+    subcategories: [
+      { name: "Fuel", accountKey: "travel_exp" },
+      { name: "Vehicle Maintenance", accountKey: "travel_exp" },
+      { name: "Vehicle Repairs", accountKey: "travel_exp" },
+      { name: "Vehicle Insurance", accountKey: "insurance_exp" },
+      { name: "Vehicle Registration", accountKey: "gov_tax_exp" },
+      { name: "Parking", accountKey: "travel_exp" },
+      { name: "Toll Charges", accountKey: "travel_exp" },
+      { name: "Local Transportation", accountKey: "travel_exp" },
+      { name: "Taxi / Ride Hailing", accountKey: "travel_exp" },
+      { name: "Business Travel", accountKey: "travel_exp" },
+      { name: "Airfare", accountKey: "travel_exp" },
+      { name: "Hotel / Accommodation", accountKey: "travel_exp" },
+      { name: "Meals During Business Travel", accountKey: "travel_exp" }
+    ]
+  },
+  "Technology & Software": {
+    code: "F",
+    subcategories: [
+      { name: "Software Subscriptions", accountKey: "software" },
+      { name: "SaaS Subscriptions", accountKey: "software" },
+      { name: "Cloud Services", accountKey: "software" },
+      { name: "Web Hosting", accountKey: "software" },
+      { name: "Domain Registration", accountKey: "software" },
+      { name: "IT Support", accountKey: "contractor" },
+      { name: "Computer Repairs", accountKey: "office_maint" },
+      { name: "Computer Equipment", accountKey: "equipment" },
+      { name: "Cybersecurity", accountKey: "software" },
+      { name: "Data Backup", accountKey: "software" },
+      { name: "AI Tools / Services", accountKey: "software" }
+    ]
+  },
+  "Professional & Legal": {
+    code: "G",
+    subcategories: [
+      { name: "Accounting Fees", accountKey: "prof_fees" },
+      { name: "Audit Fees", accountKey: "prof_fees" },
+      { name: "Legal Fees", accountKey: "prof_fees" },
+      { name: "Consultancy Fees", accountKey: "prof_fees" },
+      { name: "Tax Consultancy", accountKey: "prof_fees" },
+      { name: "Professional Memberships", accountKey: "expense" },
+      { name: "Business Advisory", accountKey: "prof_fees" },
+      { name: "Outsourcing / Professional Services", accountKey: "contractor" }
+    ]
+  },
+  "Insurance": {
+    code: "H",
+    subcategories: [
+      { name: "General Insurance", accountKey: "insurance_exp" },
+      { name: "Property Insurance", accountKey: "insurance_exp" },
+      { name: "Vehicle Insurance", accountKey: "insurance_exp" },
+      { name: "Employee Insurance", accountKey: "insurance_exp" },
+      { name: "Professional Liability Insurance", accountKey: "insurance_exp" },
+      { name: "Other Insurance", accountKey: "insurance_exp" }
+    ]
+  },
+  "Government, Taxes & Licenses": {
+    code: "I",
+    subcategories: [
+      { name: "Business Registration Fees", accountKey: "gov_tax_exp" },
+      { name: "Trade License", accountKey: "gov_tax_exp" },
+      { name: "Government Fees", accountKey: "gov_tax_exp" },
+      { name: "Professional Tax", accountKey: "gov_tax_exp" },
+      { name: "Property Tax", accountKey: "gov_tax_exp" },
+      { name: "Withholding Tax Expense", accountKey: "gov_tax_exp" },
+      { name: "Regulatory Fees", accountKey: "gov_tax_exp" },
+      { name: "Permit Fees", accountKey: "gov_tax_exp" }
+    ]
+  },
+  "Banking & Financial Charges": {
+    code: "J",
+    subcategories: [
+      { name: "Bank Charges", accountKey: "bank_charges" },
+      { name: "Transaction Fees", accountKey: "bank_charges" },
+      { name: "Payment Gateway Fees", accountKey: "bank_charges" },
+      { name: "Merchant Fees", accountKey: "bank_charges" },
+      { name: "Credit Card Charges", accountKey: "bank_charges" },
+      { name: "Foreign Exchange Charges", accountKey: "bank_charges" },
+      { name: "Loan Processing Fees", accountKey: "bank_charges" }
+    ]
+  },
+  "Repairs & Maintenance": {
+    code: "K",
+    subcategories: [
+      { name: "Building Repairs", accountKey: "office_maint" },
+      { name: "Office Equipment Repairs", accountKey: "office_maint" },
+      { name: "Computer Repairs", accountKey: "office_maint" },
+      { name: "Furniture Repairs", accountKey: "office_maint" },
+      { name: "Vehicle Repairs", accountKey: "travel_exp" },
+      { name: "Electrical Repairs", accountKey: "office_maint" },
+      { name: "Plumbing Repairs", accountKey: "office_maint" },
+      { name: "AC / HVAC Maintenance", accountKey: "office_maint" }
+    ]
+  },
+  "Depreciation & Amortization": {
+    code: "L",
+    subcategories: [
+      { name: "Depreciation – Building", accountKey: "depr_exp" },
+      { name: "Depreciation – Furniture", accountKey: "depr_exp" },
+      { name: "Depreciation – Vehicles", accountKey: "depr_exp" },
+      { name: "Depreciation – Computer Equipment", accountKey: "depr_exp" },
+      { name: "Depreciation – Office Equipment", accountKey: "depr_exp" },
+      { name: "Amortization – Software", accountKey: "depr_exp" },
+      { name: "Amortization – Intangible Assets", accountKey: "depr_exp" }
+    ]
+  },
+  "Rent & Leasing": {
+    code: "M",
+    subcategories: [
+      { name: "Office Rent", accountKey: "rent" },
+      { name: "Equipment Rental", accountKey: "rent" },
+      { name: "Vehicle Rental", accountKey: "rent" },
+      { name: "Warehouse Rent", accountKey: "rent" },
+      { name: "Advertising Space Rental", accountKey: "rent" },
+      { name: "Short-Term Lease Expense", accountKey: "rent" }
+    ]
+  },
+  "Sales & Business Development": {
+    code: "N",
+    subcategories: [
+      { name: "Sales Commission", accountKey: "sales_exp" },
+      { name: "Business Development Expenses", accountKey: "sales_exp" },
+      { name: "Client Entertainment", accountKey: "sales_exp" },
+      { name: "Client Meetings", accountKey: "sales_exp" },
+      { name: "Gifts & Corporate Gifts", accountKey: "sales_exp" },
+      { name: "Proposal / Tender Expenses", accountKey: "sales_exp" }
+    ]
+  },
+  "Production & Project Expenses": {
+    code: "O",
+    subcategories: [
+      { name: "Production Materials", accountKey: "direct_vendor" },
+      { name: "Raw Materials", accountKey: "direct_vendor" },
+      { name: "Printing Production", accountKey: "direct_vendor" },
+      { name: "Installation Charges", accountKey: "direct_vendor" },
+      { name: "Freelancers", accountKey: "contractor" },
+      { name: "Production Crew", accountKey: "direct_vendor" },
+      { name: "Equipment Rental", accountKey: "direct_vendor" },
+      { name: "Location Rental", accountKey: "direct_vendor" },
+      { name: "Set / Props", accountKey: "direct_vendor" },
+      { name: "Logistics", accountKey: "direct_vendor" },
+      { name: "Project-specific Expenses", accountKey: "direct_vendor" }
+    ]
+  },
+  "General & Miscellaneous": {
+    code: "P",
+    subcategories: [
+      { name: "Donations / Charity", accountKey: "expense" },
+      { name: "Membership Fees", accountKey: "expense" },
+      { name: "Subscriptions", accountKey: "expense" },
+      { name: "Fines & Penalties", accountKey: "expense" },
+      { name: "Bad Debts", accountKey: "expense" },
+      { name: "Miscellaneous Expense", accountKey: "expense" },
+      { name: "Other Operating Expense", accountKey: "expense" }
+    ]
+  }
+};
+
+const EXPENSE_CATEGORIES = Object.keys(EXPENSE_CLASSIFICATION);
+
+function getGLAccountKeyForSubcategory(catName, subName) {
+  if (!catName) return "expense";
+  const catObj = EXPENSE_CLASSIFICATION[catName];
+  if (!catObj) {
+    if (catName === "Ad Spend") return "ad_spend";
+    if (catName === "Software") return "software";
+    if (catName === "Rent") return "rent";
+    if (catName === "Contractor") return "contractor";
+    if (catName === "Utilities") return "utilities";
+    if (catName === "Payroll") return "payroll";
+    if (catName === "Production Vendor") return "direct_vendor";
+    return "expense";
+  }
+  const subObj = catObj.subcategories.find(s => s.name === subName);
+  return subObj ? subObj.accountKey : (catObj.subcategories[0]?.accountKey || "expense");
+}
+
 
 /* ---------- HR & Payroll ---------- */
 const HR_DEPARTMENTS = ["Creative", "Digital Marketing", "OOH Operations", "Client Servicing", "Production", "Accounts & Finance", "HR & Admin"];
@@ -701,6 +951,11 @@ export default function App() {
   const [showExpenseForm, setShowExpenseForm] = useState(false);
   const [editingExpense, setEditingExpense] = useState(null);
   const [payingExpenseId, setPayingExpenseId] = useState(null);
+  const [expenseCategoryFilter, setExpenseCategoryFilter] = useState("all");
+  const [expenseStatusFilter, setExpenseStatusFilter] = useState("all");
+  const [expenseSearchQuery, setExpenseSearchQuery] = useState("");
+  const [showCategoryManager, setShowCategoryManager] = useState(false);
+
 
   const [showPOForm, setShowPOForm] = useState(false);
   const [editingPO, setEditingPO] = useState(null);
@@ -1429,15 +1684,31 @@ export default function App() {
     alert(`Successfully posted remittance of ${pkr(srbPayableBalance)} to SRB.`);
   }
 
-  function addExpense({ projectId, vendor, category, amount, date, status, paidVia }) {
-    const exp = { id: uid(), projectId: projectId || null, vendor, category, amount, date, status, paidVia };
+  function addExpense({ projectId, vendor, category, subcategory, accountKey, description, refNo, amount, date, status, paidVia }) {
+    const glAccKey = accountKey || getGLAccountKeyForSubcategory(category, subcategory) || "expense";
+    const exp = {
+      id: uid(),
+      projectId: projectId || null,
+      vendor,
+      category,
+      subcategory: subcategory || category,
+      accountKey: glAccKey,
+      description: description || "",
+      refNo: refNo || "",
+      amount: Number(amount) || 0,
+      date: date || TODAY.toISOString().slice(0, 10),
+      status: status || "paid",
+      paidVia: status === "paid" ? (paidVia || "Bank") : null
+    };
     setExpenses(list => [exp, ...list]);
-    postEntry(date, `${vendor} (${category})`, [
-      { account: "expense", debit: amount, credit: 0, memo: category },
-      { account: status === "paid" ? (paidVia === "Cash" ? "cash" : "bank") : "ap", debit: 0, credit: amount },
+    const memoText = subcategory ? `${category} → ${subcategory}` : category;
+    postEntry(date, `${vendor} (${memoText}${description ? " - " + description : ""})`, [
+      { account: glAccKey, debit: Number(amount), credit: 0, memo: memoText },
+      { account: status === "paid" ? (paidVia === "Cash" ? "cash" : "bank") : "ap", debit: 0, credit: Number(amount) },
     ], "EXP-" + exp.id.toUpperCase());
     setShowExpenseForm(false);
   }
+
 
 
   function payExpense(expenseId, paymentVia, paymentDate) {
@@ -1517,8 +1788,9 @@ export default function App() {
     const voucherNo = makeVoucherNo(type);
     let journalLines = lines;
     if (type === "PV") {
+      const glKey = getGLAccountKeyForSubcategory(category, category) || "expense";
       journalLines = [
-        { account: "expense", debit: amount, credit: 0, memo: category },
+        { account: glKey, debit: amount, credit: 0, memo: category },
         { account: via === "Cash" ? "cash" : "bank", debit: 0, credit: amount },
       ];
     } else if (type === "RV") {
@@ -2413,55 +2685,183 @@ export default function App() {
 
           {tab === "expenses" && (
             <>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-                <div className="section-title" style={{ margin: 0 }}>Operating Expenses</div>
-                <button className="btn btn-primary" onClick={() => setShowExpenseForm(true)}><Plus size={14} /> New Expense</button>
-              </div>
+              {(() => {
+                const filteredExps = expenses.filter(exp => {
+                  const matchCat = expenseCategoryFilter === "all" || exp.category === expenseCategoryFilter;
+                  const matchStatus = expenseStatusFilter === "all" || exp.status === expenseStatusFilter;
+                  const q = expenseSearchQuery.toLowerCase().trim();
+                  const matchQuery = !q || (
+                    (exp.vendor && exp.vendor.toLowerCase().includes(q)) ||
+                    (exp.category && exp.category.toLowerCase().includes(q)) ||
+                    (exp.subcategory && exp.subcategory.toLowerCase().includes(q)) ||
+                    (exp.description && exp.description.toLowerCase().includes(q)) ||
+                    (exp.refNo && exp.refNo.toLowerCase().includes(q))
+                  );
+                  return matchCat && matchStatus && matchQuery;
+                });
 
-              <div className="card">
-                <div className="table-responsive">
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Vendor / Payee</th><th>Category</th><th>Associated Project</th><th>Date</th><th>Status</th>
-                        <th style={{ textAlign: "right" }}>Amount</th><th>Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {expenses.map(exp => (
-                        <tr key={exp.id}>
-                          <td style={{ fontWeight: 600 }}>{exp.vendor}</td>
-                          <td><span className="badge-mini">{exp.category}</span></td>
-                          <td>{exp.projectId ? (projects.find(p => p.id === exp.projectId)?.name || "—") : <span style={{ color: "var(--ink-muted)" }}>—</span>}</td>
-                          <td className="mono">{fmtDate(exp.date)}</td>
-                          <td>
-                            {exp.status === "unpaid" ? (
-                              <span style={{ color: "#D97706", fontWeight: 700, fontSize: 13 }}>UNPAID (AP)</span>
-                            ) : (
-                              <span style={{ color: "#059669", fontWeight: 700, fontSize: 13 }}>PAID {exp.paidVia ? `via ${exp.paidVia}` : ""}</span>
+                const totalExpAmount = expenses.reduce((s, e) => s + (e.amount || 0), 0);
+                const paidExpAmount = expenses.filter(e => e.status !== "unpaid").reduce((s, e) => s + (e.amount || 0), 0);
+                const apExpAmount = expenses.filter(e => e.status === "unpaid").reduce((s, e) => s + (e.amount || 0), 0);
+
+                return (
+                  <>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, flexWrap: "wrap", gap: 10 }}>
+                      <div>
+                        <div className="section-title" style={{ margin: 0 }}>Operating Expenses & Classification</div>
+                        <div style={{ fontSize: 13, color: "var(--ink-muted)", marginTop: 2 }}>Hierarchical Category → Subcategory → Chart of Accounts (GL) Mapping</div>
+                      </div>
+                      <div style={{ display: "flex", gap: 10 }}>
+                        <button className="btn" style={{ background: "var(--card-bg)", border: "1px solid var(--rule)" }} onClick={() => setShowCategoryManager(true)}>
+                          <BookOpenText size={14} style={{ marginRight: 4 }} /> Category & GL Catalog (16 Categories)
+                        </button>
+                        <button className="btn btn-primary" onClick={() => setShowExpenseForm(true)}>
+                          <Plus size={14} /> Record Operating Expense
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Stats Grid */}
+                    <div className="stats-grid" style={{ marginBottom: 20 }}>
+                      <div className="stat-card">
+                        <div className="stat-title">Total Operating Expenses</div>
+                        <div className="stat-value mono" style={{ color: "var(--rose)" }}>{pkr(totalExpAmount)}</div>
+                      </div>
+                      <div className="stat-card">
+                        <div className="stat-title">Disbursed (Paid Out)</div>
+                        <div className="stat-value mono" style={{ color: "#059669" }}>{pkr(paidExpAmount)}</div>
+                      </div>
+                      <div className="stat-card">
+                        <div className="stat-title">Accounts Payable (Unpaid AP)</div>
+                        <div className="stat-value mono" style={{ color: "#D97706" }}>{pkr(apExpAmount)}</div>
+                      </div>
+                      <div className="stat-card">
+                        <div className="stat-title">Configured Expense Categories</div>
+                        <div className="stat-value">16 <span style={{ fontSize: 13, color: "var(--ink-muted)", fontWeight: 500 }}>A to P Standard</span></div>
+                      </div>
+                    </div>
+
+                    {/* Filter & Search Toolbar */}
+                    <div className="card" style={{ padding: "12px 16px", marginBottom: 16, display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
+                      <div className="field" style={{ margin: 0, flex: 1.5, minWidth: 200 }}>
+                        <label>Search Vendor / Description / Subcategory</label>
+                        <input
+                          value={expenseSearchQuery}
+                          onChange={e => setExpenseSearchQuery(e.target.value)}
+                          placeholder="Type keyword e.g. Meta, K-Electric, Rent, Fuel..."
+                        />
+                      </div>
+                      <div className="field" style={{ margin: 0, flex: 1, minWidth: 180 }}>
+                        <label>Filter Category</label>
+                        <select value={expenseCategoryFilter} onChange={e => setExpenseCategoryFilter(e.target.value)}>
+                          <option value="all">All 16 Categories</option>
+                          {EXPENSE_CATEGORIES.map(c => (
+                            <option key={c} value={c}>{c}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="field" style={{ margin: 0, flex: 1, minWidth: 140 }}>
+                        <label>Payment Status</label>
+                        <select value={expenseStatusFilter} onChange={e => setExpenseStatusFilter(e.target.value)}>
+                          <option value="all">All Statuses</option>
+                          <option value="paid">Paid Only</option>
+                          <option value="unpaid">Unpaid (AP) Only</option>
+                        </select>
+                      </div>
+                      {(expenseCategoryFilter !== "all" || expenseStatusFilter !== "all" || expenseSearchQuery) && (
+                        <button
+                          className="btn"
+                          style={{ marginTop: 22, height: 38 }}
+                          onClick={() => {
+                            setExpenseCategoryFilter("all");
+                            setExpenseStatusFilter("all");
+                            setExpenseSearchQuery("");
+                          }}
+                        >
+                          Clear Filters
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Expenses Table */}
+                    <div className="card">
+                      <div className="table-responsive">
+                        <table>
+                          <thead>
+                            <tr>
+                              <th>Vendor / Payee</th>
+                              <th>Category & Subcategory</th>
+                              <th>Mapped GL Account</th>
+                              <th>Associated Project</th>
+                              <th>Date</th>
+                              <th>Status</th>
+                              <th style={{ textAlign: "right" }}>Amount</th>
+                              <th>Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {filteredExps.map(exp => {
+                              const glKey = exp.accountKey || getGLAccountKeyForSubcategory(exp.category, exp.subcategory);
+                              const glObj = ACCOUNTS[glKey] || ACCOUNTS.expense;
+                              return (
+                                <tr key={exp.id}>
+                                  <td style={{ fontWeight: 600 }}>
+                                    {exp.vendor}
+                                    {exp.refNo && <div style={{ fontSize: 11, color: "var(--ink-muted)", fontFamily: "monospace" }}>Ref: {exp.refNo}</div>}
+                                  </td>
+                                  <td>
+                                    <div style={{ fontWeight: 600, color: "var(--ink)" }}>{exp.category}</div>
+                                    <div style={{ fontSize: 12, color: "var(--brand-teal)", fontWeight: 500 }}>
+                                      {exp.subcategory || exp.category}
+                                    </div>
+                                  </td>
+                                  <td>
+                                    <span className="badge-mini" style={{ background: "#E0F2FE", color: "#0369A1", fontWeight: 600 }}>
+                                      GL {glObj.code} — {glObj.name}
+                                    </span>
+                                  </td>
+                                  <td>{exp.projectId ? (projects.find(p => p.id === exp.projectId)?.name || "—") : <span style={{ color: "var(--ink-muted)" }}>—</span>}</td>
+                                  <td className="mono">{fmtDate(exp.date)}</td>
+                                  <td>
+                                    {exp.status === "unpaid" ? (
+                                      <span style={{ color: "#D97706", fontWeight: 700, fontSize: 13 }}>UNPAID (AP)</span>
+                                    ) : (
+                                      <span style={{ color: "#059669", fontWeight: 700, fontSize: 13 }}>PAID {exp.paidVia ? `via ${exp.paidVia}` : ""}</span>
+                                    )}
+                                  </td>
+                                  <td className="mono" style={{ textAlign: "right", color: "var(--rose)", fontWeight: 600 }}>{pkr(exp.amount)}</td>
+                                  <td>
+                                    <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                                      {exp.status === "unpaid" && (
+                                        <button className="btn btn-primary" style={{ padding: "4px 8px", fontSize: 12 }} onClick={() => setPayingExpenseId(exp.id)}>
+                                          <Landmark size={13} style={{ marginRight: 4 }} /> Pay
+                                        </button>
+                                      )}
+                                      <button className="btn" style={{ padding: "4px 6px", fontSize: 12 }} onClick={() => setEditingExpense(exp)}>
+                                        <Edit size={13} />
+                                      </button>
+                                    </div>
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                            {filteredExps.length === 0 && (
+                              <tr>
+                                <td colSpan={8} style={{ textAlign: "center", color: "var(--ink-muted)", padding: 24 }}>
+                                  No operating expenses found matching the selected criteria.
+                                </td>
+                              </tr>
                             )}
-                          </td>
-                          <td className="mono" style={{ textAlign: "right", color: "var(--rose)", fontWeight: 600 }}>{pkr(exp.amount)}</td>
-                          <td>
-                            <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-                              {exp.status === "unpaid" && (
-                                <button className="btn btn-primary" style={{ padding: "4px 8px", fontSize: 12 }} onClick={() => setPayingExpenseId(exp.id)}>
-                                  <Landmark size={13} style={{ marginRight: 4 }} /> Pay
-                                </button>
-                              )}
-                              <button className="btn" style={{ padding: "4px 6px", fontSize: 12 }} onClick={() => setEditingExpense(exp)}>
-                                <Edit size={13} />
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </>
+                );
+              })()}
             </>
           )}
+
 
           {tab === "purchase-orders" && (
             <>
@@ -4085,6 +4485,8 @@ export default function App() {
 
       {showExpenseForm && <ExpenseModal projects={projects} onClose={() => setShowExpenseForm(false)} onSubmit={addExpense} />}
       {editingExpense && <ExpenseModal initialData={editingExpense} projects={projects} onClose={() => setEditingExpense(null)} onSubmit={updateExpense} />}
+      {showCategoryManager && <ExpenseCategoryManagerModal onClose={() => setShowCategoryManager(false)} />}
+
 
       {payingExpenseId && <PayExpenseModal expense={expenses.find(e => e.id === payingExpenseId)} onClose={() => setPayingExpenseId(null)} onSubmit={(id, via, date) => { payExpense(id, via, date); setPayingExpenseId(null); }} />}
 
@@ -4783,14 +5185,117 @@ function InvoiceModal({ initialData, projects = [], onClose, onSubmit }) {
 function ExpenseModal({ initialData, projects = [], onClose, onSubmit }) {
   const [projectId, setProjectId] = useState(initialData?.projectId || "");
   const [vendor, setVendor] = useState(initialData?.vendor || "");
-  const [category, setCategory] = useState(initialData?.category || EXPENSE_CATEGORIES[0]);
+  const [category, setCategory] = useState(initialData?.category || "Office & Administration");
+  const [subcategory, setSubcategory] = useState(
+    initialData?.subcategory || EXPENSE_CLASSIFICATION[initialData?.category || "Office & Administration"]?.subcategories[0]?.name || "Office Rent"
+  );
+  const [searchQuery, setSearchQuery] = useState("");
+  const [description, setDescription] = useState(initialData?.description || "");
+  const [refNo, setRefNo] = useState(initialData?.refNo || "");
   const [amount, setAmount] = useState(initialData?.amount || "");
   const [date, setDate] = useState(initialData?.date || "2026-07-21");
   const [status, setStatus] = useState(initialData?.status || "paid");
   const [paidVia, setPaidVia] = useState(initialData?.paidVia || "Bank");
-  const valid = vendor && Number(amount) > 0;
+
+  // Filtered subcategories based on category
+  const currentCategoryObj = EXPENSE_CLASSIFICATION[category] || EXPENSE_CLASSIFICATION["Office & Administration"];
+  const currentSubcategories = currentCategoryObj.subcategories || [];
+
+  // Mapped GL Account
+  const glKey = getGLAccountKeyForSubcategory(category, subcategory);
+  const glAccountObj = ACCOUNTS[glKey] || ACCOUNTS.expense;
+
+  // Search matches across all subcategories
+  const searchResults = useMemo(() => {
+    if (!searchQuery.trim()) return [];
+    const q = searchQuery.toLowerCase();
+    const matches = [];
+    Object.entries(EXPENSE_CLASSIFICATION).forEach(([catName, catData]) => {
+      catData.subcategories.forEach(sub => {
+        if (sub.name.toLowerCase().includes(q) || catName.toLowerCase().includes(q)) {
+          matches.push({ category: catName, subcategory: sub.name, accountKey: sub.accountKey });
+        }
+      });
+    });
+    return matches.slice(0, 8);
+  }, [searchQuery]);
+
+  const handleCategoryChange = (newCat) => {
+    setCategory(newCat);
+    const subList = EXPENSE_CLASSIFICATION[newCat]?.subcategories || [];
+    if (subList.length > 0) {
+      setSubcategory(subList[0].name);
+    }
+  };
+
+  const handleSelectSearchResult = (item) => {
+    setCategory(item.category);
+    setSubcategory(item.subcategory);
+    setSearchQuery("");
+  };
+
+  const valid = vendor && Number(amount) > 0 && category && subcategory;
+
   return (
     <ModalShell title={initialData ? "Edit Operating Expense" : "Record Operating Expense"} onClose={onClose}>
+      {/* Quick Search Bar */}
+      <div className="field" style={{ marginBottom: 12 }}>
+        <label style={{ color: "var(--brand)", fontWeight: 600 }}>🔍 Quick Search Expense Type (Optional)</label>
+        <input
+          value={searchQuery}
+          onChange={e => setSearchQuery(e.target.value)}
+          placeholder="Type e.g. 'electric', 'facebook', 'rent', 'fuel'..."
+        />
+        {searchResults.length > 0 && (
+          <div style={{ background: "var(--card-bg)", border: "1px solid var(--rule)", borderRadius: 6, marginTop: 4, maxHeight: 160, overflowY: "auto", boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}>
+            {searchResults.map((res, idx) => (
+              <div
+                key={idx}
+                onClick={() => handleSelectSearchResult(res)}
+                style={{ padding: "8px 12px", cursor: "pointer", borderBottom: "1px solid var(--rule-subtle)", fontSize: 12.5 }}
+                onMouseDown={e => e.preventDefault()}
+              >
+                <span style={{ fontWeight: 600, color: "var(--ink)" }}>{res.category}</span>
+                <span style={{ color: "var(--ink-muted)", margin: "0 6px" }}>→</span>
+                <span style={{ color: "var(--brand-teal)", fontWeight: 600 }}>{res.subcategory}</span>
+                <span style={{ float: "right", color: "var(--ink-muted)", fontSize: 11 }}>[{ACCOUNTS[res.accountKey]?.code || "5260"}]</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+        {/* Category */}
+        <div className="field">
+          <label>Expense Category *</label>
+          <select value={category} onChange={e => handleCategoryChange(e.target.value)}>
+            {EXPENSE_CATEGORIES.map(c => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* Subcategory */}
+        <div className="field">
+          <label>Expense Subcategory *</label>
+          <select value={subcategory} onChange={e => setSubcategory(e.target.value)}>
+            {currentSubcategories.map(s => (
+              <option key={s.name} value={s.name}>{s.name}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {/* Mapped Expense GL Account Display */}
+      <div style={{ background: "rgba(2, 132, 199, 0.08)", border: "1px solid rgba(2, 132, 199, 0.2)", padding: "8px 12px", borderRadius: 6, marginBottom: 12, display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 12.5 }}>
+        <div>
+          <span style={{ color: "var(--ink-muted)" }}>Mapped GL Account: </span>
+          <strong style={{ color: "#0284C7" }}>{glAccountObj.code} — {glAccountObj.name}</strong>
+        </div>
+        <span className="badge-mini" style={{ background: "#E0F2FE", color: "#0369A1" }}>AUTOMATIC</span>
+      </div>
+
       {projects.length > 0 && (
         <div className="field">
           <label>Link to Project Cost Center (Optional)</label>
@@ -4802,16 +5307,31 @@ function ExpenseModal({ initialData, projects = [], onClose, onSubmit }) {
           </select>
         </div>
       )}
-      <div className="field"><label>Vendor / Payee</label><input value={vendor} onChange={e => setVendor(e.target.value)} placeholder="e.g. Meta Ads / Studio Rental" /></div>
-      <div className="field"><label>Category</label>
-        <select value={category} onChange={e => setCategory(e.target.value)}>
-          {EXPENSE_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-        </select>
+
+      <div className="field">
+        <label>Vendor / Payee Name *</label>
+        <input value={vendor} onChange={e => setVendor(e.target.value)} placeholder="e.g. K-Electric / Meta Ads / Studio Vendor" />
       </div>
-      <div className="field"><label>Amount (PKR)</label><input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="0" /></div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: 10 }}>
+        <div className="field">
+          <label>Amount (PKR) *</label>
+          <input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="0" />
+        </div>
+        <div className="field">
+          <label>Ref / Invoice No.</label>
+          <input value={refNo} onChange={e => setRefNo(e.target.value)} placeholder="e.g. INV-9902" />
+        </div>
+      </div>
+
+      <div className="field">
+        <label>Description / Particulars</label>
+        <input value={description} onChange={e => setDescription(e.target.value)} placeholder="Additional notes or payment reason" />
+      </div>
+
       <div style={{ display: "flex", gap: 10 }}>
-        <div className="field" style={{ flex: 1 }}><label>Date</label><input type="date" value={date} onChange={e => setDate(e.target.value)} /></div>
-        <div className="field" style={{ flex: 1 }}><label>Status</label>
+        <div className="field" style={{ flex: 1 }}><label>Expense Date</label><input type="date" value={date} onChange={e => setDate(e.target.value)} /></div>
+        <div className="field" style={{ flex: 1 }}><label>Payment Status</label>
           <select value={status} onChange={e => {
             setStatus(e.target.value);
             if (e.target.value === "unpaid") setPaidVia(null);
@@ -4829,13 +5349,83 @@ function ExpenseModal({ initialData, projects = [], onClose, onSubmit }) {
           </div>
         )}
       </div>
-      <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 6 }} disabled={!valid}
-        onClick={() => valid && onSubmit(initialData ? { ...initialData, projectId, vendor, category, amount: Number(amount), date, status, paidVia: status === "paid" ? paidVia : null } : { projectId, vendor, category, amount: Number(amount), date, status, paidVia: status === "paid" ? paidVia : null })}>
+
+      <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 8 }} disabled={!valid}
+        onClick={() => {
+          if (!valid) return;
+          const expData = {
+            projectId, vendor, category, subcategory, accountKey: glKey,
+            description, refNo, amount: Number(amount), date, status, paidVia: status === "paid" ? paidVia : null
+          };
+          onSubmit(initialData ? { ...initialData, ...expData } : expData);
+        }}>
         {initialData ? "Save Expense Changes" : "Post Expense Entry"}
       </button>
     </ModalShell>
   );
 }
+
+function ExpenseCategoryManagerModal({ onClose }) {
+  const [activeCategory, setActiveCategory] = useState(EXPENSE_CATEGORIES[0]);
+  const currentCat = EXPENSE_CLASSIFICATION[activeCategory];
+  return (
+    <ModalShell title="Expense Classification & Chart of Accounts Catalog" onClose={onClose}>
+      <div style={{ fontSize: 13, color: "var(--ink-muted)", marginBottom: 16 }}>
+        Explore all 16 major expense categories, subcategories, and their mapped General Ledger (GL) accounts.
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "1.2fr 2fr", gap: 16, maxHeight: "60vh", overflowY: "auto" }}>
+        <div style={{ borderRight: "1px solid var(--rule)", paddingRight: 12 }}>
+          <div style={{ fontWeight: 700, fontSize: 12, textTransform: "uppercase", color: "var(--brand)", marginBottom: 8 }}>16 Expense Categories</div>
+          {EXPENSE_CATEGORIES.map(c => (
+            <div
+              key={c}
+              onClick={() => setActiveCategory(c)}
+              style={{
+                padding: "8px 10px",
+                borderRadius: 6,
+                cursor: "pointer",
+                marginBottom: 4,
+                fontWeight: activeCategory === c ? 700 : 500,
+                background: activeCategory === c ? "rgba(2, 132, 199, 0.12)" : "transparent",
+                color: activeCategory === c ? "#0284C7" : "var(--ink)",
+                fontSize: 13
+              }}
+            >
+              [{EXPENSE_CLASSIFICATION[c]?.code}] {c}
+            </div>
+          ))}
+        </div>
+
+        <div>
+          <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 8, color: "var(--brand)" }}>
+            Category [{currentCat?.code}]: {activeCategory}
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {currentCat?.subcategories.map((sub, idx) => {
+              const glKey = sub.accountKey;
+              const glObj = ACCOUNTS[glKey] || ACCOUNTS.expense;
+              return (
+                <div key={idx} style={{ background: "var(--card-bg-subtle)", border: "1px solid var(--rule)", padding: "10px 14px", borderRadius: 6, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <div>
+                    <div style={{ fontWeight: 600, fontSize: 13.5, color: "var(--ink)" }}>{sub.name}</div>
+                    <div style={{ fontSize: 11.5, color: "var(--ink-muted)", marginTop: 2 }}>Subcategory item</div>
+                  </div>
+                  <div style={{ textAlign: "right" }}>
+                    <span className="badge-mini" style={{ background: "#E0F2FE", color: "#0369A1", fontWeight: 700 }}>
+                      GL {glObj.code} — {glObj.name}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </ModalShell>
+  );
+}
+
+
 
 
 function PayExpenseModal({ expense, onClose, onSubmit }) {
