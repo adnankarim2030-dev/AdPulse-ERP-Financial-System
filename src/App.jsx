@@ -4197,7 +4197,7 @@ export default function App() {
               </div>
 
               <div style={{ position: "relative", minWidth: 200 }}>
-                <Search size={14} style={{ position: "absolute", left: 10, top: 10, color: "var(--ink-muted)" }} />
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ position: "absolute", left: 10, top: 10, color: "var(--ink-muted)" }}><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
                 <input
                   value={docSearchQuery}
                   onChange={e => setDocSearchQuery(e.target.value)}
