@@ -3081,9 +3081,9 @@ export default function App() {
                   </div>
 
                   {/* SECTION 22: CEO QUICK ACTIONS BAR */}
-                  <div className="card" style={{ padding: "12px 18px", marginBottom: 20, background: "var(--card-bg)", display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
-                    <div style={{ fontSize: 12, fontWeight: 750, color: "var(--ink-muted)", textTransform: "uppercase", letterSpacing: 0.5, marginRight: 6 }}>
-                      ⚡ Executive Quick Drill-Downs:
+                  <div className="card" style={{ padding: "14px 20px", marginBottom: 20, background: "var(--card-bg)", display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center", border: "1px solid var(--rule)" }}>
+                    <div style={{ fontSize: 12, fontWeight: 800, color: "var(--ink)", textTransform: "uppercase", letterSpacing: 0.5, marginRight: 6, display: "flex", alignItems: "center", gap: 4 }}>
+                      <span style={{ color: "#D97706" }}>⚡</span> Executive Quick Drill-Downs:
                     </div>
                     {[
                       { label: "View Projects", tabKey: "projects", icon: Briefcase },
@@ -3098,10 +3098,21 @@ export default function App() {
                       <button
                         key={btn.tabKey}
                         className="btn"
-                        style={{ padding: "6px 12px", fontSize: 12, background: "var(--bg)", border: "1px solid var(--rule)" }}
+                        style={{
+                          padding: "7px 13px",
+                          fontSize: 12,
+                          fontWeight: 700,
+                          color: "var(--ink)",
+                          background: "var(--bg)",
+                          border: "1.5px solid var(--rule)",
+                          boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          borderRadius: 8
+                        }}
                         onClick={() => setTab(btn.tabKey)}
                       >
-                        <btn.icon size={13} style={{ marginRight: 5, color: "var(--brand-teal)" }} /> {btn.label}
+                        <btn.icon size={14} style={{ marginRight: 6, color: "var(--brand-teal)" }} /> {btn.label}
                       </button>
                     ))}
                   </div>
