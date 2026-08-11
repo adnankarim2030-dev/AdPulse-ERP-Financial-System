@@ -2979,7 +2979,15 @@ export default function App() {
                 const accountBalances = bankAccounts.map(b => {
                   let netMovement = 0;
                   if (b.id === "bank-cash" || b.accountType === "Petty Cash") {
-                    netMovement = journal.filter(j => j.account === "cash").reduce((s, j) => s + (j.debit - j.credit), 0);
+                    netMovement = journal.reduce((sum, entry) => {
+                      let eSum = 0;
+                      entry.lines.forEach(l => {
+                        if (l.account === "cash" && (l.bankAccountId === b.id || (!l.bankAccountId && b.id === "bank-cash"))) {
+                          eSum += (l.debit - l.credit);
+                        }
+                      });
+                      return sum + eSum;
+                    }, 0);
                   } else {
                     netMovement = journal.reduce((sum, entry) => {
                       let eSum = 0;
@@ -2993,6 +3001,7 @@ export default function App() {
                   }
                   return { ...b, liveBalance: (b.openingBalance || 0) + netMovement };
                 });
+
 
                 const totalLiquidity = accountBalances.reduce((s, b) => s + b.liveBalance, 0);
 
