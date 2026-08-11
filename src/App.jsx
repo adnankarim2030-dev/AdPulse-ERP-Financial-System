@@ -976,6 +976,8 @@ export default function App() {
   const [docStatusFilter, setDocStatusFilter] = useState("all");
   const [docSearchQuery, setDocSearchQuery] = useState("");
   const [reviewingDocId, setReviewingDocId] = useState(null);
+  const [compareDocData, setCompareDocData] = useState(null);
+
 
 
   /* General Ledger & COA UI States */
@@ -2280,12 +2282,204 @@ export default function App() {
     setPayrollConfirm(false);
   }
 
+  function normalizeDocNumber(docNo) {
+    if (!docNo) return "";
+    return String(docNo).toUpperCase().replace(/[^A-Z0-9]/g, "");
+  }
+
+  function normalizeVendorName(name) {
+    if (!name) return "";
+    return String(name)
+      .toUpperCase()
+      .replace(/(PVT|LTD|PRIVATE|LIMITED|INC|LLC|CORPORATION|CO|AND|&)/g, "")
+      .replace(/[^A-Z0-9]/g, "");
+  }
+
+  function generateFileHash(fileDataUrl) {
+    if (!fileDataUrl || fileDataUrl.length === 0) return "sha256_empty";
+    let hash = 0;
+    for (let i = 0; i < Math.min(fileDataUrl.length, 50000); i++) {
+      const char = fileDataUrl.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash |= 0;
+    }
+    return "sha256_" + Math.abs(hash).toString(16) + "_" + fileDataUrl.length;
+  }
+
+  function evaluateDuplicateRisk(fileHash, extracted, currentDocId, docsList = documents, expsList = expenses, invsList = invoices, vchsList = vouchers) {
+    if (!extracted) return { riskScore: 0, level: "LOW RISK", statusText: "No Duplicate Found", match: null };
+
+    const normDocNo = normalizeDocNumber(extracted.documentNumber);
+    const normVendor = normalizeVendorName(extracted.party);
+    const docType = extracted.documentType || "Invoice";
+    const totalAmt = Number(extracted.totalAmount) || Number(extracted.baseAmount) || 0;
+    const docDate = extracted.date;
+
+    // LAYER 1: Cryptographic SHA-256 Hash Match (Exact File Binary Duplicate)
+    if (fileHash && fileHash !== "sha256_empty") {
+      const hashMatch = docsList.find(d => d.id !== currentDocId && d.fileHash === fileHash);
+      if (hashMatch) {
+        return {
+          riskScore: 100,
+          level: "EXACT DUPLICATE",
+          statusText: "Exact File Binary Hash Match (SHA-256)",
+          reason: `This exact file binary (SHA-256 hash match) was already uploaded as ${hashMatch.fileName} on ${hashMatch.uploadedAt}.`,
+          match: {
+            type: "Document Record",
+            ref: hashMatch.extracted?.documentNumber || hashMatch.fileName,
+            vendor: hashMatch.extracted?.party || "Vendor",
+            amount: hashMatch.extracted?.totalAmount || 0,
+            date: hashMatch.uploadedAt,
+            postedBy: "System User",
+            status: hashMatch.status.toUpperCase(),
+            id: hashMatch.id
+          }
+        };
+      }
+    }
+
+    // Quotations do NOT trigger duplicate blocks for invoices
+    if (docType === "Quotation") {
+      return { riskScore: 5, level: "LOW RISK", statusText: "No Duplicate Found (Quotation Record)", match: null };
+    }
+
+    // LAYER 2: Exact Invoice Match (Same Vendor + Same Doc # + Same Amount)
+    for (const exp of expsList) {
+      const expNormVendor = normalizeVendorName(exp.vendor);
+      const expNormDocNo = normalizeDocNumber(exp.docNumber || exp.id);
+      if (expNormVendor && normVendor && expNormVendor === normVendor) {
+        if (normDocNo && (expNormDocNo.includes(normDocNo) || normDocNo.includes(expNormDocNo))) {
+          if (Math.abs(exp.amount - totalAmt) < 2) {
+            return {
+              riskScore: 98,
+              level: "HIGH RISK",
+              statusText: "Duplicate Invoice Detected",
+              reason: `Invoice #${extracted.documentNumber} from ${extracted.party} with amount ${pkr(totalAmt)} is already posted in Expenses.`,
+              match: {
+                type: "Operating Expense",
+                ref: exp.docNumber || exp.id,
+                vendor: exp.vendor,
+                amount: exp.amount,
+                date: exp.date,
+                postedBy: "Finance User",
+                status: exp.status.toUpperCase(),
+                id: exp.id
+              }
+            };
+          } else {
+            return {
+              riskScore: 78,
+              level: "MEDIUM RISK",
+              statusText: "Invoice # Match with Amount Conflict",
+              reason: `Invoice #${extracted.documentNumber} from ${extracted.party} already exists with a different amount (${pkr(exp.amount)} vs ${pkr(totalAmt)}).`,
+              match: {
+                type: "Operating Expense",
+                ref: exp.docNumber || exp.id,
+                vendor: exp.vendor,
+                amount: exp.amount,
+                date: exp.date,
+                postedBy: "Finance User",
+                status: exp.status.toUpperCase(),
+                id: exp.id
+              }
+            };
+          }
+        }
+      }
+    }
+
+    for (const inv of invsList) {
+      const invNormClient = normalizeVendorName(inv.client);
+      const invNormNo = normalizeDocNumber(inv.id);
+      if (invNormClient && normVendor && invNormClient === normVendor) {
+        if (normDocNo && (invNormNo.includes(normDocNo) || normDocNo.includes(invNormNo))) {
+          if (Math.abs((inv.totalAmount || inv.amount) - totalAmt) < 2) {
+            return {
+              riskScore: 98,
+              level: "HIGH RISK",
+              statusText: "Duplicate Invoice Detected",
+              reason: `Client Invoice #${extracted.documentNumber} for ${extracted.party} with amount ${pkr(totalAmt)} is already posted.`,
+              match: {
+                type: "Client Invoice",
+                ref: "INV-" + inv.id.toUpperCase(),
+                vendor: inv.client,
+                amount: inv.totalAmount || inv.amount,
+                date: inv.issueDate,
+                postedBy: "Finance User",
+                status: inv.paid ? "PAID" : "UNPAID",
+                id: inv.id
+              }
+            };
+          }
+        }
+      }
+    }
+
+    for (const otherDoc of docsList) {
+      if (otherDoc.id === currentDocId || !otherDoc.extracted) continue;
+      const otherNormVendor = normalizeVendorName(otherDoc.extracted.party);
+      const otherNormDocNo = normalizeDocNumber(otherDoc.extracted.documentNumber);
+      const otherAmt = Number(otherDoc.extracted.totalAmount) || Number(otherDoc.extracted.baseAmount) || 0;
+
+      if (otherNormVendor && normVendor && otherNormVendor === normVendor) {
+        if (normDocNo && otherNormDocNo && normDocNo === otherNormDocNo) {
+          if (Math.abs(otherAmt - totalAmt) < 2) {
+            return {
+              riskScore: 98,
+              level: "HIGH RISK",
+              statusText: "Duplicate Document Record",
+              reason: `Document #${extracted.documentNumber} from ${extracted.party} is already uploaded as ${otherDoc.fileName} (${otherDoc.status.toUpperCase()}).`,
+              match: {
+                type: "Uploaded Document",
+                ref: otherDoc.extracted.documentNumber || otherDoc.fileName,
+                vendor: otherDoc.extracted.party,
+                amount: otherAmt,
+                date: otherDoc.uploadedAt,
+                postedBy: "System User",
+                status: otherDoc.status.toUpperCase(),
+                id: otherDoc.id
+              }
+            };
+          }
+        }
+      }
+    }
+
+    // LAYER 3: Same Vendor + Same Amount + Same Date (Doc # missing / unreadable)
+    for (const exp of expsList) {
+      const expNormVendor = normalizeVendorName(exp.vendor);
+      if (expNormVendor && normVendor && expNormVendor === normVendor) {
+        if (exp.date === docDate && Math.abs(exp.amount - totalAmt) < 2) {
+          return {
+            riskScore: 82,
+            level: "MEDIUM RISK",
+            statusText: "Possible Duplicate Expense",
+            reason: `Same Vendor (${extracted.party}) + Same Amount (${pkr(totalAmt)}) + Same Date (${docDate}) found in posted expenses.`,
+            match: {
+              type: "Operating Expense",
+              ref: exp.docNumber || exp.id,
+              vendor: exp.vendor,
+              amount: exp.amount,
+              date: exp.date,
+              postedBy: "Finance User",
+              status: exp.status.toUpperCase(),
+              id: exp.id
+            }
+          };
+        }
+      }
+    }
+
+    return { riskScore: 10, level: "LOW RISK", statusText: "No Duplicate Found", match: null };
+  }
+
   async function handleFileUpload(file) {
     const docId = uid();
     const reader = new FileReader();
 
     reader.onload = async (e) => {
       const fileDataUrl = e.target.result;
+      const fileHash = generateFileHash(fileDataUrl);
       const filenameLower = file.name.toLowerCase();
 
       let docType = "Invoice";
@@ -2302,6 +2496,7 @@ export default function App() {
         fileName: file.name,
         fileType: file.type || "application/pdf",
         fileDataUrl,
+        fileHash,
         fileSize: (file.size / 1024).toFixed(1) + " KB",
         uploadedAt: TODAY.toISOString().slice(0, 10),
         status: "processing", // uploaded -> processing -> extracted -> ready_for_review -> draft / posted
@@ -2338,9 +2533,6 @@ export default function App() {
 
         const invNum = "INV-" + (Math.floor(Math.random() * 8999) + 1000);
 
-        const isDup = expenses.some(exp => exp.vendor === partyName && exp.amount === totalAmount) ||
-                      invoices.some(inv => inv.client === partyName && inv.amount === totalAmount);
-
         const extracted = {
           documentType: docType,
           aiConfidence: (Math.floor(Math.random() * 6) + 93) + "%",
@@ -2361,8 +2553,15 @@ export default function App() {
           poNumber: "PO-" + Math.floor(Math.random() * 900 + 100),
         };
 
+        const dupEval = evaluateDuplicateRisk(fileHash, extracted, docId, documents, expenses, invoices, vouchers);
+
         setDocuments(docs => docs.map(d => d.id === docId
-          ? { ...d, status: isDup ? "duplicate" : "ready_for_review", isDuplicate: isDup, extracted }
+          ? {
+              ...d,
+              status: dupEval.level === "EXACT DUPLICATE" || dupEval.level === "HIGH RISK" ? "duplicate" : "ready_for_review",
+              duplicateRisk: dupEval,
+              extracted
+            }
           : d
         ));
       }, 1200);
@@ -2379,10 +2578,19 @@ export default function App() {
     setReviewingDocId(null);
   }
 
-  function postDocumentToLedger(docId, customExtracted) {
+  function postDocumentToLedger(docId, customExtracted, overrideReason) {
     const doc = documents.find(d => d.id === docId);
     if (!doc) return;
     const extracted = customExtracted || doc.extracted;
+
+    // Stage 2 Final Atomic Duplicate Re-check
+    const dupEval = evaluateDuplicateRisk(doc.fileHash, extracted, docId, documents, expenses, invoices, vouchers);
+    
+    if ((dupEval.level === "EXACT DUPLICATE" || dupEval.level === "HIGH RISK") && !overrideReason) {
+      alert(`Cannot Post Transaction: ${dupEval.statusText}\n\n${dupEval.reason}\n\nPlease review duplicate comparison before posting.`);
+      setCompareDocData({ doc, duplicateMatch: dupEval });
+      return;
+    }
 
     const baseAmt = Number(extracted.baseAmount) || 0;
     const taxAmt = Number(extracted.taxAmount) || 0;
@@ -2410,7 +2618,11 @@ export default function App() {
     }
 
     const docRef = extracted.documentNumber || `DOC-${doc.id.toUpperCase().slice(0, 6)}`;
-    const postDesc = `[AI Doc: ${extracted.documentType || 'Invoice'}] ${extracted.party} - ${extracted.description || 'Uploaded Document'}`;
+    let postDesc = `[AI Doc: ${extracted.documentType || 'Invoice'}] ${extracted.party} - ${extracted.description || 'Uploaded Document'}`;
+    if (overrideReason) {
+      postDesc += ` (OVERRIDE: ${overrideReason})`;
+    }
+
     postEntry(extracted.date || TODAY.toISOString().slice(0, 10), postDesc, journalLines, docRef);
 
     const expRecord = {
@@ -2425,17 +2637,28 @@ export default function App() {
       paidVia: paymentMode === "Cash" ? "Cash" : "Bank",
       projectId: extracted.projectId || null,
       documentId: doc.id,
-      docNumber: docRef
+      docNumber: docRef,
+      overrideReason: overrideReason || null
     };
     setExpenses(prev => [expRecord, ...prev]);
 
     setDocuments(docs => docs.map(d => d.id === docId
-      ? { ...d, status: "posted", extracted, postedAt: TODAY.toISOString().slice(0, 10), docRef }
+      ? {
+          ...d,
+          status: "posted",
+          extracted,
+          duplicateRisk: dupEval,
+          postedAt: TODAY.toISOString().slice(0, 10),
+          docRef,
+          overrideReason: overrideReason || null
+        }
       : d
     ));
 
     setReviewingDocId(null);
+    setCompareDocData(null);
   }
+
 
   function deleteDocument(docId) {
     setDocuments(docs => docs.filter(d => d.id !== docId));
@@ -4698,6 +4921,8 @@ export default function App() {
 
       {showVoucherForm && <VoucherModal projects={projects} bankAccounts={bankAccounts} defaultType={voucherDefaultType} onClose={() => setShowVoucherForm(false)} onSubmit={createVoucher} />}
       {reviewingDocId && <DocumentReviewModal doc={documents.find(d => d.id === reviewingDocId)} projects={projects} bankAccounts={bankAccounts} onClose={() => setReviewingDocId(null)} onSaveDraft={saveDocumentDraft} onPost={postDocumentToLedger} onCreateProjectTrigger={() => { setReviewingDocId(null); setShowProjectForm(true); }} />}
+      {compareDocData && <CompareDocumentsModal doc={compareDocData.doc} duplicateMatch={compareDocData.duplicateMatch} onClose={() => setCompareDocData(null)} onCancelUpload={() => { deleteDocument(compareDocData.doc.id); setCompareDocData(null); }} onOverride={(docId, reason) => postDocumentToLedger(docId, null, reason)} />}
+
 
 
 
@@ -6343,21 +6568,37 @@ function DocumentReviewModal({ doc, projects = [], bankAccounts = [], onClose, o
   return (
     <ModalShell title={`AI Document Review & Accounting Entry — ${doc.fileName}`} onClose={onClose} width="95%" style={{ maxWidth: 1200 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "var(--bg)", padding: "10px 14px", borderRadius: 8, marginBottom: 14, border: "1px solid var(--rule)" }}>
-        <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+        <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
           <span style={{ fontWeight: 700, fontSize: 13, color: "var(--ink)" }}>Document Type: <span style={{ color: "#0284C7" }}>{extracted.documentType || "Invoice"}</span></span>
           <span style={{ fontSize: 12, background: "rgba(5, 150, 105, 0.12)", color: "#059669", padding: "2px 8px", borderRadius: 12, fontWeight: 700 }}>AI Confidence: {extracted.aiConfidence || "96%"}</span>
-          {doc.isDuplicate && <span style={{ fontSize: 12, background: "rgba(220, 38, 38, 0.12)", color: "#DC2626", padding: "2px 8px", borderRadius: 12, fontWeight: 700 }}>⚠️ Duplicate Warning</span>}
+          
+          {doc.duplicateRisk?.level === "LOW RISK" && (
+            <span style={{ fontSize: 12, background: "#DCFCE7", color: "#15803D", padding: "2px 8px", borderRadius: 12, fontWeight: 700 }}>✓ No Duplicate Found</span>
+          )}
+          {doc.duplicateRisk?.level === "MEDIUM RISK" && (
+            <span style={{ fontSize: 12, background: "#FEF3C7", color: "#B45309", padding: "2px 8px", borderRadius: 12, fontWeight: 700 }}>⚠ Possible Duplicate ({doc.duplicateRisk.riskScore}%)</span>
+          )}
+          {(doc.duplicateRisk?.level === "HIGH RISK" || doc.duplicateRisk?.level === "EXACT DUPLICATE") && (
+            <span style={{ fontSize: 12, background: "#FEE2E2", color: "#991B1B", padding: "2px 8px", borderRadius: 12, fontWeight: 700 }}>✕ Duplicate Detected ({doc.duplicateRisk.riskScore}%)</span>
+          )}
         </div>
         <div style={{ fontSize: 12, color: "var(--ink-muted)" }}>
           Status: <strong style={{ textTransform: "uppercase", color: "var(--gold)" }}>{doc.status.replace("_", " ")}</strong>
         </div>
       </div>
 
-      {doc.isDuplicate && (
-        <div style={{ background: "rgba(220, 38, 38, 0.08)", border: "1px solid rgba(220, 38, 38, 0.2)", padding: "10px 14px", borderRadius: 8, fontSize: 12.5, color: "#DC2626", marginBottom: 14 }}>
-          ⚠️ <b>Possible Duplicate Document Detected:</b> A document/invoice for <b>{extracted.party}</b> with <b>{pkr(totalAmt)}</b> already exists in the system. Please verify carefully before posting.
+      {doc.duplicateRisk && doc.duplicateRisk.level !== "LOW RISK" && (
+        <div style={{ background: doc.duplicateRisk.level === "MEDIUM RISK" ? "#FFFBEB" : "rgba(220, 38, 38, 0.08)", border: `1px solid ${doc.duplicateRisk.level === "MEDIUM RISK" ? "#FCD34D" : "rgba(220, 38, 38, 0.2)"}`, padding: "10px 14px", borderRadius: 8, fontSize: 12.5, color: doc.duplicateRisk.level === "MEDIUM RISK" ? "#B45309" : "#DC2626", marginBottom: 14, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div>
+            ⚠️ <b>{doc.duplicateRisk.level}: {doc.duplicateRisk.statusText}</b>
+            <div style={{ marginTop: 2, fontSize: 12, color: "var(--ink)" }}>{doc.duplicateRisk.reason}</div>
+          </div>
+          <button className="btn" style={{ fontSize: 12, padding: "4px 10px", borderColor: "currentColor", color: "inherit", fontWeight: 700 }} onClick={() => setCompareDocData({ doc, duplicateMatch: doc.duplicateRisk })}>
+            Compare Documents
+          </button>
         </div>
       )}
+
 
       {validationErrors.length > 0 && (
         <div style={{ background: "rgba(220, 38, 38, 0.08)", border: "1px solid rgba(220, 38, 38, 0.2)", padding: "10px 14px", borderRadius: 8, fontSize: 12.5, color: "#DC2626", marginBottom: 14 }}>
@@ -6566,11 +6807,102 @@ function DocumentReviewModal({ doc, projects = [], bankAccounts = [], onClose, o
           </div>
 
         </div>
-
       </div>
     </ModalShell>
   );
 }
+
+function CompareDocumentsModal({ doc, duplicateMatch, onClose, onCancelUpload, onOverride }) {
+
+
+  const [overrideReason, setOverrideReason] = useState("");
+  const [showOverrideInput, setShowOverrideInput] = useState(false);
+
+  if (!doc || !duplicateMatch) return null;
+
+  return (
+    <ModalShell title={`Duplicate Comparison — ${doc.fileName}`} onClose={onClose} width="90%" style={{ maxWidth: 1000 }}>
+      <div style={{ background: "rgba(220, 38, 38, 0.08)", border: "1px solid rgba(220, 38, 38, 0.2)", padding: "12px 16px", borderRadius: 8, fontSize: 13, color: "#DC2626", marginBottom: 16 }}>
+        ⚠️ <b>{duplicateMatch.level}: {duplicateMatch.statusText}</b> (Risk Score: <b>{duplicateMatch.riskScore}%</b>)
+        <div style={{ marginTop: 4, color: "var(--ink)" }}>{duplicateMatch.reason}</div>
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
+        {/* EXISTING RECORD */}
+        <div className="card" style={{ padding: 16, background: "var(--bg)", border: "1px solid var(--rule)" }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: "#059669", textTransform: "uppercase", marginBottom: 10 }}>
+            ✓ Existing System Record ({duplicateMatch.match?.type || "Financial Record"})
+          </div>
+          <div style={{ fontSize: 13, display: "flex", flexDirection: "column", gap: 6 }}>
+            <div><strong>Reference #:</strong> {duplicateMatch.match?.ref || "—"}</div>
+            <div><strong>Party / Vendor:</strong> {duplicateMatch.match?.vendor || "—"}</div>
+            <div><strong>Transaction Date:</strong> {duplicateMatch.match?.date || "—"}</div>
+            <div><strong>Total Amount:</strong> <span className="mono" style={{ fontWeight: 700, color: "var(--ink)" }}>{pkr(duplicateMatch.match?.amount || 0)}</span></div>
+            <div><strong>Status:</strong> <span style={{ color: "#059669", fontWeight: 700 }}>{duplicateMatch.match?.status || "POSTED"}</span></div>
+            <div><strong>Posted By:</strong> {duplicateMatch.match?.postedBy || "Finance User"}</div>
+          </div>
+        </div>
+
+        {/* UPLOADED NEW DOCUMENT */}
+        <div className="card" style={{ padding: 16, background: "var(--bg)", border: "1px solid var(--rule)" }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: "#0284C7", textTransform: "uppercase", marginBottom: 10 }}>
+            🆕 New Uploaded Document ({doc.extracted?.documentType || "Invoice"})
+          </div>
+          <div style={{ fontSize: 13, display: "flex", flexDirection: "column", gap: 6 }}>
+            <div><strong>Document #:</strong> {doc.extracted?.documentNumber || "—"}</div>
+            <div><strong>Vendor / Party:</strong> {doc.extracted?.party || "—"}</div>
+            <div><strong>Document Date:</strong> {doc.extracted?.date || "—"}</div>
+            <div><strong>Total Amount:</strong> <span className="mono" style={{ fontWeight: 700, color: "var(--ink)" }}>{pkr(doc.extracted?.totalAmount || doc.extracted?.amount || 0)}</span></div>
+            <div><strong>Current Status:</strong> <span style={{ color: "#D97706", fontWeight: 700 }}>{doc.status.toUpperCase()}</span></div>
+            <div><strong>File Name:</strong> {doc.fileName}</div>
+          </div>
+        </div>
+      </div>
+
+      {showOverrideInput && (
+        <div style={{ background: "#FFFBEB", border: "1px solid #FCD34D", padding: 12, borderRadius: 8, marginBottom: 16 }}>
+          <label style={{ fontSize: 12.5, fontWeight: 700, color: "#B45309", marginBottom: 4, display: "block" }}>
+            Authorized Override Reason (Mandatory for Audit Trail) *
+          </label>
+          <input
+            value={overrideReason}
+            onChange={e => setOverrideReason(e.target.value)}
+            placeholder="e.g. Vendor issued revised invoice with updated tax breakdown..."
+            style={{ width: "100%", fontSize: 13, padding: "8px 12px" }}
+          />
+        </div>
+      )}
+
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <button className="btn" style={{ color: "#DC2626", borderColor: "#FCA5A5" }} onClick={onCancelUpload}>
+          Cancel Upload &amp; Remove Document
+        </button>
+
+        <div style={{ display: "flex", gap: 10 }}>
+          {!showOverrideInput ? (
+            <button className="btn" style={{ color: "#D97706", borderColor: "#FCD34D" }} onClick={() => setShowOverrideInput(true)}>
+              Authorized Override (Admin)
+            </button>
+          ) : (
+            <button
+              className="btn btn-primary"
+              disabled={!overrideReason.trim()}
+              onClick={() => onOverride(doc.id, overrideReason)}
+            >
+              Confirm Override &amp; Post
+            </button>
+          )}
+          <button className="btn btn-primary" onClick={onClose}>
+            Close &amp; Return to Review
+          </button>
+        </div>
+      </div>
+    </ModalShell>
+  );
+}
+
+
+
 
 
 
