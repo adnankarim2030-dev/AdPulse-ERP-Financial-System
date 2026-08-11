@@ -3036,7 +3036,9 @@ export default function App() {
                     const ceoNetProfit = ceoBilledTotal - ceoExpensesTotal;
                     const ceoNetMarginPct = ceoBilledTotal > 0 ? ((ceoNetProfit / ceoBilledTotal) * 100).toFixed(1) : "0.0";
 
-                    const totalLiquidReserves = bankAccounts.reduce((s, b) => s + (b.balance || 0), 0) + pettyCashVault.balance;
+                    const pettyCashBalance = (balances && balances.net) ? (balances.net.cash || 0) : 0;
+                    const bankBalanceTotal = (balances && balances.net) ? (balances.net.bank || 0) : 0;
+                    const totalLiquidReserves = pettyCashBalance + bankBalanceTotal;
 
                     const activeProjectsCount = projects.filter(p => p.status !== "Completed").length;
                     const completedProjectsCount = projects.filter(p => p.status === "Completed").length;
@@ -3079,7 +3081,7 @@ export default function App() {
                           <KpiCard
                             label="Liquid Cash & Bank Reserves"
                             value={pkr(totalLiquidReserves)}
-                            sub={`Vault: ${pkr(pettyCashVault.balance)} | Banks: ${pkr(totalLiquidReserves - pettyCashVault.balance)}`}
+                            sub={`Vault: ${pkr(pettyCashBalance)} | Banks: ${pkr(bankBalanceTotal)}`}
                             icon={Landmark}
                             accent="var(--brand-teal)"
                           />
