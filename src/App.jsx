@@ -650,15 +650,17 @@ function buildInitialJournal(invoices, expenses) {
   });
 
   expenses.forEach(exp => {
+    const glAccKey = exp.accountKey || getGLAccountKeyForSubcategory(exp.category, exp.subcategory) || "expense";
     entries.push({
       id: uid(), date: exp.date, reference: "EXP-" + exp.id.toUpperCase(),
-      description: `${exp.vendor} (${exp.category})`,
+      description: `${exp.vendor} (${exp.category}${exp.subcategory ? ' → ' + exp.subcategory : ''})`,
       lines: [
-        { account: "expense", debit: exp.amount, credit: 0, memo: exp.category },
-        { account: exp.paidVia === "Cash" ? "cash" : "bank", debit: 0, credit: exp.amount },
+        { account: glAccKey, debit: exp.amount, credit: 0, memo: exp.category },
+        { account: exp.status === "unpaid" ? "ap" : (exp.paidVia === "Cash" ? "cash" : "bank"), debit: 0, credit: exp.amount },
       ],
     });
   });
+
 
   entries.sort((a, b) => new Date(a.date) - new Date(b.date));
   return entries;
