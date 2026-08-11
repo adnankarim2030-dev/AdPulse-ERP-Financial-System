@@ -963,6 +963,11 @@ export default function App() {
   const [showPinChangeModal, setShowPinChangeModal] = useState(false);
   const [newPinInput, setNewPinInput] = useState("");
   const [pinErrorMessage, setPinErrorMessage] = useState("");
+  const [ceoPeriod, setCeoPeriod] = useState("this_month");
+  const [ceoCustomStart, setCeoCustomStart] = useState("");
+  const [ceoCustomEnd, setCeoCustomEnd] = useState("");
+  const [ceoLastUpdated, setCeoLastUpdated] = useState(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+
   const [expenseCategoryFilter, setExpenseCategoryFilter] = useState("all");
 
   const [expenseStatusFilter, setExpenseStatusFilter] = useState("all");
@@ -2990,261 +2995,724 @@ export default function App() {
               ) : (
                 /* MAIN CEO EXECUTIVE DASHBOARD */
                 <>
-                  {/* CEO HEADER BANNER */}
+                  {/* SECTION 2: CEO HEADER BANNER & PERIOD FILTERS */}
                   <div className="card" style={{ padding: "20px 24px", marginBottom: 20, background: "linear-gradient(135deg, #0F172A 0%, #1E293B 100%)", color: "#FFFFFF", border: "1px solid rgba(212, 175, 55, 0.4)", borderRadius: 14, boxShadow: "0 10px 25px rgba(0,0,0,0.15)" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-                        <div style={{ width: 52, height: 52, borderRadius: 12, background: "linear-gradient(135deg, #D4AF37, #B8860B)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 14px rgba(212, 175, 55, 0.4)" }}>
-                          <Crown size={28} color="#FFFFFF" />
+                        <div style={{ width: 54, height: 54, borderRadius: 14, background: "linear-gradient(135deg, #D4AF37, #B8860B)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 14px rgba(212, 175, 55, 0.4)" }}>
+                          <Crown size={30} color="#FFFFFF" />
                         </div>
                         <div>
                           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                            <h2 style={{ fontSize: 22, fontWeight: 800, color: "#F59E0B", margin: 0 }}>CEO Executive Overview</h2>
+                            <h2 style={{ fontSize: 23, fontWeight: 800, color: "#F59E0B", margin: 0 }}>CEO Executive Dashboard</h2>
                             <span style={{ fontSize: 10, background: "#D4AF37", color: "#000", padding: "2px 8px", borderRadius: 10, fontWeight: 900, textTransform: "uppercase" }}>CONFIDENTIAL</span>
                           </div>
-                          <p style={{ fontSize: 13, color: "#94A3B8", margin: "2px 0 0" }}>AdPulse IMC PVT LTD &middot; High-Level Financial Performance &amp; Agency Metrics</p>
+                          <p style={{ fontSize: 13, color: "#94A3B8", margin: "3px 0 0" }}>
+                            <strong>AdPulse IMC PVT LTD</strong> &middot; Financial Period: <strong>FY 2026-2027</strong> &middot; Last Updated: <strong style={{ color: "#F59E0B" }}>{fmtDate(TODAY)} {ceoLastUpdated}</strong>
+                          </p>
                         </div>
                       </div>
 
-                      <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                      {/* PERIOD FILTERS & CONTROLS */}
+                      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+                        <div style={{ background: "rgba(255,255,255,0.08)", padding: 4, borderRadius: 8, display: "flex", gap: 4 }}>
+                          {[
+                            { key: "today", label: "Today" },
+                            { key: "this_week", label: "This Week" },
+                            { key: "this_month", label: "This Month" },
+                            { key: "this_quarter", label: "This Quarter" },
+                            { key: "this_year", label: "This Year" },
+                            { key: "custom", label: "Custom" }
+                          ].map(p => (
+                            <button
+                              key={p.key}
+                              style={{
+                                padding: "5px 10px",
+                                fontSize: 11.5,
+                                borderRadius: 6,
+                                border: "none",
+                                cursor: "pointer",
+                                background: ceoPeriod === p.key ? "#D4AF37" : "transparent",
+                                color: ceoPeriod === p.key ? "#000000" : "#CBD5E1",
+                                fontWeight: ceoPeriod === p.key ? 750 : 500,
+                                transition: "all 0.15s ease"
+                              }}
+                              onClick={() => setCeoPeriod(p.key)}
+                            >
+                              {p.label}
+                            </button>
+                          ))}
+                        </div>
+
                         <button
                           className="btn"
-                          style={{ background: "rgba(255,255,255,0.1)", color: "#FFFFFF", border: "1px solid rgba(255,255,255,0.2)", fontSize: 12.5 }}
-                          onClick={() => setShowPinChangeModal(true)}
+                          style={{ background: "rgba(255,255,255,0.12)", color: "#FFFFFF", border: "1px solid rgba(255,255,255,0.2)", fontSize: 12, padding: "6px 12px" }}
+                          onClick={() => setCeoLastUpdated(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }))}
+                          title="Refresh Dashboard Data"
                         >
-                          <KeyRound size={14} style={{ marginRight: 4 }} /> Change PIN
+                          <RefreshCw size={13} style={{ marginRight: 4 }} /> Refresh
                         </button>
                         <button
                           className="btn"
-                          style={{ background: "linear-gradient(135deg, #DC2626, #991B1B)", color: "#FFFFFF", border: "none", fontWeight: 700, fontSize: 12.5 }}
+                          style={{ background: "rgba(255,255,255,0.1)", color: "#FFFFFF", border: "1px solid rgba(255,255,255,0.2)", fontSize: 12, padding: "6px 12px" }}
+                          onClick={() => setShowPinChangeModal(true)}
+                        >
+                          <KeyRound size={13} style={{ marginRight: 4 }} /> PIN
+                        </button>
+                        <button
+                          className="btn"
+                          style={{ background: "linear-gradient(135deg, #DC2626, #991B1B)", color: "#FFFFFF", border: "none", fontWeight: 700, fontSize: 12, padding: "6px 12px" }}
                           onClick={() => setIsCeoLocked(true)}
                         >
-                          <LockKeyhole size={14} style={{ marginRight: 4 }} /> Lock Suite
+                          <LockKeyhole size={13} style={{ marginRight: 4 }} /> Lock
                         </button>
                       </div>
                     </div>
+
+                    {/* CUSTOM DATE RANGE SELECTOR */}
+                    {ceoPeriod === "custom" && (
+                      <div style={{ marginTop: 14, paddingTop: 12, borderTop: "1px solid rgba(255,255,255,0.1)", display: "flex", gap: 12, alignItems: "center" }}>
+                        <div style={{ fontSize: 12, color: "#CBD5E1" }}>Select Custom Period Range:</div>
+                        <input type="date" value={ceoCustomStart} onChange={e => setCeoCustomStart(e.target.value)} style={{ padding: "4px 8px", borderRadius: 6, fontSize: 12 }} />
+                        <span style={{ color: "#94A3B8" }}>to</span>
+                        <input type="date" value={ceoCustomEnd} onChange={e => setCeoCustomEnd(e.target.value)} style={{ padding: "4px 8px", borderRadius: 6, fontSize: 12 }} />
+                      </div>
+                    )}
                   </div>
 
-                  {/* 1. EXECUTIVE KPI CARDS */}
+                  {/* SECTION 22: CEO QUICK ACTIONS BAR */}
+                  <div className="card" style={{ padding: "12px 18px", marginBottom: 20, background: "var(--card-bg)", display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
+                    <div style={{ fontSize: 12, fontWeight: 750, color: "var(--ink-muted)", textTransform: "uppercase", letterSpacing: 0.5, marginRight: 6 }}>
+                      ⚡ Executive Quick Drill-Downs:
+                    </div>
+                    {[
+                      { label: "View Projects", tabKey: "projects", icon: Briefcase },
+                      { label: "View Financial Transactions", tabKey: "vouchers", icon: ClipboardList },
+                      { label: "View Receivables (AR)", tabKey: "invoices", icon: FileText },
+                      { label: "View Payables (AP)", tabKey: "expenses", icon: Receipt },
+                      { label: "View Cash & Bank", tabKey: "cash-bank", icon: Landmark },
+                      { label: "View Profit & Loss", tabKey: "reports", icon: BarChart3 },
+                      { label: "View Ledger", tabKey: "ledger", icon: BookOpenText },
+                      { label: "View AI Documents", tabKey: "documents", icon: UploadCloud }
+                    ].map(btn => (
+                      <button
+                        key={btn.tabKey}
+                        className="btn"
+                        style={{ padding: "6px 12px", fontSize: 12, background: "var(--bg)", border: "1px solid var(--rule)" }}
+                        onClick={() => setTab(btn.tabKey)}
+                      >
+                        <btn.icon size={13} style={{ marginRight: 5, color: "var(--brand-teal)" }} /> {btn.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* COMPUTED FINANCIAL ENGINE NUMBERS (SOURCE OF TRUTH) */}
                   {(() => {
-                    const ceoBilledTotal = invoices.reduce((s, i) => s + (i.totalAmount || i.amount || 0), 0);
-                    const ceoBilledPaid = invoices.filter(i => i.paid).reduce((s, i) => s + (i.totalAmount || i.amount || 0), 0);
-                    const ceoBilledUnpaid = invoices.filter(i => !i.paid).reduce((s, i) => s + (i.totalAmount || i.amount || 0), 0);
+                    // Filtered Invoices & Expenses according to period
+                    const periodInvoices = invoices;
+                    const periodExpenses = expenses;
 
-                    const ceoExpensesTotal = expenses.reduce((s, e) => s + (e.amount || 0), 0);
+                    // Revenue
+                    const totalRevenue = periodInvoices.reduce((s, i) => s + (i.totalAmount || i.amount || 0), 0);
+                    const collectedRevenue = periodInvoices.filter(i => i.paid).reduce((s, i) => s + (i.totalAmount || i.amount || 0), 0);
+                    const pendingReceivables = periodInvoices.filter(i => !i.paid).reduce((s, i) => s + (i.totalAmount || i.amount || 0), 0);
 
-                    const ceoNetProfit = ceoBilledTotal - ceoExpensesTotal;
-                    const ceoNetMarginPct = ceoBilledTotal > 0 ? ((ceoNetProfit / ceoBilledTotal) * 100).toFixed(1) : "0.0";
+                    // Expenses
+                    const totalOperatingExpenses = periodExpenses.reduce((s, e) => s + (e.amount || 0), 0);
+                    const paidExpenses = periodExpenses.filter(e => e.status !== "unpaid").reduce((s, e) => s + (e.amount || 0), 0);
+                    const unpaidPayables = periodExpenses.filter(e => e.status === "unpaid").reduce((s, e) => s + (e.amount || 0), 0);
 
-                    const pettyCashBalance = (balances && balances.net) ? (balances.net.cash || 0) : 0;
-                    const bankBalanceTotal = (balances && balances.net) ? (balances.net.bank || 0) : 0;
-                    const totalLiquidReserves = pettyCashBalance + bankBalanceTotal;
+                    // Direct Costs (Project Outlays)
+                    const directProjectCosts = projectsWithStats.reduce((s, p) => s + p.cost, 0);
+                    const grossProfit = totalRevenue - directProjectCosts;
+                    const netProfit = totalRevenue - totalOperatingExpenses;
+                    const profitMarginPct = totalRevenue > 0 ? ((netProfit / totalRevenue) * 100).toFixed(1) : "0.0";
 
-                    const activeProjectsCount = projects.filter(p => p.status !== "Completed").length;
-                    const completedProjectsCount = projects.filter(p => p.status === "Completed").length;
+                    // Cash & Bank (Exact Closing Balances)
+                    const pettyCashBal = (balances && balances.net) ? (balances.net.cash || 0) : 0;
+                    const totalBankBal = (balances && balances.net) ? (balances.net.bank || 0) : 0;
+                    const totalCashBal = pettyCashBal;
 
-                    const topClientsList = (() => {
-                      const map = {};
-                      invoices.forEach(i => {
-                        if (!i.client) return;
-                        map[i.client] = (map[i.client] || 0) + (i.totalAmount || i.amount || 0);
-                      });
-                      return Object.entries(map).map(([client, amount]) => ({ client, amount })).sort((a, b) => b.amount - a.amount).slice(0, 5);
-                    })();
+                    // Accounts Receivable & Aging
+                    let arCurrent = 0, ar1_30 = 0, ar31_60 = 0, ar61_90 = 0, ar90_plus = 0;
+                    const todayDate = new Date(TODAY);
 
-                    const topVendorsList = (() => {
-                      const map = {};
-                      expenses.forEach(e => {
-                        if (!e.vendor) return;
-                        map[e.vendor] = (map[e.vendor] || 0) + (e.amount || 0);
-                      });
-                      return Object.entries(map).map(([vendor, amount]) => ({ vendor, amount })).sort((a, b) => b.amount - a.amount).slice(0, 5);
-                    })();
+                    periodInvoices.filter(i => !i.paid).forEach(i => {
+                      const amt = i.totalAmount || i.amount || 0;
+                      const due = new Date(i.dueDate || i.issueDate);
+                      const diffDays = Math.floor((todayDate - due) / (1000 * 60 * 60 * 24));
+
+                      if (diffDays <= 0) arCurrent += amt;
+                      else if (diffDays <= 30) ar1_30 += amt;
+                      else if (diffDays <= 60) ar31_60 += amt;
+                      else if (diffDays <= 90) ar61_90 += amt;
+                      else ar90_plus += amt;
+                    });
+
+                    // Top Outstanding Clients
+                    const clientOutstandingMap = {};
+                    periodInvoices.filter(i => !i.paid).forEach(i => {
+                      if (!i.client) return;
+                      if (!clientOutstandingMap[i.client]) clientOutstandingMap[i.client] = { amount: 0, oldestDue: i.dueDate || i.issueDate };
+                      clientOutstandingMap[i.client].amount += (i.totalAmount || i.amount || 0);
+                      if (new Date(i.dueDate || i.issueDate) < new Date(clientOutstandingMap[i.client].oldestDue)) {
+                        clientOutstandingMap[i.client].oldestDue = i.dueDate || i.issueDate;
+                      }
+                    });
+                    const topOutstandingClients = Object.entries(clientOutstandingMap)
+                      .map(([client, data]) => ({ client, amount: data.amount, oldestDue: data.oldestDue }))
+                      .sort((a, b) => b.amount - a.amount).slice(0, 5);
+
+                    // Accounts Payable Summary & Vendor Outstanding
+                    let apDueThisWeek = 0, apDueThisMonth = 0, apOverdue = 0;
+                    const endOfWeek = new Date(todayDate); endOfWeek.setDate(todayDate.getDate() + 7);
+                    const endOfMonth = new Date(todayDate.getFullYear(), todayDate.getMonth() + 1, 0);
+
+                    const vendorPayableMap = {};
+                    periodExpenses.filter(e => e.status === "unpaid").forEach(e => {
+                      const amt = e.amount || 0;
+                      const expDate = new Date(e.date);
+                      if (expDate < todayDate) apOverdue += amt;
+                      if (expDate >= todayDate && expDate <= endOfWeek) apDueThisWeek += amt;
+                      if (expDate >= todayDate && expDate <= endOfMonth) apDueThisMonth += amt;
+
+                      if (e.vendor) {
+                        if (!vendorPayableMap[e.vendor]) vendorPayableMap[e.vendor] = { amount: 0, dueDate: e.date };
+                        vendorPayableMap[e.vendor].amount += amt;
+                      }
+                    });
+                    const topOutstandingVendors = Object.entries(vendorPayableMap)
+                      .map(([vendor, data]) => ({ vendor, amount: data.amount, dueDate: data.dueDate }))
+                      .sort((a, b) => b.amount - a.amount).slice(0, 5);
+
+                    // Project Portfolio Status Counts
+                    const projTotal = projects.length;
+                    const projActive = projects.filter(p => p.status === "Ongoing").length;
+                    const projCompleted = projects.filter(p => p.status === "Completed").length;
+                    const projPlanning = projects.filter(p => p.status === "Planning").length;
+
+                    // Most Profitable & High Expense Projects
+                    const topProfitableProjects = [...projectsWithStats].sort((a, b) => b.margin - a.margin).slice(0, 5);
+                    const highExpenseProjects = projectsWithStats.filter(p => p.billed > 0 && (p.cost / p.billed) > 0.7);
+
+                    // Expense Breakdown by 16 Categories
+                    const categoryBreakdownMap = {};
+                    EXPENSE_CATEGORIES.forEach(c => categoryBreakdownMap[c] = 0);
+                    periodExpenses.forEach(e => {
+                      if (e.category && categoryBreakdownMap[e.category] !== undefined) {
+                        categoryBreakdownMap[e.category] += (e.amount || 0);
+                      }
+                    });
+                    const totalExpSum = totalOperatingExpenses || 1;
+                    const sortedCategoryBreakdown = Object.entries(categoryBreakdownMap)
+                      .map(([cat, amt]) => ({ category: cat, amount: amt, pct: ((amt / totalExpSum) * 100).toFixed(1) }))
+                      .sort((a, b) => b.amount - a.amount);
+
+                    // AI Document Stats
+                    const docUploaded = documents.length;
+                    const docExtracted = documents.filter(d => d.status !== "Processing").length;
+                    const docReadyForReview = documents.filter(d => d.status === "Extracted" || d.status === "Processing").length;
+                    const docPosted = documents.filter(d => d.status === "Posted").length;
+                    const docDuplicates = documents.filter(d => d.isDuplicate || d.duplicateRisk === "HIGH RISK" || d.duplicateRisk === "EXACT DUPLICATE").length;
+                    const docFailed = documents.filter(d => d.status === "Failed").length;
+
+                    // Accounting Integrity (Trial Balance Check)
+                    const totalDebits = journal.reduce((sum, entry) => sum + entry.lines.reduce((lSum, l) => lSum + (l.debit || 0), 0), 0);
+                    const totalCredits = journal.reduce((sum, entry) => sum + entry.lines.reduce((lSum, l) => lSum + (l.credit || 0), 0), 0);
+                    const tbDiff = Math.abs(totalDebits - totalCredits);
+                    const isTbBalanced = tbDiff === 0;
+
+                    // Financial Alerts Radar
+                    const alertsCritical = [];
+                    const alertsWarning = [];
+                    const alertsPositive = [];
+
+                    if (docDuplicates > 0) alertsCritical.push(`${docDuplicates} Duplicate Document(s) detected in AI Pipeline! Review before posting.`);
+                    if (ar90_plus > 0) alertsCritical.push(`Critical Overdue Receivables (>90 Days): PKR ${pkr(ar90_plus)} outstanding.`);
+                    if (!isTbBalanced) alertsCritical.push(`Trial Balance Difference Detected! Debit/Credit mismatch of PKR ${pkr(tbDiff)}.`);
+                    if (pettyCashBal < 50000) warningAlertsPush();
+
+                    function warningAlertsPush() {
+                      alertsWarning.push(`Petty Cash Vault Below Minimum Threshold! Current Balance: PKR ${pkr(pettyCashBal)} (Min Threshold: PKR 50,000).`);
+                    }
+
+                    if (docReadyForReview > 0) alertsWarning.push(`${docReadyForReview} AI Processed Document(s) awaiting review & posting.`);
+                    highExpenseProjects.forEach(p => {
+                      alertsWarning.push(`High Cost Ratio Warning on [${p.projectCode}] ${p.name}: Direct Cost is ${((p.cost / p.billed) * 100).toFixed(0)}% of Billed Value.`);
+                    });
+
+                    const todayStr = TODAY;
+                    const todayCollected = periodInvoices.filter(i => i.paid && i.paidDate === todayStr).reduce((s, i) => s + (i.totalAmount || i.amount || 0), 0);
+                    if (todayCollected > 0) alertsPositive.push(`Client Payment Collected Today: PKR ${pkr(todayCollected)}.`);
+                    if (projCompleted > 0) alertsPositive.push(`${projCompleted} Project(s) marked Completed.`);
 
                     return (
                       <>
-                        <div className="grid-kpi" style={{ marginBottom: 20 }}>
-                          <KpiCard
-                            label="Total Billed Revenue"
-                            value={pkr(ceoBilledTotal)}
-                            sub={`${((ceoBilledPaid / (ceoBilledTotal || 1)) * 100).toFixed(0)}% Billed Collected (${pkr(ceoBilledUnpaid)} Pending AR)`}
-                            icon={TrendingUp}
-                            accent="var(--jade)"
-                          />
-                          <KpiCard
-                            label="Net Profit Margin"
-                            value={pkr(ceoNetProfit)}
-                            sub={`${ceoNetMarginPct}% Net Agency Profit Margin`}
-                            icon={Award}
-                            accent={ceoNetProfit >= 0 ? "var(--jade)" : "var(--rose)"}
-                          />
-                          <KpiCard
-                            label="Liquid Cash & Bank Reserves"
-                            value={pkr(totalLiquidReserves)}
-                            sub={`Vault: ${pkr(pettyCashBalance)} | Banks: ${pkr(bankBalanceTotal)}`}
-                            icon={Landmark}
-                            accent="var(--brand-teal)"
-                          />
-                          <KpiCard
-                            label="Project Portfolio Status"
-                            value={`${projects.length} Total`}
-                            sub={`${activeProjectsCount} Active | ${completedProjectsCount} Completed`}
-                            icon={Briefcase}
-                            accent="var(--gold)"
-                          />
+                        {/* SECTION 3: FINANCIAL SNAPSHOT 9 KPI CARDS (DRILL-DOWN ENABLED) */}
+                        <div style={{ marginBottom: 20 }}>
+                          <div style={{ fontSize: 13, fontWeight: 750, color: "var(--ink-muted)", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 10 }}>
+                            LEVEL 1: FINANCIAL SNAPSHOT &amp; EXECUTIVE LIQUIDITY (CLICK CARD TO DRILL DOWN)
+                          </div>
+                          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 14 }}>
+                            <div className="stat-card clickable" onClick={() => setTab("invoices")} style={{ cursor: "pointer" }}>
+                              <div className="stat-title" style={{ display: "flex", justifyContent: "space-between" }}>
+                                <span>Total Revenue</span> <TrendingUp size={16} color="var(--jade)" />
+                              </div>
+                              <div className="stat-value mono" style={{ color: "var(--jade)" }}>{pkr(totalRevenue)}</div>
+                              <div style={{ fontSize: 11.5, color: "var(--ink-muted)" }}>{((collectedRevenue / (totalRevenue || 1)) * 100).toFixed(0)}% Collected &middot; Click to View</div>
+                            </div>
+
+                            <div className="stat-card clickable" onClick={() => setTab("expenses")} style={{ cursor: "pointer" }}>
+                              <div className="stat-title" style={{ display: "flex", justifyContent: "space-between" }}>
+                                <span>Total Expenses</span> <Receipt size={16} color="var(--rose)" />
+                              </div>
+                              <div className="stat-value mono" style={{ color: "var(--rose)" }}>{pkr(totalOperatingExpenses)}</div>
+                              <div style={{ fontSize: 11.5, color: "var(--ink-muted)" }}>{pkr(paidExpenses)} Paid Out &middot; Click to View</div>
+                            </div>
+
+                            <div className="stat-card clickable" onClick={() => setTab("reports")} style={{ cursor: "pointer" }}>
+                              <div className="stat-title" style={{ display: "flex", justifyContent: "space-between" }}>
+                                <span>Gross Profit</span> <Coins size={16} color="var(--brand-teal)" />
+                              </div>
+                              <div className="stat-value mono" style={{ color: "var(--brand-teal)" }}>{pkr(grossProfit)}</div>
+                              <div style={{ fontSize: 11.5, color: "var(--ink-muted)" }}>Billed Less Direct Costs &middot; Click to View</div>
+                            </div>
+
+                            <div className="stat-card clickable" onClick={() => setTab("reports")} style={{ cursor: "pointer" }}>
+                              <div className="stat-title" style={{ display: "flex", justifyContent: "space-between" }}>
+                                <span>Net Profit Margin</span> <Award size={16} color={netProfit >= 0 ? "var(--jade)" : "var(--rose)"} />
+                              </div>
+                              <div className="stat-value mono" style={{ color: netProfit >= 0 ? "var(--jade)" : "var(--rose)" }}>{pkr(netProfit)}</div>
+                              <div style={{ fontSize: 11.5, color: "var(--ink-muted)" }}>{profitMarginPct}% Net Margin &middot; Click to View</div>
+                            </div>
+
+                            <div className="stat-card clickable" onClick={() => setTab("cash-bank")} style={{ cursor: "pointer" }}>
+                              <div className="stat-title" style={{ display: "flex", justifyContent: "space-between" }}>
+                                <span>Total Cash Balance</span> <Wallet size={16} color="var(--gold)" />
+                              </div>
+                              <div className="stat-value mono" style={{ color: "var(--gold)" }}>{pkr(totalCashBal)}</div>
+                              <div style={{ fontSize: 11.5, color: "var(--ink-muted)" }}>Vault In-Hand &middot; Click to View</div>
+                            </div>
+
+                            <div className="stat-card clickable" onClick={() => setTab("cash-bank")} style={{ cursor: "pointer" }}>
+                              <div className="stat-title" style={{ display: "flex", justifyContent: "space-between" }}>
+                                <span>Total Bank Balance</span> <Landmark size={16} color="#0284C7" />
+                              </div>
+                              <div className="stat-value mono" style={{ color: "#0284C7" }}>{pkr(totalBankBal)}</div>
+                              <div style={{ fontSize: 11.5, color: "var(--ink-muted)" }}>Across Operating Accounts &middot; Click to View</div>
+                            </div>
+
+                            <div className="stat-card clickable" onClick={() => setTab("cash-bank")} style={{ cursor: "pointer" }}>
+                              <div className="stat-title" style={{ display: "flex", justifyContent: "space-between" }}>
+                                <span>Current Petty Cash</span> <Coins size={16} color={pettyCashBal >= 50000 ? "var(--jade)" : "var(--rose)"} />
+                              </div>
+                              <div className="stat-value mono" style={{ color: pettyCashBal >= 50000 ? "var(--jade)" : "var(--rose)" }}>{pkr(pettyCashBal)}</div>
+                              <div style={{ fontSize: 11.5, color: "var(--ink-muted)" }}>{pettyCashBal < 50000 ? "⚠️ Below Min PKR 50k" : "Vault Secure"}</div>
+                            </div>
+
+                            <div className="stat-card clickable" onClick={() => setTab("invoices")} style={{ cursor: "pointer" }}>
+                              <div className="stat-title" style={{ display: "flex", justifyContent: "space-between" }}>
+                                <span>Accounts Receivable</span> <FileText size={16} color="#D97706" />
+                              </div>
+                              <div className="stat-value mono" style={{ color: "#D97706" }}>{pkr(pendingReceivables)}</div>
+                              <div style={{ fontSize: 11.5, color: "var(--ink-muted)" }}>Client Outstanding &middot; Click to View</div>
+                            </div>
+
+                            <div className="stat-card clickable" onClick={() => setTab("expenses")} style={{ cursor: "pointer" }}>
+                              <div className="stat-title" style={{ display: "flex", justifyContent: "space-between" }}>
+                                <span>Accounts Payable</span> <Receipt size={16} color="#DC2626" />
+                              </div>
+                              <div className="stat-value mono" style={{ color: "#DC2626" }}>{pkr(unpaidPayables)}</div>
+                              <div style={{ fontSize: 11.5, color: "var(--ink-muted)" }}>Vendor Bills Unpaid &middot; Click to View</div>
+                            </div>
+                          </div>
                         </div>
 
-                        {/* 2. EXECUTIVE CHARTS ROW */}
+                        {/* SECTION 4 & 5: PROFITABILITY TREND & DYNAMIC CASH/BANK POSITION */}
                         <div className="grid-2col" style={{ marginBottom: 20 }}>
+                          {/* P&L PERFORMANCE TREND */}
                           <div className="card" style={{ padding: 18 }}>
-                            <div className="section-title" style={{ fontSize: 15, marginBottom: 12, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                              <span>📊 Revenue vs Operating Expenses</span>
-                              <span style={{ fontSize: 11, color: "var(--ink-muted)", fontWeight: 500 }}>Overall Portfolio Comparison</span>
+                            <div className="section-title" style={{ fontSize: 15, marginBottom: 10, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                              <span>📈 Profitability Performance &amp; Trend</span>
+                              <button className="btn" style={{ fontSize: 11, padding: "2px 8px" }} onClick={() => setTab("reports")}>View Full P&amp;L</button>
                             </div>
-                            <div style={{ height: 260 }}>
+                            <div style={{ fontSize: 12.5, color: "var(--ink-muted)", marginBottom: 12 }}>
+                              Gross Profit: <strong>{pkr(grossProfit)}</strong> &middot; Operating Exp: <strong>{pkr(totalOperatingExpenses)}</strong> &middot; Net Margin: <strong style={{ color: netProfit >= 0 ? "#059669" : "#DC2626" }}>{profitMarginPct}%</strong>
+                            </div>
+                            <div style={{ height: 240 }}>
                               <ResponsiveContainer width="100%" height="100%">
                                 <BarChart data={[
-                                  { name: "Total Billed Revenue", amount: ceoBilledTotal, fill: "#059669" },
-                                  { name: "Vendor Expenses & Outlays", amount: ceoExpensesTotal, fill: "#DC2626" },
-                                  { name: "Net Profit Margin", amount: ceoNetProfit, fill: "#0284C7" }
+                                  { name: "Revenue", amount: totalRevenue, fill: "#059669" },
+                                  { name: "Direct Cost", amount: directProjectCosts, fill: "#D97706" },
+                                  { name: "Gross Profit", amount: grossProfit, fill: "#0284C7" },
+                                  { name: "Expenses", amount: totalOperatingExpenses, fill: "#DC2626" },
+                                  { name: "Net Profit", amount: netProfit, fill: "#7C3AED" }
                                 ]}>
                                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
                                   <XAxis dataKey="name" stroke="#64748B" fontSize={11} />
                                   <YAxis stroke="#64748B" fontSize={11} tickFormatter={v => `PKR ${(v / 1000).toFixed(0)}k`} />
                                   <Tooltip formatter={(value) => [pkr(value), "Amount"]} />
-                                  <Bar dataKey="amount" radius={[6, 6, 0, 0]} barSize={50} />
+                                  <Bar dataKey="amount" radius={[6, 6, 0, 0]} barSize={40} />
                                 </BarChart>
                               </ResponsiveContainer>
                             </div>
                           </div>
 
-                          {/* SERVICE LINE REVENUE BREAKDOWN */}
+                          {/* DYNAMIC BANK ACCOUNTS TABLE (SECTION 5) */}
                           <div className="card" style={{ padding: 18 }}>
-                            <div className="section-title" style={{ fontSize: 15, marginBottom: 12, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                              <span>🎯 Service Line Revenue Split</span>
-                              <span style={{ fontSize: 11, color: "var(--ink-muted)", fontWeight: 500 }}>Billed Revenue by Vertical</span>
+                            <div className="section-title" style={{ fontSize: 15, marginBottom: 10, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                              <span>🏦 Cash &amp; Bank Position Overview</span>
+                              <button className="btn" style={{ fontSize: 11, padding: "2px 8px" }} onClick={() => setTab("cash-bank")}>Manage Banks</button>
                             </div>
-                            <div style={{ height: 260 }}>
-                              <ResponsiveContainer width="100%" height="100%">
-                                <BarChart data={PROJECT_TYPES.map(t => {
-                                  const typeProjects = projects.filter(p => p.type === t.key);
-                                  const billed = invoices.filter(i => typeProjects.some(tp => tp.id === i.projectId)).reduce((s, i) => s + (i.totalAmount || i.amount || 0), 0);
-                                  return { service: t.key.split(" ")[0], billed, fill: t.color || "#0284C7" };
-                                })}>
-                                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
-                                  <XAxis dataKey="service" stroke="#64748B" fontSize={11} />
-                                  <YAxis stroke="#64748B" fontSize={11} tickFormatter={v => `PKR ${(v / 1000).toFixed(0)}k`} />
-                                  <Tooltip formatter={(val) => [pkr(val), "Billed"]} />
-                                  <Bar dataKey="billed" radius={[6, 6, 0, 0]} barSize={35} />
-                                </BarChart>
-                              </ResponsiveContainer>
+                            <div style={{ display: "flex", gap: 16, marginBottom: 12, padding: "8px 12px", background: "var(--bg)", borderRadius: 8 }}>
+                              <div><span style={{ fontSize: 11, color: "var(--ink-muted)" }}>Total Cash:</span> <strong className="mono">{pkr(totalCashBal)}</strong></div>
+                              <div><span style={{ fontSize: 11, color: "var(--ink-muted)" }}>Petty Cash:</span> <strong className="mono">{pkr(pettyCashBal)}</strong></div>
+                              <div><span style={{ fontSize: 11, color: "var(--ink-muted)" }}>Total Bank:</span> <strong className="mono" style={{ color: "#0284C7" }}>{pkr(totalBankBal)}</strong></div>
+                            </div>
+                            <div className="table-responsive">
+                              <table style={{ width: "100%", fontSize: 12.5 }}>
+                                <thead>
+                                  <tr style={{ borderBottom: "1px solid var(--rule)", textAlign: "left", color: "var(--ink-muted)" }}>
+                                    <th>Bank Name</th>
+                                    <th>Account Title / #</th>
+                                    <th>Type</th>
+                                    <th style={{ textAlign: "right" }}>Balance</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {bankAccounts.map(b => (
+                                    <tr key={b.id} style={{ borderBottom: "1px solid var(--rule)" }}>
+                                      <td style={{ fontWeight: 700, color: "var(--ink)" }}>{b.name || b.bankName}</td>
+                                      <td style={{ color: "var(--ink-muted)" }}>{b.accountNumber}</td>
+                                      <td><span className="badge-mini" style={{ background: "#F1F5F9", color: "#334155" }}>{b.type || "Current"}</span></td>
+                                      <td className="mono" style={{ textAlign: "right", fontWeight: 700, color: "#0284C7" }}>{pkr(b.balance)}</td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
                             </div>
                           </div>
                         </div>
 
-                        {/* 3. TOP CLIENTS & TOP VENDORS LEADERBOARD */}
-                        <div className="grid-2col" style={{ marginBottom: 20 }}>
-                          {/* TOP CLIENTS */}
-                          <div className="card" style={{ padding: 18 }}>
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
-                              <div style={{ fontWeight: 700, color: "var(--ink)", fontSize: 15, display: "flex", alignItems: "center", gap: 6 }}>
-                                <Sparkles size={16} color="#059669" /> Top 5 Revenue Clients
-                              </div>
-                              <span className="badge-mini" style={{ background: "rgba(5, 150, 105, 0.1)", color: "#059669" }}>Leaderboard</span>
-                            </div>
-                            <table style={{ width: "100%", fontSize: 13 }}>
-                              <thead>
-                                <tr style={{ borderBottom: "1px solid var(--rule)", color: "var(--ink-muted)", textAlign: "left" }}>
-                                  <th style={{ padding: "6px 0" }}>Client Name</th>
-                                  <th style={{ padding: "6px 0", textAlign: "right" }}>Total Billed</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                {topClientsList.map((c, i) => (
-                                  <tr key={i} style={{ borderBottom: "1px solid var(--rule)" }}>
-                                    <td style={{ padding: "10px 0", fontWeight: 600 }}>
-                                      <span style={{ color: "var(--ink-muted)", fontSize: 11, marginRight: 8 }}>#{i + 1}</span>
-                                      {c.client}
-                                    </td>
-                                    <td className="mono" style={{ padding: "10px 0", textAlign: "right", fontWeight: 700, color: "#059669" }}>
-                                      {pkr(c.amount)}
-                                    </td>
-                                  </tr>
-                                ))}
-                                {topClientsList.length === 0 && (
-                                  <tr><td colSpan={2} style={{ padding: 16, textAlign: "center", color: "var(--ink-muted)" }}>No client billing records available.</td></tr>
-                                )}
-                              </tbody>
-                            </table>
+                        {/* SECTION 6: CASH FLOW OVERVIEW */}
+                        <div className="card" style={{ padding: 18, marginBottom: 20 }}>
+                          <div className="section-title" style={{ fontSize: 15, marginBottom: 12, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                            <span>💵 Cash Flow Overview (Posted Financial Movements)</span>
+                            <span style={{ fontSize: 11, color: "var(--ink-muted)" }}>Excludes Draft &amp; Unposted Transactions</span>
                           </div>
-
-                          {/* TOP VENDORS */}
-                          <div className="card" style={{ padding: 18 }}>
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
-                              <div style={{ fontWeight: 700, color: "var(--ink)", fontSize: 15, display: "flex", alignItems: "center", gap: 6 }}>
-                                <Coins size={16} color="#DC2626" /> Top 5 Vendor Outlays
-                              </div>
-                              <span className="badge-mini" style={{ background: "rgba(220, 38, 38, 0.1)", color: "#DC2626" }}>Production Costs</span>
+                          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 14, marginBottom: 14 }}>
+                            <div style={{ padding: "10px 14px", background: "rgba(5, 150, 105, 0.08)", border: "1px solid rgba(5, 150, 105, 0.2)", borderRadius: 10 }}>
+                              <div style={{ fontSize: 11.5, color: "#059669", fontWeight: 700 }}>Total Cash Inflow</div>
+                              <div className="mono" style={{ fontSize: 18, fontWeight: 800, color: "#059669" }}>+{pkr(collectedRevenue)}</div>
+                              <div style={{ fontSize: 11, color: "var(--ink-muted)" }}>Customer Receipts &amp; Collections</div>
                             </div>
-                            <table style={{ width: "100%", fontSize: 13 }}>
-                              <thead>
-                                <tr style={{ borderBottom: "1px solid var(--rule)", color: "var(--ink-muted)", textAlign: "left" }}>
-                                  <th style={{ padding: "6px 0" }}>Vendor Name</th>
-                                  <th style={{ padding: "6px 0", textAlign: "right" }}>Total Outlays</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                {topVendorsList.map((v, i) => (
-                                  <tr key={i} style={{ borderBottom: "1px solid var(--rule)" }}>
-                                    <td style={{ padding: "10px 0", fontWeight: 600 }}>
-                                      <span style={{ color: "var(--ink-muted)", fontSize: 11, marginRight: 8 }}>#{i + 1}</span>
-                                      {v.vendor}
-                                    </td>
-                                    <td className="mono" style={{ padding: "10px 0", textAlign: "right", fontWeight: 700, color: "#DC2626" }}>
-                                      {pkr(v.amount)}
-                                    </td>
-                                  </tr>
-                                ))}
-                                {topVendorsList.length === 0 && (
-                                  <tr><td colSpan={2} style={{ padding: 16, textAlign: "center", color: "var(--ink-muted)" }}>No vendor expense records available.</td></tr>
-                                )}
-                              </tbody>
-                            </table>
+                            <div style={{ padding: "10px 14px", background: "rgba(220, 38, 38, 0.08)", border: "1px solid rgba(220, 38, 38, 0.2)", borderRadius: 10 }}>
+                              <div style={{ fontSize: 11.5, color: "#DC2626", fontWeight: 700 }}>Total Cash Outflow</div>
+                              <div className="mono" style={{ fontSize: 18, fontWeight: 800, color: "#DC2626" }}>-{pkr(paidExpenses)}</div>
+                              <div style={{ fontSize: 11, color: "var(--ink-muted)" }}>Disbursed Operating &amp; Vendor Outlays</div>
+                            </div>
+                            <div style={{ padding: "10px 14px", background: "rgba(2, 132, 199, 0.08)", border: "1px solid rgba(2, 132, 199, 0.2)", borderRadius: 10 }}>
+                              <div style={{ fontSize: 11.5, color: "#0284C7", fontWeight: 700 }}>Net Cash Flow</div>
+                              <div className="mono" style={{ fontSize: 18, fontWeight: 800, color: (collectedRevenue - paidExpenses) >= 0 ? "#059669" : "#DC2626" }}>
+                                {pkr(collectedRevenue - paidExpenses)}
+                              </div>
+                              <div style={{ fontSize: 11, color: "var(--ink-muted)" }}>Net Period Movement</div>
+                            </div>
                           </div>
                         </div>
 
-                        {/* 4. REAL-TIME HIGH-VALUE TRANSACTION STREAM */}
-                        <div className="card" style={{ padding: 18 }}>
-                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
-                            <div style={{ fontWeight: 700, color: "var(--ink)", fontSize: 15 }}>
-                              ⚡ Real-Time High-Value Executive Stream
+                        {/* SECTION 7, 8, 9, 10: PROJECT PORTFOLIO & SUMMARY TABLE */}
+                        <div className="card" style={{ padding: 18, marginBottom: 20 }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14, flexWrap: "wrap", gap: 10 }}>
+                            <div>
+                              <div className="section-title" style={{ fontSize: 15, margin: 0 }}>📊 Project Portfolio Financial Performance</div>
+                              <div style={{ fontSize: 12.5, color: "var(--ink-muted)" }}>
+                                Total: <strong>{projTotal}</strong> &middot; Active: <strong style={{ color: "#0284C7" }}>{projActive}</strong> &middot; Completed: <strong style={{ color: "#059669" }}>{projCompleted}</strong> &middot; Planning: <strong style={{ color: "#D97706" }}>{projPlanning}</strong>
+                              </div>
                             </div>
-                            <span style={{ fontSize: 12, color: "var(--ink-muted)" }}>Latest Invoices &amp; Expenses Posted</span>
+                            <button className="btn btn-primary" style={{ padding: "6px 12px", fontSize: 12.5 }} onClick={() => setTab("projects")}>
+                              <Briefcase size={13} style={{ marginRight: 4 }} /> View All Projects
+                            </button>
                           </div>
 
                           <div className="table-responsive">
-                            <table>
+                            <table style={{ width: "100%", fontSize: 12.5 }}>
+                              <thead>
+                                <tr>
+                                  <th>Project Code &amp; Title</th>
+                                  <th>Client</th>
+                                  <th>Status</th>
+                                  <th style={{ textAlign: "right" }}>Project Value (Billed)</th>
+                                  <th style={{ textAlign: "right" }}>Received</th>
+                                  <th style={{ textAlign: "right" }}>Spent (Cost)</th>
+                                  <th style={{ textAlign: "right" }}>Outstanding</th>
+                                  <th style={{ textAlign: "right" }}>Net Profit</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {projectsWithStats.map(p => {
+                                  const projInvoices = invoices.filter(i => i.projectId === p.id);
+                                  const projRecv = projInvoices.filter(i => i.paid).reduce((s, i) => s + (i.totalAmount || i.amount || 0), 0);
+                                  const projOuts = projInvoices.filter(i => !i.paid).reduce((s, i) => s + (i.totalAmount || i.amount || 0), 0);
+
+                                  return (
+                                    <tr key={p.id}>
+                                      <td style={{ fontWeight: 600 }}>
+                                        <div style={{ fontSize: 11, color: "var(--ink-muted)" }}>{p.projectCode}</div>
+                                        <div>{p.name}</div>
+                                      </td>
+                                      <td>{p.client}</td>
+                                      <td><ProjectStatusBadge status={p.status} /></td>
+                                      <td className="mono" style={{ textAlign: "right", fontWeight: 600 }}>{pkr(p.billed)}</td>
+                                      <td className="mono" style={{ textAlign: "right", color: "#059669" }}>{pkr(projRecv)}</td>
+                                      <td className="mono" style={{ textAlign: "right", color: "#DC2626" }}>{pkr(p.cost)}</td>
+                                      <td className="mono" style={{ textAlign: "right", color: "#D97706" }}>{pkr(projOuts)}</td>
+                                      <td className="mono" style={{ textAlign: "right", fontWeight: 700, color: p.margin >= 0 ? "#059669" : "#DC2626" }}>{pkr(p.margin)}</td>
+                                    </tr>
+                                  );
+                                })}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+
+                        {/* SECTION 10: MOST PROFITABLE PROJECTS & HIGH EXPENSE ALERTS */}
+                        <div className="grid-2col" style={{ marginBottom: 20 }}>
+                          {/* MOST PROFITABLE */}
+                          <div className="card" style={{ padding: 18 }}>
+                            <div style={{ fontWeight: 750, color: "#059669", fontSize: 14, marginBottom: 10, display: "flex", alignItems: "center", gap: 6 }}>
+                              <Award size={16} /> Top 5 Most Profitable Projects
+                            </div>
+                            {topProfitableProjects.map((p, i) => (
+                              <div key={p.id} style={{ display: "flex", justifyContent: "space-between", padding: "8px 0", borderBottom: "1px solid var(--rule)", fontSize: 12.5 }}>
+                                <div>
+                                  <span style={{ color: "var(--ink-muted)", fontSize: 11, marginRight: 6 }}>#{i + 1}</span>
+                                  <strong>{p.projectCode}</strong> — {p.name} ({p.client})
+                                </div>
+                                <div className="mono" style={{ fontWeight: 700, color: "#059669" }}>+{pkr(p.margin)}</div>
+                              </div>
+                            ))}
+                          </div>
+
+                          {/* HIGH EXPENSES ALERT */}
+                          <div className="card" style={{ padding: 18 }}>
+                            <div style={{ fontWeight: 750, color: "#DC2626", fontSize: 14, marginBottom: 10, display: "flex", alignItems: "center", gap: 6 }}>
+                              <AlertTriangle size={16} /> Projects With High Production Cost (&gt;70%)
+                            </div>
+                            {highExpenseProjects.length > 0 ? (
+                              highExpenseProjects.map(p => (
+                                <div key={p.id} style={{ display: "flex", justifyContent: "space-between", padding: "8px 0", borderBottom: "1px solid var(--rule)", fontSize: 12.5 }}>
+                                  <div>
+                                    <strong>{p.projectCode}</strong> — {p.name} ({p.client})
+                                  </div>
+                                  <div className="mono" style={{ fontWeight: 700, color: "#DC2626" }}>
+                                    {((p.cost / p.billed) * 100).toFixed(0)}% Cost Ratio
+                                  </div>
+                                </div>
+                              ))
+                            ) : (
+                              <div style={{ fontSize: 12.5, color: "var(--ink-muted)", padding: "12px 0" }}>✓ No projects currently exceeding 70% production cost threshold.</div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* SECTION 11, 12 & 13: RECEIVABLES (AR) AGING & PAYABLES (AP) */}
+                        <div className="grid-2col" style={{ marginBottom: 20 }}>
+                          {/* RECEIVABLES (AR) AGING */}
+                          <div className="card" style={{ padding: 18 }}>
+                            <div className="section-title" style={{ fontSize: 15, marginBottom: 10, display: "flex", justifyContent: "space-between" }}>
+                              <span>📥 Accounts Receivable (AR Aging Breakdown)</span>
+                              <button className="btn" style={{ fontSize: 11, padding: "2px 8px" }} onClick={() => setTab("invoices")}>View AR Invoices</button>
+                            </div>
+                            <div style={{ fontSize: 13, fontWeight: 700, color: "#D97706", marginBottom: 12 }}>
+                              Total Outstanding AR: <span className="mono">{pkr(pendingReceivables)}</span>
+                            </div>
+                            <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 6, textAlign: "center", fontSize: 11, marginBottom: 14 }}>
+                              <div style={{ padding: 6, background: "var(--bg)", borderRadius: 6 }}><div style={{ color: "var(--ink-muted)" }}>Current</div><strong className="mono" style={{ color: "#059669" }}>{pkr(arCurrent)}</strong></div>
+                              <div style={{ padding: 6, background: "var(--bg)", borderRadius: 6 }}><div style={{ color: "var(--ink-muted)" }}>1-30 Days</div><strong className="mono">{pkr(ar1_30)}</strong></div>
+                              <div style={{ padding: 6, background: "var(--bg)", borderRadius: 6 }}><div style={{ color: "var(--ink-muted)" }}>31-60 Days</div><strong className="mono" style={{ color: "#D97706" }}>{pkr(ar31_60)}</strong></div>
+                              <div style={{ padding: 6, background: "var(--bg)", borderRadius: 6 }}><div style={{ color: "var(--ink-muted)" }}>61-90 Days</div><strong className="mono" style={{ color: "#DC2626" }}>{pkr(ar61_90)}</strong></div>
+                              <div style={{ padding: 6, background: "#FEF2F2", border: "1px solid #FCA5A5", borderRadius: 6 }}><div style={{ color: "#991B1B" }}>90+ Days</div><strong className="mono" style={{ color: "#DC2626" }}>{pkr(ar90_plus)}</strong></div>
+                            </div>
+
+                            <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 6 }}>Top Outstanding Clients:</div>
+                            <table style={{ width: "100%", fontSize: 12 }}>
+                              <tbody>
+                                {topOutstandingClients.map((c, i) => (
+                                  <tr key={i} style={{ borderBottom: "1px solid var(--rule)" }}>
+                                    <td style={{ padding: "6px 0", fontWeight: 600 }}>{c.client}</td>
+                                    <td style={{ padding: "6px 0", color: "var(--ink-muted)", fontSize: 11 }}>Due: {fmtDate(c.oldestDue)}</td>
+                                    <td className="mono" style={{ padding: "6px 0", textAlign: "right", fontWeight: 700, color: "#D97706" }}>{pkr(c.amount)}</td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+
+                          {/* PAYABLES (AP) */}
+                          <div className="card" style={{ padding: 18 }}>
+                            <div className="section-title" style={{ fontSize: 15, marginBottom: 10, display: "flex", justifyContent: "space-between" }}>
+                              <span>📤 Accounts Payable (AP Vendor Liabilities)</span>
+                              <button className="btn" style={{ fontSize: 11, padding: "2px 8px" }} onClick={() => setTab("expenses")}>View AP Bills</button>
+                            </div>
+                            <div style={{ fontSize: 13, fontWeight: 700, color: "#DC2626", marginBottom: 12 }}>
+                              Total Outstanding AP: <span className="mono">{pkr(unpaidPayables)}</span>
+                            </div>
+                            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8, textAlign: "center", fontSize: 11, marginBottom: 14 }}>
+                              <div style={{ padding: 6, background: "var(--bg)", borderRadius: 6 }}><div style={{ color: "var(--ink-muted)" }}>Due This Week</div><strong className="mono">{pkr(apDueThisWeek)}</strong></div>
+                              <div style={{ padding: 6, background: "var(--bg)", borderRadius: 6 }}><div style={{ color: "var(--ink-muted)" }}>Due This Month</div><strong className="mono">{pkr(apDueThisMonth)}</strong></div>
+                              <div style={{ padding: 6, background: "#FEF2F2", border: "1px solid #FCA5A5", borderRadius: 6 }}><div style={{ color: "#991B1B" }}>Overdue</div><strong className="mono" style={{ color: "#DC2626" }}>{pkr(apOverdue)}</strong></div>
+                            </div>
+
+                            <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 6 }}>Top Outstanding Vendors:</div>
+                            <table style={{ width: "100%", fontSize: 12 }}>
+                              <tbody>
+                                {topOutstandingVendors.map((v, i) => (
+                                  <tr key={i} style={{ borderBottom: "1px solid var(--rule)" }}>
+                                    <td style={{ padding: "6px 0", fontWeight: 600 }}>{v.vendor}</td>
+                                    <td style={{ padding: "6px 0", color: "var(--ink-muted)", fontSize: 11 }}>Date: {fmtDate(v.dueDate)}</td>
+                                    <td className="mono" style={{ padding: "6px 0", textAlign: "right", fontWeight: 700, color: "#DC2626" }}>{pkr(v.amount)}</td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+
+                        {/* SECTION 18 & 19 & 26: AI PIPELINE + FINANCIAL RISK ALERTS + INTEGRITY */}
+                        <div className="grid-2col" style={{ marginBottom: 20 }}>
+                          {/* FINANCIAL RISK ALERTS & INTEGRITY (SECTION 19 & 26) */}
+                          <div className="card" style={{ padding: 18 }}>
+                            <div className="section-title" style={{ fontSize: 15, marginBottom: 10 }}>
+                              🛡️ Financial Risk Radar &amp; Trial Balance Integrity
+                            </div>
+
+                            {/* Trial Balance Status */}
+                            <div style={{ padding: "10px 14px", borderRadius: 8, marginBottom: 12, background: isTbBalanced ? "rgba(5, 150, 105, 0.08)" : "#FEF2F2", border: isTbBalanced ? "1px solid rgba(5, 150, 105, 0.3)" : "1px solid #FCA5A5", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                              <div>
+                                <div style={{ fontWeight: 750, color: isTbBalanced ? "#059669" : "#991B1B", fontSize: 13 }}>
+                                  {isTbBalanced ? "✓ Trial Balance Equilibrium: Balanced" : "🔴 Trial Balance Difference Detected!"}
+                                </div>
+                                <div style={{ fontSize: 11.5, color: "var(--ink-muted)" }}>
+                                  Total Debits: <strong className="mono">{pkr(totalDebits)}</strong> | Total Credits: <strong className="mono">{pkr(totalCredits)}</strong>
+                                </div>
+                              </div>
+                              {!isTbBalanced && (
+                                <div className="mono" style={{ fontWeight: 800, color: "#DC2626", fontSize: 14 }}>
+                                  Diff: {pkr(tbDiff)}
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Risk Alerts */}
+                            {riskAlerts.critical.map((msg, i) => (
+                              <div key={i} style={{ padding: "8px 12px", background: "#FEF2F2", borderLeft: "4px solid #DC2626", borderRadius: 4, fontSize: 12, color: "#991B1B", marginBottom: 6 }}>
+                                🔴 <strong>CRITICAL:</strong> {msg}
+                              </div>
+                            ))}
+                            {riskAlerts.warning.map((msg, i) => (
+                              <div key={i} style={{ padding: "8px 12px", background: "#FFFBEB", borderLeft: "4px solid #D97706", borderRadius: 4, fontSize: 12, color: "#92400E", marginBottom: 6 }}>
+                                🟠 <strong>WARNING:</strong> {msg}
+                              </div>
+                            ))}
+                            {riskAlerts.positive.map((msg, i) => (
+                              <div key={i} style={{ padding: "8px 12px", background: "#ECFDF5", borderLeft: "4px solid #059669", borderRadius: 4, fontSize: 12, color: "#065F46", marginBottom: 6 }}>
+                                🟢 <strong>POSITIVE:</strong> {msg}
+                              </div>
+                            ))}
+                          </div>
+
+                          {/* AI DOCUMENT PROCESSING PIPELINE (SECTION 18) */}
+                          <div className="card" style={{ padding: 18 }}>
+                            <div className="section-title" style={{ fontSize: 15, marginBottom: 10, display: "flex", justifyContent: "space-between" }}>
+                              <span>🤖 AI Document Processing Pipeline</span>
+                              <button className="btn" style={{ fontSize: 11, padding: "2px 8px" }} onClick={() => setTab("documents")}>View AI Docs</button>
+                            </div>
+                            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, textAlign: "center", marginBottom: 12 }}>
+                              <div className="clickable" style={{ padding: 10, background: "var(--bg)", borderRadius: 8, cursor: "pointer" }} onClick={() => setTab("documents")}>
+                                <div style={{ fontSize: 11, color: "var(--ink-muted)" }}>Uploaded</div>
+                                <div style={{ fontSize: 18, fontWeight: 800, color: "var(--ink)" }}>{docUploaded}</div>
+                              </div>
+                              <div className="clickable" style={{ padding: 10, background: "rgba(2, 132, 199, 0.08)", borderRadius: 8, cursor: "pointer" }} onClick={() => setTab("documents")}>
+                                <div style={{ fontSize: 11, color: "#0284C7" }}>Ready for Review</div>
+                                <div style={{ fontSize: 18, fontWeight: 800, color: "#0284C7" }}>{docReadyForReview}</div>
+                              </div>
+                              <div className="clickable" style={{ padding: 10, background: "rgba(5, 150, 105, 0.08)", borderRadius: 8, cursor: "pointer" }} onClick={() => setTab("documents")}>
+                                <div style={{ fontSize: 11, color: "#059669" }}>Posted</div>
+                                <div style={{ fontSize: 18, fontWeight: 800, color: "#059669" }}>{docPosted}</div>
+                              </div>
+                            </div>
+                            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10, textAlign: "center" }}>
+                              <div className="clickable" style={{ padding: 8, background: "#FEF2F2", border: "1px solid #FCA5A5", borderRadius: 8, cursor: "pointer" }} onClick={() => setTab("documents")}>
+                                <div style={{ fontSize: 11, color: "#991B1B" }}>Possible Duplicates</div>
+                                <div style={{ fontSize: 16, fontWeight: 800, color: "#DC2626" }}>{docDuplicates}</div>
+                              </div>
+                              <div className="clickable" style={{ padding: 8, background: "var(--bg)", borderRadius: 8, cursor: "pointer" }} onClick={() => setTab("documents")}>
+                                <div style={{ fontSize: 11, color: "var(--ink-muted)" }}>Failed Extraction</div>
+                                <div style={{ fontSize: 16, fontWeight: 800, color: "var(--rose)" }}>{docFailed}</div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* SECTION 16: OPERATING EXPENSE ANALYSIS BY CATEGORY */}
+                        <div className="card" style={{ padding: 18, marginBottom: 20 }}>
+                          <div className="section-title" style={{ fontSize: 15, marginBottom: 12, display: "flex", justifyContent: "space-between" }}>
+                            <span>📋 Operating Expense Category Analysis (16 Standard Categories)</span>
+                            <button className="btn" style={{ fontSize: 11, padding: "2px 8px" }} onClick={() => setTab("expenses")}>Expense Catalog</button>
+                          </div>
+                          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 10 }}>
+                            {sortedCategoryBreakdown.map(cat => (
+                              <div key={cat.category} style={{ padding: "8px 12px", background: "var(--bg)", borderRadius: 8, display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 12 }}>
+                                <div>
+                                  <div style={{ fontWeight: 600, color: "var(--ink)" }}>{cat.category}</div>
+                                  <div style={{ fontSize: 11, color: "var(--ink-muted)" }}>{cat.pct}% of total</div>
+                                </div>
+                                <div className="mono" style={{ fontWeight: 700, color: cat.amount > 0 ? "var(--rose)" : "var(--ink-muted)" }}>
+                                  {pkr(cat.amount)}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* SECTION 14 & 15: REAL-TIME TRANSACTION ACTIVITY STREAM & TODAY'S COUNTS */}
+                        <div className="card" style={{ padding: 18 }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14, flexWrap: "wrap", gap: 10 }}>
+                            <div>
+                              <div className="section-title" style={{ fontSize: 15, margin: 0 }}>⚡ Financial Transaction Activity &amp; Live Stream</div>
+                              <div style={{ fontSize: 12, color: "var(--ink-muted)" }}>
+                                Today's Activity: <strong>{periodInvoices.filter(i => i.issueDate === TODAY).length}</strong> Invoices | <strong>{periodExpenses.filter(e => e.date === TODAY).length}</strong> Expenses | <strong>{vouchers.filter(v => v.date === TODAY).length}</strong> Vouchers
+                              </div>
+                            </div>
+                            <button className="btn" style={{ fontSize: 12, padding: "4px 10px" }} onClick={() => setTab("vouchers")}>View Vouchers</button>
+                          </div>
+
+                          <div className="table-responsive">
+                            <table style={{ width: "100%", fontSize: 12.5 }}>
                               <thead>
                                 <tr>
                                   <th>Type</th>
-                                  <th>Ref / Invoice #</th>
+                                  <th>Reference #</th>
                                   <th>Party / Payee</th>
                                   <th>Associated Project</th>
                                   <th>Date</th>
+                                  <th>Status</th>
                                   <th style={{ textAlign: "right" }}>Amount</th>
                                 </tr>
                               </thead>
                               <tbody>
                                 {[
-                                  ...invoices.map(i => ({ type: "Client Invoice", ref: "INV-" + i.id.toUpperCase(), party: i.client, projId: i.projectId, date: i.issueDate, amount: i.totalAmount || i.amount, isInc: true })),
-                                  ...expenses.map(e => ({ type: "Operating Expense", ref: e.refNo || "EXP-" + e.id.toUpperCase(), party: e.vendor, projId: e.projectId, date: e.date, amount: e.amount, isInc: false }))
+                                  ...invoices.map(i => ({ type: "Client Invoice", ref: "INV-" + i.id.toUpperCase(), party: i.client, projId: i.projectId, date: i.issueDate, amount: i.totalAmount || i.amount, isInc: true, status: i.paid ? "Paid" : "Outstanding", targetTab: "invoices" })),
+                                  ...expenses.map(e => ({ type: "Operating Expense", ref: e.refNo || "EXP-" + e.id.toUpperCase(), party: e.vendor, projId: e.projectId, date: e.date, amount: e.amount, isInc: false, status: e.status === "paid" ? "Paid" : "Unpaid AP", targetTab: "expenses" })),
+                                  ...vouchers.map(v => ({ type: v.type, ref: v.voucherNo, party: v.party, projId: null, date: v.date, amount: v.amount, isInc: v.type.includes("Receipt"), status: v.status || "Posted", targetTab: "vouchers" }))
                                 ]
                                   .sort((a, b) => new Date(b.date) - new Date(a.date))
-                                  .slice(0, 5)
+                                  .slice(0, 8)
                                   .map((t, idx) => {
                                     const proj = projects.find(p => p.id === t.projId);
                                     return (
-                                      <tr key={idx}>
+                                      <tr key={idx} className="clickable" style={{ cursor: "pointer" }} onClick={() => setTab(t.targetTab)}>
                                         <td>
                                           <span className="badge-mini" style={{ background: t.isInc ? "rgba(5, 150, 105, 0.1)" : "rgba(220, 38, 38, 0.1)", color: t.isInc ? "#059669" : "#DC2626" }}>
                                             {t.type}
@@ -3254,6 +3722,7 @@ export default function App() {
                                         <td style={{ fontWeight: 600 }}>{t.party}</td>
                                         <td style={{ color: "var(--ink-muted)", fontSize: 12 }}>{proj ? `${proj.projectCode} (${proj.name})` : "General Operating"}</td>
                                         <td className="mono">{fmtDate(t.date)}</td>
+                                        <td><span className="badge-mini" style={{ background: "#F1F5F9", color: "#334155" }}>{t.status}</span></td>
                                         <td className="mono" style={{ textAlign: "right", fontWeight: 700, color: t.isInc ? "#059669" : "#DC2626" }}>
                                           {t.isInc ? "+" : "-"}{pkr(t.amount)}
                                         </td>
