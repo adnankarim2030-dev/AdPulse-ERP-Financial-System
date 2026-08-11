@@ -123,12 +123,14 @@ const COA_STRUCTURE = [
 
 
 const VOUCHER_TYPES = {
-  JV: "Journal Voucher",
   PV: "Payment Voucher",
   RV: "Receipt Voucher",
-  SV: "Sales Voucher",
+  CTV: "Contra Transfer Voucher (Cash ↔ Bank)",
   CV: "Client-to-Vendor Direct Settlement",
+  JV: "Journal Voucher",
+  SV: "Sales Voucher",
 };
+
 
 
 const PAGE_SIZES = {
@@ -1786,25 +1788,43 @@ export default function App() {
     return `${type}-${String(voucherCounters.current[type]).padStart(3, "0")}`;
   }
 
-  function createVoucher(type, { projectId, date, party, description, amount, category, via, settleAR, lines }) {
+  function createVoucher(type, { projectId, date, party, description, amount, category, subcategory, accountKey, via, bankAccountId, sourceBankId, targetBankId, settleAR, lines }) {
     const voucherNo = makeVoucherNo(type);
     let journalLines = lines;
+
     if (type === "PV") {
-      const glKey = getGLAccountKeyForSubcategory(category, category) || "expense";
+      const glKey = accountKey || getGLAccountKeyForSubcategory(category, subcategory) || "expense";
+      const paymentAccount = via === "Cash" ? "cash" : "bank";
+      const bAccountId = via === "Cash" ? "bank-cash" : (bankAccountId || bankAccounts.find(b => b.accountType !== "Petty Cash")?.id || "bank-hbl");
+      const memoText = subcategory ? `${category} → ${subcategory}` : (category || "Payment");
       journalLines = [
-        { account: glKey, debit: amount, credit: 0, memo: category },
-        { account: via === "Cash" ? "cash" : "bank", debit: 0, credit: amount },
+        { account: glKey, debit: amount, credit: 0, memo: memoText },
+        { account: paymentAccount, bankAccountId: bAccountId, debit: 0, credit: amount },
       ];
     } else if (type === "RV") {
+      const depositAccount = via === "Cash" ? "cash" : "bank";
+      const bAccountId = via === "Cash" ? "bank-cash" : (bankAccountId || bankAccounts.find(b => b.accountType !== "Petty Cash")?.id || "bank-hbl");
       journalLines = settleAR
         ? [
-            { account: via === "Cash" ? "cash" : "bank", debit: amount, credit: 0 },
+            { account: depositAccount, bankAccountId: bAccountId, debit: amount, credit: 0 },
             { account: "ar", debit: 0, credit: amount },
           ]
         : [
-            { account: via === "Cash" ? "cash" : "bank", debit: amount, credit: 0 },
+            { account: depositAccount, bankAccountId: bAccountId, debit: amount, credit: 0 },
             { account: "revenue", debit: 0, credit: amount },
           ];
+    } else if (type === "CTV") {
+      // Contra Transfer Voucher (Transfer between Cash ↔ Bank, Bank ↔ Bank)
+      const srcBank = bankAccounts.find(b => b.id === sourceBankId) || bankAccounts.find(b => b.id === "bank-cash") || bankAccounts[0];
+      const tgtBank = bankAccounts.find(b => b.id === targetBankId) || bankAccounts.find(b => b.id !== "bank-cash") || bankAccounts[1];
+      
+      const srcAccType = (srcBank?.id === "bank-cash" || srcBank?.accountType === "Petty Cash") ? "cash" : "bank";
+      const tgtAccType = (tgtBank?.id === "bank-cash" || tgtBank?.accountType === "Petty Cash") ? "cash" : "bank";
+
+      journalLines = [
+        { account: tgtAccType, bankAccountId: tgtBank?.id, debit: amount, credit: 0, memo: `Contra Transfer into ${tgtBank?.bankName || 'Target'}` },
+        { account: srcAccType, bankAccountId: srcBank?.id, debit: 0, credit: amount, memo: `Contra Transfer from ${srcBank?.bankName || 'Source'}` },
+      ];
     } else if (type === "SV") {
       journalLines = [
         { account: "ar", debit: amount, credit: 0 },
@@ -1817,11 +1837,17 @@ export default function App() {
         { account: "ar", debit: 0, credit: amount },
       ];
     }
-    postEntry(date, projectId ? `[Project Direct Settle] ${description}` : `[Direct Settle] ${description}`, journalLines, voucherNo);
-    setVouchers(v => [{ id: uid(), voucherNo, type, projectId: projectId || null, date, party, description, amount }, ...v]);
+
+    postEntry(date, projectId ? `[Project] ${description}` : description, journalLines, voucherNo);
+    const vRecord = {
+      id: uid(), voucherNo, type, projectId: projectId || null, date, party, description, amount,
+      category, subcategory, via, bankAccountId, sourceBankId, targetBankId
+    };
+    setVouchers(v => [vRecord, ...v]);
     setShowVoucherForm(false);
     return voucherNo;
   }
+
 
 
 
@@ -4496,7 +4522,8 @@ export default function App() {
       {editingPO && <POModal initialData={editingPO} projects={projects} onClose={() => setEditingPO(null)} onSubmit={updatePO} />}
       {payingPOId && <PayPOModal po={purchaseOrders.find(p => p.id === payingPOId)} onClose={() => setPayingPOId(null)} onSubmit={(id, via, date) => { payPO(id, via, date); setPayingPOId(null); }} />}
 
-      {showVoucherForm && <VoucherModal projects={projects} defaultType={voucherDefaultType} onClose={() => setShowVoucherForm(false)} onSubmit={createVoucher} />}
+      {showVoucherForm && <VoucherModal projects={projects} bankAccounts={bankAccounts} defaultType={voucherDefaultType} onClose={() => setShowVoucherForm(false)} onSubmit={createVoucher} />}
+
 
 
       {pnlDrillDown && (
@@ -5763,20 +5790,47 @@ function BankAccountModal({ initialData, onClose, onSubmit }) {
   );
 }
 
-function VoucherModal({ defaultType, projects = [], onClose, onSubmit }) {
-  const [type, setType] = useState(defaultType || "JV");
+function VoucherModal({ defaultType, projects = [], bankAccounts = [], onClose, onSubmit }) {
+  const [type, setType] = useState(defaultType || "PV");
   const [projectId, setProjectId] = useState("");
   const [description, setDescription] = useState("");
   const [date, setDate] = useState("2026-07-21");
   const [party, setParty] = useState("");
   const [amount, setAmount] = useState("");
-  const [category, setCategory] = useState(EXPENSE_CATEGORIES[0]);
-  const [via, setVia] = useState("Bank");
+  const [category, setCategory] = useState("Office & Administration");
+  const [subcategory, setSubcategory] = useState("Office Rent");
+  const [via, setVia] = useState("Cash"); // "Cash" or "Bank"
+
+  // Real bank accounts list (excluding petty cash)
+  const realBankAccounts = useMemo(() => {
+    return bankAccounts.filter(b => b.id !== "bank-cash" && b.accountType !== "Petty Cash");
+  }, [bankAccounts]);
+
+  const [selectedBankId, setSelectedBankId] = useState(realBankAccounts[0]?.id || "bank-hbl");
+
+  // All accounts list for Contra Transfer (Cash + Bank Accounts)
+  const allAccountsForContra = useMemo(() => {
+    const list = [...bankAccounts];
+    if (!list.some(b => b.id === "bank-cash")) {
+      list.unshift({ id: "bank-cash", bankName: "Petty Cash Vault", accountTitle: "Office Petty Cash Custodian", accountNumber: "CASH-VAULT-01", accountType: "Petty Cash" });
+    }
+    return list;
+  }, [bankAccounts]);
+
+  const [sourceBankId, setSourceBankId] = useState(allAccountsForContra[0]?.id || "bank-cash");
+  const [targetBankId, setTargetBankId] = useState(allAccountsForContra[1]?.id || realBankAccounts[0]?.id || "bank-hbl");
+
   const [settleAR, setSettleAR] = useState(true);
   const [lines, setLines] = useState([
     { account: "cash", debit: "", credit: "" },
     { account: "revenue", debit: "", credit: "" },
   ]);
+
+  const handleCategoryChange = (newCat) => {
+    setCategory(newCat);
+    const subList = EXPENSE_CLASSIFICATION[newCat]?.subcategories || [];
+    if (subList.length > 0) setSubcategory(subList[0].name);
+  };
 
   const handleProjectSelect = (id) => {
     setProjectId(id);
@@ -5786,12 +5840,25 @@ function VoucherModal({ defaultType, projects = [], onClose, onSubmit }) {
     }
   };
 
+  const currentCategoryObj = EXPENSE_CLASSIFICATION[category] || EXPENSE_CLASSIFICATION["Office & Administration"];
+  const currentSubcategories = currentCategoryObj.subcategories || [];
+  const glKey = getGLAccountKeyForSubcategory(category, subcategory);
+  const glAccountObj = ACCOUNTS[glKey] || ACCOUNTS.expense;
+
+  const selectedBankObj = bankAccounts.find(b => b.id === selectedBankId) || realBankAccounts[0];
+  const sourceBankObj = allAccountsForContra.find(b => b.id === sourceBankId);
+  const targetBankObj = allAccountsForContra.find(b => b.id === targetBankId);
+
   const updateLine = (i, key, val) => setLines(ls => ls.map((l, idx) => idx === i ? { ...l, [key]: val } : l));
   const totalD = lines.reduce((s, l) => s + (Number(l.debit) || 0), 0);
   const totalC = lines.reduce((s, l) => s + (Number(l.credit) || 0), 0);
   const jvBalanced = totalD > 0 && totalD === totalC;
 
-  const valid = type === "JV" ? (jvBalanced && description) : (party && Number(amount) > 0 && description);
+  const valid = type === "JV"
+    ? (jvBalanced && description)
+    : type === "CTV"
+    ? (Number(amount) > 0 && sourceBankId !== targetBankId && description)
+    : (party && Number(amount) > 0 && description);
 
   function submit() {
     if (!valid) return;
@@ -5800,8 +5867,19 @@ function VoucherModal({ defaultType, projects = [], onClose, onSubmit }) {
         projectId, date, party: "", description,
         lines: lines.filter(l => Number(l.debit) || Number(l.credit)).map(l => ({ account: l.account, debit: Number(l.debit) || 0, credit: Number(l.credit) || 0 })),
       });
+    } else if (type === "CTV") {
+      onSubmit("CTV", {
+        projectId, date, party: `${sourceBankObj?.bankName} → ${targetBankObj?.bankName}`,
+        description: description || `Internal Contra Transfer from ${sourceBankObj?.bankName} to ${targetBankObj?.bankName}`,
+        amount: Number(amount), sourceBankId, targetBankId
+      });
     } else {
-      onSubmit(type, { projectId, date, party, description, amount: Number(amount), category, via, settleAR });
+      onSubmit(type, {
+        projectId, date, party, description, amount: Number(amount),
+        category, subcategory, accountKey: glKey, via,
+        bankAccountId: via === "Cash" ? "bank-cash" : selectedBankId,
+        settleAR
+      });
     }
   }
 
@@ -5814,7 +5892,7 @@ function VoucherModal({ defaultType, projects = [], onClose, onSubmit }) {
         </select>
       </div>
 
-      {projects.length > 0 && (
+      {projects.length > 0 && type !== "CTV" && (
         <div className="field">
           <label>Link to Project / Cost Center (Optional)</label>
           <select value={projectId} onChange={e => handleProjectSelect(e.target.value)}>
@@ -5828,36 +5906,160 @@ function VoucherModal({ defaultType, projects = [], onClose, onSubmit }) {
 
       <div className="field"><label>Posting Date</label><input type="date" value={date} onChange={e => setDate(e.target.value)} /></div>
 
-      {type !== "JV" && (
-        <div className="field"><label>{type === "PV" ? "Paid To (Payee)" : type === "RV" ? "Received From (Payer)" : "Client Name"}</label>
-          <input value={party} onChange={e => setParty(e.target.value)} placeholder="Party Name" /></div>
+      {type !== "JV" && type !== "CTV" && (
+        <div className="field">
+          <label>{type === "PV" ? "Paid To (Payee Name)" : type === "RV" ? "Received From (Payer Name)" : "Client Name"}</label>
+          <input value={party} onChange={e => setParty(e.target.value)} placeholder="Party Name" />
+        </div>
       )}
-      <div className="field"><label>Description / Particulars</label><input value={description} onChange={e => setDescription(e.target.value)} placeholder="e.g. Media booking retainer" /></div>
+
+      <div className="field">
+        <label>Description / Particulars</label>
+        <input value={description} onChange={e => setDescription(e.target.value)} placeholder="e.g. Media booking retainer / Utility payment" />
+      </div>
 
       {type === "PV" && (
         <>
-          <div className="field"><label>Expense Category</label>
-            <select value={category} onChange={e => setCategory(e.target.value)}>{EXPENSE_CATEGORIES.map(c => <option key={c}>{c}</option>)}</select></div>
-          <div className="field"><label>Amount (PKR)</label><input type="number" value={amount} onChange={e => setAmount(e.target.value)} /></div>
-          <div className="field"><label>Payment Account</label>
-            <select value={via} onChange={e => setVia(e.target.value)}><option>Bank</option><option>Cash</option></select></div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            <div className="field">
+              <label>Expense Category</label>
+              <select value={category} onChange={e => handleCategoryChange(e.target.value)}>
+                {EXPENSE_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+              </select>
+            </div>
+            <div className="field">
+              <label>Expense Subcategory</label>
+              <select value={subcategory} onChange={e => setSubcategory(e.target.value)}>
+                {currentSubcategories.map(s => <option key={s.name} value={s.name}>{s.name}</option>)}
+              </select>
+            </div>
+          </div>
+
+          <div style={{ background: "rgba(2, 132, 199, 0.08)", border: "1px solid rgba(2, 132, 199, 0.2)", padding: "8px 12px", borderRadius: 6, marginBottom: 12, fontSize: 12.5 }}>
+            Mapped GL Account: <strong style={{ color: "#0284C7" }}>{glAccountObj.code} — {glAccountObj.name}</strong>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: 10 }}>
+            <div className="field"><label>Voucher Amount (PKR)</label><input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="0" /></div>
+            <div className="field">
+              <label>Payment Through</label>
+              <select value={via} onChange={e => setVia(e.target.value)}>
+                <option value="Cash">Cash (Petty Cash Vault)</option>
+                <option value="Bank">Bank Account</option>
+              </select>
+            </div>
+          </div>
+
+          {via === "Bank" && (
+            <div className="field" style={{ marginTop: 4 }}>
+              <label>Select Bank Account</label>
+              <select value={selectedBankId} onChange={e => setSelectedBankId(e.target.value)}>
+                {realBankAccounts.map(b => (
+                  <option key={b.id} value={b.id}>
+                    {b.bankName} — {b.accountTitle} ({b.accountNumber})
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          <div style={{ background: via === "Cash" ? "rgba(217, 119, 6, 0.08)" : "rgba(5, 150, 105, 0.08)", border: `1px solid ${via === "Cash" ? "rgba(217, 119, 6, 0.2)" : "rgba(5, 150, 105, 0.2)"}`, padding: "10px 14px", borderRadius: 8, fontSize: 12.5, color: via === "Cash" ? "#D97706" : "#059669", marginBottom: 14 }}>
+            {via === "Cash" ? (
+              <>💡 <b>Cash Payment Rule:</b> Debits <b>{glAccountObj.name}</b> &amp; Credits <b>Petty Cash Vault (Cash in Hand)</b>. Petty cash balance decreases automatically.</>
+            ) : (
+              <>💡 <b>Bank Payment Rule:</b> Debits <b>{glAccountObj.name}</b> &amp; Credits <b>{selectedBankObj?.bankName || "Selected Bank"}</b>. Bank balance decreases automatically.</>
+            )}
+          </div>
         </>
       )}
+
       {type === "RV" && (
         <>
-          <div className="field"><label>Amount (PKR)</label><input type="number" value={amount} onChange={e => setAmount(e.target.value)} /></div>
-          <div className="field"><label>Receipt Credit Account</label>
+          <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: 10 }}>
+            <div className="field"><label>Receipt Amount (PKR)</label><input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="0" /></div>
+            <div className="field">
+              <label>Receive Through</label>
+              <select value={via} onChange={e => setVia(e.target.value)}>
+                <option value="Cash">Cash (Petty Cash Vault)</option>
+                <option value="Bank">Bank Account</option>
+              </select>
+            </div>
+          </div>
+
+          {via === "Bank" && (
+            <div className="field">
+              <label>Select Receiving Bank Account</label>
+              <select value={selectedBankId} onChange={e => setSelectedBankId(e.target.value)}>
+                {realBankAccounts.map(b => (
+                  <option key={b.id} value={b.id}>
+                    {b.bankName} — {b.accountTitle} ({b.accountNumber})
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          <div className="field">
+            <label>Receipt Credit Account</label>
             <select value={settleAR ? "ar" : "revenue"} onChange={e => setSettleAR(e.target.value === "ar")}>
-              <option value="ar">Settle Accounts Receivable</option>
-              <option value="revenue">Direct Revenue (No prior invoice)</option>
-            </select></div>
-          <div className="field"><label>Deposit Account</label>
-            <select value={via} onChange={e => setVia(e.target.value)}><option>Bank</option><option>Cash</option></select></div>
+              <option value="ar">Settle Accounts Receivable (Client Bill)</option>
+              <option value="revenue">Direct Service Revenue (No Invoice)</option>
+            </select>
+          </div>
+
+          <div style={{ background: "rgba(5, 150, 105, 0.08)", border: "1px solid rgba(5, 150, 105, 0.2)", padding: "10px 14px", borderRadius: 8, fontSize: 12.5, color: "#059669", marginBottom: 14 }}>
+            {via === "Cash" ? (
+              <>💡 <b>Cash Receipt Rule:</b> Debits <b>Petty Cash Vault</b> &amp; Credits <b>{settleAR ? "Accounts Receivable" : "Direct Revenue"}</b>. Petty cash balance increases automatically.</>
+            ) : (
+              <>💡 <b>Bank Receipt Rule:</b> Debits <b>{selectedBankObj?.bankName || "Selected Bank"}</b> &amp; Credits <b>{settleAR ? "Accounts Receivable" : "Direct Revenue"}</b>. Bank balance increases automatically.</>
+            )}
+          </div>
         </>
       )}
+
+      {type === "CTV" && (
+        <>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            <div className="field">
+              <label>Transfer From (Source Account) *</label>
+              <select value={sourceBankId} onChange={e => setSourceBankId(e.target.value)}>
+                {allAccountsForContra.map(b => (
+                  <option key={b.id} value={b.id}>
+                    {b.bankName} ({b.accountTitle})
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="field">
+              <label>Transfer To (Destination Account) *</label>
+              <select value={targetBankId} onChange={e => setTargetBankId(e.target.value)}>
+                {allAccountsForContra.map(b => (
+                  <option key={b.id} value={b.id}>
+                    {b.bankName} ({b.accountTitle})
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {sourceBankId === targetBankId && (
+            <div style={{ color: "#DC2626", fontSize: 12, marginBottom: 10, fontWeight: 600 }}>
+              ⚠️ Source and Destination accounts must be different!
+            </div>
+          )}
+
+          <div className="field"><label>Transfer Amount (PKR) *</label><input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="0" /></div>
+
+          <div style={{ background: "rgba(14, 165, 233, 0.08)", border: "1px solid rgba(14, 165, 233, 0.2)", padding: "10px 14px", borderRadius: 8, fontSize: 12.5, color: "#0284C7", marginBottom: 14 }}>
+            💡 <b>Contra Transfer Rule:</b> Debits <b>{targetBankObj?.bankName}</b> &amp; Credits <b>{sourceBankObj?.bankName}</b>. Source balance decreases, Destination balance increases. No revenue or expense created!
+          </div>
+        </>
+      )}
+
       {type === "SV" && (
         <div className="field"><label>Amount (PKR)</label><input type="number" value={amount} onChange={e => setAmount(e.target.value)} /></div>
       )}
+
       {type === "CV" && (
         <>
           <div className="field"><label>Vendor Name (Payee / Accounts Payable Settle)</label>
@@ -5865,11 +6067,10 @@ function VoucherModal({ defaultType, projects = [], onClose, onSubmit }) {
           <div className="field"><label>Amount (PKR)</label>
             <input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="0" /></div>
           <div style={{ background: "rgba(14, 165, 233, 0.08)", padding: "10px 14px", borderRadius: 8, fontSize: 13, color: "#0284C7", marginBottom: 14 }}>
-            💡 <b>Direct Settlement Rule:</b> Debits Accounts Payable (Vendor) &amp; Credits Accounts Receivable (Client: <b>{party || "Client"}</b>). Neither Bank nor Cash balance is touched!
+            💡 <b>Direct Settlement Rule:</b> Debits Accounts Payable (Vendor: <b>{category || "Vendor"}</b>) &amp; Credits Accounts Receivable (Client: <b>{party || "Client"}</b>). Neither Bank nor Cash balance is touched!
           </div>
         </>
       )}
-
 
       {type === "JV" && (
         <>
@@ -5898,6 +6099,7 @@ function VoucherModal({ defaultType, projects = [], onClose, onSubmit }) {
     </ModalShell>
   );
 }
+
 
 
 function BookHoardingModal({ hoarding, projects, onClose, onSubmit }) {
