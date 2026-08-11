@@ -972,6 +972,12 @@ export default function App() {
   const [showVoucherForm, setShowVoucherForm] = useState(false);
   const [voucherDefaultType, setVoucherDefaultType] = useState("JV");
 
+  /* AI Document Review UI States */
+  const [docStatusFilter, setDocStatusFilter] = useState("all");
+  const [docSearchQuery, setDocSearchQuery] = useState("");
+  const [reviewingDocId, setReviewingDocId] = useState(null);
+
+
   /* General Ledger & COA UI States */
   const [ledgerSubTab, setLedgerSubTab] = useState("entries");
   const [selectedLedgerAccount, setSelectedLedgerAccount] = useState("all");
@@ -2276,68 +2282,166 @@ export default function App() {
 
   async function handleFileUpload(file) {
     const docId = uid();
-    setDocuments(d => [{ id: docId, fileName: file.name, status: "processing" }, ...d]);
-    try {
-      await new Promise(r => setTimeout(r, 1200));
+    const reader = new FileReader();
+
+    reader.onload = async (e) => {
+      const fileDataUrl = e.target.result;
       const filenameLower = file.name.toLowerCase();
-      let extractedData = {
-        documentType: filenameLower.includes("quote") ? "Quotation" : "Invoice",
-        party: filenameLower.includes("meta") ? "Meta Platforms Inc" : (filenameLower.includes("dawn") ? "Pakistan Herald Publications" : "Vendor / Client Partner"),
-        amount: Math.floor(Math.random() * 250000) + 45000,
-        date: TODAY.toISOString().slice(0, 10),
-        description: "Media Production & Placement Billing",
+
+      let docType = "Invoice";
+      if (filenameLower.includes("receipt") || filenameLower.includes("rec")) docType = "Expense Receipt";
+      else if (filenameLower.includes("quote") || filenameLower.includes("qtn")) docType = "Quotation";
+      else if (filenameLower.includes("po") || filenameLower.includes("purchase")) docType = "Purchase Order";
+      else if (filenameLower.includes("voucher") || filenameLower.includes("pv")) docType = "Payment Voucher";
+      else if (filenameLower.includes("rv")) docType = "Receipt Voucher";
+      else if (filenameLower.includes("bill")) docType = "Bill";
+      else if (filenameLower.includes("bank") || filenameLower.includes("stmt")) docType = "Bank Statement";
+
+      const newDoc = {
+        id: docId,
+        fileName: file.name,
+        fileType: file.type || "application/pdf",
+        fileDataUrl,
+        fileSize: (file.size / 1024).toFixed(1) + " KB",
+        uploadedAt: TODAY.toISOString().slice(0, 10),
+        status: "processing", // uploaded -> processing -> extracted -> ready_for_review -> draft / posted
       };
-      setDocuments(d => d.map(doc => doc.id === docId
-        ? { ...doc, status: "extracted", extracted: extractedData, direction: "received" }
-        : doc));
-    } catch (err) {
-      setDocuments(d => d.map(doc => doc.id === docId ? { ...doc, status: "error" } : doc));
+
+      setDocuments(d => [newDoc, ...d]);
+
+      // Simulate AI OCR reading delay (1.2s)
+      setTimeout(() => {
+        const partyName = filenameLower.includes("meta") ? "Meta Platforms Inc"
+          : (filenameLower.includes("dawn") ? "Pakistan Herald Publications"
+          : (filenameLower.includes("kelect") || filenameLower.includes("electric") ? "K-Electric Limited"
+          : "ABC Foods & Beverages"));
+
+        const baseAmount = Math.floor(Math.random() * 200000) + 45000;
+        const taxAmount = Math.round(baseAmount * 0.15);
+        const totalAmount = baseAmount + taxAmount;
+
+        const matchedProject = projects.find(p =>
+          filenameLower.includes(p.client.toLowerCase()) ||
+          filenameLower.includes(p.name.toLowerCase()) ||
+          filenameLower.includes(p.projectCode.toLowerCase())
+        ) || projects[0];
+
+        let cat = "Marketing & Advertising";
+        let subcat = "Meta / Facebook Ads";
+        if (filenameLower.includes("electric") || filenameLower.includes("bill")) {
+          cat = "Utilities";
+          subcat = "Electricity";
+        } else if (filenameLower.includes("rent")) {
+          cat = "Office & Administration";
+          subcat = "Office Rent";
+        }
+
+        const invNum = "INV-" + (Math.floor(Math.random() * 8999) + 1000);
+
+        const isDup = expenses.some(exp => exp.vendor === partyName && exp.amount === totalAmount) ||
+                      invoices.some(inv => inv.client === partyName && inv.amount === totalAmount);
+
+        const extracted = {
+          documentType: docType,
+          aiConfidence: (Math.floor(Math.random() * 6) + 93) + "%",
+          documentNumber: invNum,
+          date: TODAY.toISOString().slice(0, 10),
+          dueDate: new Date(Date.now() + 15 * 86400000).toISOString().slice(0, 10),
+          party: partyName,
+          projectId: matchedProject ? matchedProject.id : "",
+          category: cat,
+          subcategory: subcat,
+          baseAmount,
+          taxAmount,
+          totalAmount,
+          currency: "PKR",
+          paymentMode: "Bank",
+          bankAccountId: bankAccounts.find(b => b.accountType !== "Petty Cash")?.id || "bank-hbl",
+          description: "Media Production, Placement & Digital Campaigns",
+          poNumber: "PO-" + Math.floor(Math.random() * 900 + 100),
+        };
+
+        setDocuments(docs => docs.map(d => d.id === docId
+          ? { ...d, status: isDup ? "duplicate" : "ready_for_review", isDuplicate: isDup, extracted }
+          : d
+        ));
+      }, 1200);
+    };
+
+    reader.readAsDataURL(file);
+  }
+
+  function saveDocumentDraft(docId, customExtracted) {
+    setDocuments(docs => docs.map(d => d.id === docId
+      ? { ...d, status: "draft", extracted: customExtracted || d.extracted }
+      : d
+    ));
+    setReviewingDocId(null);
+  }
+
+  function postDocumentToLedger(docId, customExtracted) {
+    const doc = documents.find(d => d.id === docId);
+    if (!doc) return;
+    const extracted = customExtracted || doc.extracted;
+
+    const baseAmt = Number(extracted.baseAmount) || 0;
+    const taxAmt = Number(extracted.taxAmount) || 0;
+    const totalAmt = Number(extracted.totalAmount) || (baseAmt + taxAmt);
+    const category = extracted.category || "Marketing & Advertising";
+    const subcategory = extracted.subcategory || "Meta / Facebook Ads";
+    const glKey = getGLAccountKeyForSubcategory(category, subcategory);
+
+    const paymentMode = extracted.paymentMode || "Bank";
+    const bankAccountId = paymentMode === "Cash" ? "bank-cash" : (extracted.bankAccountId || "bank-hbl");
+
+    const journalLines = [
+      { account: glKey, debit: baseAmt, credit: 0, memo: `${category} → ${subcategory}` },
+    ];
+    if (taxAmt > 0) {
+      journalLines.push({ account: "srb_payable", debit: taxAmt, credit: 0, memo: "Input Sales Tax" });
     }
-  }
 
-  function updateDocField(docId, field, value) {
-    setDocuments(d => d.map(doc => doc.id === docId ? { ...doc, extracted: { ...doc.extracted, [field]: value } } : doc));
-  }
-  function setDocDirection(docId, direction) {
-    setDocuments(d => d.map(doc => doc.id === docId ? { ...doc, direction } : doc));
-  }
-
-  function postDocumentToLedger(doc) {
-    const { extracted, direction } = doc;
-    const amount = Number(extracted.amount) || 0;
-    if (direction === "received") {
-      const exp = { id: uid(), vendor: extracted.party, category: "Uploaded Document", amount, date: extracted.date, paidVia: "Bank" };
-      setExpenses(list => [exp, ...list]);
-      postEntry(extracted.date, `${extracted.party} (${extracted.description})`, [
-        { account: "expense", debit: amount, credit: 0, memo: "Uploaded Document" },
-        { account: "bank", debit: 0, credit: amount },
-      ], "DOC-" + doc.id.toUpperCase());
-    } else if (extracted.documentType === "Quotation") {
-      // quotations saved for reference
-    } else if (direction === "issued") {
-      const sstR = Number(extracted.sstRate) || 0;
-      const whtR = Number(extracted.whtRate) || 0;
-      const sstA = extracted.applySst ? amount * sstR / 100 : 0;
-      const whtA = extracted.applyWht ? amount * whtR / 100 : 0;
-      addInvoice({
-        client: extracted.party || "Client",
-        description: extracted.description || "Uploaded Invoice",
-        amount,
-        applySst: !!extracted.applySst,
-        sstRate: sstR,
-        sstAmount: sstA,
-        applyWht: !!extracted.applyWht,
-        whtRate: whtR,
-        whtAmount: whtA,
-        totalAmount: amount + sstA - whtA,
-        issueDate: extracted.date || TODAY.toISOString().slice(0, 10),
-        dueDate: extracted.date || TODAY.toISOString().slice(0, 10)
-      });
+    if (paymentMode === "Cash") {
+      journalLines.push({ account: "cash", bankAccountId: "bank-cash", debit: 0, credit: totalAmt });
+    } else if (paymentMode === "Bank") {
+      journalLines.push({ account: "bank", bankAccountId, debit: 0, credit: totalAmt });
     } else {
-      createVoucher("SV", { date: extracted.date, party: extracted.party, description: extracted.description, amount });
+      journalLines.push({ account: "ap", debit: 0, credit: totalAmt });
     }
-    setDocuments(d => d.map(x => x.id === doc.id ? { ...x, status: "posted" } : x));
+
+    const docRef = extracted.documentNumber || `DOC-${doc.id.toUpperCase().slice(0, 6)}`;
+    const postDesc = `[AI Doc: ${extracted.documentType || 'Invoice'}] ${extracted.party} - ${extracted.description || 'Uploaded Document'}`;
+    postEntry(extracted.date || TODAY.toISOString().slice(0, 10), postDesc, journalLines, docRef);
+
+    const expRecord = {
+      id: uid(),
+      vendor: extracted.party,
+      category,
+      subcategory,
+      accountKey: glKey,
+      amount: totalAmt,
+      date: extracted.date || TODAY.toISOString().slice(0, 10),
+      status: paymentMode === "Unpaid" ? "unpaid" : "paid",
+      paidVia: paymentMode === "Cash" ? "Cash" : "Bank",
+      projectId: extracted.projectId || null,
+      documentId: doc.id,
+      docNumber: docRef
+    };
+    setExpenses(prev => [expRecord, ...prev]);
+
+    setDocuments(docs => docs.map(d => d.id === docId
+      ? { ...d, status: "posted", extracted, postedAt: TODAY.toISOString().slice(0, 10), docRef }
+      : d
+    ));
+
+    setReviewingDocId(null);
   }
+
+  function deleteDocument(docId) {
+    setDocuments(docs => docs.filter(d => d.id !== docId));
+    if (reviewingDocId === docId) setReviewingDocId(null);
+  }
+
 
   /* Build Navigation items filtered by currentUser permissions */
   const ALL_NAV_ITEMS = [
@@ -3813,98 +3917,159 @@ export default function App() {
 
         {tab === "documents" && (
           <>
-            <div className="card" style={{ padding: 24, marginBottom: 18, textAlign: "center", border: "2px dashed var(--rule)" }}>
-              <UploadCloud size={32} color="var(--gold)" style={{ marginBottom: 8 }} />
-              <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 4 }}>Upload Invoice, Quotation, or Receipt</div>
-              <div style={{ fontSize: 13, marginBottom: 14, color: "var(--ink-muted)" }}>
-                Upload an image or PDF. The extraction parser automatically drafts ledger entries for confirmation.
+            {/* DOCUMENT PROCESSING WORKFLOW PILL HEADER */}
+            <div className="card" style={{ padding: "14px 20px", marginBottom: 18, background: "linear-gradient(135deg, rgba(2, 132, 199, 0.06), rgba(5, 150, 105, 0.06))", border: "1px solid rgba(2, 132, 199, 0.15)" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: 15, color: "var(--ink)" }}>AI Document OCR &amp; Accounting Posting Workflow</div>
+                  <div style={{ fontSize: 12.5, color: "var(--ink-muted)", marginTop: 2 }}>
+                    Upload Invoice, Quotation, PO, or Receipt. System extracts data for user review. No financial entry is posted automatically.
+                  </div>
+                </div>
+                <div style={{ display: "flex", gap: 6, fontSize: 11.5, fontWeight: 700 }}>
+                  <span style={{ background: "#E0F2FE", color: "#0369A1", padding: "4px 8px", borderRadius: 12 }}>1. UPLOAD</span>
+                  <span style={{ color: "var(--ink-muted)" }}>→</span>
+                  <span style={{ background: "#FEF3C7", color: "#B45309", padding: "4px 8px", borderRadius: 12 }}>2. AI EXTRACT</span>
+                  <span style={{ color: "var(--ink-muted)" }}>→</span>
+                  <span style={{ background: "#F3E8FF", color: "#6B21A8", padding: "4px 8px", borderRadius: 12 }}>3. EDIT &amp; REVIEW</span>
+                  <span style={{ color: "var(--ink-muted)" }}>→</span>
+                  <span style={{ background: "#DCFCE7", color: "#15803D", padding: "4px 8px", borderRadius: 12 }}>4. ACCOUNTING PREVIEW &amp; POST</span>
+                </div>
               </div>
-              <label className="btn btn-primary" style={{ display: "inline-flex", cursor: "pointer" }}>
-                <Plus size={14} /> Upload File
-                <input type="file" accept="image/*,.pdf" style={{ display: "none" }}
+            </div>
+
+            {/* UPLOAD FILE CARD */}
+            <div className="card" style={{ padding: 24, marginBottom: 18, textAlign: "center", border: "2px dashed var(--rule)", background: "#FAFDFB" }}>
+              <UploadCloud size={36} color="var(--gold)" style={{ marginBottom: 8 }} />
+              <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 4 }}>Upload Invoice, Receipt, PO, or Business Document</div>
+              <div style={{ fontSize: 13, marginBottom: 14, color: "var(--ink-muted)" }}>
+                Supports PDF, JPG, PNG, WEBP, DOC, DOCX, XLS, XLSX files.
+              </div>
+              <label className="btn btn-primary" style={{ display: "inline-flex", cursor: "pointer", padding: "10px 20px" }}>
+                <Plus size={16} /> Select &amp; Upload Document
+                <input type="file" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx" style={{ display: "none" }}
                   onChange={e => { if (e.target.files[0]) handleFileUpload(e.target.files[0]); e.target.value = ""; }} />
               </label>
             </div>
 
-            {documents.map(doc => (
-              <div className="card" key={doc.id} style={{ padding: 18, marginBottom: 14 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-                  <div style={{ fontWeight: 700, fontSize: 14.5, display: "flex", alignItems: "center", gap: 8 }}>
-                    <FileCheck2 size={16} color="var(--gold)" /> {doc.fileName}
-                  </div>
-                  {doc.status === "processing" && <span style={{ fontSize: 13, color: "var(--ink-muted)", display: "flex", alignItems: "center", gap: 6 }}><Loader2 size={14} className="spin" /> Reading document…</span>}
-                  {doc.status === "error" && <span style={{ fontSize: 13, color: "var(--rose)" }}>Error reading document — try another photo.</span>}
-                  {doc.status === "posted" && <StatusBadge status="Paid" />}
-                </div>
+            {/* STATS & FILTER TOOLBAR */}
+            <div className="card" style={{ padding: "12px 16px", marginBottom: 16, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                {[
+                  { key: "all", label: `All Documents (${documents.length})` },
+                  { key: "ready_for_review", label: `Ready for Review (${documents.filter(d => d.status === "ready_for_review").length})` },
+                  { key: "draft", label: `Drafts (${documents.filter(d => d.status === "draft").length})` },
+                  { key: "posted", label: `Posted (${documents.filter(d => d.status === "posted").length})` },
+                  { key: "duplicate", label: `Duplicates (${documents.filter(d => d.status === "duplicate").length})` },
+                ].map(tabItem => (
+                  <button
+                    key={tabItem.key}
+                    className={"btn" + (docStatusFilter === tabItem.key ? " btn-primary" : "")}
+                    style={{ fontSize: 12.5, padding: "5px 12px" }}
+                    onClick={() => setDocStatusFilter(tabItem.key)}
+                  >
+                    {tabItem.label}
+                  </button>
+                ))}
+              </div>
 
-                {doc.extracted && doc.status !== "posted" && (
-                  <>
-                    <div style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
-                      <button className={"btn" + (doc.direction === "received" ? " btn-primary" : "")} style={{ fontSize: 12.5, padding: "6px 12px" }}
-                        onClick={() => setDocDirection(doc.id, "received")}>Vendor Bill</button>
-                      <button className={"btn" + (doc.direction === "issued" ? " btn-primary" : "")} style={{ fontSize: 12.5, padding: "6px 12px" }}
-                        onClick={() => setDocDirection(doc.id, "issued")}>Client Invoice / Quote</button>
-                    </div>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 12 }}>
-                      <div className="field" style={{ margin: 0 }}><label>Party Name</label>
-                        <input value={doc.extracted.party || ""} onChange={e => updateDocField(doc.id, "party", e.target.value)} /></div>
-                      <div className="field" style={{ margin: 0 }}><label>Amount (PKR)</label>
-                        <input type="number" value={doc.extracted.amount || ""} onChange={e => updateDocField(doc.id, "amount", e.target.value)} /></div>
-                      <div className="field" style={{ margin: 0 }}><label>Date</label>
-                        <input type="date" value={doc.extracted.date || ""} onChange={e => updateDocField(doc.id, "date", e.target.value)} /></div>
-                      <div className="field" style={{ margin: 0 }}><label>Class</label>
-                        <select value={doc.extracted.documentType || "Invoice"} onChange={e => updateDocField(doc.id, "documentType", e.target.value)}>
-                          <option>Invoice</option><option>Quotation</option><option>Receipt</option><option>Other</option>
-                        </select></div>
-                      <div className="field" style={{ margin: 0, gridColumn: "1 / -1" }}><label>Particulars</label>
-                        <input value={doc.extracted.description || ""} onChange={e => updateDocField(doc.id, "description", e.target.value)} /></div>
-                      {doc.direction === "issued" && (
-                        <div className="field" style={{ margin: 0, gridColumn: "1 / -1", display: "flex", flexDirection: "column", gap: 10 }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                            <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontWeight: 600, minWidth: 200 }}>
-                              <input type="checkbox" checked={!!doc.extracted.applySst} onChange={e => updateDocField(doc.id, "applySst", e.target.checked)} />
-                              Apply Sindh Sales Tax (SRB)
-                            </label>
-                            {doc.extracted.applySst && (
-                              <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                                <input type="number" value={doc.extracted.sstRate || ""} onChange={e => updateDocField(doc.id, "sstRate", e.target.value)} placeholder="%" style={{ width: 60, padding: "4px 8px", fontSize: 13 }} />
-                                <span style={{ fontSize: 13, color: "var(--ink-muted)" }}>%</span>
-                              </div>
-                            )}
+              <div style={{ position: "relative", minWidth: 200 }}>
+                <Search size={14} style={{ position: "absolute", left: 10, top: 10, color: "var(--ink-muted)" }} />
+                <input
+                  value={docSearchQuery}
+                  onChange={e => setDocSearchQuery(e.target.value)}
+                  placeholder="Search filename, vendor, or invoice #…"
+                  style={{ paddingLeft: 30, fontSize: 12.5, height: 34 }}
+                />
+              </div>
+            </div>
+
+            {/* DOCUMENTS GRID */}
+            {(() => {
+              const filteredDocs = documents.filter(doc => {
+                if (docStatusFilter !== "all" && doc.status !== docStatusFilter) return false;
+                if (docSearchQuery) {
+                  const q = docSearchQuery.toLowerCase();
+                  const fn = (doc.fileName || "").toLowerCase();
+                  const pty = (doc.extracted?.party || "").toLowerCase();
+                  const num = (doc.extracted?.documentNumber || "").toLowerCase();
+                  return fn.includes(q) || pty.includes(q) || num.includes(q);
+                }
+                return true;
+              });
+
+              if (filteredDocs.length === 0) {
+                return (
+                  <div className="card" style={{ padding: 40, textAlign: "center", color: "var(--ink-muted)" }}>
+                    <FileText size={40} style={{ marginBottom: 12, opacity: 0.5 }} />
+                    <div style={{ fontSize: 15, fontWeight: 700 }}>No Documents Found</div>
+                    <div style={{ fontSize: 13, marginTop: 4 }}>Upload a new document or adjust your search filters.</div>
+                  </div>
+                );
+              }
+
+              return (
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))", gap: 16 }}>
+                  {filteredDocs.map(doc => (
+                    <div key={doc.id} className="card" style={{ padding: 16, display: "flex", flexDirection: "column", justifyContent: "space-between", borderLeft: `4px solid ${doc.status === "posted" ? "#059669" : doc.status === "duplicate" ? "#DC2626" : doc.status === "draft" ? "#D97706" : "#0284C7"}` }}>
+                      <div>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+                          <div style={{ fontWeight: 700, fontSize: 14, color: "var(--ink)", display: "flex", alignItems: "center", gap: 8, wordBreak: "break-all" }}>
+                            <FileCheck2 size={16} color="var(--gold)" /> {doc.fileName}
                           </div>
-                          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                            <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontWeight: 600, minWidth: 200 }}>
-                              <input type="checkbox" checked={!!doc.extracted.applyWht} onChange={e => updateDocField(doc.id, "applyWht", e.target.checked)} />
-                              Apply Withholding Tax (WHT)
-                            </label>
-                            {doc.extracted.applyWht && (
-                              <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                                <input type="number" value={doc.extracted.whtRate || ""} onChange={e => updateDocField(doc.id, "whtRate", e.target.value)} placeholder="%" style={{ width: 60, padding: "4px 8px", fontSize: 13 }} />
-                                <span style={{ fontSize: 13, color: "var(--ink-muted)" }}>%</span>
-                              </div>
-                            )}
-                          </div>
-                          {(doc.extracted.applySst || doc.extracted.applyWht) && (
-                            <div style={{ fontSize: 13, marginTop: 4, color: "var(--ink-muted)" }}>
-                              Subtotal: {pkr(doc.extracted.amount)} 
-                              {doc.extracted.applySst && ` • Tax: +${pkr(((doc.extracted.amount || 0) * (Number(doc.extracted.sstRate) || 0)) / 100)}`}
-                              {doc.extracted.applyWht && ` • WHT: -${pkr(((doc.extracted.amount || 0) * (Number(doc.extracted.whtRate) || 0)) / 100)}`}
-                              {' '}• Net Total: <strong style={{ color: "var(--ink)" }}>{pkr((doc.extracted.amount || 0) + (doc.extracted.applySst ? ((doc.extracted.amount || 0) * (Number(doc.extracted.sstRate) || 0)) / 100 : 0) - (doc.extracted.applyWht ? ((doc.extracted.amount || 0) * (Number(doc.extracted.whtRate) || 0)) / 100 : 0))}</strong>
+                          {doc.status === "processing" && (
+                            <span style={{ fontSize: 11.5, color: "#0284C7", background: "rgba(2, 132, 199, 0.1)", padding: "2px 8px", borderRadius: 10, fontWeight: 700, display: "flex", alignItems: "center", gap: 4 }}>
+                              <Loader2 size={12} className="spin" /> READING…
+                            </span>
+                          )}
+                          {doc.status === "ready_for_review" && <span style={{ fontSize: 11.5, background: "#E0F2FE", color: "#0369A1", padding: "2px 8px", borderRadius: 10, fontWeight: 700 }}>READY FOR REVIEW</span>}
+                          {doc.status === "draft" && <span style={{ fontSize: 11.5, background: "#FEF3C7", color: "#B45309", padding: "2px 8px", borderRadius: 10, fontWeight: 700 }}>DRAFT</span>}
+                          {doc.status === "posted" && <span style={{ fontSize: 11.5, background: "#DCFCE7", color: "#15803D", padding: "2px 8px", borderRadius: 10, fontWeight: 700 }}>POSTED</span>}
+                          {doc.status === "duplicate" && <span style={{ fontSize: 11.5, background: "#FEE2E2", color: "#991B1B", padding: "2px 8px", borderRadius: 10, fontWeight: 700 }}>DUPLICATE</span>}
+                        </div>
+
+                        {doc.extracted && (
+                          <div style={{ background: "var(--bg)", padding: 10, borderRadius: 6, fontSize: 12, marginBottom: 12, border: "1px solid var(--rule)" }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+                              <span style={{ color: "var(--ink-muted)" }}>Type: <strong>{doc.extracted.documentType}</strong></span>
+                              <span style={{ color: "#059669", fontWeight: 700 }}>Confidence: {doc.extracted.aiConfidence}</span>
                             </div>
+                            <div style={{ fontWeight: 600, color: "var(--ink)", marginBottom: 2 }}>
+                              Party: {doc.extracted.party || "Unmatched"}
+                            </div>
+                            <div style={{ display: "flex", justifyContent: "space-between", color: "var(--ink-muted)" }}>
+                              <span>Doc #: {doc.extracted.documentNumber}</span>
+                              <span className="mono" style={{ fontWeight: 700, color: "var(--ink)", fontSize: 13 }}>{pkr(doc.extracted.totalAmount || doc.extracted.amount)}</span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid var(--rule)", paddingTop: 10 }}>
+                        <span style={{ fontSize: 11, color: "var(--ink-muted)" }}>{doc.uploadedAt || "Today"} • {doc.fileSize || "PDF"}</span>
+                        <div style={{ display: "flex", gap: 6 }}>
+                          <button className="btn" style={{ padding: "4px 8px", fontSize: 12, color: "#DC2626" }} onClick={() => deleteDocument(doc.id)}>
+                            <Trash2 size={13} />
+                          </button>
+                          {doc.status !== "posted" ? (
+                            <button className="btn btn-primary" style={{ padding: "5px 12px", fontSize: 12.5, fontWeight: 700 }} onClick={() => setReviewingDocId(doc.id)}>
+                              Review &amp; Edit Data
+                            </button>
+                          ) : (
+                            <button className="btn" style={{ padding: "5px 12px", fontSize: 12.5 }} onClick={() => setReviewingDocId(doc.id)}>
+                              View Record
+                            </button>
                           )}
                         </div>
-                      )}
+                      </div>
                     </div>
-                    <button className="btn btn-primary" style={{ fontSize: 13 }} onClick={() => postDocumentToLedger(doc)}>
-                      Confirm &amp; Post to General Ledger
-                    </button>
-
-                  </>
-                )}
-              </div>
-            ))}
+                  ))}
+                </div>
+              );
+            })()}
           </>
         )}
+
 
         {tab === "ledger" && (
           <>
@@ -4532,6 +4697,8 @@ export default function App() {
       {payingPOId && <PayPOModal po={purchaseOrders.find(p => p.id === payingPOId)} onClose={() => setPayingPOId(null)} onSubmit={(id, via, date) => { payPO(id, via, date); setPayingPOId(null); }} />}
 
       {showVoucherForm && <VoucherModal projects={projects} bankAccounts={bankAccounts} defaultType={voucherDefaultType} onClose={() => setShowVoucherForm(false)} onSubmit={createVoucher} />}
+      {reviewingDocId && <DocumentReviewModal doc={documents.find(d => d.id === reviewingDocId)} projects={projects} bankAccounts={bankAccounts} onClose={() => setReviewingDocId(null)} onSaveDraft={saveDocumentDraft} onPost={postDocumentToLedger} onCreateProjectTrigger={() => { setReviewingDocId(null); setShowProjectForm(true); }} />}
+
 
 
 
@@ -6108,6 +6275,305 @@ function VoucherModal({ defaultType, projects = [], bankAccounts = [], onClose, 
     </ModalShell>
   );
 }
+
+function DocumentReviewModal({ doc, projects = [], bankAccounts = [], onClose, onSaveDraft, onPost, onCreateProjectTrigger }) {
+  if (!doc) return null;
+  const [extracted, setExtracted] = useState({ ...(doc.extracted || {}) });
+  const [zoom, setZoom] = useState(100);
+  const [page, setPage] = useState(1);
+  const [validationErrors, setValidationErrors] = useState([]);
+
+  const category = extracted.category || "Marketing & Advertising";
+  const subcategory = extracted.subcategory || "Meta / Facebook Ads";
+
+  const currentCategoryObj = EXPENSE_CLASSIFICATION[category] || EXPENSE_CLASSIFICATION["Office & Administration"];
+  const currentSubcategories = currentCategoryObj.subcategories || [];
+
+  const glKey = getGLAccountKeyForSubcategory(category, subcategory);
+  const glAccountObj = ACCOUNTS[glKey] || ACCOUNTS.expense;
+
+  const realBankAccounts = useMemo(() => {
+    return bankAccounts.filter(b => b.id !== "bank-cash" && b.accountType !== "Petty Cash");
+  }, [bankAccounts]);
+
+  const selectedBankObj = bankAccounts.find(b => b.id === extracted.bankAccountId) || realBankAccounts[0];
+
+  const baseAmt = Number(extracted.baseAmount) || Number(extracted.amount) || 0;
+  const taxAmt = Number(extracted.taxAmount) || 0;
+  const totalAmt = Number(extracted.totalAmount) || (baseAmt + taxAmt);
+
+  const updateField = (key, val) => {
+    setExtracted(prev => {
+      const next = { ...prev, [key]: val };
+      if (key === "category") {
+        const subList = EXPENSE_CLASSIFICATION[val]?.subcategories || [];
+        next.subcategory = subList[0]?.name || "";
+      }
+      if (key === "baseAmount" || key === "taxAmount") {
+        const b = key === "baseAmount" ? Number(val) || 0 : Number(prev.baseAmount) || 0;
+        const t = key === "taxAmount" ? Number(val) || 0 : Number(prev.taxAmount) || 0;
+        next.totalAmount = b + t;
+      }
+      return next;
+    });
+  };
+
+  const handlePost = () => {
+    const errs = [];
+    if (!extracted.party) errs.push("Party / Vendor / Customer Name is required.");
+    if (!extracted.documentNumber) errs.push("Document / Invoice Number is required.");
+    if (!extracted.date) errs.push("Document Date is required.");
+    if (!extracted.category) errs.push("Expense Category is required.");
+    if (totalAmt <= 0) errs.push("Total Amount must be greater than 0.");
+    if (extracted.paymentMode === "Bank" && !extracted.bankAccountId) errs.push("Bank Account selection is mandatory.");
+
+    if (errs.length > 0) {
+      setValidationErrors(errs);
+      return;
+    }
+
+    setValidationErrors([]);
+    onPost(doc.id, extracted);
+  };
+
+  const handleDraft = () => {
+    onSaveDraft(doc.id, extracted);
+  };
+
+  return (
+    <ModalShell title={`AI Document Review & Accounting Entry — ${doc.fileName}`} onClose={onClose} width="95%" style={{ maxWidth: 1200 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "var(--bg)", padding: "10px 14px", borderRadius: 8, marginBottom: 14, border: "1px solid var(--rule)" }}>
+        <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+          <span style={{ fontWeight: 700, fontSize: 13, color: "var(--ink)" }}>Document Type: <span style={{ color: "#0284C7" }}>{extracted.documentType || "Invoice"}</span></span>
+          <span style={{ fontSize: 12, background: "rgba(5, 150, 105, 0.12)", color: "#059669", padding: "2px 8px", borderRadius: 12, fontWeight: 700 }}>AI Confidence: {extracted.aiConfidence || "96%"}</span>
+          {doc.isDuplicate && <span style={{ fontSize: 12, background: "rgba(220, 38, 38, 0.12)", color: "#DC2626", padding: "2px 8px", borderRadius: 12, fontWeight: 700 }}>⚠️ Duplicate Warning</span>}
+        </div>
+        <div style={{ fontSize: 12, color: "var(--ink-muted)" }}>
+          Status: <strong style={{ textTransform: "uppercase", color: "var(--gold)" }}>{doc.status.replace("_", " ")}</strong>
+        </div>
+      </div>
+
+      {doc.isDuplicate && (
+        <div style={{ background: "rgba(220, 38, 38, 0.08)", border: "1px solid rgba(220, 38, 38, 0.2)", padding: "10px 14px", borderRadius: 8, fontSize: 12.5, color: "#DC2626", marginBottom: 14 }}>
+          ⚠️ <b>Possible Duplicate Document Detected:</b> A document/invoice for <b>{extracted.party}</b> with <b>{pkr(totalAmt)}</b> already exists in the system. Please verify carefully before posting.
+        </div>
+      )}
+
+      {validationErrors.length > 0 && (
+        <div style={{ background: "rgba(220, 38, 38, 0.08)", border: "1px solid rgba(220, 38, 38, 0.2)", padding: "10px 14px", borderRadius: 8, fontSize: 12.5, color: "#DC2626", marginBottom: 14 }}>
+          <strong>Cannot Post Transaction — Please fix the following errors:</strong>
+          <ul style={{ margin: "4px 0 0 16px", padding: 0 }}>
+            {validationErrors.map((err, i) => <li key={i}>{err}</li>)}
+          </ul>
+        </div>
+      )}
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18, maxHeight: "72vh", overflowY: "auto" }}>
+        
+        {/* LEFT COLUMN: ORIGINAL DOCUMENT PREVIEW */}
+        <div style={{ background: "var(--bg)", border: "1px solid var(--rule)", borderRadius: 8, padding: 14, display: "flex", flexDirection: "column" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+            <span style={{ fontWeight: 700, fontSize: 13, display: "flex", alignItems: "center", gap: 6 }}>
+              <FileCheck2 size={15} color="var(--gold)" /> Original Document Preview
+            </span>
+            <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+              <button className="btn" style={{ padding: "3px 7px", fontSize: 11 }} onClick={() => setZoom(z => Math.max(50, z - 15))}>-</button>
+              <span style={{ fontSize: 11.5, color: "var(--ink-muted)" }}>{zoom}%</span>
+              <button className="btn" style={{ padding: "3px 7px", fontSize: 11 }} onClick={() => setZoom(z => Math.min(200, z + 15))}>+</button>
+              {doc.fileDataUrl && (
+                <a href={doc.fileDataUrl} download={doc.fileName} className="btn" style={{ padding: "3px 7px", fontSize: 11, display: "inline-flex", textDecoration: "none" }}>
+                  <Download size={12} style={{ marginRight: 4 }} /> Save
+                </a>
+              )}
+            </div>
+          </div>
+
+          <div style={{ flex: 1, minHeight: 400, background: "#0F172A", borderRadius: 6, display: "flex", alignItems: "center", justifyContent: "center", overflow: "auto", position: "relative", padding: 10 }}>
+            {doc.fileDataUrl && doc.fileDataUrl.startsWith("data:image") ? (
+              <img src={doc.fileDataUrl} alt="Uploaded Document" style={{ transform: `scale(${zoom / 100})`, transformOrigin: "top center", transition: "transform 0.2s ease", maxWidth: "100%", height: "auto", borderRadius: 4 }} />
+            ) : (
+              <div style={{ color: "#94A3B8", textAlign: "center", padding: 30 }}>
+                <FileText size={48} style={{ marginBottom: 12, opacity: 0.7 }} />
+                <div style={{ fontSize: 14, fontWeight: 700, color: "#F8FAFC" }}>{doc.fileName}</div>
+                <div style={{ fontSize: 12, marginTop: 4 }}>{doc.fileSize || "PDF Document"}</div>
+                {doc.fileDataUrl && (
+                  <iframe src={doc.fileDataUrl} title="Document Preview" style={{ width: "100%", height: 380, border: "none", marginTop: 12, borderRadius: 6, background: "#FFFFFF" }} />
+                )}
+              </div>
+            )}
+          </div>
+
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 10, fontSize: 11.5, color: "var(--ink-muted)" }}>
+            <span>Page {page} of 1</span>
+            <span>Uploaded: {doc.uploadedAt || "Today"}</span>
+          </div>
+        </div>
+
+        {/* RIGHT COLUMN: AI EXTRACTED DATA (100% EDITABLE FORM) */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            <div className="field" style={{ margin: 0 }}>
+              <label>Document Type</label>
+              <select value={extracted.documentType || "Invoice"} onChange={e => updateField("documentType", e.target.value)}>
+                <option value="Invoice">Invoice</option>
+                <option value="Payment Voucher">Payment Voucher</option>
+                <option value="Receipt Voucher">Receipt Voucher</option>
+                <option value="Quotation">Quotation</option>
+                <option value="Purchase Order">Purchase Order</option>
+                <option value="Expense Receipt">Expense Receipt</option>
+                <option value="Bill">Bill</option>
+                <option value="Credit Note">Credit Note</option>
+                <option value="Debit Note">Debit Note</option>
+                <option value="Bank Statement">Bank Statement</option>
+                <option value="Other">Other Business Document</option>
+              </select>
+            </div>
+
+            <div className="field" style={{ margin: 0 }}>
+              <label>Document / Invoice #</label>
+              <input value={extracted.documentNumber || ""} onChange={e => updateField("documentNumber", e.target.value)} placeholder="e.g. INV-1023" />
+            </div>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            <div className="field" style={{ margin: 0 }}>
+              <label>Document Date</label>
+              <input type="date" value={extracted.date || ""} onChange={e => updateField("date", e.target.value)} />
+            </div>
+            <div className="field" style={{ margin: 0 }}>
+              <label>Due Date</label>
+              <input type="date" value={extracted.dueDate || ""} onChange={e => updateField("dueDate", e.target.value)} />
+            </div>
+          </div>
+
+          <div className="field" style={{ margin: 0 }}>
+            <label>Vendor / Client / Party Name *</label>
+            <input value={extracted.party || ""} onChange={e => updateField("party", e.target.value)} placeholder="Vendor or Customer Name" />
+          </div>
+
+          <div className="field" style={{ margin: 0 }}>
+            <label style={{ display: "flex", justifyContent: "space-between" }}>
+              <span>Link to Client Project / Cost Center</span>
+              {!extracted.projectId && (
+                <button type="button" onClick={onCreateProjectTrigger} style={{ background: "none", border: "none", color: "#0284C7", fontSize: 11.5, cursor: "pointer", textDecoration: "underline", padding: 0 }}>
+                  + Create New Project
+                </button>
+              )}
+            </label>
+            <select value={extracted.projectId || ""} onChange={e => updateField("projectId", e.target.value)}>
+              <option value="">-- General Overhead / No Project --</option>
+              {projects.map(p => (
+                <option key={p.id} value={p.id}>{p.projectCode} — {p.client} ({p.name})</option>
+              ))}
+            </select>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            <div className="field" style={{ margin: 0 }}>
+              <label>Expense Category (A-P)</label>
+              <select value={category} onChange={e => updateField("category", e.target.value)}>
+                {EXPENSE_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+              </select>
+            </div>
+            <div className="field" style={{ margin: 0 }}>
+              <label>Expense Subcategory</label>
+              <select value={subcategory} onChange={e => updateField("subcategory", e.target.value)}>
+                {currentSubcategories.map(s => <option key={s.name} value={s.name}>{s.name}</option>)}
+              </select>
+            </div>
+          </div>
+
+          <div style={{ background: "rgba(2, 132, 199, 0.08)", border: "1px solid rgba(2, 132, 199, 0.2)", padding: "7px 10px", borderRadius: 6, fontSize: 12 }}>
+            Mapped GL Account: <strong style={{ color: "#0284C7" }}>{glAccountObj.code} — {glAccountObj.name}</strong>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
+            <div className="field" style={{ margin: 0 }}>
+              <label>Subtotal (PKR)</label>
+              <input type="number" value={extracted.baseAmount || 0} onChange={e => updateField("baseAmount", e.target.value)} />
+            </div>
+            <div className="field" style={{ margin: 0 }}>
+              <label>Tax Amount (PKR)</label>
+              <input type="number" value={extracted.taxAmount || 0} onChange={e => updateField("taxAmount", e.target.value)} />
+            </div>
+            <div className="field" style={{ margin: 0 }}>
+              <label>Total Amount (PKR)</label>
+              <input type="number" value={extracted.totalAmount || 0} onChange={e => updateField("totalAmount", e.target.value)} />
+            </div>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            <div className="field" style={{ margin: 0 }}>
+              <label>Payment Settlement Mode</label>
+              <select value={extracted.paymentMode || "Bank"} onChange={e => updateField("paymentMode", e.target.value)}>
+                <option value="Unpaid">Unpaid (Accounts Payable / Credit)</option>
+                <option value="Cash">Paid via Cash (Petty Cash Vault)</option>
+                <option value="Bank">Paid via Bank Account</option>
+              </select>
+            </div>
+
+            {extracted.paymentMode === "Bank" && (
+              <div className="field" style={{ margin: 0 }}>
+                <label>Select Bank Account</label>
+                <select value={extracted.bankAccountId || selectedBankObj?.id || ""} onChange={e => updateField("bankAccountId", e.target.value)}>
+                  {realBankAccounts.map(b => (
+                    <option key={b.id} value={b.id}>{b.bankName} — {b.accountTitle}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+          </div>
+
+          <div className="field" style={{ margin: 0 }}>
+            <label>Particulars / Notes</label>
+            <input value={extracted.description || ""} onChange={e => updateField("description", e.target.value)} placeholder="Description or particulars" />
+          </div>
+
+          {/* LIVE ACCOUNTING ENTRY PREVIEW */}
+          <div style={{ background: "var(--bg)", border: "1px solid var(--rule)", padding: "10px 14px", borderRadius: 8, marginTop: 4 }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: "var(--ink-muted)", textTransform: "uppercase", marginBottom: 6 }}>
+              ⚡ Accounting Double-Entry Preview
+            </div>
+            <div style={{ fontSize: 12.5, fontFamily: "monospace" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", color: "#059669", marginBottom: 2 }}>
+                <span>Debit  : {glAccountObj.code} — {glAccountObj.name}</span>
+                <span>{pkr(baseAmt)}</span>
+              </div>
+              {taxAmt > 0 && (
+                <div style={{ display: "flex", justifyContent: "space-between", color: "#059669", marginBottom: 2 }}>
+                  <span>Debit  : 1140 — Input Sales Tax (SRB)</span>
+                  <span>{pkr(taxAmt)}</span>
+                </div>
+              )}
+              <div style={{ display: "flex", justifyContent: "space-between", color: "#D97706" }}>
+                <span>
+                  Credit : {extracted.paymentMode === "Cash" ? "1010 — Petty Cash Vault" : extracted.paymentMode === "Bank" ? `1020 — ${selectedBankObj?.bankName || "Bank"}` : "2010 — Accounts Payable (AP)"}
+                </span>
+                <span>{pkr(totalAmt)}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* FOOTER ACTIONS */}
+          <div style={{ display: "flex", gap: 10, marginTop: 10 }}>
+            <button className="btn" style={{ flex: 1, justifyContent: "center", padding: "10px" }} onClick={handleDraft}>
+              Save as Draft
+            </button>
+            <button className="btn btn-primary" style={{ flex: 1.5, justifyContent: "center", padding: "10px", fontWeight: 700 }} onClick={handlePost}>
+              Post Transaction
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+    </ModalShell>
+  );
+}
+
+
+
 
 
 
