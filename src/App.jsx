@@ -954,7 +954,9 @@ export default function App() {
 
   const [showExpenseForm, setShowExpenseForm] = useState(false);
   const [editingExpense, setEditingExpense] = useState(null);
+  const [payingExpenseId, setPayingExpenseId] = useState(null);
   const [expenseCategoryFilter, setExpenseCategoryFilter] = useState("all");
+
   const [expenseStatusFilter, setExpenseStatusFilter] = useState("all");
   const [expenseVendorFilter, setExpenseVendorFilter] = useState("all");
   const [expenseSearchQuery, setExpenseSearchQuery] = useState("");
