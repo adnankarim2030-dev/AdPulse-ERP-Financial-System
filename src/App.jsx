@@ -9510,7 +9510,16 @@ function PrintPreviewModal({ doc, onClose }) {
   const [pageOrientation, setPageOrientation] = useState("portrait");
   const [pageMargin, setPageMargin] = useState("8mm");
   const [printScale, setPrintScale] = useState("100%");
-  const [template, setTemplate] = useState(doc.invoiceType || "GENERAL");
+  const [template, setTemplate] = useState(() => {
+    if (doc.invoiceType) return doc.invoiceType;
+    if (doc.oohSites && doc.oohSites.length > 0) return "OOH";
+    if (doc.printingItems && doc.printingItems.length > 0) return "PRINTING";
+    const desc = (doc.description || "").toLowerCase();
+    const typeStr = (doc.type || doc.serviceCategory || "").toLowerCase();
+    if (desc.includes("ooh") || typeStr.includes("ooh") || desc.includes("billboard") || desc.includes("outdoor") || desc.includes("sites")) return "OOH";
+    if (desc.includes("printing") || typeStr.includes("printing") || desc.includes("flex") || desc.includes("installation")) return "PRINTING";
+    return "OOH";
+  });
   const [specialNote, setSpecialNote] = useState(
     doc.specialNote || doc.note ||
     `• ABOVE MENTIONED AMOUNT IS BASED ON NET. ALL TAXES WOULD BE CHARGED OVER & ABOVE.\n• PAYMENT TO BE MADE IN THE FAVOR OF "ADPULSE IMC (PRIVATE) LTD"\n• NTN: A0654656-8 / STRN: SA054896-8`
