@@ -9880,29 +9880,27 @@ function PrintPreviewModal({ doc, onClose }) {
         {/* PRINT AREA MATCHING PDF TEMPLATES */}
         <div className="print-area" style={{ background: "#ffffff", color: "#000000", padding: "28px 32px", fontFamily: "'Calibri', 'Inter', sans-serif", border: "1px solid #E2E8F0", borderRadius: 8, position: "relative" }}>
           
-          {/* HEADER SECTION */}
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
-            {/* Logo & Agency Branding */}
-            <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
-              <img src="/logo.png" alt="AdPulse Logo" style={{ height: 58, width: "auto", objectFit: "contain", alignSelf: "flex-start" }} onError={(e) => { e.target.style.display = 'none'; }} />
-              <div style={{ fontWeight: 800, fontSize: 18, color: "#A81C1C", letterSpacing: "0.5px", marginTop: 4 }}>ADPULSE</div>
-              <div style={{ fontSize: 10, color: "#475569", fontWeight: 700 }}>IMC (PVT) LTD.</div>
+          {/* HEADER SECTION - 3 COLUMN BALANCED GRID */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", marginBottom: 22 }}>
+            {/* Logo Branding (Clean Image Only, No Extra Text) */}
+            <div style={{ display: "flex", justifyContent: "flex-start" }}>
+              <img src="/logo.png" alt="AdPulse Logo" style={{ height: 60, width: "auto", objectFit: "contain" }} onError={(e) => { e.target.style.display = 'none'; }} />
             </div>
 
-            {/* Center Heading */}
-            <div style={{ textAlign: "center", paddingTop: 10 }}>
+            {/* Center Heading (Mathematically Centered) */}
+            <div style={{ textAlign: "center", padding: "0 10px" }}>
               <h2 style={{ margin: 0, fontSize: 20, fontWeight: 800, textDecoration: "underline", letterSpacing: "1px", textTransform: "uppercase", color: doc.applySst ? "#A81C1C" : "#0F172A" }}>
                 {doc.applySst ? "SALES TAX INVOICE (15% SST INCLUDED)" : "INVOICE"}
               </h2>
               {doc.applySst && (
-                <div style={{ fontSize: 11, fontWeight: 600, color: "#475569", marginTop: 2 }}>
+                <div style={{ fontSize: 11, fontWeight: 600, color: "#475569", marginTop: 3 }}>
                   Sindh Revenue Board (SRB) Regn. # SA054896-8
                 </div>
               )}
             </div>
 
-            {/* Right Meta Info */}
-            <div style={{ textAlign: "left", fontSize: 13, fontWeight: 700, minWidth: 200 }}>
+            {/* Right Meta Info (Right-Aligned to Margin Edge) */}
+            <div style={{ textAlign: "right", fontSize: 13, fontWeight: 700, display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
               <div style={{ marginBottom: 4 }}>DATE: <span style={{ fontWeight: 500 }}>{fmtDate(doc.date || doc.issueDate || TODAY)}</span></div>
               <div>INVOICE NO: <span style={{ fontWeight: 800 }}>{doc.voucherNo || ("AD/" + (doc.id ? doc.id.slice(0, 6).toUpperCase() : "9438/03/26"))}</span></div>
             </div>
