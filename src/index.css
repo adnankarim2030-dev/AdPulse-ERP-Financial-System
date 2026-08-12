@@ -1010,3 +1010,80 @@ tr:hover td {
   border-radius: 20px !important;
   box-shadow: 0 25px 60px rgba(15, 23, 42, 0.25), 0 10px 20px rgba(15, 23, 42, 0.15), inset 0 1.5px 0 rgba(255, 255, 255, 1) !important;
 }
+
+/* ==========================================================================
+   MOBILE & TABLET TOUCH-OPTIMIZED RESPONSIVE DESIGN SYSTEM
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  /* Prevent iOS Auto-Zoom on form focus by forcing 16px font-size on mobile inputs */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="date"],
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+
+  /* Touch-friendly Minimum Tap Target Heights */
+  button.btn,
+  .btn,
+  .nav-item,
+  .gateway-tab-btn,
+  .subtab-btn {
+    min-height: 42px;
+    touch-action: manipulation;
+  }
+
+  /* Mobile Topbar Improvements */
+  .topbar {
+    padding: 12px 14px !important;
+    gap: 8px;
+  }
+
+  .topbar h1 {
+    font-size: 20px !important;
+  }
+
+  .content {
+    padding: 12px 12px !important;
+  }
+
+  /* Modal Dialog Full Mobile Screen Optimizations */
+  .modal-backdrop {
+    padding: 10px !important;
+    align-items: flex-end !important;
+  }
+
+  .modal {
+    width: 100% !important;
+    max-height: 92vh !important;
+    border-radius: 20px 20px 0 0 !important;
+    padding: 16px !important;
+  }
+
+  /* Responsive Gateway Card for Phones */
+  .gateway-card {
+    width: 100% !important;
+    padding: 24px 18px !important;
+    border-radius: 18px !important;
+  }
+
+  /* Horizontal Smooth Touch Scrolling for Table Wrappers */
+  .table-responsive {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    border-radius: 10px;
+  }
+
+  /* CEO Quick Drill-down Bar Mobile Smooth Scroll */
+  .ceo-quick-bar {
+    display: flex !important;
+    overflow-x: auto !important;
+    white-space: nowrap !important;
+    padding-bottom: 6px;
+    -webkit-overflow-scrolling: touch !important;
+  }
+}
