@@ -1087,3 +1087,79 @@ tr:hover td {
     -webkit-overflow-scrolling: touch !important;
   }
 }
+
+/* ==========================================================================
+   MASTER MOBILE RESPONSIVENESS & ZERO-CUTOFF LAYOUT FIXES
+   ========================================================================== */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+.erp-root {
+  overflow-x: hidden !important;
+}
+
+.main {
+  min-width: 0 !important;
+}
+
+.content {
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+
+/* Force flex containers with inputs or text to wrap on small mobile screens */
+@media (max-width: 640px) {
+  /* Stack form dual columns into single column on mobile */
+  .modal div[style*="display: flex"],
+  .modal div[style*="display:flex"] {
+    flex-wrap: wrap !important;
+  }
+
+  .modal div[style*="display: flex"] > .field,
+  .modal div[style*="display:flex"] > .field {
+    flex: 1 1 100% !important;
+    min-width: 100% !important;
+  }
+
+  /* Prevent card titles from cutting off */
+  .section-title {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+
+  /* Make tables 100% touch scrollable with rounded borders */
+  .table-responsive {
+    width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    display: block !important;
+  }
+
+  /* CEO KPI cards 1 column on phones */
+  .grid-kpi {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Topbar header responsiveness */
+  .topbar {
+    padding: 12px 14px !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+
+  .topbar-actions {
+    width: 100% !important;
+    justify-content: space-between !important;
+    flex-wrap: wrap !important;
+  }
+
+  /* Ensure print modal doesn't clip on small screens */
+  .print-area {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    padding: 14px !important;
+  }
+}

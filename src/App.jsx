@@ -3050,7 +3050,7 @@ export default function App() {
 
                       {/* PERIOD FILTERS & CONTROLS */}
                       <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
-                        <div style={{ background: "rgba(255,255,255,0.08)", padding: 4, borderRadius: 8, display: "flex", gap: 4 }}>
+                        <div style={{ background: "rgba(255,255,255,0.08)", padding: 4, borderRadius: 8, display: "flex", gap: 4, flexWrap: "wrap", maxWidth: "100%", overflowX: "auto" }}>
                           {[
                             { key: "today", label: "Today" },
                             { key: "this_week", label: "This Week" },
@@ -3078,10 +3078,9 @@ export default function App() {
                             </button>
                           ))}
                         </div>
-
                         <button
                           className="btn"
-                          style={{ background: "rgba(255,255,255,0.12)", color: "#FFFFFF", border: "1px solid rgba(255,255,255,0.2)", fontSize: 12, padding: "6px 12px" }}
+                          style={{ background: "rgba(255,255,255,0.1)", color: "#FFFFFF", border: "1px solid rgba(255,255,255,0.2)", fontSize: 12, padding: "6px 12px" }}
                           onClick={() => setCeoLastUpdated(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }))}
                           title="Refresh Dashboard Data"
                         >
@@ -3106,7 +3105,7 @@ export default function App() {
 
                     {/* CUSTOM DATE RANGE SELECTOR */}
                     {ceoPeriod === "custom" && (
-                      <div style={{ marginTop: 14, paddingTop: 12, borderTop: "1px solid rgba(255,255,255,0.1)", display: "flex", gap: 12, alignItems: "center" }}>
+                      <div style={{ marginTop: 14, paddingTop: 12, borderTop: "1px solid rgba(255,255,255,0.1)", display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
                         <div style={{ fontSize: 12, color: "#CBD5E1" }}>Select Custom Period Range:</div>
                         <input type="date" value={ceoCustomStart} onChange={e => setCeoCustomStart(e.target.value)} style={{ padding: "4px 8px", borderRadius: 6, fontSize: 12 }} />
                         <span style={{ color: "#94A3B8" }}>to</span>
