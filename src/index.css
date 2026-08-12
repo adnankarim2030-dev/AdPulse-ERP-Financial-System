@@ -44,7 +44,7 @@ html, body, #root {
   background: #F1F5F9;
   color: var(--ink);
   font-family: var(--font-body);
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 400;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
@@ -818,10 +818,10 @@ tr:last-child td {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 11.5px 15px;
+  padding: 12px 16px;
   border-radius: 12px;
   color: #1E293B !important;
-  font-size: 14.5px;
+  font-size: 15.5px !important;
   font-weight: 700 !important;
   cursor: pointer;
   border: 1px solid #CBD5E1 !important;
@@ -879,7 +879,7 @@ button.btn,
   align-items: center;
   justify-content: center;
   gap: 8px;
-  font-size: 14px;
+  font-size: 15px !important;
   font-weight: 700 !important;
   padding: 10px 18px;
   border-radius: 11px;
@@ -945,7 +945,7 @@ button.btn-primary:hover,
   padding: 10px 16px !important;
   border-radius: 10px !important;
   border: 1px solid transparent !important;
-  font-size: 14px !important;
+  font-size: 15px !important;
   font-weight: 700 !important;
   cursor: pointer;
   background: transparent;
@@ -980,7 +980,7 @@ th {
   text-align: left;
   color: #0F172A !important;
   font-weight: 800 !important;
-  font-size: 13px !important;
+  font-size: 14px !important;
   text-transform: uppercase;
   letter-spacing: 0.6px;
   padding: 14px 16px !important;
@@ -995,7 +995,7 @@ td {
   border-bottom: 1px solid #E2E8F0 !important;
   vertical-align: middle;
   color: #0F172A !important;
-  font-size: 14.5px !important;
+  font-size: 15.5px !important;
   font-weight: 600 !important;
 }
 
