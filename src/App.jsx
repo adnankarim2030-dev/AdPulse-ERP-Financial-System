@@ -44,6 +44,7 @@ function fmtDate(d) {
 
 /* Global Live System Date Reference */
 const TODAY = new Date();
+const TODAY_STR = TODAY.toISOString().slice(0, 10);
 const uid = (() => { let n = 1000; return () => (n++).toString(36); })();
 
 const ACCOUNTS = {
@@ -731,6 +732,106 @@ function seedProjectExpenses(projects) {
   }));
 }
 
+function seedVouchers() {
+  const todayStr = TODAY_STR;
+  return [
+    {
+      id: "vch-301",
+      voucherNo: "PV-2026-001",
+      type: "PV",
+      date: todayStr,
+      party: "Flex Printing Vendor",
+      description: "Payment for Independence Day OOH Banner Printing",
+      amount: 45000,
+      category: "Printing & Production",
+      subcategory: "Flex Printing",
+      via: "Bank",
+      createdBy: "Adpulseshawal",
+      postedBy: "Adpulseshawal",
+      status: "Posted"
+    },
+    {
+      id: "vch-302",
+      voucherNo: "RV-2026-001",
+      type: "RV",
+      date: todayStr,
+      party: "Prime Estate Enterprises",
+      description: "Advance Receipt for Q3 Digital Branding Package",
+      amount: 150000,
+      category: "Service Revenue",
+      subcategory: "Digital Media",
+      via: "Bank",
+      createdBy: "Adpulsewahab",
+      postedBy: "Adpulsewahab",
+      status: "Posted"
+    },
+    {
+      id: "vch-303",
+      voucherNo: "CTV-2026-001",
+      type: "CTV",
+      date: todayStr,
+      party: "HBL Main Branch -> Cash Vault",
+      description: "Cash withdrawal for office petty cash vault replenishment",
+      amount: 50000,
+      via: "Bank",
+      createdBy: "Adpulseshawal",
+      postedBy: "Adpulseshawal",
+      status: "Posted"
+    },
+    {
+      id: "vch-304",
+      voucherNo: "JV-2026-001",
+      type: "JV",
+      date: todayStr,
+      party: "Internal Adjustment",
+      description: "Adjustment entry for monthly software subscriptions",
+      amount: 18500,
+      via: "Bank",
+      createdBy: "Adpulsewahab",
+      postedBy: "Adpulsewahab",
+      status: "Posted"
+    }
+  ];
+}
+
+function seedDocuments() {
+  const todayStr = TODAY_STR;
+  return [
+    {
+      id: "doc-101",
+      name: "Vendor_Invoice_FlexPrint_Aug2026.pdf",
+      filename: "Vendor_Invoice_FlexPrint_Aug2026.pdf",
+      uploadedBy: "Adpulseshawal",
+      uploadedAt: todayStr,
+      docType: "Vendor Invoice",
+      status: "Extracted",
+      isDuplicate: false,
+      extractedData: {
+        vendor: "Flex Printing Vendor",
+        amount: 45000,
+        date: todayStr,
+        refNo: "INV-9842"
+      }
+    },
+    {
+      id: "doc-102",
+      name: "Office_Rent_Receipt_Aug2026.pdf",
+      filename: "Office_Rent_Receipt_Aug2026.pdf",
+      uploadedBy: "Adpulsewahab",
+      uploadedAt: todayStr,
+      docType: "Receipt Voucher",
+      status: "Posted",
+      isDuplicate: false,
+      extractedData: {
+        vendor: "Building Management",
+        amount: 120000,
+        date: todayStr,
+        refNo: "REC-4410"
+      }
+    }
+  ];
+}
+
 function buildInitialData() {
   const projects = seedProjects();
   const hoardings = seedHoardings();
@@ -767,7 +868,9 @@ function buildInitialData() {
   const invoices = [...seedInvoices(), ...seedProjectInvoices(projects), ...hoardingInvoices];
   const expenses = [...seedExpenses(), ...seedProjectExpenses(projects), payrollExpense];
   const journal = buildInitialJournal(invoices, expenses);
-  return { projects, invoices, expenses, journal, hoardings, employees, leaveRequests, payrollRuns: [payrollRun], inventoryItems, inventoryLogs, bankAccounts };
+  const vouchers = seedVouchers();
+  const documents = seedDocuments();
+  return { projects, invoices, expenses, journal, hoardings, employees, leaveRequests, payrollRuns: [payrollRun], inventoryItems, inventoryLogs, bankAccounts, vouchers, documents };
 }
 
 /* ---------- SMALL UI COMPONENTS ---------- */
@@ -937,13 +1040,15 @@ export default function App() {
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed && parsed.data && parsed.data[key] !== undefined) {
-          return parsed.data[key];
+          const val = parsed.data[key];
+          if (Array.isArray(val) && val.length > 0) return val;
+          if (!Array.isArray(val) && val !== null && val !== undefined) return val;
         }
       }
     } catch (e) {
       console.warn("Could not read localStorage backup:", e);
     }
-    return fallback;
+    return typeof fallback === "function" ? fallback() : fallback;
   };
 
   const [usersList, setUsersList] = useState(() => {
@@ -968,8 +1073,8 @@ export default function App() {
   const [hoardings, setHoardings] = useState(() => getInitialState("hoardings", seedData.hoardings));
   const [inventoryItems, setInventoryItems] = useState(() => getInitialState("inventoryItems", seedData.inventoryItems || []));
   const [inventoryLogs, setInventoryLogs] = useState(() => getInitialState("inventoryLogs", seedData.inventoryLogs || []));
-  const [vouchers, setVouchers] = useState(() => getInitialState("vouchers", []));
-  const [documents, setDocuments] = useState(() => getInitialState("documents", []));
+  const [vouchers, setVouchers] = useState(() => getInitialState("vouchers", seedData.vouchers || seedVouchers()));
+  const [documents, setDocuments] = useState(() => getInitialState("documents", seedData.documents || seedDocuments()));
   const [employees, setEmployees] = useState(() => getInitialState("employees", seedData.employees));
   const [leaveRequests, setLeaveRequests] = useState(() => getInitialState("leaveRequests", seedData.leaveRequests));
   const [payrollRuns, setPayrollRuns] = useState(() => getInitialState("payrollRuns", seedData.payrollRuns));
@@ -4048,7 +4153,7 @@ export default function App() {
                             <div>
                               <div className="section-title" style={{ fontSize: 15, margin: 0 }}>⚡ Financial Transaction Activity &amp; Live Stream</div>
                               <div style={{ fontSize: 12, color: "var(--ink-muted)" }}>
-                                Today's Activity: <strong>{periodInvoices.filter(i => i.issueDate === TODAY).length}</strong> Invoices | <strong>{periodExpenses.filter(e => e.date === TODAY).length}</strong> Expenses | <strong>{vouchers.filter(v => v.date === TODAY).length}</strong> Vouchers
+                                Today's Activity: <strong>{periodInvoices.filter(i => i.issueDate === TODAY_STR).length}</strong> Invoices | <strong>{periodExpenses.filter(e => e.date === TODAY_STR).length}</strong> Expenses | <strong>{vouchers.filter(v => v.date === TODAY_STR).length}</strong> Vouchers
                               </div>
                             </div>
                             <button className="btn" style={{ fontSize: 12, padding: "4px 10px" }} onClick={() => setTab("vouchers")}>View Vouchers</button>
@@ -7182,8 +7287,8 @@ function InvoiceModal({ initialData, projects = [], onClose, onSubmit }) {
   const [sstRate, setSstRate] = useState(initialData?.sstRate || "");
   const [applyWht, setApplyWht] = useState(initialData?.applyWht || false);
   const [whtRate, setWhtRate] = useState(initialData?.whtRate || "");
-  const [issueDate, setIssueDate] = useState(initialData?.issueDate || "2026-07-21");
-  const [dueDate, setDueDate] = useState(initialData?.dueDate || "2026-08-05");
+  const [issueDate, setIssueDate] = useState(initialData?.issueDate || TODAY_STR);
+  const [dueDate, setDueDate] = useState(initialData?.dueDate || TODAY_STR);
   const [notes, setNotes] = useState(
     initialData?.notes ||
     initialData?.specialNotes ||
@@ -7309,7 +7414,7 @@ function ExpenseModal({ initialData, projects = [], onClose, onSubmit }) {
   const [description, setDescription] = useState(initialData?.description || "");
   const [refNo, setRefNo] = useState(initialData?.refNo || "");
   const [amount, setAmount] = useState(initialData?.amount || "");
-  const [date, setDate] = useState(initialData?.date || "2026-07-21");
+  const [date, setDate] = useState(initialData?.date || TODAY_STR);
   const [status, setStatus] = useState(initialData?.status || "paid");
   const [paidVia, setPaidVia] = useState(initialData?.paidVia || "Bank");
 
@@ -7564,7 +7669,7 @@ function ExpenseCategoryManagerModal({ onClose }) {
 
 
 function PayExpenseModal({ expense, onClose, onSubmit }) {
-  const [date, setDate] = useState("2026-07-21");
+  const [date, setDate] = useState(TODAY_STR);
   const [paidVia, setPaidVia] = useState("Bank");
   return (
     <ModalShell title="Pay Accounts Payable" onClose={onClose}>
@@ -7592,8 +7697,8 @@ function POModal({ initialData, projects, onClose, onSubmit }) {
   const [projectId, setProjectId] = useState(initialData?.projectId || "");
   const [description, setDescription] = useState(initialData?.description || "");
   const [amount, setAmount] = useState(initialData?.amount || "");
-  const [issueDate, setIssueDate] = useState(initialData?.issueDate || "2026-07-21");
-  const [expectedDate, setExpectedDate] = useState(initialData?.expectedDate || "2026-07-28");
+  const [issueDate, setIssueDate] = useState(initialData?.issueDate || TODAY_STR);
+  const [expectedDate, setExpectedDate] = useState(initialData?.expectedDate || TODAY_STR);
   
   const valid = vendor && description && Number(amount) > 0;
   return (
@@ -7620,7 +7725,7 @@ function POModal({ initialData, projects, onClose, onSubmit }) {
 }
 
 function PayPOModal({ po, onClose, onSubmit }) {
-  const [date, setDate] = useState("2026-07-21");
+  const [date, setDate] = useState(TODAY_STR);
   const [paidVia, setPaidVia] = useState("Bank");
   return (
     <ModalShell title="Pay Purchase Order" onClose={onClose}>
@@ -7900,7 +8005,7 @@ function VoucherModal({ defaultType, projects = [], bankAccounts = [], onClose, 
   const [type, setType] = useState(defaultType || "PV");
   const [projectId, setProjectId] = useState("");
   const [description, setDescription] = useState("");
-  const [date, setDate] = useState("2026-07-21");
+  const [date, setDate] = useState(TODAY_STR);
   const [party, setParty] = useState("");
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState("Office & Administration");
@@ -8619,8 +8724,8 @@ function BookHoardingModal({ hoarding, projects, onClose, onSubmit }) {
   const [projectId, setProjectId] = useState(projects[0]?.id || "");
   const [client, setClient] = useState("");
   const [projectName, setProjectName] = useState("");
-  const [startDate, setStartDate] = useState("2026-07-21");
-  const [endDate, setEndDate] = useState("2026-08-21");
+  const [startDate, setStartDate] = useState(TODAY_STR);
+  const [endDate, setEndDate] = useState(TODAY_STR);
   const [rent, setRent] = useState(hoarding.pricePerMonth);
 
   const selectedProject = projects.find(p => p.id === projectId);
@@ -8724,8 +8829,8 @@ function ProjectModal({ initialData, onClose, onSubmit }) {
   const [type, setType] = useState(initialData?.type || PROJECT_TYPES[0].key);
   const [name, setName] = useState(initialData?.name || "");
   const [description, setDescription] = useState(initialData?.description || "");
-  const [startDate, setStartDate] = useState(initialData?.startDate || "2026-07-21");
-  const [endDate, setEndDate] = useState(initialData?.endDate || "2026-08-05");
+  const [startDate, setStartDate] = useState(initialData?.startDate || TODAY_STR);
+  const [endDate, setEndDate] = useState(initialData?.endDate || TODAY_STR);
   
   // OOH specific state (Multiple Locations: Location/Area, Width, Height, Auto Sq. Ft., Rate)
   const [oohSites, setOohSites] = useState(() => {
@@ -9084,8 +9189,8 @@ function ProjectModal({ initialData, onClose, onSubmit }) {
 function ProjectBillingModal({ project, onClose, onSubmit }) {
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
-  const [issueDate, setIssueDate] = useState("2026-07-21");
-  const [dueDate, setDueDate] = useState("2026-08-05");
+  const [issueDate, setIssueDate] = useState(TODAY_STR);
+  const [dueDate, setDueDate] = useState(TODAY_STR);
   const valid = Number(amount) > 0;
   return (
     <ModalShell title={`Bill Client — ${project.name}`} onClose={onClose}>
@@ -9110,7 +9215,7 @@ function ProjectCostModal({ project, onClose, onSubmit }) {
   const [vendor, setVendor] = useState("");
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
-  const [date, setDate] = useState("2026-07-21");
+  const [date, setDate] = useState(TODAY_STR);
   const [paidVia, setPaidVia] = useState("Bank");
   const valid = vendor && Number(amount) > 0;
   return (
