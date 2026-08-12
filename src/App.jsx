@@ -42,7 +42,8 @@ function fmtDate(d) {
   return new Date(d).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
 }
 
-const TODAY = new Date("2026-07-21");
+/* Global Live System Date Reference */
+const TODAY = new Date();
 const uid = (() => { let n = 1000; return () => (n++).toString(36); })();
 
 const ACCOUNTS = {
