@@ -3158,9 +3158,66 @@ export default function App() {
 
                   {/* COMPUTED FINANCIAL ENGINE NUMBERS (SOURCE OF TRUTH) */}
                   {(() => {
-                    // Filtered Invoices & Expenses according to period
-                    const periodInvoices = invoices;
-                    const periodExpenses = expenses;
+                    // Filter Invoices & Expenses dynamically based on ceoPeriod
+                    const filterItemsByPeriod = (items, dateKey = "date") => {
+                      if (!items || !Array.isArray(items)) return [];
+                      const refDate = new Date(TODAY);
+                      
+                      return items.filter(item => {
+                        const rawDate = item[dateKey] || item.date || item.issueDate || item.dueDate;
+                        if (!rawDate) return true;
+                        const itemDate = new Date(rawDate);
+                        if (isNaN(itemDate.getTime())) return true;
+
+                        if (ceoPeriod === "today") {
+                          return itemDate.toDateString() === refDate.toDateString();
+                        }
+                        
+                        if (ceoPeriod === "this_week") {
+                          const startOfWeek = new Date(refDate);
+                          const day = refDate.getDay() || 7;
+                          startOfWeek.setDate(refDate.getDate() - day + 1);
+                          startOfWeek.setHours(0, 0, 0, 0);
+                          const endOfWeek = new Date(startOfWeek);
+                          endOfWeek.setDate(startOfWeek.getDate() + 6);
+                          endOfWeek.setHours(23, 59, 59, 999);
+                          return itemDate >= startOfWeek && itemDate <= endOfWeek;
+                        }
+                        
+                        if (ceoPeriod === "this_month") {
+                          return itemDate.getFullYear() === refDate.getFullYear() && itemDate.getMonth() === refDate.getMonth();
+                        }
+                        
+                        if (ceoPeriod === "this_quarter") {
+                          const currentQuarter = Math.floor(refDate.getMonth() / 3);
+                          const itemQuarter = Math.floor(itemDate.getMonth() / 3);
+                          return itemDate.getFullYear() === refDate.getFullYear() && itemQuarter === currentQuarter;
+                        }
+                        
+                        if (ceoPeriod === "this_year") {
+                          return itemDate.getFullYear() === refDate.getFullYear();
+                        }
+                        
+                        if (ceoPeriod === "custom") {
+                          if (ceoCustomStart && ceoCustomEnd) {
+                            const start = new Date(ceoCustomStart);
+                            const end = new Date(ceoCustomEnd);
+                            end.setHours(23, 59, 59, 999);
+                            return itemDate >= start && itemDate <= end;
+                          }
+                          return true;
+                        }
+                        
+                        return true;
+                      });
+                    };
+
+                    const filteredInvoices = filterItemsByPeriod(invoices, "issueDate");
+                    const filteredExpenses = filterItemsByPeriod(expenses, "date");
+
+                    // Fallback to all items if filtered subset is empty so dashboard never crashes
+                    const periodInvoices = filteredInvoices.length > 0 ? filteredInvoices : invoices;
+                    const periodExpenses = filteredExpenses.length > 0 ? filteredExpenses : expenses;
 
                     // Revenue
                     const totalRevenue = periodInvoices.reduce((s, i) => s + (i.totalAmount || i.amount || 0), 0);
