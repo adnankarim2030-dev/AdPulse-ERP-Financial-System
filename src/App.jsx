@@ -20,6 +20,14 @@ import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, BarChart, Bar, Legend
 } from "recharts";
+import ClientMasterModal from "./components/ClientMasterModal.jsx";
+import VendorMasterModal from "./components/VendorMasterModal.jsx";
+import ClientStatementView from "./components/ClientStatementView.jsx";
+import VendorStatementView from "./components/VendorStatementView.jsx";
+import ProjectFinancialDashboard from "./components/ProjectFinancialDashboard.jsx";
+import AiDocumentDuplicateModal from "./components/AiDocumentDuplicateModal.jsx";
+import GlobalSearchBar from "./components/GlobalSearchBar.jsx";
+import StaffAuditTimeline from "./components/StaffAuditTimeline.jsx";
 
 /* ---------- HELPERS & FORMATTERS ---------- */
 
@@ -448,20 +456,22 @@ const INVENTORY_CATEGORIES = [
 ];
 
 const ALL_MODULE_TABS = [
-  { key: "ceo-dashboard", label: "CEO Executive Suite" },
-  { key: "dashboard", label: "Dashboard" },
-  { key: "projects", label: "Projects" },
-  { key: "invoices", label: "Invoices" },
-  { key: "purchase-orders", label: "Purchase Orders" },
-  { key: "expenses", label: "Expenses" },
-  { key: "cash-bank", label: "Cash & Bank" },
-  { key: "ooh", label: "OOH Advertising" },
-  { key: "inventory", label: "Inventory & Assets" },
-  { key: "hr", label: "HR & Payroll" },
-  { key: "vouchers", label: "Vouchers" },
-  { key: "documents", label: "Documents" },
-  { key: "ledger", label: "Ledger" },
-  { key: "reports", label: "Reports" },
+  { key: "ceo-dashboard", label: "CEO Executive Suite", category: "EXECUTIVE" },
+  { key: "dashboard", label: "Dashboard", category: "OVERVIEW" },
+  { key: "clients", label: "Clients Master", category: "MASTER DATA" },
+  { key: "vendors", label: "Vendors Master", category: "MASTER DATA" },
+  { key: "projects", label: "Projects & Financials", category: "MASTER DATA" },
+  { key: "invoices", label: "Invoices & AR", category: "TRANSACTIONS" },
+  { key: "purchase-orders", label: "Purchase Orders", category: "TRANSACTIONS" },
+  { key: "expenses", label: "Expenses & AP", category: "TRANSACTIONS" },
+  { key: "vouchers", label: "Vouchers & Receipts", category: "TRANSACTIONS" },
+  { key: "cash-bank", label: "Cash & Bank Vaults", category: "MASTER DATA" },
+  { key: "documents", label: "AI Document Upload", category: "TRANSACTIONS" },
+  { key: "ledger", label: "General Ledger & COA", category: "REPORTS" },
+  { key: "reports", label: "Financial Reports", category: "REPORTS" },
+  { key: "ooh", label: "OOH Assets & Sites", category: "OPERATIONS" },
+  { key: "inventory", label: "Inventory & Supplies", category: "OPERATIONS" },
+  { key: "hr", label: "HR & Payroll", category: "OPERATIONS" },
 ];
 
 /* ---------- SEED USERS ---------- */
@@ -499,6 +509,204 @@ const SEED_USERS = [
 
 /* ---------- SEED FINANCIAL DATA ---------- */
 
+function seedClients() {
+  return [
+    {
+      id: "cli-101",
+      clientCode: "CLI-001",
+      name: "Imtiaz Retail",
+      companyName: "Imtiaz Super Market Ltd",
+      contactPerson: "Imtiaz Ahmed",
+      phone: "0300-1112233",
+      email: "finance@imtiaz.pk",
+      address: "Rashid Minhas Road",
+      city: "Karachi",
+      ntn: "1234567-8",
+      strn: "3277876543210",
+      paymentTerms: "Net 30",
+      creditLimit: 5000000,
+      openingBalance: 500000,
+      status: "Active",
+      notes: "Key retail client for OOH & Printing campaigns",
+      createdAt: "2026-06-01",
+      createdBy: "AdpulseCEO"
+    },
+    {
+      id: "cli-102",
+      clientCode: "CLI-002",
+      name: "Prime Estate Enterprises",
+      companyName: "Prime Estate Developers Pvt Ltd",
+      contactPerson: "Tariq Mahmood",
+      phone: "0321-4445566",
+      email: "info@primeestate.pk",
+      address: "II Chundrigar Road",
+      city: "Karachi",
+      ntn: "2345678-9",
+      strn: "3277876543211",
+      paymentTerms: "Net 15",
+      creditLimit: 3000000,
+      openingBalance: 0,
+      status: "Active",
+      notes: "Real estate client",
+      createdAt: "2026-06-05",
+      createdBy: "Adpulseshawal"
+    },
+    {
+      id: "cli-103",
+      clientCode: "CLI-003",
+      name: "Kinza Beverages",
+      companyName: "Kinza Foods & Beverages Pvt Ltd",
+      contactPerson: "Omar Farooq",
+      phone: "0333-7778899",
+      email: "accounts@kinzabeverages.com",
+      address: "S.I.T.E. Industrial Area",
+      city: "Karachi",
+      ntn: "3456789-0",
+      strn: "3277876543212",
+      paymentTerms: "Net 30",
+      creditLimit: 4000000,
+      openingBalance: 0,
+      status: "Active",
+      notes: "FMCG Beverages client",
+      createdAt: "2026-06-10",
+      createdBy: "Adpulsewahab"
+    },
+    {
+      id: "cli-104",
+      clientCode: "CLI-004",
+      name: "North Town Residency",
+      companyName: "North Town Builders & Developers",
+      contactPerson: "Kamran Siddiqui",
+      phone: "0302-8889900",
+      email: "sales@northtownresidency.com",
+      address: "North Nazimabad Sector 5",
+      city: "Karachi",
+      ntn: "4567890-1",
+      strn: "3277876543213",
+      paymentTerms: "Net 15",
+      creditLimit: 2000000,
+      openingBalance: 0,
+      status: "Active",
+      notes: "Residential project leads",
+      createdAt: "2026-07-01",
+      createdBy: "Adpulseshawal"
+    },
+    {
+      id: "cli-105",
+      clientCode: "CLI-005",
+      name: "Magnitude",
+      companyName: "Magnitude Clothing & Apparel",
+      contactPerson: "Sarah Khan",
+      phone: "0312-9990011",
+      email: "brand@magnitude.pk",
+      address: "Zamani Chambers, Tariq Road",
+      city: "Karachi",
+      ntn: "5678901-2",
+      strn: "3277876543214",
+      paymentTerms: "Immediate",
+      creditLimit: 1000000,
+      openingBalance: 0,
+      status: "Active",
+      notes: "Fashion apparel client",
+      createdAt: "2026-06-15",
+      createdBy: "Adpulsewahab"
+    }
+  ];
+}
+
+function seedVendors() {
+  return [
+    {
+      id: "vnd-101",
+      vendorCode: "VND-001",
+      name: "ABC Printing",
+      companyName: "ABC Printing Solutions Pvt Ltd",
+      contactPerson: "Aslam Chaudhry",
+      phone: "0322-1112233",
+      email: "orders@abcprinting.pk",
+      address: "Korangi Industrial Area",
+      city: "Karachi",
+      ntn: "9876543-2",
+      strn: "1122334455667",
+      paymentTerms: "Net 15",
+      bankName: "Meezan Bank",
+      bankAccountTitle: "ABC Printing Solutions",
+      accountNumberIban: "PK12MEZN00123456789012",
+      openingBalance: 0,
+      status: "Active",
+      notes: "Large format vinyl & flex printing partner",
+      createdAt: "2026-06-01",
+      createdBy: "Adpulseshawal"
+    },
+    {
+      id: "vnd-102",
+      vendorCode: "VND-002",
+      name: "Meta Ads",
+      companyName: "Meta Platforms Ireland Ltd",
+      contactPerson: "Ad Operations",
+      phone: "N/A",
+      email: "billing@meta.com",
+      address: "Dublin, Ireland",
+      city: "International",
+      ntn: "N/A",
+      strn: "N/A",
+      paymentTerms: "Credit Card",
+      bankName: "Credit Card",
+      bankAccountTitle: "AdPulse Corporate Card",
+      accountNumberIban: "CARD-4111-XXXX",
+      openingBalance: 0,
+      status: "Active",
+      notes: "FB & Instagram digital advertising platform",
+      createdAt: "2026-06-01",
+      createdBy: "Adpulsewahab"
+    },
+    {
+      id: "vnd-103",
+      vendorCode: "VND-003",
+      name: "Shahrah-e-Faisal Office Rent",
+      companyName: "Faisal Plaza Management",
+      contactPerson: "Estate Manager",
+      phone: "0300-9998877",
+      email: "rentals@faisalplaza.pk",
+      address: "Shahrah-e-Faisal",
+      city: "Karachi",
+      ntn: "8765432-1",
+      strn: "N/A",
+      paymentTerms: "1st of Month",
+      bankName: "HBL",
+      bankAccountTitle: "Faisal Plaza Management",
+      accountNumberIban: "PK44HABB009988776655",
+      openingBalance: 0,
+      status: "Active",
+      notes: "HQ office premises rent landlord",
+      createdAt: "2026-06-01",
+      createdBy: "AdpulseCEO"
+    },
+    {
+      id: "vnd-104",
+      vendorCode: "VND-004",
+      name: "Freelance 3D Animator",
+      companyName: "Zohaib Media Arts",
+      contactPerson: "Zohaib Hassan",
+      phone: "0345-6667788",
+      email: "zohaib.animator@gmail.com",
+      address: "Gulshan-e-Iqbal",
+      city: "Karachi",
+      ntn: "7654321-0",
+      strn: "N/A",
+      paymentTerms: "On Delivery",
+      bankName: "Bank Alfalah",
+      bankAccountTitle: "Zohaib Hassan",
+      accountNumberIban: "PK88ALFH005544332211",
+      openingBalance: 0,
+      status: "Active",
+      notes: "3D Motion Graphics & Animation Contractor",
+      createdAt: "2026-07-01",
+      createdBy: "Adpulseshawal"
+    }
+  ];
+}
+
 function seedJournal() {
   const entries = [];
   const add = (date, description, lines, ref) => {
@@ -514,23 +722,116 @@ function seedJournal() {
   return entries;
 }
 
+function seedProjects() {
+  return [
+    { id: "prj-008", projectCode: "PRJ-008", clientId: "cli-101", client: "Imtiaz Retail", type: "Printing & Installations", name: "Back to School", description: "Large format frontlit printing & metal frame installation", startDate: "2026-08-01", endDate: "2026-08-28", status: "Active", contractValue: 1500000, budget: 1500000 },
+    { id: "prj-003", projectCode: "PRJ-003", clientId: "cli-101", client: "Imtiaz Retail", type: "OOH Advertising", name: "Ramzan Drive Billboards", description: "City-wide hoarding & billboard campaign — multiple prime sites", startDate: "2026-07-01", endDate: "2026-08-31", status: "In Progress", contractValue: 600000, budget: 600000 },
+    { id: "prj-001", projectCode: "PRJ-001", clientId: "cli-103", client: "Kinza Beverages", type: "TVC Production", name: "Summer Refresh TVC", description: "30-sec TV commercial: script, shoot & post-production edit", startDate: "2026-06-10", endDate: "2026-07-15", status: "Completed", contractValue: 480000, budget: 480000 },
+    { id: "prj-002", projectCode: "PRJ-002", clientId: "cli-102", client: "Prime Estate Enterprises", type: "Events", name: "Project Launch Event", description: "Site launch event management & stage production", startDate: "2026-07-01", endDate: "2026-07-05", status: "Completed", contractValue: 350000, budget: 350000 },
+    { id: "prj-004", projectCode: "PRJ-004", clientId: "cli-102", client: "Prime Estate Enterprises", type: "OOH Advertising", name: "Launch Campaign Billboards", description: "Site-launch hoarding campaign around II Chundrigar", startDate: "2026-07-05", endDate: "2026-09-05", status: "Active", contractValue: 600000, budget: 600000 },
+    { id: "prj-005", projectCode: "PRJ-005", clientId: "cli-104", client: "North Town Residency", type: "Digital Marketing", name: "Commercial Units Digital Push", description: "FB/Insta lead generation campaign & ad management", startDate: "2026-07-15", endDate: "2026-08-15", status: "Active", contractValue: 300000, budget: 300000 },
+    { id: "prj-006", projectCode: "PRJ-006", clientId: "cli-105", client: "Magnitude", type: "BTL Marketing", name: "Retail Activation Drive", description: "In-store BTL brand activation & promotional sampling", startDate: "2026-06-20", endDate: "2026-07-10", status: "Completed", contractValue: 220000, budget: 220000 },
+    { id: "prj-007", projectCode: "PRJ-007", clientId: "cli-103", client: "Kinza Beverages", type: "Print Media", name: "Newspaper Insert Campaign", description: "Print ad insertions - Dawn & Jang Sunday editions", startDate: "2026-07-05", endDate: "2026-07-25", status: "Draft", contractValue: 150000, budget: 150000 }
+  ];
+}
+
 function seedInvoices() {
   return [
-    { id: uid(), client: "Prime Estate Enterprises", description: "Website + Proposal Package", amount: 450000, applySst: true, sstAmount: 67500, totalAmount: 517500, issueDate: "2026-07-05", dueDate: "2026-07-20", paid: true, paidVia: "Bank" },
-    { id: uid(), client: "Imtiaz Retail", description: "Q3 Campaign Strategy Retainer", amount: 1250000, applySst: true, sstAmount: 187500, totalAmount: 1437500, issueDate: "2026-07-10", dueDate: "2026-07-25", paid: false, paidVia: null },
-    { id: uid(), client: "Kinza Beverages", description: "Website + Brand Package", amount: 680000, applySst: true, sstAmount: 102000, totalAmount: 782000, issueDate: "2026-06-15", dueDate: "2026-06-30", paid: false, paidVia: null },
-    { id: uid(), client: "North Town Residency", description: "FB/Insta Campaign - Commercial Units", amount: 320000, applySst: true, sstAmount: 48000, totalAmount: 368000, issueDate: "2026-07-15", dueDate: "2026-07-30", paid: false, paidVia: null },
-    { id: uid(), client: "Magnitude", description: "Logo Design Package", amount: 85000, applySst: true, sstAmount: 12750, totalAmount: 97750, issueDate: "2026-06-20", dueDate: "2026-07-05", paid: true, paidVia: "Cash" },
+    { id: "inv-101", invoiceNo: "INV-001", clientId: "cli-101", projectId: "prj-008", client: "Imtiaz Retail", description: "Back to School OOH & Printing Campaign", amount: 1500000, applySst: false, sstAmount: 0, totalAmount: 1500000, issueDate: "2026-08-03", dueDate: "2026-08-18", paid: false, paidVia: null, status: "Posted" },
+    { id: "inv-102", invoiceNo: "INV-002", clientId: "cli-102", projectId: "prj-002", client: "Prime Estate Enterprises", description: "Project Launch Event Management Package", amount: 450000, applySst: true, sstAmount: 67500, totalAmount: 517500, issueDate: "2026-07-05", dueDate: "2026-07-20", paid: true, paidVia: "Bank", status: "Posted" },
+    { id: "inv-103", invoiceNo: "INV-003", clientId: "cli-101", projectId: "prj-003", client: "Imtiaz Retail", description: "Q3 Ramzan Drive Billboard Retainer", amount: 1250000, applySst: true, sstAmount: 187500, totalAmount: 1437500, issueDate: "2026-07-10", dueDate: "2026-07-25", paid: false, paidVia: null, status: "Posted" },
+    { id: "inv-104", invoiceNo: "INV-004", clientId: "cli-103", projectId: "prj-001", client: "Kinza Beverages", description: "Summer Refresh TVC Shoot & Post-Production", amount: 680000, applySst: true, sstAmount: 102000, totalAmount: 782000, issueDate: "2026-06-15", dueDate: "2026-06-30", paid: false, paidVia: null, status: "Posted" },
+    { id: "inv-105", invoiceNo: "INV-005", clientId: "cli-104", projectId: "prj-005", client: "North Town Residency", description: "Commercial Units Digital Marketing Push", amount: 320000, applySst: true, sstAmount: 48000, totalAmount: 368000, issueDate: "2026-07-15", dueDate: "2026-07-30", paid: false, paidVia: null, status: "Posted" },
+    { id: "inv-106", invoiceNo: "INV-006", clientId: "cli-105", projectId: "prj-006", client: "Magnitude", description: "Retail Activation Logo & BTL Design Package", amount: 85000, applySst: true, sstAmount: 12750, totalAmount: 97750, issueDate: "2026-06-20", dueDate: "2026-07-05", paid: true, paidVia: "Cash", status: "Posted" }
   ];
 }
 
 function seedExpenses() {
   return [
-    { id: uid(), vendor: "Meta Ads", category: "Ad Spend", amount: 210000, date: "2026-07-08", paidVia: "Bank" },
-    { id: uid(), vendor: "Midjourney & Creative Suite", category: "Software", amount: 45000, date: "2026-07-01", paidVia: "Bank" },
-    { id: uid(), vendor: "Shahrah-e-Faisal Office Rent", category: "Rent", amount: 180000, date: "2026-07-01", paidVia: "Bank" },
-    { id: uid(), vendor: "Freelance 3D Animator", category: "Contractor", amount: 65000, date: "2026-07-12", paidVia: "Cash" },
-    { id: uid(), vendor: "K-Electric & High-Speed Fiber", category: "Utilities", amount: 28000, date: "2026-07-03", paidVia: "Cash" },
+    { id: "exp-101", expenseNo: "EXP-001", vendorId: "vnd-101", projectId: "prj-008", vendor: "ABC Printing", category: "Printing & Production", description: "Back to School Frontlit Banner Printing & Framing", amount: 250000, date: "2026-08-10", status: "unpaid", paidVia: null, createdBy: "Adpulseshawal" },
+    { id: "exp-102", expenseNo: "EXP-002", vendorId: "vnd-102", projectId: "prj-005", vendor: "Meta Ads", category: "Ad Spend", description: "FB/Insta Leads campaign for North Town", amount: 210000, date: "2026-07-08", status: "paid", paidVia: "Bank", createdBy: "Adpulsewahab" },
+    { id: "exp-103", expenseNo: "EXP-003", vendorId: "vnd-103", projectId: null, vendor: "Shahrah-e-Faisal Office Rent", category: "Rent", description: "Monthly HQ Rent for July 2026", amount: 180000, date: "2026-07-01", status: "paid", paidVia: "Bank", createdBy: "AdpulseCEO" },
+    { id: "exp-104", expenseNo: "EXP-004", vendorId: "vnd-104", projectId: "prj-001", vendor: "Freelance 3D Animator", category: "Contractor", description: "3D Animation shoot for Kinza TVC", amount: 65000, date: "2026-07-12", status: "paid", paidVia: "Cash", createdBy: "Adpulseshawal" },
+    { id: "exp-105", expenseNo: "EXP-005", vendorId: null, projectId: null, vendor: "K-Electric & High-Speed Fiber", category: "Utilities", description: "Monthly utility & fiber internet bills", amount: 28000, date: "2026-07-03", status: "paid", paidVia: "Cash", createdBy: "Adpulsewahab" }
+  ];
+}
+
+function seedVouchers() {
+  const todayStr = TODAY_STR;
+  return [
+    {
+      id: "vch-001",
+      voucherNo: "RV-001",
+      type: "RV",
+      date: "2026-08-08",
+      partyType: "Client",
+      clientId: "cli-101",
+      projectId: "prj-008",
+      bankAccountId: "bank-hbl",
+      party: "Imtiaz Retail",
+      description: "Receipt applied against Invoice INV-001 for Back to School Campaign",
+      amount: 500000,
+      via: "Bank",
+      createdBy: "Adpulsewahab",
+      postedBy: "Adpulsewahab",
+      status: "Posted"
+    },
+    {
+      id: "vch-002",
+      voucherNo: "PV-001",
+      type: "PV",
+      date: "2026-08-12",
+      partyType: "Vendor",
+      vendorId: "vnd-101",
+      projectId: "prj-008",
+      bankAccountId: "bank-hbl",
+      party: "ABC Printing",
+      description: "Partial Vendor Payment for Back to School Printing (EXP-001)",
+      amount: 150000,
+      via: "Bank",
+      createdBy: "Adpulseshawal",
+      postedBy: "Adpulseshawal",
+      status: "Posted"
+    },
+    {
+      id: "vch-301",
+      voucherNo: "PV-2026-001",
+      type: "PV",
+      date: "2026-08-01",
+      partyType: "Vendor",
+      vendorId: "vnd-101",
+      party: "ABC Printing",
+      description: "Payment for Independence Day OOH Banner Printing",
+      amount: 45000,
+      via: "Bank",
+      createdBy: "Adpulseshawal",
+      postedBy: "Adpulseshawal",
+      status: "Posted"
+    },
+    {
+      id: "vch-302",
+      voucherNo: "RV-2026-001",
+      type: "RV",
+      date: "2026-08-01",
+      partyType: "Client",
+      clientId: "cli-102",
+      party: "Prime Estate Enterprises",
+      description: "Advance Receipt for Q3 Digital Branding Package",
+      amount: 150000,
+      via: "Bank",
+      createdBy: "Adpulsewahab",
+      postedBy: "Adpulsewahab",
+      status: "Posted"
+    }
+  ];
+}
+
+function seedAuditLogs() {
+  return [
+    { id: "aud-001", userId: "u-shawal", userName: "Adpulseshawal", role: "Staff", action: "Created Vendor Expense EXP-001 (PKR 250,000)", module: "Expenses", recordType: "Expense", recordId: "exp-101", timestamp: "2026-08-10T10:15:00Z" },
+    { id: "aud-002", userId: "u-wahab", userName: "Adpulsewahab", role: "Staff", action: "Posted Receipt Voucher RV-001 (PKR 500,000)", module: "Vouchers", recordType: "Voucher", recordId: "vch-001", timestamp: "2026-08-08T14:30:00Z" },
+    { id: "aud-003", userId: "u-shawal", userName: "Adpulseshawal", role: "Staff", action: "Posted Payment Voucher PV-001 (PKR 150,000)", module: "Vouchers", recordType: "Voucher", recordId: "vch-002", timestamp: "2026-08-12T11:20:00Z" },
+    { id: "aud-004", userId: "u-ceo", userName: "AdPulseCEO", role: "CEO", action: "Registered Client Master CLI-001 (Imtiaz Retail)", module: "Clients", recordType: "Client", recordId: "cli-101", timestamp: "2026-06-01T09:00:00Z" }
   ];
 }
 
@@ -596,48 +897,7 @@ function seedEmployees() {
   ];
 }
 
-function seedMonthlyAttendance(empList = []) {
-  const att = {};
-  empList.forEach(e => {
-    att[e.id] = {};
-    for (let day = 1; day <= 31; day++) {
-      if (day === 5 || day === 12 || day === 19 || day === 26) {
-        att[e.id][day] = "OFF";
-      } else if (e.name === "Hamza Qureshi" && (day >= 18 && day <= 22)) {
-        att[e.id][day] = "L";
-      } else if (e.name === "Bilal Sheikh" && (day === 8 || day === 9)) {
-        att[e.id][day] = "A";
-      } else if (e.name === "Usman Tariq" && day > 15) {
-        att[e.id][day] = "OFF";
-      } else {
-        att[e.id][day] = "P";
-      }
-    }
-  });
-  return att;
-}
-
-
-function seedLeaveRequests(employees) {
-  const byName = n => employees.find(e => e.name === n);
-  return [
-    { id: uid(), employeeId: byName("Hamza Qureshi")?.id || "e4", employeeName: "Hamza Qureshi", type: "Sick", fromDate: "2026-07-18", toDate: "2026-07-22", days: 5, reason: "Recovering from fever", status: "Approved", appliedOn: "2026-07-16" },
-    { id: uid(), employeeId: byName("Zainab Hussain")?.id || "e3", employeeName: "Zainab Hussain", type: "Casual", fromDate: "2026-07-28", toDate: "2026-07-29", days: 2, reason: "Family function", status: "Pending", appliedOn: "2026-07-20" },
-    { id: uid(), employeeId: byName("Sana Malik")?.id || "e5", employeeName: "Sana Malik", type: "Annual", fromDate: "2026-08-03", toDate: "2026-08-07", days: 5, reason: "Travelling out of city", status: "Pending", appliedOn: "2026-07-19" },
-    { id: uid(), employeeId: byName("Faisal Ahmed")?.id || "e6", employeeName: "Faisal Ahmed", type: "Casual", fromDate: "2026-07-10", toDate: "2026-07-10", days: 1, reason: "Personal errand", status: "Rejected", appliedOn: "2026-07-08" },
-  ];
-}
-
-function seedPayrollRun(employees) {
-  const active = employees.filter(e => e.status !== "Terminated");
-  const entries = active.map(e => ({ employeeId: e.id, name: e.name, department: e.department, gross: e.salary, deduction: 0, net: e.salary }));
-  const totalNet = entries.reduce((s, e) => s + e.net, 0);
-  const run = { id: uid(), month: "June 2026", runDate: "2026-06-30", employeeCount: entries.length, totalGross: totalNet, totalDeductions: 0, totalNet, entries };
-  const exp = { id: uid(), vendor: "Payroll — June 2026", category: "Payroll", description: `Salaries for ${entries.length} employees`, amount: totalNet, date: run.runDate, paidVia: "Bank" };
-  return { run, expense: exp };
-}
-
-function buildInitialJournal(invoices, expenses) {
+function buildInitialJournal(invoices, expenses, vouchers) {
   const entries = seedJournal();
 
   invoices.forEach(inv => {
@@ -650,13 +910,13 @@ function buildInitialJournal(invoices, expenses) {
       lines.push({ account: "srb_payable", debit: 0, credit: inv.sstAmount });
     }
     entries.push({
-      id: uid(), date: inv.issueDate, reference: "INV-" + inv.id.toUpperCase(),
+      id: uid(), date: inv.issueDate, reference: "INV-" + (inv.invoiceNo || inv.id.toUpperCase()),
       description: `Invoice - ${inv.client} (${inv.description})`,
       lines,
     });
     if (inv.paid) {
       entries.push({
-        id: uid(), date: inv.dueDate, reference: "PMT-" + inv.id.toUpperCase(),
+        id: uid(), date: inv.dueDate, reference: "PMT-" + (inv.invoiceNo || inv.id.toUpperCase()),
         description: `Payment received - ${inv.client}`,
         lines: [
           { account: inv.paidVia === "Cash" ? "cash" : "bank", debit: totalAmount, credit: 0 },
@@ -669,7 +929,7 @@ function buildInitialJournal(invoices, expenses) {
   expenses.forEach(exp => {
     const glAccKey = exp.accountKey || getGLAccountKeyForSubcategory(exp.category, exp.subcategory) || "expense";
     entries.push({
-      id: uid(), date: exp.date, reference: "EXP-" + exp.id.toUpperCase(),
+      id: uid(), date: exp.date, reference: exp.expenseNo || ("EXP-" + exp.id.toUpperCase()),
       description: `${exp.vendor} (${exp.category}${exp.subcategory ? ' → ' + exp.subcategory : ''})`,
       lines: [
         { account: glAccKey, debit: exp.amount, credit: 0, memo: exp.category },
@@ -678,182 +938,61 @@ function buildInitialJournal(invoices, expenses) {
     });
   });
 
+  (vouchers || []).forEach(v => {
+    if (v.type === "RV") {
+      entries.push({
+        id: uid(), date: v.date, reference: v.voucherNo || ("RV-" + v.id.toUpperCase()),
+        description: `Receipt - ${v.party} (${v.description})`,
+        lines: [
+          { account: v.via === "Cash" ? "cash" : "bank", debit: Number(v.amount) || 0, credit: 0 },
+          { account: "ar", debit: 0, credit: Number(v.amount) || 0 }
+        ]
+      });
+    } else if (v.type === "PV") {
+      entries.push({
+        id: uid(), date: v.date, reference: v.voucherNo || ("PV-" + v.id.toUpperCase()),
+        description: `Payment - ${v.party} (${v.description})`,
+        lines: [
+          { account: "ap", debit: Number(v.amount) || 0, credit: 0 },
+          { account: v.via === "Cash" ? "cash" : "bank", debit: 0, credit: Number(v.amount) || 0 }
+        ]
+      });
+    }
+  });
 
   entries.sort((a, b) => new Date(a.date) - new Date(b.date));
   return entries;
 }
 
-function seedProjects() {
-  return [
-    { id: uid(), projectCode: "PRJ-001", client: "Kinza Beverages", type: "TVC Production", name: "Summer Refresh TVC", description: "30-sec TV commercial: script, shoot & post-production edit", startDate: "2026-06-10", endDate: "2026-07-15", status: "Completed" },
-    { id: uid(), projectCode: "PRJ-002", client: "Prime Estate Enterprises", type: "Events", name: "Project Launch Event", description: "Site launch event management & stage production", startDate: "2026-07-01", endDate: "2026-07-05", status: "Completed" },
-    { id: uid(), projectCode: "PRJ-003", client: "Imtiaz Retail", type: "OOH Advertising", name: "Ramzan Drive Billboards", description: "City-wide hoarding & billboard campaign — multiple prime sites", startDate: "2026-07-01", endDate: "2026-08-31", status: "Ongoing" },
-    { id: uid(), projectCode: "PRJ-004", client: "Prime Estate Enterprises", type: "OOH Advertising", name: "Launch Campaign Billboards", description: "Site-launch hoarding campaign around II Chundrigar", startDate: "2026-07-05", endDate: "2026-09-05", status: "Ongoing" },
-    { id: uid(), projectCode: "PRJ-005", client: "North Town Residency", type: "Digital Marketing", name: "Commercial Units Digital Push", description: "FB/Insta lead generation campaign & ad management", startDate: "2026-07-15", endDate: "2026-08-15", status: "Ongoing" },
-    { id: uid(), projectCode: "PRJ-006", client: "Magnitude", type: "BTL Marketing", name: "Retail Activation Drive", description: "In-store BTL brand activation & promotional sampling", startDate: "2026-06-20", endDate: "2026-07-10", status: "Completed" },
-    { id: uid(), projectCode: "PRJ-007", client: "Kinza Beverages", type: "Print Media", name: "Newspaper Insert Campaign", description: "Print ad insertions - Dawn & Jang Sunday editions", startDate: "2026-07-05", endDate: "2026-07-25", status: "Planning" },
-    {
-      id: uid(), projectCode: "PRJ-008", client: "Imtiaz Retail", type: "Printing & Installations", name: "Flagship Store Frontlit Vinyl Branding", description: "Large format frontlit printing & metal frame installation", startDate: "2026-07-10", endDate: "2026-07-28", status: "Ongoing",
-      totalSqft: 346, budget: 56800,
-      printingItems: [
-        { width: 10, height: 20, sqft: 200, rate: 150, amount: 30000 },
-        { width: 5, height: 10, sqft: 50, rate: 200, amount: 10000 },
-        { width: 8, height: 12, sqft: 96, rate: 175, amount: 16800 }
-      ]
-    },
-  ];
-}
-
-function seedProjectInvoices(projects) {
-  const billAmount = {
-    "TVC Production": 480000, "Events": 350000, "OOH Advertising": 600000,
-    "Printing & Installations": 56800, "Digital Marketing": 300000, "BTL Marketing": 220000, "Print Media": 150000,
-  };
-  return projects.map(p => ({
-    id: uid(), client: p.client, description: `${p.type} — ${p.name}`, amount: p.budget || billAmount[p.type] || 100000,
-    applySst: true, sstAmount: (p.budget || billAmount[p.type] || 100000) * 0.15, totalAmount: (p.budget || billAmount[p.type] || 100000) * 1.15,
-    issueDate: p.startDate, dueDate: p.endDate,
-    paid: p.status === "Completed", paidVia: p.status === "Completed" ? "Bank" : null,
-    projectId: p.id,
-    printingItems: p.printingItems || null
-  }));
-}
-
-function seedProjectExpenses(projects) {
-  const costAmount = {
-    "TVC Production": 220000, "Events": 180000, "OOH Advertising": 210000,
-    "Printing & Installations": 24000, "Digital Marketing": 90000, "BTL Marketing": 95000, "Print Media": 60000,
-  };
-  return projects.filter(p => costAmount[p.type]).map(p => ({
-
-    id: uid(), vendor: `${p.type} — Production Vendor`, description: `Cost for ${p.name}`,
-    category: p.type, amount: costAmount[p.type], date: p.startDate, paidVia: "Bank",
-    projectId: p.id,
-  }));
-}
-
-function seedVouchers() {
-  const todayStr = TODAY_STR;
-  return [
-    {
-      id: "vch-301",
-      voucherNo: "PV-2026-001",
-      type: "PV",
-      date: todayStr,
-      party: "Flex Printing Vendor",
-      description: "Payment for Independence Day OOH Banner Printing",
-      amount: 45000,
-      category: "Printing & Production",
-      subcategory: "Flex Printing",
-      via: "Bank",
-      createdBy: "Adpulseshawal",
-      postedBy: "Adpulseshawal",
-      status: "Posted"
-    },
-    {
-      id: "vch-302",
-      voucherNo: "RV-2026-001",
-      type: "RV",
-      date: todayStr,
-      party: "Prime Estate Enterprises",
-      description: "Advance Receipt for Q3 Digital Branding Package",
-      amount: 150000,
-      category: "Service Revenue",
-      subcategory: "Digital Media",
-      via: "Bank",
-      createdBy: "Adpulsewahab",
-      postedBy: "Adpulsewahab",
-      status: "Posted"
-    },
-    {
-      id: "vch-303",
-      voucherNo: "CTV-2026-001",
-      type: "CTV",
-      date: todayStr,
-      party: "HBL Main Branch -> Cash Vault",
-      description: "Cash withdrawal for office petty cash vault replenishment",
-      amount: 50000,
-      via: "Bank",
-      createdBy: "Adpulseshawal",
-      postedBy: "Adpulseshawal",
-      status: "Posted"
-    },
-    {
-      id: "vch-304",
-      voucherNo: "JV-2026-001",
-      type: "JV",
-      date: todayStr,
-      party: "Internal Adjustment",
-      description: "Adjustment entry for monthly software subscriptions",
-      amount: 18500,
-      via: "Bank",
-      createdBy: "Adpulsewahab",
-      postedBy: "Adpulsewahab",
-      status: "Posted"
-    }
-  ];
-}
-
-function seedDocuments() {
-  const todayStr = TODAY_STR;
-  return [
-    {
-      id: "doc-101",
-      name: "Vendor_Invoice_FlexPrint_Aug2026.pdf",
-      filename: "Vendor_Invoice_FlexPrint_Aug2026.pdf",
-      uploadedBy: "Adpulseshawal",
-      uploadedAt: todayStr,
-      docType: "Vendor Invoice",
-      status: "Extracted",
-      isDuplicate: false,
-      extractedData: {
-        vendor: "Flex Printing Vendor",
-        amount: 45000,
-        date: todayStr,
-        refNo: "INV-9842"
-      }
-    },
-    {
-      id: "doc-102",
-      name: "Office_Rent_Receipt_Aug2026.pdf",
-      filename: "Office_Rent_Receipt_Aug2026.pdf",
-      uploadedBy: "Adpulsewahab",
-      uploadedAt: todayStr,
-      docType: "Receipt Voucher",
-      status: "Posted",
-      isDuplicate: false,
-      extractedData: {
-        vendor: "Building Management",
-        amount: 120000,
-        date: todayStr,
-        refNo: "REC-4410"
-      }
-    }
-  ];
-}
-
 function buildInitialData() {
-  const hoardings = seedHoardings().map(h => ({ ...h, status: "Available", client: "", project: "", projectId: "" }));
+  const clients = seedClients();
+  const vendors = seedVendors();
+  const projects = seedProjects();
+  const invoices = seedInvoices();
+  const expenses = seedExpenses();
+  const vouchers = seedVouchers();
+  const auditLogs = seedAuditLogs();
+  const bankAccounts = seedBankAccounts();
+  const hoardings = seedHoardings();
   const employees = seedEmployees();
   const inventoryItems = seedInventoryItems();
-  const bankAccounts = seedBankAccounts();
 
   return {
-    projects: [],
-    invoices: [],
-    expenses: [],
-    journal: [],
+    clients,
+    vendors,
+    projects,
+    invoices,
+    expenses,
+    vouchers,
+    auditLogs,
+    bankAccounts,
     hoardings,
     employees,
-    leaveRequests: [],
-    payrollRuns: [],
     inventoryItems,
-    inventoryLogs: [],
-    bankAccounts,
-    vouchers: [],
     documents: []
   };
 }
+
 
 /* ---------- SMALL UI COMPONENTS ---------- */
 
@@ -1056,10 +1195,23 @@ export default function App() {
   const [vouchers, setVouchers] = useState(() => getInitialState("vouchers", []));
   const [documents, setDocuments] = useState(() => getInitialState("documents", []));
   const [employees, setEmployees] = useState(() => getInitialState("employees", seedData.employees));
-  const [leaveRequests, setLeaveRequests] = useState(() => getInitialState("leaveRequests", seedData.leaveRequests));
   const [payrollRuns, setPayrollRuns] = useState(() => getInitialState("payrollRuns", seedData.payrollRuns));
+  const [clients, setClients] = useState(() => getInitialState("clients", seedData.clients || []));
+  const [vendors, setVendors] = useState(() => getInitialState("vendors", seedData.vendors || []));
+  const [auditLogs, setAuditLogs] = useState(() => getInitialState("auditLogs", seedData.auditLogs || []));
 
-  /* Modal & Form UI states */
+  /* Client & Vendor Master UI States */
+  const [showClientModal, setShowClientModal] = useState(false);
+  const [editingClient, setEditingClient] = useState(null);
+  const [selectedClientId, setSelectedClientId] = useState(null);
+  const [clientSearchQuery, setClientSearchQuery] = useState("");
+
+  const [showVendorModal, setShowVendorModal] = useState(false);
+  const [editingVendor, setEditingVendor] = useState(null);
+  const [selectedVendorId, setSelectedVendorId] = useState(null);
+  const [vendorSearchQuery, setVendorSearchQuery] = useState("");
+
+  const [duplicateDocWarning, setDuplicateDocWarning] = useState(null);
   const [showInvoiceForm, setShowInvoiceForm] = useState(false);
   const [editingInvoice, setEditingInvoice] = useState(null);
 
@@ -1320,7 +1472,10 @@ export default function App() {
           employees,
           leaveRequests,
           payrollRuns,
-          usersList
+          usersList,
+          clients,
+          vendors,
+          auditLogs
         }
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
@@ -1330,7 +1485,7 @@ export default function App() {
   }, [
     journal, invoices, expenses, purchaseOrders, projects, bankAccounts,
     hoardings, inventoryItems, inventoryLogs, vouchers, documents,
-    employees, leaveRequests, payrollRuns, usersList, currentUser
+    employees, leaveRequests, payrollRuns, usersList, clients, vendors, auditLogs, currentUser
   ]);
 
   const handleExportBackup = () => {
@@ -2823,6 +2978,8 @@ export default function App() {
   const ALL_NAV_ITEMS = [
     { key: "ceo-dashboard", label: "CEO Suite", icon: Crown },
     { key: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { key: "clients", label: "Clients Master", icon: Building2 },
+    { key: "vendors", label: "Vendors Master", icon: Truck },
     { key: "projects", label: "Projects", icon: Briefcase },
     { key: "invoices", label: "Invoices", icon: FileText },
     { key: "purchase-orders", label: "Purchase Orders", icon: ShoppingCart },
@@ -2961,6 +3118,21 @@ export default function App() {
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <GlobalSearchBar
+              clients={clients}
+              vendors={vendors}
+              projects={projects}
+              invoices={invoices}
+              expenses={expenses}
+              vouchers={vouchers}
+              documents={documents}
+              onNavigate={(targetTab, item) => {
+                setTab(targetTab);
+                if (targetTab === "clients" && item?.id) setSelectedClientId(item.id);
+                if (targetTab === "vendors" && item?.id) setSelectedVendorId(item.id);
+                if (targetTab === "projects" && item?.id) setSelectedProjectId(item.id);
+              }}
+            />
             {/* User Profile Badge */}
             <div style={{ display: "flex", alignItems: "center", gap: 10, background: "#FFFFFF", padding: "6px 14px", borderRadius: 10, border: "1px solid #CBD5E1", boxShadow: "0 2px 6px rgba(0,0,0,0.04)" }}>
               <img
@@ -4184,6 +4356,11 @@ export default function App() {
                             </table>
                           </div>
                         </div>
+
+                        {/* SECTION 27: CEO STAFF ACTIVITY OVERVIEW & AUDIT TIMELINE */}
+                        <div style={{ marginTop: 24 }}>
+                          <StaffAuditTimeline auditLogs={auditLogs} usersList={usersList} />
+                        </div>
                       </>
                     );
                   })()}
@@ -4240,6 +4417,230 @@ export default function App() {
                 <LedgerStrip rows={recentEntries} showAccounts />
               </div>
             </>
+          )}
+
+          {tab === "clients" && (
+            <div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                <div>
+                  <h2 style={{ margin: 0, fontSize: 20 }}>Client Master &amp; Receivables Architecture</h2>
+                  <p style={{ margin: 0, fontSize: 12, color: "var(--ink-muted)" }}>Permanent Client Entities, Project Linkages &amp; Accounts Receivable Sub-Ledgers</p>
+                </div>
+                <div style={{ display: "flex", gap: 10 }}>
+                  <button className="btn btn-primary" onClick={() => { setEditingClient(null); setShowClientModal(true); }}>
+                    <Plus size={15} /> Register New Client
+                  </button>
+                </div>
+              </div>
+
+              {/* CLIENT LIST TABLE */}
+              <div className="card" style={{ padding: 0, borderRadius: 12, overflow: "hidden", border: "1px solid var(--rule)", marginBottom: 20 }}>
+                <div style={{ padding: "12px 16px", background: "var(--table-header-bg)", borderBottom: "1px solid var(--rule)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, flex: 1 }}>
+                    <Search size={16} color="var(--ink-muted)" />
+                    <input
+                      type="text"
+                      className="form-input"
+                      style={{ maxWidth: 320, padding: "4px 10px", fontSize: 12.5 }}
+                      placeholder="Search Client Name, Code, Phone, NTN..."
+                      value={clientSearchQuery}
+                      onChange={e => setClientSearchQuery(e.target.value)}
+                    />
+                  </div>
+                  <span style={{ fontSize: 12, color: "var(--ink-muted)" }}>{clients.length} Registered Clients</span>
+                </div>
+
+                <table className="table" style={{ margin: 0 }}>
+                  <thead>
+                    <tr>
+                      <th>Client Code</th>
+                      <th>Client / Company Name</th>
+                      <th>Contact Person</th>
+                      <th>Phone &amp; Email</th>
+                      <th>NTN / STRN</th>
+                      <th>Payment Terms</th>
+                      <th style={{ textAlign: "right" }}>Outstanding Bal.</th>
+                      <th>Status</th>
+                      <th style={{ textAlign: "center" }}>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {clients.filter(c => !clientSearchQuery || c.name.toLowerCase().includes(clientSearchQuery.toLowerCase()) || (c.companyName && c.companyName.toLowerCase().includes(clientSearchQuery.toLowerCase())) || (c.phone && c.phone.includes(clientSearchQuery))).map(c => {
+                      const clientInvoices = invoices.filter(i => i.clientId === c.id || (i.client && i.client.toLowerCase() === c.name.toLowerCase()));
+                      const clientVouchers = vouchers.filter(v => v.clientId === c.id || (v.party && v.party.toLowerCase().includes(c.name.toLowerCase())));
+                      const totalInvoiced = clientInvoices.reduce((s, i) => s + (Number(i.totalAmount || i.amount) || 0), 0);
+                      const totalReceived = clientVouchers.filter(v => v.type === "RV").reduce((s, v) => s + (Number(v.amount) || 0), 0);
+                      const outstanding = (Number(c.openingBalance) || 0) + totalInvoiced - totalReceived;
+
+                      return (
+                        <tr key={c.id}>
+                          <td><span style={{ fontFamily: "monospace", fontWeight: 800, color: "#0284C7" }}>{c.clientCode || c.id}</span></td>
+                          <td>
+                            <div style={{ fontWeight: 700, color: "var(--ink)" }}>{c.name}</div>
+                            {c.companyName && <div style={{ fontSize: 11, color: "var(--ink-muted)" }}>{c.companyName}</div>}
+                          </td>
+                          <td>{c.contactPerson || "N/A"}</td>
+                          <td>
+                            <div>{c.phone || "N/A"}</div>
+                            <div style={{ fontSize: 11, color: "var(--ink-muted)" }}>{c.email || ""}</div>
+                          </td>
+                          <td style={{ fontSize: 12 }}>
+                            <div>NTN: {c.ntn || "N/A"}</div>
+                            {c.strn && <div style={{ fontSize: 11, color: "var(--ink-muted)" }}>STRN: {c.strn}</div>}
+                          </td>
+                          <td><span className="badge-mini">{c.paymentTerms || "Net 30"}</span></td>
+                          <td style={{ textAlign: "right", fontWeight: 800, color: outstanding > 0 ? "#0284C7" : "#059669" }}>
+                            {pkr(outstanding)}
+                          </td>
+                          <td>
+                            <span style={{
+                              padding: "2px 8px", borderRadius: 12, fontSize: 11, fontWeight: 700,
+                              background: c.status === "Active" ? "rgba(5, 150, 105, 0.1)" : "rgba(220, 38, 38, 0.1)",
+                              color: c.status === "Active" ? "#059669" : "#DC2626"
+                            }}>
+                              {c.status || "Active"}
+                            </span>
+                          </td>
+                          <td style={{ textAlign: "center" }}>
+                            <div style={{ display: "flex", gap: 6, justifyContent: "center" }}>
+                              <button className="btn" style={{ fontSize: 11, padding: "2px 8px" }} onClick={() => setSelectedClientId(c.id)}>
+                                View Statement
+                              </button>
+                              <button className="btn" style={{ fontSize: 11, padding: "2px 6px" }} onClick={() => { setEditingClient(c); setShowClientModal(true); }}>
+                                Edit
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* DETAILED STATEMENT VIEW */}
+              <ClientStatementView
+                clients={clients}
+                projects={projects}
+                invoices={invoices}
+                vouchers={vouchers}
+                journal={journal}
+                selectedClientId={selectedClientId}
+                onSelectClient={id => setSelectedClientId(id)}
+              />
+            </div>
+          )}
+
+          {tab === "vendors" && (
+            <div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                <div>
+                  <h2 style={{ margin: 0, fontSize: 20 }}>Vendor Master &amp; Accounts Payable Architecture</h2>
+                  <p style={{ margin: 0, fontSize: 12, color: "var(--ink-muted)" }}>Permanent Vendor Suppliers &amp; Accounts Payable Sub-Ledger Entities</p>
+                </div>
+                <div style={{ display: "flex", gap: 10 }}>
+                  <button className="btn btn-primary" style={{ background: "#D97706", borderColor: "#D97706" }} onClick={() => { setEditingVendor(null); setShowVendorModal(true); }}>
+                    <Plus size={15} /> Register New Vendor
+                  </button>
+                </div>
+              </div>
+
+              {/* VENDOR LIST TABLE */}
+              <div className="card" style={{ padding: 0, borderRadius: 12, overflow: "hidden", border: "1px solid var(--rule)", marginBottom: 20 }}>
+                <div style={{ padding: "12px 16px", background: "var(--table-header-bg)", borderBottom: "1px solid var(--rule)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, flex: 1 }}>
+                    <Search size={16} color="var(--ink-muted)" />
+                    <input
+                      type="text"
+                      className="form-input"
+                      style={{ maxWidth: 320, padding: "4px 10px", fontSize: 12.5 }}
+                      placeholder="Search Vendor Name, Code, Phone, NTN..."
+                      value={vendorSearchQuery}
+                      onChange={e => setVendorSearchQuery(e.target.value)}
+                    />
+                  </div>
+                  <span style={{ fontSize: 12, color: "var(--ink-muted)" }}>{vendors.length} Registered Vendors</span>
+                </div>
+
+                <table className="table" style={{ margin: 0 }}>
+                  <thead>
+                    <tr>
+                      <th>Vendor Code</th>
+                      <th>Vendor / Company Name</th>
+                      <th>Contact Person</th>
+                      <th>Phone &amp; Email</th>
+                      <th>Bank Details</th>
+                      <th>Payment Terms</th>
+                      <th style={{ textAlign: "right" }}>Payable Balance</th>
+                      <th>Status</th>
+                      <th style={{ textAlign: "center" }}>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {vendors.filter(v => !vendorSearchQuery || v.name.toLowerCase().includes(vendorSearchQuery.toLowerCase()) || (v.companyName && v.companyName.toLowerCase().includes(vendorSearchQuery.toLowerCase()))).map(v => {
+                      const vendorExpenses = expenses.filter(e => e.vendorId === v.id || (e.vendor && e.vendor.toLowerCase().includes(v.name.toLowerCase())));
+                      const vendorVouchers = vouchers.filter(vo => vo.vendorId === v.id || (vo.party && vo.party.toLowerCase().includes(v.name.toLowerCase())));
+                      const totalExpenses = vendorExpenses.reduce((s, e) => s + (Number(e.amount) || 0), 0);
+                      const totalPayments = vendorVouchers.filter(vo => vo.type === "PV").reduce((s, vo) => s + (Number(vo.amount) || 0), 0);
+                      const payable = (Number(v.openingBalance) || 0) + totalExpenses - totalPayments;
+
+                      return (
+                        <tr key={v.id}>
+                          <td><span style={{ fontFamily: "monospace", fontWeight: 800, color: "#D97706" }}>{v.vendorCode || v.id}</span></td>
+                          <td>
+                            <div style={{ fontWeight: 700, color: "var(--ink)" }}>{v.name}</div>
+                            {v.companyName && <div style={{ fontSize: 11, color: "var(--ink-muted)" }}>{v.companyName}</div>}
+                          </td>
+                          <td>{v.contactPerson || "N/A"}</td>
+                          <td>
+                            <div>{v.phone || "N/A"}</div>
+                            <div style={{ fontSize: 11, color: "var(--ink-muted)" }}>{v.email || ""}</div>
+                          </td>
+                          <td style={{ fontSize: 12 }}>
+                            <div>{v.bankName || "N/A"}</div>
+                            {v.accountNumberIban && <div style={{ fontSize: 11, color: "var(--ink-muted)" }}>{v.accountNumberIban}</div>}
+                          </td>
+                          <td><span className="badge-mini">{v.paymentTerms || "Net 30"}</span></td>
+                          <td style={{ textAlign: "right", fontWeight: 800, color: payable > 0 ? "#D97706" : "#059669" }}>
+                            {pkr(payable)}
+                          </td>
+                          <td>
+                            <span style={{
+                              padding: "2px 8px", borderRadius: 12, fontSize: 11, fontWeight: 700,
+                              background: v.status === "Active" ? "rgba(5, 150, 105, 0.1)" : "rgba(220, 38, 38, 0.1)",
+                              color: v.status === "Active" ? "#059669" : "#DC2626"
+                            }}>
+                              {v.status || "Active"}
+                            </span>
+                          </td>
+                          <td style={{ textAlign: "center" }}>
+                            <div style={{ display: "flex", gap: 6, justifyContent: "center" }}>
+                              <button className="btn" style={{ fontSize: 11, padding: "2px 8px" }} onClick={() => setSelectedVendorId(v.id)}>
+                                View Statement
+                              </button>
+                              <button className="btn" style={{ fontSize: 11, padding: "2px 6px" }} onClick={() => { setEditingVendor(v); setShowVendorModal(true); }}>
+                                Edit
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* DETAILED VENDOR STATEMENT VIEW */}
+              <VendorStatementView
+                vendors={vendors}
+                projects={projects}
+                expenses={expenses}
+                vouchers={vouchers}
+                journal={journal}
+                selectedVendorId={selectedVendorId}
+                onSelectVendor={id => setSelectedVendorId(id)}
+              />
+            </div>
           )}
 
           {tab === "projects" && (
@@ -6668,6 +7069,9 @@ export default function App() {
       {payingPOId && <PayPOModal po={purchaseOrders.find(p => p.id === payingPOId)} onClose={() => setPayingPOId(null)} onSubmit={(id, via, date) => { payPO(id, via, date); setPayingPOId(null); }} />}
 
       {showVoucherForm && <VoucherModal projects={projects} bankAccounts={bankAccounts} defaultType={voucherDefaultType} onClose={() => setShowVoucherForm(false)} onSubmit={createVoucher} />}
+      {showClientModal && <ClientMasterModal clients={clients} client={editingClient} onClose={() => { setShowClientModal(false); setEditingClient(null); }} onSave={handleSaveClient} />}
+      {showVendorModal && <VendorMasterModal vendors={vendors} vendor={editingVendor} onClose={() => { setShowVendorModal(false); setEditingVendor(null); }} onSave={handleSaveVendor} />}
+      {duplicateDocWarning && <AiDocumentDuplicateModal duplicateMatch={duplicateDocWarning.duplicateMatch} incomingDoc={duplicateDocWarning.incomingDoc} existingDoc={duplicateDocWarning.existingDoc} onClose={() => setDuplicateDocWarning(null)} onOverridePosting={duplicateDocWarning.onOverridePosting} />}
       {reviewingDocId && <DocumentReviewModal doc={documents.find(d => d.id === reviewingDocId)} projects={projects} bankAccounts={bankAccounts} onClose={() => setReviewingDocId(null)} onSaveDraft={saveDocumentDraft} onPost={postDocumentToLedger} onCreateProjectTrigger={() => { setReviewingDocId(null); setShowProjectForm(true); }} />}
       {compareDocData && <CompareDocumentsModal doc={compareDocData.doc} duplicateMatch={compareDocData.duplicateMatch} onClose={() => setCompareDocData(null)} onCancelUpload={() => { deleteDocument(compareDocData.doc.id); setCompareDocData(null); }} onOverride={(docId, reason) => postDocumentToLedger(docId, null, reason)} />}
 
