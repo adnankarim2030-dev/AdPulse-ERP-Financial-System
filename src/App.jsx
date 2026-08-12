@@ -463,6 +463,8 @@ const ALL_MODULE_TABS = [
 ];
 
 /* ---------- SEED USERS ---------- */
+const ALL_STAFF_TABS = ALL_MODULE_TABS.map(t => t.key).filter(k => k !== "ceo-dashboard");
+
 const SEED_USERS = [
   {
     id: "u-ceo",
@@ -480,7 +482,7 @@ const SEED_USERS = [
     password: "shawal4548",
     role: "Staff",
     department: "Digital Operations",
-    allowedTabs: ["dashboard", "projects", "invoices", "expenses", "ooh", "documents"],
+    allowedTabs: ALL_STAFF_TABS,
   },
   {
     id: "u-wahab",
@@ -489,7 +491,7 @@ const SEED_USERS = [
     password: "wahab5458",
     role: "Staff",
     department: "Finance & Accounts",
-    allowedTabs: ["dashboard", "projects", "invoices", "expenses", "ooh", "documents"],
+    allowedTabs: ALL_STAFF_TABS,
   },
 ];
 
@@ -949,7 +951,7 @@ export default function App() {
     SEED_USERS.forEach(su => {
       const idx = merged.findIndex(u => u.name.toLowerCase() === su.name.toLowerCase() || u.email.toLowerCase() === su.email.toLowerCase());
       if (idx >= 0) {
-        merged[idx] = { ...merged[idx], password: su.password, role: su.role };
+        merged[idx] = { ...merged[idx], password: su.password, role: su.role, allowedTabs: su.allowedTabs };
       } else {
         merged.push(su);
       }
@@ -1653,16 +1655,16 @@ export default function App() {
     return { total: employees.length, active: active.length, onLeave: onLeave.length, monthlyPayrollCost, pendingLeaves, presentToday, absentToday, leaveToday };
   }, [employees, leaveRequests, attendanceToday]);
 
-  /* User & Password Actions */
-  function handleLogin(userObj) {
+  function handleLogin(userObj, targetTab) {
     if (!userObj) return;
-    let allowed = Array.isArray(userObj.allowedTabs) && userObj.allowedTabs.length > 0
-      ? [...userObj.allowedTabs]
-      : ALL_MODULE_TABS.map(t => t.key);
-
-    const isCeoUser = (userObj.role === "Admin" || userObj.role === "CEO" || userObj.email === "admin@adpulse.pk");
-    if (isCeoUser && !allowed.includes("ceo-dashboard")) {
-      allowed.unshift("ceo-dashboard");
+    const isCeoUser = (userObj.role === "Admin" || userObj.role === "CEO" || userObj.email === "admin@adpulse.pk" || userObj.email === "ceo@adpulse.pk");
+    
+    let allowed;
+    if (isCeoUser) {
+      allowed = ALL_MODULE_TABS.map(t => t.key);
+    } else {
+      // Staff accounts get access to ALL tabs except the CEO Executive Suite
+      allowed = ALL_MODULE_TABS.map(t => t.key).filter(k => k !== "ceo-dashboard");
     }
 
     const safeUser = {
@@ -1676,7 +1678,7 @@ export default function App() {
     setIsCeoLocked(true);
     setCeoPinInput("");
     setPinErrorMessage("");
-    const firstAllowed = isCeoUser ? "ceo-dashboard" : (allowed[0] || "dashboard");
+    const firstAllowed = targetTab || (isCeoUser ? "ceo-dashboard" : (allowed[0] || "dashboard"));
     setTab(firstAllowed);
   }
 
