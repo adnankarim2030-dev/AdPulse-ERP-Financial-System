@@ -1710,8 +1710,8 @@ export default function App() {
   }
 
   /* Financial Actions */
-  function addInvoice({ projectId, client, description, amount, applySst, sstRate, sstAmount, applyWht, whtRate, whtAmount, totalAmount, issueDate, dueDate }) {
-    const inv = { id: uid(), projectId: projectId || null, client, description, amount, applySst, sstRate, sstAmount, applyWht, whtRate, whtAmount, totalAmount, issueDate, dueDate, paid: false, paidVia: null };
+  function addInvoice({ projectId, client, description, amount, applySst, sstRate, sstAmount, applyWht, whtRate, whtAmount, totalAmount, issueDate, dueDate, notes }) {
+    const inv = { id: uid(), projectId: projectId || null, client, description, amount, applySst, sstRate, sstAmount, applyWht, whtRate, whtAmount, totalAmount, issueDate, dueDate, notes, paid: false, paidVia: null };
     setInvoices(list => [inv, ...list]);
     
     const lines = [
@@ -4027,7 +4027,7 @@ export default function App() {
                               <Edit size={13} />
                             </button>
                             <button className="btn" style={{ padding: "4px 7px", fontSize: 12 }}
-                              onClick={() => setPrintDoc({ voucherNo: "INV-" + inv.id.toUpperCase(), type: "Invoice", date: inv.issueDate, party: inv.client, description: inv.description, amount: inv.amount, applySst: inv.applySst, sstRate: inv.sstRate, sstAmount: inv.sstAmount, applyWht: inv.applyWht, whtRate: inv.whtRate, whtAmount: inv.whtAmount, totalAmount: inv.totalAmount || inv.amount, projectCode: projects.find(p => p.id === inv.projectId)?.projectCode })}>
+                              onClick={() => setPrintDoc({ voucherNo: "INV-" + inv.id.toUpperCase(), type: "Invoice", date: inv.issueDate, party: inv.client, description: inv.description, amount: inv.amount, applySst: inv.applySst, sstRate: inv.sstRate, sstAmount: inv.sstAmount, applyWht: inv.applyWht, whtRate: inv.whtRate, whtAmount: inv.whtAmount, totalAmount: inv.totalAmount || inv.amount, notes: inv.notes || inv.specialNotes, projectCode: projects.find(p => p.id === inv.projectId)?.projectCode })}>
                               <Printer size={13} />
                             </button>
                           </td>
@@ -6624,6 +6624,11 @@ function InvoiceModal({ initialData, projects = [], onClose, onSubmit }) {
   const [whtRate, setWhtRate] = useState(initialData?.whtRate || "");
   const [issueDate, setIssueDate] = useState(initialData?.issueDate || "2026-07-21");
   const [dueDate, setDueDate] = useState(initialData?.dueDate || "2026-08-05");
+  const [notes, setNotes] = useState(
+    initialData?.notes ||
+    initialData?.specialNotes ||
+    "• ABOVE MENTIONED AMOUNT IS BASED ON NET. ALL TAXES WOULD BE CHARGED OVER & ABOVE.\n• PAYMENT TO BE MADE IN THE FAVOR OF \"ADPULSE IMC (PRIVATE) LTD\"\n• NTN: A0654656-8 / STRN: SA054896-8"
+  );
   
   const amt = Number(amount) || 0;
   const sstAmount = (applySst && Number(sstRate)) ? (amt * Number(sstRate) / 100) : 0;
@@ -6707,12 +6712,26 @@ function InvoiceModal({ initialData, projects = [], onClose, onSubmit }) {
         </div>
       </div>
 
+      <div className="field" style={{ marginBottom: 14 }}>
+        <label style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <span>Special Notes &amp; Payment Terms (Manual Note)</span>
+          <span style={{ fontSize: 11, color: "var(--ink-muted)", fontWeight: 400 }}>Appears on printed invoice/quotation</span>
+        </label>
+        <textarea
+          rows={3}
+          value={notes}
+          onChange={e => setNotes(e.target.value)}
+          placeholder="Enter custom terms, payment notes, bank info, or specific conditions..."
+          style={{ width: "100%", padding: "8px 12px", fontSize: 12.5, borderRadius: 8, border: "1px solid var(--rule)", background: "var(--bg-card)", color: "var(--ink)", fontFamily: "inherit", resize: "vertical" }}
+        />
+      </div>
+
       <div style={{ display: "flex", gap: 10 }}>
         <div className="field" style={{ flex: 1 }}><label>Issue Date</label><input type="date" value={issueDate} onChange={e => setIssueDate(e.target.value)} /></div>
         <div className="field" style={{ flex: 1 }}><label>Due Date</label><input type="date" value={dueDate} onChange={e => setDueDate(e.target.value)} /></div>
       </div>
       <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 6 }} disabled={!valid}
-        onClick={() => valid && onSubmit(initialData ? { ...initialData, projectId, client, description, amount: amt, applySst, sstRate: Number(sstRate) || 0, sstAmount, applyWht, whtRate: Number(whtRate) || 0, whtAmount, totalAmount, issueDate, dueDate } : { projectId, client, description, amount: amt, applySst, sstRate: Number(sstRate) || 0, sstAmount, applyWht, whtRate: Number(whtRate) || 0, whtAmount, totalAmount, issueDate, dueDate })}>
+        onClick={() => valid && onSubmit(initialData ? { ...initialData, projectId, client, description, amount: amt, applySst, sstRate: Number(sstRate) || 0, sstAmount, applyWht, whtRate: Number(whtRate) || 0, whtAmount, totalAmount, issueDate, dueDate, notes } : { projectId, client, description, amount: amt, applySst, sstRate: Number(sstRate) || 0, sstAmount, applyWht, whtRate: Number(whtRate) || 0, whtAmount, totalAmount, issueDate, dueDate, notes })}>
         {initialData ? "Save Invoice Changes" : "Generate & Post Invoice"}
       </button>
     </ModalShell>
@@ -8739,7 +8758,7 @@ function ProjectDetailModal({ project, invoices, expenses, sites, onClose, onSta
                     <td style={{ display: "flex", gap: 4 }}>
                       {!inv.paid && <button className="btn" style={{ padding: "4px 8px", fontSize: 12 }} onClick={() => onMarkPaid(inv)}>Mark Paid</button>}
                       <button className="btn" style={{ padding: "4px 7px", fontSize: 12 }}
-                        onClick={() => onPrint({ voucherNo: "INV-" + inv.id.toUpperCase(), type: "Invoice", date: inv.issueDate, party: inv.client, description: inv.description, amount: inv.amount })}>
+                        onClick={() => onPrint({ voucherNo: "INV-" + inv.id.toUpperCase(), type: "Invoice", date: inv.issueDate, party: inv.client, description: inv.description, amount: inv.amount, applySst: inv.applySst, sstRate: inv.sstRate, sstAmount: inv.sstAmount, applyWht: inv.applyWht, whtRate: inv.whtRate, whtAmount: inv.whtAmount, totalAmount: inv.totalAmount || inv.amount, notes: inv.notes || inv.specialNotes })}>
                         <Printer size={13} />
                       </button>
                     </td>
