@@ -9706,40 +9706,71 @@ function PrintPreviewModal({ doc, onClose }) {
     if (!printEl) return;
     const refNo = doc.voucherNo || ("AD_" + (doc.id ? doc.id.slice(0, 6).toUpperCase() : "9438"));
 
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-    const width = printEl.offsetWidth || 800;
-    const height = printEl.offsetHeight || 1000;
-
-    canvas.width = width * 2;
-    canvas.height = height * 2;
-    ctx.scale(2, 2);
-
-    const data = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">` +
-      `<foreignObject width="100%" height="100%">` +
-      `<div xmlns="http://www.w3.org/1999/xhtml" style="background:#ffffff;color:#000000;font-family:sans-serif;padding:20px;box-sizing:border-box;">` +
-      printEl.innerHTML +
-      `</div></foreignObject></svg>`;
-
-    const img = new Image();
-    const svgBlob = new Blob([data], { type: "image/svg+xml;charset=utf-8" });
-    const url = URL.createObjectURL(svgBlob);
-
-    img.onload = function() {
-      ctx.fillStyle = "#ffffff";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(img, 0, 0, width, height);
-      URL.revokeObjectURL(url);
-
-      const pngUrl = canvas.toDataURL("image/png");
-      const link = document.createElement("a");
-      link.download = `Document_${refNo}.png`;
-      link.href = pngUrl;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+    const triggerPng = () => {
+      if (window.html2canvas) {
+        window.html2canvas(printEl, {
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: "#ffffff",
+          logging: false
+        }).then(canvas => {
+          const pngUrl = canvas.toDataURL("image/png");
+          const link = document.createElement("a");
+          link.download = `Invoice_${refNo}.png`;
+          link.href = pngUrl;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        }).catch(err => {
+          console.warn("PNG export error:", err);
+          window.print();
+        });
+      } else {
+        window.print();
+      }
     };
-    img.src = url;
+
+    if (window.html2canvas) {
+      triggerPng();
+    } else {
+      const script = document.createElement("script");
+      script.src = "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
+      script.onload = triggerPng;
+      script.onerror = () => window.print();
+      document.head.appendChild(script);
+    }
+  };
+
+  const handleExportPDF = () => {
+    const printEl = document.querySelector(".print-area");
+    if (!printEl) return;
+    const refNo = doc.voucherNo || ("AD_" + (doc.id ? doc.id.slice(0, 6).toUpperCase() : "9438"));
+
+    const triggerPdf = () => {
+      if (window.html2pdf) {
+        const opt = {
+          margin: 8,
+          filename: `Invoice_${refNo}.pdf`,
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { scale: 2, useCORS: true },
+          jsPDF: { unit: 'mm', format: (pageSize || "A4").toLowerCase(), orientation: pageOrientation || "portrait" }
+        };
+        window.html2pdf().set(opt).from(printEl).save();
+      } else {
+        window.print();
+      }
+    };
+
+    if (window.html2pdf) {
+      triggerPdf();
+    } else {
+      const script = document.createElement("script");
+      script.src = "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
+      script.onload = triggerPdf;
+      script.onerror = () => window.print();
+      document.head.appendChild(script);
+    }
   };
 
   return (
@@ -9830,14 +9861,17 @@ function PrintPreviewModal({ doc, onClose }) {
             </div>
 
             <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-              <button className="btn btn-primary" style={{ padding: "6px 14px", fontSize: 12.5, fontWeight: 700 }} onClick={() => window.print()}>
-                <Printer size={14} /> Print / PDF
+              <button className="btn btn-primary" style={{ padding: "6px 14px", fontSize: 12.5, fontWeight: 700 }} onClick={handleExportPDF}>
+                <FileText size={14} /> Download PDF
               </button>
               <button className="btn" style={{ background: "#0284C7", color: "#FFFFFF", border: "none", padding: "6px 14px", fontSize: 12.5, fontWeight: 700 }} onClick={handleExportImage}>
-                <FileText size={14} /> Download PNG
+                <Download size={14} /> Download PNG
               </button>
               <button className="btn" style={{ background: "#059669", color: "#FFFFFF", border: "none", padding: "6px 14px", fontSize: 12.5, fontWeight: 700 }} onClick={handleExportExcel}>
                 <Download size={14} /> Download Excel
+              </button>
+              <button className="btn" style={{ background: "#475569", color: "#FFFFFF", border: "none", padding: "6px 12px", fontSize: 12.5, fontWeight: 700 }} onClick={() => window.print()}>
+                <Printer size={14} /> Print
               </button>
             </div>
           </div>
@@ -9853,9 +9887,6 @@ function PrintPreviewModal({ doc, onClose }) {
               <img src="/logo.png" alt="AdPulse Logo" style={{ height: 58, width: "auto", objectFit: "contain", alignSelf: "flex-start" }} onError={(e) => { e.target.style.display = 'none'; }} />
               <div style={{ fontWeight: 800, fontSize: 18, color: "#A81C1C", letterSpacing: "0.5px", marginTop: 4 }}>ADPULSE</div>
               <div style={{ fontSize: 10, color: "#475569", fontWeight: 700 }}>IMC (PVT) LTD.</div>
-              <div style={{ display: "inline-block", background: "#1D3B4E", color: "#FFFFFF", fontSize: 9.5, fontWeight: 700, padding: "2px 8px", borderRadius: 3, letterSpacing: "1px", textTransform: "uppercase", width: "fit-content", marginTop: 2 }}>
-                MEDIA AGENCY
-              </div>
             </div>
 
             {/* Center Heading */}
@@ -9887,7 +9918,7 @@ function PrintPreviewModal({ doc, onClose }) {
 
           {/* DYNAMIC DATA TABLE BASED ON TEMPLATE */}
           {template === "PRINTING" ? (
-            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 20, border: "2px solid #000", fontSize: 12 }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 0, border: "2px solid #000", fontSize: 12 }}>
               <thead>
                 <tr style={{ background: "#F1F5F9" }}>
                   <th style={{ border: "1.5px solid #000", padding: "8px 6px", textAlign: "center", width: 50 }}>S #</th>
@@ -9934,7 +9965,7 @@ function PrintPreviewModal({ doc, onClose }) {
               </tbody>
             </table>
           ) : template === "OOH" ? (
-            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 20, border: "2px solid #000", fontSize: 12 }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 0, border: "2px solid #000", fontSize: 12 }}>
               <thead>
                 <tr style={{ background: "#F1F5F9" }}>
                   <th style={{ border: "1.5px solid #000", padding: "8px 6px", textAlign: "center", width: 50 }}>S #</th>
@@ -9987,7 +10018,7 @@ function PrintPreviewModal({ doc, onClose }) {
               </tbody>
             </table>
           ) : (
-            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 20, border: "2px solid #000", fontSize: 13 }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 0, border: "2px solid #000", fontSize: 13 }}>
               <thead>
                 <tr style={{ background: "#F8FAFC" }}>
                   <th style={{ border: "1.5px solid #000", padding: "8px 6px", textAlign: "center", width: 50 }}>S #</th>
@@ -10012,48 +10043,46 @@ function PrintPreviewModal({ doc, onClose }) {
             </table>
           )}
 
-          {/* TOTALS & TAX BREAKDOWN BLOCK */}
-          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 20 }}>
-            <table style={{ borderCollapse: "collapse", minWidth: 350, fontSize: 13, border: "2px solid #000" }}>
-              <tbody>
-                {doc.applySst ? (
-                  <>
+          {/* TOTALS & TAX BREAKDOWN BLOCK - FULL WIDTH ALIGNED TO AMOUNT COLUMN */}
+          <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 20, border: "2px solid #000", borderTop: "none", fontSize: 13 }}>
+            <tbody>
+              {doc.applySst ? (
+                <>
+                  <tr>
+                    <td colSpan={template === "PRINTING" || template === "OOH" ? 6 : 4} style={{ border: "1.5px solid #000", padding: "7px 12px", fontWeight: 700, textAlign: "right" }}>Total Net Amount</td>
+                    <td style={{ border: "1.5px solid #000", padding: "7px 12px", textAlign: "right", fontWeight: 700, width: template === "PRINTING" || template === "OOH" ? 125 : 130 }}>{pkr(netAmt)}</td>
+                  </tr>
+                  <tr>
+                    <td colSpan={template === "PRINTING" || template === "OOH" ? 6 : 4} style={{ border: "1.5px solid #000", padding: "7px 12px", textAlign: "right" }}>15% Sindh Sales Tax (SRB)</td>
+                    <td style={{ border: "1.5px solid #000", padding: "7px 12px", textAlign: "right", fontWeight: 600, width: template === "PRINTING" || template === "OOH" ? 125 : 130 }}>{pkr(sstAmt || (netAmt * 0.15))}</td>
+                  </tr>
+                  {doc.applyWht && (
                     <tr>
-                      <td style={{ border: "1.5px solid #000", padding: "7px 12px", fontWeight: 700, textAlign: "left" }}>Total Net Amount</td>
-                      <td style={{ border: "1.5px solid #000", padding: "7px 12px", textAlign: "right", fontWeight: 700 }}>{pkr(netAmt)}</td>
+                      <td colSpan={template === "PRINTING" || template === "OOH" ? 6 : 4} style={{ border: "1.5px solid #000", padding: "7px 12px", textAlign: "right", color: "#059669" }}>Less: WHT Deduction ({doc.whtRate || 0}%)</td>
+                      <td style={{ border: "1.5px solid #000", padding: "7px 12px", textAlign: "right", color: "#059669", width: template === "PRINTING" || template === "OOH" ? 125 : 130 }}>- {pkr(whtAmt)}</td>
                     </tr>
+                  )}
+                  <tr style={{ background: "#F1F5F9", fontWeight: 800 }}>
+                    <td colSpan={template === "PRINTING" || template === "OOH" ? 6 : 4} style={{ border: "2px solid #000", padding: "9px 12px", fontSize: 14, textAlign: "right" }}>Grand Total Payable</td>
+                    <td style={{ border: "2px solid #000", padding: "9px 12px", textAlign: "right", fontSize: 15, color: "#A81C1C", width: template === "PRINTING" || template === "OOH" ? 125 : 130 }}>{pkr(totalAmt)}</td>
+                  </tr>
+                </>
+              ) : (
+                <>
+                  {doc.applyWht && (
                     <tr>
-                      <td style={{ border: "1.5px solid #000", padding: "7px 12px", textAlign: "left" }}>15% Sindh Sales Tax (SRB)</td>
-                      <td style={{ border: "1.5px solid #000", padding: "7px 12px", textAlign: "right", fontWeight: 600 }}>{pkr(sstAmt || (netAmt * 0.15))}</td>
+                      <td colSpan={template === "PRINTING" || template === "OOH" ? 6 : 4} style={{ border: "1.5px solid #000", padding: "7px 12px", textAlign: "right", color: "#059669" }}>Less: WHT Deduction ({doc.whtRate || 0}%)</td>
+                      <td style={{ border: "1.5px solid #000", padding: "7px 12px", textAlign: "right", color: "#059669", width: template === "PRINTING" || template === "OOH" ? 125 : 130 }}>- {pkr(whtAmt)}</td>
                     </tr>
-                    {doc.applyWht && (
-                      <tr>
-                        <td style={{ border: "1.5px solid #000", padding: "7px 12px", textAlign: "left", color: "#059669" }}>Less: WHT Deduction ({doc.whtRate || 0}%)</td>
-                        <td style={{ border: "1.5px solid #000", padding: "7px 12px", textAlign: "right", color: "#059669" }}>- {pkr(whtAmt)}</td>
-                      </tr>
-                    )}
-                    <tr style={{ background: "#F1F5F9", fontWeight: 800 }}>
-                      <td style={{ border: "2px solid #000", padding: "9px 12px", fontSize: 14, textAlign: "left" }}>Grand Total Payable</td>
-                      <td style={{ border: "2px solid #000", padding: "9px 12px", textAlign: "right", fontSize: 15, color: "#A81C1C" }}>{pkr(totalAmt)}</td>
-                    </tr>
-                  </>
-                ) : (
-                  <>
-                    {doc.applyWht && (
-                      <tr>
-                        <td style={{ border: "1.5px solid #000", padding: "7px 12px", textAlign: "left", color: "#059669" }}>Less: WHT Deduction ({doc.whtRate || 0}%)</td>
-                        <td style={{ border: "1.5px solid #000", padding: "7px 12px", textAlign: "right", color: "#059669" }}>- {pkr(whtAmt)}</td>
-                      </tr>
-                    )}
-                    <tr style={{ background: "#F1F5F9", fontWeight: 800 }}>
-                      <td style={{ border: "2px solid #000", padding: "9px 12px", fontSize: 14, textAlign: "left" }}>Grand Total Payable</td>
-                      <td style={{ border: "2px solid #000", padding: "9px 12px", textAlign: "right", fontSize: 15, color: "#0F172A" }}>{pkr(totalAmt || (netAmt - whtAmt))}</td>
-                    </tr>
-                  </>
-                )}
-              </tbody>
-            </table>
-          </div>
+                  )}
+                  <tr style={{ background: "#F1F5F9", fontWeight: 800 }}>
+                    <td colSpan={template === "PRINTING" || template === "OOH" ? 6 : 4} style={{ border: "2px solid #000", padding: "9px 12px", fontSize: 14, textAlign: "right" }}>Grand Total Payable</td>
+                    <td style={{ border: "2px solid #000", padding: "9px 12px", textAlign: "right", fontSize: 15, color: "#0F172A", width: template === "PRINTING" || template === "OOH" ? 125 : 130 }}>{pkr(totalAmt || (netAmt - whtAmt))}</td>
+                  </tr>
+                </>
+              )}
+            </tbody>
+          </table>
 
           {/* AMOUNT IN WORDS */}
           <div style={{ fontSize: 12.5, fontStyle: "italic", marginBottom: 20, background: "#F8FAFC", padding: "8px 12px", border: "1px solid #CBD5E1", borderRadius: 4 }}>
