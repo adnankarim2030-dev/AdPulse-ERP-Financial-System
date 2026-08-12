@@ -833,44 +833,26 @@ function seedDocuments() {
 }
 
 function buildInitialData() {
-  const projects = seedProjects();
-  const hoardings = seedHoardings();
-
-  const ramzan = projects.find(p => p.name === "Ramzan Drive Billboards");
-  const launch = projects.find(p => p.name === "Launch Campaign Billboards");
-  const hoardingInvoices = [];
-
-  const linkSite = (siteName, proj, bookedFrom, bookedTo) => {
-    const h = hoardings.find(x => x.name === siteName);
-    if (!h || !proj) return;
-    h.status = "Booked"; h.client = proj.client; h.project = proj.name; h.projectId = proj.id;
-    h.bookedFrom = bookedFrom; h.bookedTo = bookedTo;
-    hoardingInvoices.push({
-      id: uid(), client: proj.client, description: `OOH Advertising — ${proj.name}: ${h.name} rental`,
-      amount: h.pricePerMonth, applySst: true, sstAmount: h.pricePerMonth * 0.15, totalAmount: h.pricePerMonth * 1.15, 
-      issueDate: bookedFrom, dueDate: bookedTo,
-      paid: false, paidVia: null, projectId: proj.id,
-    });
-  };
-
-  linkSite("Tariq Road Junction", ramzan, "2026-07-01", "2026-08-31");
-  linkSite("Gulshan-e-Iqbal Flyover", ramzan, "2026-07-10", "2026-08-31");
-  linkSite("II Chundrigar Financial Hub", launch, "2026-07-05", "2026-09-05");
-
+  const hoardings = seedHoardings().map(h => ({ ...h, status: "Available", client: "", project: "", projectId: "" }));
   const employees = seedEmployees();
-  const leaveRequests = seedLeaveRequests(employees);
-  const { run: payrollRun, expense: payrollExpense } = seedPayrollRun(employees);
-
   const inventoryItems = seedInventoryItems();
-  const inventoryLogs = seedInventoryLogs(inventoryItems);
   const bankAccounts = seedBankAccounts();
 
-  const invoices = [...seedInvoices(), ...seedProjectInvoices(projects), ...hoardingInvoices];
-  const expenses = [...seedExpenses(), ...seedProjectExpenses(projects), payrollExpense];
-  const journal = buildInitialJournal(invoices, expenses);
-  const vouchers = seedVouchers();
-  const documents = seedDocuments();
-  return { projects, invoices, expenses, journal, hoardings, employees, leaveRequests, payrollRuns: [payrollRun], inventoryItems, inventoryLogs, bankAccounts, vouchers, documents };
+  return {
+    projects: [],
+    invoices: [],
+    expenses: [],
+    journal: [],
+    hoardings,
+    employees,
+    leaveRequests: [],
+    payrollRuns: [],
+    inventoryItems,
+    inventoryLogs: [],
+    bankAccounts,
+    vouchers: [],
+    documents: []
+  };
 }
 
 /* ---------- SMALL UI COMPONENTS ---------- */
@@ -1031,7 +1013,7 @@ export default function App() {
   /* Financial & Operations state */
   const [seedData] = useState(buildInitialData);
 
-  const STORAGE_KEY = "adpulse_erp_financial_backup_v1";
+  const STORAGE_KEY = "adpulse_erp_financial_backup_v2";
 
   // Helper to load state from localStorage or fallback to default
   const getInitialState = (key, fallback) => {
@@ -1040,9 +1022,7 @@ export default function App() {
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed && parsed.data && parsed.data[key] !== undefined) {
-          const val = parsed.data[key];
-          if (Array.isArray(val) && val.length > 0) return val;
-          if (!Array.isArray(val) && val !== null && val !== undefined) return val;
+          return parsed.data[key];
         }
       }
     } catch (e) {
@@ -1064,17 +1044,17 @@ export default function App() {
     });
     return merged;
   });
-  const [journal, setJournal] = useState(() => getInitialState("journal", seedData.journal));
-  const [invoices, setInvoices] = useState(() => getInitialState("invoices", seedData.invoices));
-  const [expenses, setExpenses] = useState(() => getInitialState("expenses", seedData.expenses));
+  const [journal, setJournal] = useState(() => getInitialState("journal", []));
+  const [invoices, setInvoices] = useState(() => getInitialState("invoices", []));
+  const [expenses, setExpenses] = useState(() => getInitialState("expenses", []));
   const [purchaseOrders, setPurchaseOrders] = useState(() => getInitialState("purchaseOrders", []));
-  const [projects, setProjects] = useState(() => getInitialState("projects", seedData.projects));
+  const [projects, setProjects] = useState(() => getInitialState("projects", []));
   const [bankAccounts, setBankAccounts] = useState(() => getInitialState("bankAccounts", seedData.bankAccounts || []));
   const [hoardings, setHoardings] = useState(() => getInitialState("hoardings", seedData.hoardings));
   const [inventoryItems, setInventoryItems] = useState(() => getInitialState("inventoryItems", seedData.inventoryItems || []));
-  const [inventoryLogs, setInventoryLogs] = useState(() => getInitialState("inventoryLogs", seedData.inventoryLogs || []));
-  const [vouchers, setVouchers] = useState(() => getInitialState("vouchers", seedData.vouchers || seedVouchers()));
-  const [documents, setDocuments] = useState(() => getInitialState("documents", seedData.documents || seedDocuments()));
+  const [inventoryLogs, setInventoryLogs] = useState(() => getInitialState("inventoryLogs", []));
+  const [vouchers, setVouchers] = useState(() => getInitialState("vouchers", []));
+  const [documents, setDocuments] = useState(() => getInitialState("documents", []));
   const [employees, setEmployees] = useState(() => getInitialState("employees", seedData.employees));
   const [leaveRequests, setLeaveRequests] = useState(() => getInitialState("leaveRequests", seedData.leaveRequests));
   const [payrollRuns, setPayrollRuns] = useState(() => getInitialState("payrollRuns", seedData.payrollRuns));
@@ -1469,28 +1449,28 @@ export default function App() {
   };
 
   const handleResetData = () => {
-    if (window.confirm("CAUTION: Are you sure you want to reset all system data back to initial demo data? Any unexported local changes will be reset.")) {
+    if (window.confirm("CONFIRMATION: Are you sure you want to clear ALL demo entries and start fresh with a clean system for real entry testing?")) {
       const initial = buildInitialData();
-      setJournal(initial.journal);
-      setInvoices(initial.invoices);
-      setExpenses(initial.expenses);
+      setJournal([]);
+      setInvoices([]);
+      setExpenses([]);
       setPurchaseOrders([]);
-      setProjects(initial.projects);
+      setProjects([]);
       setBankAccounts(initial.bankAccounts || []);
       setHoardings(initial.hoardings);
       setInventoryItems(initial.inventoryItems || []);
-      setInventoryLogs(initial.inventoryLogs || []);
+      setInventoryLogs([]);
       setVouchers([]);
       setDocuments([]);
       setEmployees(initial.employees);
-      setLeaveRequests(initial.leaveRequests);
-      setPayrollRuns(initial.payrollRuns);
+      setLeaveRequests([]);
+      setPayrollRuns([]);
       setUsersList(SEED_USERS);
       localStorage.removeItem(STORAGE_KEY);
       setLastBackupTime(null);
       setBackupNotification({
         type: "success",
-        text: "System data reset to initial default seed data successfully."
+        text: "🧹 All sample demo data cleared successfully! System is now 100% clean and ready for your fresh entries."
       });
       setTimeout(() => setBackupNotification(null), 5000);
     }
