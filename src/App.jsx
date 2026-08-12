@@ -7275,8 +7275,8 @@ function InvoiceModal({ initialData, projects = [], onClose, onSubmit }) {
     "• ABOVE MENTIONED AMOUNT IS BASED ON NET. ALL TAXES WOULD BE CHARGED OVER & ABOVE.\n• PAYMENT TO BE MADE IN THE FAVOR OF \"ADPULSE IMC (PRIVATE) LTD\"\n• NTN: A0654656-8 / STRN: SA054896-8"
   );
 
-  // OOH Sites Multi-Location State inside InvoiceModal
-  const [enableOohSites, setEnableOohSites] = useState(() => !!(initialData?.oohSites && initialData.oohSites.length > 0));
+  // OOH Sites Multi-Location State inside InvoiceModal (Enabled by default so headers show immediately)
+  const [enableOohSites, setEnableOohSites] = useState(() => initialData?.oohSites ? true : true);
   const [oohSites, setOohSites] = useState(() => {
     if (initialData?.oohSites && Array.isArray(initialData.oohSites) && initialData.oohSites.length > 0) {
       return initialData.oohSites.map(s => {
@@ -9838,14 +9838,14 @@ function PrintPreviewModal({ doc, onClose }) {
             <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 0, border: "2px solid #000", fontSize: 12 }}>
               <thead>
                 <tr style={{ background: "#F1F5F9" }}>
-                  <th style={{ border: "1.5px solid #000", padding: "8px 6px", textAlign: "center", width: 50 }}>S #</th>
-                  <th style={{ border: "1.5px solid #000", padding: "8px 10px", textAlign: "left" }}>LOCATIONS / AREA</th>
-                  <th style={{ border: "1.5px solid #000", padding: "8px 6px", textAlign: "center", width: 55 }}>W (FT)</th>
-                  <th style={{ border: "1.5px solid #000", padding: "8px 6px", textAlign: "center", width: 55 }}>H (FT)</th>
-                  <th style={{ border: "1.5px solid #000", padding: "8px 6px", textAlign: "center", width: 65 }}>SQFT</th>
-                  <th style={{ border: "1.5px solid #000", padding: "8px 6px", textAlign: "center", width: 65 }}>DAYS</th>
-                  <th style={{ border: "1.5px solid #000", padding: "8px 10px", textAlign: "right", width: 105 }}>RATE</th>
-                  <th style={{ border: "1.5px solid #000", padding: "8px 10px", textAlign: "right", width: 125 }}>AMOUNT</th>
+                  <th style={{ border: "1.5px solid #000", padding: "8px 6px", textAlign: "center", width: 45 }}>S #</th>
+                  <th style={{ border: "1.5px solid #000", padding: "8px 10px", textAlign: "left" }}>LOCATION / AREA</th>
+                  <th style={{ border: "1.5px solid #000", padding: "8px 6px", textAlign: "center", width: 65 }}>WIDTH (FT)</th>
+                  <th style={{ border: "1.5px solid #000", padding: "8px 6px", textAlign: "center", width: 65 }}>HEIGHT (FT)</th>
+                  <th style={{ border: "1.5px solid #000", padding: "8px 6px", textAlign: "center", width: 75 }}>TOTAL SQ. FT.</th>
+                  <th style={{ border: "1.5px solid #000", padding: "8px 6px", textAlign: "center", width: 85 }}>DURATION (DAYS)</th>
+                  <th style={{ border: "1.5px solid #000", padding: "8px 10px", textAlign: "right", width: 100 }}>RATE (PKR)</th>
+                  <th style={{ border: "1.5px solid #000", padding: "8px 10px", textAlign: "right", width: 125 }}>AMOUNT (PKR)</th>
                 </tr>
               </thead>
               <tbody>
