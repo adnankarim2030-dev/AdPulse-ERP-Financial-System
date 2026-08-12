@@ -9660,7 +9660,7 @@ function PrintPreviewModal({ doc, onClose }) {
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <style>{`
-        @page { size: ${pageSize} ${pageOrientation}; margin: ${pageMargin}; }
+        @page { size: ${PAGE_SIZES[pageSize] || pageSize} ${pageOrientation}; margin: ${pageMargin}; }
         @media print {
           .no-print-header { display: none !important; }
           .modal-backdrop { background: none !important; padding: 0 !important; }
@@ -9691,6 +9691,7 @@ function PrintPreviewModal({ doc, onClose }) {
                 <span style={{ fontSize: 11, color: "#94A3B8", fontWeight: 700 }}>Paper:</span>
                 <select value={pageSize} onChange={e => setPageSize(e.target.value)} style={{ background: "transparent", border: "none", color: "#FFF", fontSize: 12.5, fontWeight: 700, cursor: "pointer" }}>
                   <option value="A4">A4 (210 x 297 mm)</option>
+                  <option value="A5">A5 (148 x 210 mm)</option>
                   <option value="Letter">Letter (8.5 x 11 in)</option>
                   <option value="Legal">Legal (8.5 x 14 in)</option>
                   <option value="A3">A3 (297 x 420 mm)</option>
