@@ -9002,7 +9002,6 @@ function ProjectModal({ initialData, onClose, onSubmit }) {
   const [type, setType] = useState(initialData?.type || PROJECT_TYPES[0].key);
   const [name, setName] = useState(initialData?.name || "");
   const [description, setDescription] = useState(initialData?.description || "");
-  const [budget, setBudget] = useState(initialData?.budget || "");
   const [startDate, setStartDate] = useState(initialData?.startDate || TODAY_STR);
   const [endDate, setEndDate] = useState(initialData?.endDate || TODAY_STR);
 
@@ -9018,7 +9017,6 @@ function ProjectModal({ initialData, onClose, onSubmit }) {
       </div>
       <div className="field"><label>Project Title</label><input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Q3 Brand Campaign" /></div>
       <div className="field"><label>Scope Note / Objective</label><input value={description} onChange={e => setDescription(e.target.value)} placeholder="Brief summary of creative scope" /></div>
-      <div className="field"><label>Estimated Budget / Value (PKR)</label><input type="number" value={budget} onChange={e => setBudget(e.target.value)} placeholder="0" /></div>
 
       <div style={{ display: "flex", gap: 10 }}>
         <div className="field" style={{ flex: 1 }}><label>Start Date</label><input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} /></div>
@@ -9026,9 +9024,9 @@ function ProjectModal({ initialData, onClose, onSubmit }) {
       </div>
       <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 6 }} disabled={!valid}
         onClick={() => valid && onSubmit(initialData ? {
-          ...initialData, client, type, name, description, budget: Number(budget) || 0, startDate, endDate
+          ...initialData, client, type, name, description, startDate, endDate
         } : {
-          client, type, name, description, budget: Number(budget) || 0, startDate, endDate, spent: 0, billed: 0, status: "Active"
+          client, type, name, description, startDate, endDate, budget: 0, spent: 0, billed: 0, status: "Active"
         })}>
         {initialData ? "Save Project Changes" : "Initialize Project"}
       </button>
