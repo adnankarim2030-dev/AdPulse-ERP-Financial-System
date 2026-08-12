@@ -3031,26 +3031,26 @@ export default function App() {
                 /* MAIN CEO EXECUTIVE DASHBOARD */
                 <>
                   {/* SECTION 2: CEO HEADER BANNER & PERIOD FILTERS */}
-                  <div className="card" style={{ padding: "20px 24px", marginBottom: 20, background: "linear-gradient(135deg, #0F172A 0%, #1E293B 100%)", color: "#FFFFFF", border: "1px solid rgba(212, 175, 55, 0.4)", borderRadius: 14, boxShadow: "0 10px 25px rgba(0,0,0,0.15)" }}>
+                  <div className="card ceo-header-card" style={{ padding: "20px 24px", marginBottom: 20, background: "linear-gradient(135deg, #0F172A 0%, #1E293B 100%)", color: "#FFFFFF", border: "1.5px solid rgba(212, 175, 55, 0.6)", borderRadius: 16, boxShadow: "0 12px 30px rgba(0,0,0,0.25)" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-                        <div style={{ width: 54, height: 54, borderRadius: 14, background: "linear-gradient(135deg, #D4AF37, #B8860B)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 14px rgba(212, 175, 55, 0.4)" }}>
+                        <div style={{ width: 54, height: 54, borderRadius: 14, background: "linear-gradient(135deg, #D4AF37, #B8860B)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 14px rgba(212, 175, 55, 0.4)", flexShrink: 0 }}>
                           <Crown size={30} color="#FFFFFF" />
                         </div>
                         <div>
                           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                            <h2 style={{ fontSize: 23, fontWeight: 800, color: "#F59E0B", margin: 0 }}>CEO Executive Dashboard</h2>
-                            <span style={{ fontSize: 10, background: "#D4AF37", color: "#000", padding: "2px 8px", borderRadius: 10, fontWeight: 900, textTransform: "uppercase" }}>CONFIDENTIAL</span>
+                            <h2 style={{ fontSize: 23, fontWeight: 800, color: "#F59E0B", margin: 0, textShadow: "0 1px 2px rgba(0,0,0,0.5)" }}>CEO Executive Dashboard</h2>
+                            <span style={{ fontSize: 10, background: "#D4AF37", color: "#0F172A", padding: "2px 8px", borderRadius: 10, fontWeight: 900, textTransform: "uppercase", letterSpacing: 0.5 }}>CONFIDENTIAL</span>
                           </div>
-                          <p style={{ fontSize: 13, color: "#94A3B8", margin: "3px 0 0" }}>
-                            <strong>AdPulse IMC PVT LTD</strong> &middot; Financial Period: <strong>FY 2026-2027</strong> &middot; Last Updated: <strong style={{ color: "#F59E0B" }}>{fmtDate(TODAY)} {ceoLastUpdated}</strong>
+                          <p style={{ fontSize: 13.5, color: "#CBD5E1", margin: "4px 0 0", fontWeight: 500 }}>
+                            <strong style={{ color: "#FFFFFF" }}>AdPulse IMC PVT LTD</strong> &middot; Financial Period: <strong style={{ color: "#FFFFFF" }}>FY 2026-2027</strong> &middot; Last Updated: <strong style={{ color: "#F59E0B" }}>{fmtDate(TODAY)} {ceoLastUpdated}</strong>
                           </p>
                         </div>
                       </div>
 
                       {/* PERIOD FILTERS & CONTROLS */}
-                      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
-                        <div style={{ background: "rgba(255,255,255,0.08)", padding: 4, borderRadius: 8, display: "flex", gap: 4, flexWrap: "wrap", maxWidth: "100%", overflowX: "auto" }}>
+                      <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
+                        <div style={{ background: "rgba(15, 23, 42, 0.8)", padding: "5px 6px", borderRadius: 12, display: "flex", gap: 5, flexWrap: "wrap", maxWidth: "100%", overflowX: "auto", border: "1px solid rgba(255,255,255,0.15)", boxShadow: "inset 0 2px 4px rgba(0,0,0,0.4)" }}>
                           {[
                             { key: "today", label: "Today" },
                             { key: "this_week", label: "This Week" },
@@ -3058,58 +3058,63 @@ export default function App() {
                             { key: "this_quarter", label: "This Quarter" },
                             { key: "this_year", label: "This Year" },
                             { key: "custom", label: "Custom" }
-                          ].map(p => (
-                            <button
-                              key={p.key}
-                              style={{
-                                padding: "5px 10px",
-                                fontSize: 11.5,
-                                borderRadius: 6,
-                                border: "none",
-                                cursor: "pointer",
-                                background: ceoPeriod === p.key ? "#D4AF37" : "transparent",
-                                color: ceoPeriod === p.key ? "#000000" : "#CBD5E1",
-                                fontWeight: ceoPeriod === p.key ? 750 : 500,
-                                transition: "all 0.15s ease"
-                              }}
-                              onClick={() => setCeoPeriod(p.key)}
-                            >
-                              {p.label}
-                            </button>
-                          ))}
+                          ].map(p => {
+                            const isSelected = ceoPeriod === p.key;
+                            return (
+                              <button
+                                key={p.key}
+                                style={{
+                                  padding: "6px 13px",
+                                  fontSize: 13,
+                                  borderRadius: 8,
+                                  border: isSelected ? "1px solid #F59E0B" : "1px solid transparent",
+                                  cursor: "pointer",
+                                  background: isSelected ? "linear-gradient(135deg, #D4AF37 0%, #B8860B 100%)" : "rgba(255, 255, 255, 0.06)",
+                                  color: isSelected ? "#0F172A" : "#F1F5F9",
+                                  fontWeight: isSelected ? 850 : 650,
+                                  transition: "all 0.2s ease",
+                                  boxShadow: isSelected ? "0 4px 12px rgba(212, 175, 55, 0.4)" : "none",
+                                  textShadow: isSelected ? "none" : "0 1px 2px rgba(0,0,0,0.6)"
+                                }}
+                                onClick={() => setCeoPeriod(p.key)}
+                              >
+                                {p.label}
+                              </button>
+                            );
+                          })}
                         </div>
                         <button
                           className="btn"
-                          style={{ background: "rgba(255,255,255,0.1)", color: "#FFFFFF", border: "1px solid rgba(255,255,255,0.2)", fontSize: 12, padding: "6px 12px" }}
+                          style={{ background: "#1E293B", color: "#FFFFFF", border: "1.5px solid #D4AF37", fontSize: 13, padding: "7px 14px", fontWeight: 700, borderRadius: 10, boxShadow: "0 3px 8px rgba(0,0,0,0.3)" }}
                           onClick={() => setCeoLastUpdated(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }))}
                           title="Refresh Dashboard Data"
                         >
-                          <RefreshCw size={13} style={{ marginRight: 4 }} /> Refresh
+                          <RefreshCw size={14} color="#F59E0B" style={{ marginRight: 5 }} /> Refresh
                         </button>
                         <button
                           className="btn"
-                          style={{ background: "rgba(255,255,255,0.1)", color: "#FFFFFF", border: "1px solid rgba(255,255,255,0.2)", fontSize: 12, padding: "6px 12px" }}
+                          style={{ background: "#1E293B", color: "#FFFFFF", border: "1.5px solid #D4AF37", fontSize: 13, padding: "7px 14px", fontWeight: 700, borderRadius: 10, boxShadow: "0 3px 8px rgba(0,0,0,0.3)" }}
                           onClick={() => setShowPinChangeModal(true)}
                         >
-                          <KeyRound size={13} style={{ marginRight: 4 }} /> PIN
+                          <KeyRound size={14} color="#F59E0B" style={{ marginRight: 5 }} /> PIN
                         </button>
                         <button
                           className="btn"
-                          style={{ background: "linear-gradient(135deg, #DC2626, #991B1B)", color: "#FFFFFF", border: "none", fontWeight: 700, fontSize: 12, padding: "6px 12px" }}
+                          style={{ background: "linear-gradient(135deg, #DC2626, #991B1B)", color: "#FFFFFF", border: "1px solid #EF4444", fontWeight: 800, fontSize: 13, padding: "7px 14px", borderRadius: 10, boxShadow: "0 4px 12px rgba(220,38,38,0.4)" }}
                           onClick={() => setIsCeoLocked(true)}
                         >
-                          <LockKeyhole size={13} style={{ marginRight: 4 }} /> Lock
+                          <LockKeyhole size={14} style={{ marginRight: 5 }} /> Lock
                         </button>
                       </div>
                     </div>
 
                     {/* CUSTOM DATE RANGE SELECTOR */}
                     {ceoPeriod === "custom" && (
-                      <div style={{ marginTop: 14, paddingTop: 12, borderTop: "1px solid rgba(255,255,255,0.1)", display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
-                        <div style={{ fontSize: 12, color: "#CBD5E1" }}>Select Custom Period Range:</div>
-                        <input type="date" value={ceoCustomStart} onChange={e => setCeoCustomStart(e.target.value)} style={{ padding: "4px 8px", borderRadius: 6, fontSize: 12 }} />
-                        <span style={{ color: "#94A3B8" }}>to</span>
-                        <input type="date" value={ceoCustomEnd} onChange={e => setCeoCustomEnd(e.target.value)} style={{ padding: "4px 8px", borderRadius: 6, fontSize: 12 }} />
+                      <div style={{ marginTop: 14, paddingTop: 12, borderTop: "1px solid rgba(255,255,255,0.15)", display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+                        <div style={{ fontSize: 13, color: "#F1F5F9", fontWeight: 700 }}>Select Custom Period Range:</div>
+                        <input type="date" value={ceoCustomStart} onChange={e => setCeoCustomStart(e.target.value)} style={{ padding: "6px 10px", borderRadius: 8, fontSize: 13, background: "#0F172A", color: "#FFFFFF", border: "1px solid #D4AF37" }} />
+                        <span style={{ color: "#CBD5E1", fontWeight: 600 }}>to</span>
+                        <input type="date" value={ceoCustomEnd} onChange={e => setCeoCustomEnd(e.target.value)} style={{ padding: "6px 10px", borderRadius: 8, fontSize: 13, background: "#0F172A", color: "#FFFFFF", border: "1px solid #D4AF37" }} />
                       </div>
                     )}
                   </div>
