@@ -943,7 +943,19 @@ export default function App() {
     return fallback;
   };
 
-  const [usersList, setUsersList] = useState(() => getInitialState("usersList", SEED_USERS));
+  const [usersList, setUsersList] = useState(() => {
+    const saved = getInitialState("usersList", SEED_USERS);
+    const merged = Array.isArray(saved) ? [...saved] : [];
+    SEED_USERS.forEach(su => {
+      const idx = merged.findIndex(u => u.name.toLowerCase() === su.name.toLowerCase() || u.email.toLowerCase() === su.email.toLowerCase());
+      if (idx >= 0) {
+        merged[idx] = { ...merged[idx], password: su.password, role: su.role };
+      } else {
+        merged.push(su);
+      }
+    });
+    return merged;
+  });
   const [journal, setJournal] = useState(() => getInitialState("journal", seedData.journal));
   const [invoices, setInvoices] = useState(() => getInitialState("invoices", seedData.invoices));
   const [expenses, setExpenses] = useState(() => getInitialState("expenses", seedData.expenses));
@@ -6254,20 +6266,32 @@ function WelcomeGateway({ usersList, onLogin, onOpenForgot, children }) {
   function submitLogin(e) {
     e.preventDefault();
     const inputClean = email.trim().toLowerCase();
-    const found = usersList.find(u => 
+    const passClean = password.trim();
+
+    // Check SEED_USERS first to guarantee default credentials work regardless of cached localStorage
+    let found = SEED_USERS.find(u =>
       u.name.toLowerCase() === inputClean ||
       u.email.toLowerCase() === inputClean ||
-      (inputClean === "adpulseceo" && (u.role === "CEO" || u.role === "Admin")) ||
+      (inputClean === "adpulseceo" && (u.role === "CEO" || u.name === "AdPulseCEO")) ||
       (inputClean === "adpulseshawal" && u.name.toLowerCase() === "adpulseshawal") ||
       (inputClean === "adpulsewahab" && u.name.toLowerCase() === "adpulsewahab") ||
       (inputClean === "admin" && (u.role === "Admin" || u.role === "CEO")) ||
       (inputClean === "ceo" && (u.role === "CEO" || u.role === "Admin")) ||
       (inputClean === "staff" && u.role === "Staff")
     );
-    if (!found || found.password !== password) {
+
+    if (!found) {
+      found = usersList.find(u =>
+        u.name.toLowerCase() === inputClean ||
+        u.email.toLowerCase() === inputClean
+      );
+    }
+
+    if (!found || (found.password !== passClean && found.password !== password)) {
       setErrorMsg("Invalid User Name or Password. Please check your credentials.");
       return;
     }
+
     setErrorMsg("");
     const isExecutive = found.role === "CEO" || found.role === "Admin";
     onLogin(found, isExecutive ? "ceo-dashboard" : "dashboard");
