@@ -9552,6 +9552,9 @@ function PayrollConfirmModal({ activeEmployees = [], monthlyAttendance = {}, onC
 function PrintPreviewModal({ doc, onClose }) {
 
   const [pageSize, setPageSize] = useState("A4");
+  const [pageOrientation, setPageOrientation] = useState("portrait");
+  const [pageMargin, setPageMargin] = useState("8mm");
+  const [printScale, setPrintScale] = useState("100%");
   const [template, setTemplate] = useState(doc.invoiceType || "GENERAL");
   const [specialNote, setSpecialNote] = useState(
     doc.specialNote || doc.note ||
@@ -9563,23 +9566,116 @@ function PrintPreviewModal({ doc, onClose }) {
   const whtAmt = doc.whtAmount || 0;
   const netAmt = doc.amount || 0;
 
+  const handleExportExcel = () => {
+    const docTitle = doc.type || (doc.applySst ? "Sales_Tax_Invoice" : "Invoice");
+    const refNo = doc.voucherNo || ("AD_" + (doc.id ? doc.id.slice(0, 6).toUpperCase() : "9438"));
+    const clientName = doc.client || doc.party || "Client";
+    const issueDate = doc.date || doc.issueDate || TODAY;
+
+    let csvContent = "\uFEFF"; // UTF-8 BOM
+    csvContent += `ADPULSE IMC (PVT) LTD - FINANCIAL DOCUMENT EXPORT\n`;
+    csvContent += `Document Type:,${docTitle}\n`;
+    csvContent += `Reference No:,${refNo}\n`;
+    csvContent += `Date:,${issueDate}\n`;
+    csvContent += `Client / Party:,${clientName}\n`;
+    csvContent += `Description:,${(doc.description || "").replace(/,/g, ' ')}\n\n`;
+
+    if (template === "PRINTING" || template === "OOH") {
+      csvContent += `S.No,Location / Particulars,Width (Ft),Height (Ft),Sq. Ft.,Rate (PKR),Amount (PKR)\n`;
+      const items = doc.printingItems || doc.oohSites || [
+        { location: doc.description || "Service Line Item", width: 45, height: 15, sqft: 675, rate: doc.amount, amount: doc.amount }
+      ];
+      items.forEach((item, idx) => {
+        const loc = `"${(item.location || item.description || doc.description || "").replace(/"/g, '""')}"`;
+        const w = Number(item.width || 0).toFixed(2);
+        const h = Number(item.height || 0).toFixed(2);
+        const sq = Number(item.sqft || 0).toFixed(2);
+        const r = Number(item.rate || item.amount || 0).toFixed(2);
+        const a = Number(item.amount || 0).toFixed(2);
+        csvContent += `${idx + 1},${loc},${w},${h},${sq},${r},${a}\n`;
+      });
+    } else {
+      csvContent += `S.No,Description / Scope Particulars,Quantity,Rate (PKR),Amount (PKR)\n`;
+      csvContent += `1,"${(doc.description || "Commercial Media Service").replace(/"/g, '""')}",1,${(doc.amount || 0).toFixed(2)},${(doc.amount || 0).toFixed(2)}\n`;
+    }
+
+    csvContent += `\n`;
+    csvContent += `Subtotal Amount (PKR):,${(doc.amount || 0).toFixed(2)}\n`;
+    if (doc.applySst) csvContent += `SRB Sales Tax (15%):,${(doc.sstAmount || 0).toFixed(2)}\n`;
+    if (doc.applyWht) csvContent += `WHT Withholding (3%):,${(doc.whtAmount || 0).toFixed(2)}\n`;
+    csvContent += `NET TOTAL RECEIVABLE (PKR):,${(doc.totalAmount || doc.amount || 0).toFixed(2)}\n\n`;
+    csvContent += `Special Notes & Terms:,"${(specialNote || "").replace(/\n/g, ' ').replace(/"/g, '""')}"\n`;
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `${docTitle}_${refNo}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleExportImage = () => {
+    const printEl = document.querySelector(".print-area");
+    if (!printEl) return;
+    const refNo = doc.voucherNo || ("AD_" + (doc.id ? doc.id.slice(0, 6).toUpperCase() : "9438"));
+
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    const width = printEl.offsetWidth || 800;
+    const height = printEl.offsetHeight || 1000;
+
+    canvas.width = width * 2;
+    canvas.height = height * 2;
+    ctx.scale(2, 2);
+
+    const data = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">` +
+      `<foreignObject width="100%" height="100%">` +
+      `<div xmlns="http://www.w3.org/1999/xhtml" style="background:#ffffff;color:#000000;font-family:sans-serif;padding:20px;box-sizing:border-box;">` +
+      printEl.innerHTML +
+      `</div></foreignObject></svg>`;
+
+    const img = new Image();
+    const svgBlob = new Blob([data], { type: "image/svg+xml;charset=utf-8" });
+    const url = URL.createObjectURL(svgBlob);
+
+    img.onload = function() {
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0, width, height);
+      URL.revokeObjectURL(url);
+
+      const pngUrl = canvas.toDataURL("image/png");
+      const link = document.createElement("a");
+      link.download = `Document_${refNo}.png`;
+      link.href = pngUrl;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    };
+    img.src = url;
+  };
+
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <style>{`
-        @page { size: ${PAGE_SIZES[pageSize]}; margin: 8mm; }
+        @page { size: ${pageSize} ${pageOrientation}; margin: ${pageMargin}; }
         @media print {
           .no-print-header { display: none !important; }
           .modal-backdrop { background: none !important; padding: 0 !important; }
           .modal { box-shadow: none !important; border: none !important; width: 100% !important; max-width: 100% !important; margin: 0 !important; }
-          .print-area { padding: 0 !important; border: none !important; border-radius: 0 !important; }
+          .print-area { padding: 0 !important; border: none !important; border-radius: 0 !important; transform: scale(${parseInt(printScale) / 100}); transform-origin: top left; }
         }
       `}</style>
-      <div className="modal" style={{ width: 840, maxWidth: "95vw", maxHeight: "90vh", overflowY: "auto" }} onClick={e => e.stopPropagation()}>
-        <div className="no-print-header" style={{ marginBottom: 14, background: "#1E293B", padding: "12px 16px", borderRadius: 8, color: "#fff" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <span style={{ fontWeight: 700, fontSize: 13.5 }}>Document Layout:</span>
-              <select value={template} onChange={e => setTemplate(e.target.value)} style={{ background: "#0F172A", color: "#fff", border: "1px solid #475569", borderRadius: 6, padding: "5px 10px", fontSize: 13 }}>
+      <div className="modal" style={{ width: 880, maxWidth: "95vw", maxHeight: "92vh", overflowY: "auto" }} onClick={e => e.stopPropagation()}>
+        <div className="no-print-header" style={{ marginBottom: 14, background: "#1E293B", padding: "14px 18px", borderRadius: 12, color: "#fff", border: "1px solid #334155", boxShadow: "0 4px 14px rgba(0,0,0,0.3)" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10, flexWrap: "wrap", gap: 10 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+              <span style={{ fontWeight: 800, fontSize: 13.5, color: "#F59E0B", display: "flex", alignItems: "center", gap: 5 }}>
+                <FileText size={16} /> Document Layout:
+              </span>
+              <select value={template} onChange={e => setTemplate(e.target.value)} style={{ background: "#0F172A", color: "#fff", border: "1.5px solid #475569", borderRadius: 8, padding: "6px 12px", fontSize: 13, fontWeight: 600 }}>
                 <option value="GENERAL">General / Standard Agency Invoice</option>
                 <option value="PRINTING">OOH Printing &amp; Installation Invoice</option>
                 <option value="OOH">OOH Billboards Sales Tax Invoice</option>
@@ -9588,22 +9684,76 @@ function PrintPreviewModal({ doc, onClose }) {
                 <option value="BRANDING">Project Branding Invoice</option>
               </select>
             </div>
-            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-              <select value={pageSize} onChange={e => setPageSize(e.target.value)} style={{ background: "#0F172A", border: "1px solid #475569", borderRadius: 6, color: "#FFF", fontSize: 13, padding: "5px 10px" }}>
-                {Object.keys(PAGE_SIZES).map(p => <option key={p}>{p}</option>)}
-              </select>
-              <button className="btn btn-primary" style={{ padding: "6px 14px", fontSize: 13 }} onClick={() => window.print()}><Printer size={14} /> Print / Save PDF</button>
-              <button className="btn" style={{ padding: 6, color: "#fff" }} onClick={onClose}><X size={16} /></button>
+
+            {/* PAGE SETTING CONTROLS */}
+            <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 6, background: "#0F172A", padding: "4px 8px", borderRadius: 8, border: "1px solid #334155" }}>
+                <span style={{ fontSize: 11, color: "#94A3B8", fontWeight: 700 }}>Paper:</span>
+                <select value={pageSize} onChange={e => setPageSize(e.target.value)} style={{ background: "transparent", border: "none", color: "#FFF", fontSize: 12.5, fontWeight: 700, cursor: "pointer" }}>
+                  <option value="A4">A4 (210 x 297 mm)</option>
+                  <option value="Letter">Letter (8.5 x 11 in)</option>
+                  <option value="Legal">Legal (8.5 x 14 in)</option>
+                  <option value="A3">A3 (297 x 420 mm)</option>
+                  <option value="Executive">Executive (7.25 x 10.5 in)</option>
+                </select>
+              </div>
+
+              <div style={{ display: "flex", alignItems: "center", gap: 6, background: "#0F172A", padding: "4px 8px", borderRadius: 8, border: "1px solid #334155" }}>
+                <span style={{ fontSize: 11, color: "#94A3B8", fontWeight: 700 }}>Orient:</span>
+                <select value={pageOrientation} onChange={e => setPageOrientation(e.target.value)} style={{ background: "transparent", border: "none", color: "#FFF", fontSize: 12.5, fontWeight: 700, cursor: "pointer" }}>
+                  <option value="portrait">Portrait 📄</option>
+                  <option value="landscape">Landscape 📑</option>
+                </select>
+              </div>
+
+              <div style={{ display: "flex", alignItems: "center", gap: 6, background: "#0F172A", padding: "4px 8px", borderRadius: 8, border: "1px solid #334155" }}>
+                <span style={{ fontSize: 11, color: "#94A3B8", fontWeight: 700 }}>Margin:</span>
+                <select value={pageMargin} onChange={e => setPageMargin(e.target.value)} style={{ background: "transparent", border: "none", color: "#FFF", fontSize: 12.5, fontWeight: 700, cursor: "pointer" }}>
+                  <option value="8mm">Compact (8mm)</option>
+                  <option value="15mm">Normal (15mm)</option>
+                  <option value="5mm">Narrow (5mm)</option>
+                  <option value="0mm">Zero Margin</option>
+                </select>
+              </div>
+
+              <div style={{ display: "flex", alignItems: "center", gap: 6, background: "#0F172A", padding: "4px 8px", borderRadius: 8, border: "1px solid #334155" }}>
+                <span style={{ fontSize: 11, color: "#94A3B8", fontWeight: 700 }}>Scale:</span>
+                <select value={printScale} onChange={e => setPrintScale(e.target.value)} style={{ background: "transparent", border: "none", color: "#FFF", fontSize: 12.5, fontWeight: 700, cursor: "pointer" }}>
+                  <option value="100%">100% (Standard)</option>
+                  <option value="95%">95% Fit</option>
+                  <option value="90%">90% Fit</option>
+                  <option value="85%">85% Compact</option>
+                  <option value="80%">80% Mini</option>
+                </select>
+              </div>
+
+              <button className="btn" style={{ padding: 6, color: "#fff", background: "#334155" }} onClick={onClose}><X size={16} /></button>
             </div>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <span style={{ fontSize: 12, color: "#94A3B8", fontWeight: 600 }}>Special Note / Terms:</span>
-            <input
-              style={{ flex: 1, background: "#0F172A", color: "#F8FAFC", border: "1px solid #475569", borderRadius: 4, padding: "4px 8px", fontSize: 12 }}
-              value={specialNote}
-              onChange={e => setSpecialNote(e.target.value)}
-              placeholder="Custom invoice notes, payment terms..."
-            />
+
+          {/* DOWNLOAD EXPORT TOOLBAR */}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, flexWrap: "wrap", paddingTop: 8, borderTop: "1px solid #334155" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, flex: 1 }}>
+              <span style={{ fontSize: 12, color: "#94A3B8", fontWeight: 700 }}>Special Note / Terms:</span>
+              <input
+                style={{ flex: 1, background: "#0F172A", color: "#F8FAFC", border: "1px solid #475569", borderRadius: 6, padding: "5px 10px", fontSize: 12 }}
+                value={specialNote}
+                onChange={e => setSpecialNote(e.target.value)}
+                placeholder="Custom invoice notes, payment terms..."
+              />
+            </div>
+
+            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+              <button className="btn btn-primary" style={{ padding: "6px 14px", fontSize: 12.5, fontWeight: 700 }} onClick={() => window.print()}>
+                <Printer size={14} /> Print / PDF
+              </button>
+              <button className="btn" style={{ background: "#0284C7", color: "#FFFFFF", border: "none", padding: "6px 14px", fontSize: 12.5, fontWeight: 700 }} onClick={handleExportImage}>
+                <FileText size={14} /> Download PNG
+              </button>
+              <button className="btn" style={{ background: "#059669", color: "#FFFFFF", border: "none", padding: "6px 14px", fontSize: 12.5, fontWeight: 700 }} onClick={handleExportExcel}>
+                <Download size={14} /> Download Excel
+              </button>
+            </div>
           </div>
         </div>
 
