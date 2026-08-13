@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { Printer, Download, Filter, FileText, Calendar, Building2, CheckCircle2, AlertCircle, Search } from "lucide-react";
 
 export default function ClientStatementView({
@@ -16,14 +16,22 @@ export default function ClientStatementView({
   const [selectedProjectId, setSelectedProjectId] = useState("all");
   const [selectedTxType, setSelectedTxType] = useState("all");
 
+  useEffect(() => {
+    if (selectedClientId) {
+      setActiveClientId(selectedClientId);
+    }
+  }, [selectedClientId]);
+
   const selectedClient = useMemo(() => {
+    if (!clients || clients.length === 0) return null;
     return clients.find(c => c.id === activeClientId || c.clientCode === activeClientId) || clients[0] || null;
   }, [clients, activeClientId]);
 
   // Filter projects belonging ONLY to selected client
   const clientProjects = useMemo(() => {
     if (!selectedClient) return [];
-    return projects.filter(p => p.clientId === selectedClient.id || p.client?.toLowerCase() === selectedClient.name?.toLowerCase());
+    const clientNameNorm = (selectedClient.name || "").toLowerCase();
+    return projects.filter(p => p.clientId === selectedClient.id || (p.client && p.client.toLowerCase() === clientNameNorm));
   }, [projects, selectedClient]);
 
   // Compute transactions & opening balance from posted journal entries / transactions
@@ -32,11 +40,12 @@ export default function ClientStatementView({
       return { openingBalance: 0, rows: [], totalInvoiced: 0, totalReceived: 0, creditNotes: 0, closingBalance: 0 };
     }
 
-    const clientNameNorm = selectedClient.name.toLowerCase();
-    const clientCodeNorm = (selectedClient.clientCode || selectedClient.id).toLowerCase();
+    const clientNameNorm = (selectedClient.name || "").toLowerCase();
+    const clientCodeNorm = (selectedClient.clientCode || selectedClient.id || "").toLowerCase();
 
     // Helper: is transaction related to selected client?
     const isClientMatch = (item) => {
+      if (!item || !selectedClient) return false;
       if (item.clientId === selectedClient.id) return true;
       if (item.client && item.client.toLowerCase() === clientNameNorm) return true;
       if (item.party && item.party.toLowerCase().includes(clientNameNorm)) return true;

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { Printer, Download, Filter, Truck } from "lucide-react";
 
 export default function VendorStatementView({
@@ -15,7 +15,14 @@ export default function VendorStatementView({
   const [dateTo, setDateTo] = useState("2026-08-31");
   const [selectedProjectId, setSelectedProjectId] = useState("all");
 
+  useEffect(() => {
+    if (selectedVendorId) {
+      setActiveVendorId(selectedVendorId);
+    }
+  }, [selectedVendorId]);
+
   const selectedVendor = useMemo(() => {
+    if (!vendors || vendors.length === 0) return null;
     return vendors.find(v => v.id === activeVendorId || v.vendorCode === activeVendorId) || vendors[0] || null;
   }, [vendors, activeVendorId]);
 
@@ -25,9 +32,10 @@ export default function VendorStatementView({
       return { openingPayable: 0, rows: [], totalExpenses: 0, totalPayments: 0, closingPayable: 0 };
     }
 
-    const vendorNameNorm = selectedVendor.name.toLowerCase();
+    const vendorNameNorm = (selectedVendor.name || "").toLowerCase();
 
     const isVendorMatch = (item) => {
+      if (!item || !selectedVendor) return false;
       if (item.vendorId === selectedVendor.id) return true;
       if (item.vendor && item.vendor.toLowerCase().includes(vendorNameNorm)) return true;
       if (item.party && item.party.toLowerCase().includes(vendorNameNorm)) return true;
