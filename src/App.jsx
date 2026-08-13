@@ -981,6 +981,19 @@ function buildInitialJournal(invoices, expenses, vouchers) {
   return entries;
 }
 
+function seedLeaveRequests() {
+  return [
+    { id: uid(), employeeId: "emp-104", employeeName: "Hamza Qureshi", leaveType: "Sick Leave", startDate: "2026-08-10", endDate: "2026-08-15", days: 5, reason: "Medical Recovery", status: "Approved" },
+    { id: uid(), employeeId: "emp-107", employeeName: "Mehak Raza", leaveType: "Casual Leave", startDate: "2026-08-20", endDate: "2026-08-22", days: 2, reason: "Family Function", status: "Pending" }
+  ];
+}
+
+function seedPayrollRuns() {
+  return [
+    { id: "pay-2026-07", month: "July 2026", runDate: "2026-07-31", totalEmployees: 8, grossPayroll: 1310000, totalDeductions: 65000, netPayroll: 1245000, status: "Processed" }
+  ];
+}
+
 function buildInitialData() {
   const clients = seedClients();
   const vendors = seedVendors();
@@ -993,6 +1006,8 @@ function buildInitialData() {
   const hoardings = seedHoardings();
   const employees = seedEmployees();
   const inventoryItems = seedInventoryItems();
+  const leaveRequests = seedLeaveRequests();
+  const payrollRuns = seedPayrollRuns();
 
   return {
     clients,
@@ -1006,6 +1021,8 @@ function buildInitialData() {
     hoardings,
     employees,
     inventoryItems,
+    leaveRequests,
+    payrollRuns,
     documents: []
   };
 }
@@ -1212,6 +1229,7 @@ export default function App() {
   const [vouchers, setVouchers] = useState(() => getInitialState("vouchers", []));
   const [documents, setDocuments] = useState(() => getInitialState("documents", []));
   const [employees, setEmployees] = useState(() => getInitialState("employees", seedData.employees));
+  const [leaveRequests, setLeaveRequests] = useState(() => getInitialState("leaveRequests", seedData.leaveRequests || []));
   const [payrollRuns, setPayrollRuns] = useState(() => getInitialState("payrollRuns", seedData.payrollRuns));
   const [clients, setClients] = useState(() => getInitialState("clients", seedData.clients || []));
   const [vendors, setVendors] = useState(() => getInitialState("vendors", seedData.vendors || []));
