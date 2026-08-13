@@ -2010,8 +2010,9 @@ export default function App() {
       { account: "ar", debit: inv.totalAmount || inv.amount, credit: 0 },
       { account: "revenue", debit: 0, credit: inv.amount },
     ];
-    if (inv.applySst) lines.push({ account: "srb_payable", debit: 0, credit: inv.sstAmount });
-    if (inv.applyWht) lines.push({ account: "wht_receivable", debit: inv.whtAmount, credit: 0 });
+    if (inv.applySst && inv.sstAmount) {
+      lines.push({ account: "srb_payable", debit: 0, credit: inv.sstAmount });
+    }
     
     postEntry(issueDate, `Invoice - ${client} (${description})`, lines, "INV-" + inv.id.toUpperCase());
     setShowInvoiceForm(false);
@@ -2024,11 +2025,19 @@ export default function App() {
 
   function markPaid(inv, via) {
     setInvoices(list => list.map(i => i.id === inv.id ? { ...i, paid: true, paidVia: via } : i));
-    const paidAmount = inv.totalAmount || inv.amount;
-    postEntry(TODAY.toISOString().slice(0, 10), `Payment received - ${inv.client}`, [
-      { account: via === "Cash" ? "cash" : "bank", debit: paidAmount, credit: 0 },
-      { account: "ar", debit: 0, credit: paidAmount },
-    ], "PMT-" + inv.id.toUpperCase());
+    const totalBilled = inv.totalAmount || inv.amount;
+    const wht = inv.applyWht ? (inv.whtAmount || 0) : 0;
+    const netDeposit = totalBilled - wht;
+
+    const lines = [
+      { account: via === "Cash" ? "cash" : "bank", debit: netDeposit, credit: 0 },
+      { account: "ar", debit: 0, credit: totalBilled },
+    ];
+    if (wht > 0) {
+      lines.push({ account: "wht_receivable", debit: wht, credit: 0, memo: "Income Tax WHT Withheld at Source" });
+    }
+
+    postEntry(TODAY.toISOString().slice(0, 10), `Payment received - ${inv.client}`, lines, "PMT-" + inv.id.toUpperCase());
   }
 
   function recordSrbRemittance() {
