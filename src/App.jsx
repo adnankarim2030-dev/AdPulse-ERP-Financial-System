@@ -897,6 +897,23 @@ function seedEmployees() {
   ];
 }
 
+function seedMonthlyAttendance(employeesList = []) {
+  const empArray = Array.isArray(employeesList) && employeesList.length > 0 ? employeesList : seedEmployees();
+  const res = {};
+  empArray.forEach(emp => {
+    const days = {};
+    for (let d = 1; d <= 31; d++) {
+      const dayNum = d % 7;
+      if (dayNum === 0) days[d] = "OFF";
+      else if (d % 11 === 0) days[d] = "L";
+      else if (d % 17 === 0) days[d] = "A";
+      else days[d] = "P";
+    }
+    res[emp.id] = days;
+  });
+  return res;
+}
+
 function buildInitialJournal(invoices, expenses, vouchers) {
   const entries = seedJournal();
 
