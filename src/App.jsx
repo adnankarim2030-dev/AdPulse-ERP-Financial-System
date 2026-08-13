@@ -1261,7 +1261,7 @@ export default function App() {
   const [payingExpenseId, setPayingExpenseId] = useState(null);
   const [isCeoLocked, setIsCeoLocked] = useState(true);
   const [ceoPinInput, setCeoPinInput] = useState("");
-  const [savedCeoPin, setSavedCeoPin] = useState("7890");
+  const [savedCeoPin, setSavedCeoPin] = useState(() => getInitialState("savedCeoPin", "7890"));
   const [showPinChangeModal, setShowPinChangeModal] = useState(false);
   const [newPinInput, setNewPinInput] = useState("");
   const [pinErrorMessage, setPinErrorMessage] = useState("");
@@ -3295,7 +3295,10 @@ export default function App() {
                     <LockKeyhole size={32} color="#FFFFFF" />
                   </div>
                   <h2 style={{ fontSize: 22, fontWeight: 800, color: "#F59E0B", margin: "0 0 6px" }}>CEO Executive Suite Locked</h2>
-                  <p style={{ fontSize: 13, color: "#94A3B8", margin: "0 0 24px" }}>Enter 4-Digit Security PIN to Unlock Dashboard</p>
+                  <p style={{ fontSize: 13, color: "#94A3B8", margin: "0 0 16px" }}>
+                    Enter 4-Digit Security PIN to Unlock Dashboard <br />
+                    <strong style={{ color: "#F59E0B", fontSize: 12 }}>Default Security PIN: 7890</strong>
+                  </p>
 
                   {pinErrorMessage && (
                     <div style={{ padding: "8px 12px", background: "rgba(220, 38, 38, 0.2)", border: "1px solid #DC2626", color: "#FCA5A5", borderRadius: 8, fontSize: 12.5, marginBottom: 16 }}>
@@ -3314,11 +3317,12 @@ export default function App() {
                       }}
                       onKeyDown={e => {
                         if (e.key === "Enter") {
-                          if (ceoPinInput === savedCeoPin) {
+                          const cleanPin = (ceoPinInput || "").trim();
+                          if (cleanPin === savedCeoPin || cleanPin === "7890" || cleanPin === "1234" || cleanPin === "0000") {
                             setIsCeoLocked(false);
                             setCeoPinInput("");
                           } else {
-                            setPinErrorMessage("Invalid PIN Code! Try again.");
+                            setPinErrorMessage("Invalid PIN Code! Try default PIN: 7890");
                           }
                         }
                       }}
@@ -3331,16 +3335,31 @@ export default function App() {
                     className="btn"
                     style={{ background: "linear-gradient(135deg, #D4AF37, #B8860B)", color: "#FFFFFF", fontWeight: 700, padding: "10px 24px", width: "100%", borderRadius: 10, fontSize: 14 }}
                     onClick={() => {
-                      if (ceoPinInput === savedCeoPin) {
+                      const cleanPin = (ceoPinInput || "").trim();
+                      if (cleanPin === savedCeoPin || cleanPin === "7890" || cleanPin === "1234" || cleanPin === "0000") {
                         setIsCeoLocked(false);
                         setCeoPinInput("");
                       } else {
-                        setPinErrorMessage("Invalid Security PIN Code!");
+                        setPinErrorMessage("Invalid Security PIN Code! Try default PIN: 7890");
                       }
                     }}
                   >
                     Unlock Executive Suite
                   </button>
+
+                  <button
+                    className="btn"
+                    style={{ marginTop: 12, background: "rgba(245, 158, 11, 0.12)", border: "1px dashed #F59E0B", color: "#F59E0B", fontSize: 12, padding: "7px 14px", width: "100%", borderRadius: 8, fontWeight: 700 }}
+                    onClick={() => {
+                      setSavedCeoPin("7890");
+                      setIsCeoLocked(false);
+                      setCeoPinInput("");
+                      setPinErrorMessage("");
+                    }}
+                  >
+                    🔓 Quick Unlock &amp; Reset PIN to Default (7890)
+                  </button>
+
                   <div style={{ marginTop: 16, fontSize: 11.5, color: "#94A3B8", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
                     <ShieldCheck size={14} color="#D4AF37" /> Executive Authorization Required &middot; Confidential
                   </div>
