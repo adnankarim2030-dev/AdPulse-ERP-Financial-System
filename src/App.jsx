@@ -1177,11 +1177,61 @@ function LedgerStrip({ rows, showAccounts }) {
   );
 }
 
+/* ---------- TAB ISOLATION BOUNDARY ---------- */
+class TabBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error, info) {
+    console.error("Tab Render Error:", error, info);
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.tabKey !== this.props.tabKey && this.state.hasError) {
+      this.setState({ hasError: false, error: null });
+    }
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="card" style={{ padding: 30, background: "#FEF2F2", border: "1px solid #FCA5A5", color: "#991B1B", margin: 20 }}>
+          <h3 style={{ margin: "0 0 8px" }}>Module Display Recovered</h3>
+          <p style={{ margin: "0 0 16px", fontSize: 13, color: "#7F1D1D" }}>
+            A temporary display error occurred in this module: {this.state.error?.toString()}
+          </p>
+          <button className="btn btn-primary" onClick={() => this.setState({ hasError: false, error: null })}>
+            🔄 Reload Module View
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 /* ---------- MAIN APPLICATION ---------- */
 
 export default function App() {
-  /* Authentication & Session state */
-  const [currentUser, setCurrentUser] = useState(null); // null = Welcome Gateway Screen
+  /* Authentication & Session state (Persisted in localStorage) */
+  const [currentUser, setCurrentUser] = useState(() => {
+    try {
+      const saved = localStorage.getItem("adpulse_user_session");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && parsed.email) return parsed;
+      }
+    } catch (e) {
+      console.warn("Could not load user session:", e);
+    }
+    return null;
+  });
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
 
@@ -1966,6 +2016,11 @@ export default function App() {
       department: userObj.department || "General",
       allowedTabs: allowed
     };
+    try {
+      localStorage.setItem("adpulse_user_session", JSON.stringify(safeUser));
+    } catch (e) {
+      console.warn("Session save error:", e);
+    }
     setCurrentUser(safeUser);
     setIsCeoLocked(true);
     setCeoPinInput("");
@@ -1975,6 +2030,11 @@ export default function App() {
   }
 
   function handleLogout() {
+    try {
+      localStorage.removeItem("adpulse_user_session");
+    } catch (e) {
+      console.warn("Session remove error:", e);
+    }
     setCurrentUser(null);
     setIsCeoLocked(true);
     setCeoPinInput("");
@@ -3276,6 +3336,7 @@ export default function App() {
         </div>
 
         <div className="content">
+          <TabBoundary tabKey={tab}>
           {tab === "ceo-dashboard" && (
             <>
               {/* PRIVACY GUARD FOR CEO DASHBOARD */}
@@ -6837,6 +6898,7 @@ export default function App() {
             </div>
           </>
         )}
+          </TabBoundary>
         </div>
       </main>
 

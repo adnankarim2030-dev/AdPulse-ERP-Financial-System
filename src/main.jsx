@@ -17,8 +17,19 @@ class ErrorBoundary extends React.Component {
     console.error("Uncaught rendering error in App:", error, errorInfo);
   }
 
-  handleReset = () => {
-    localStorage.clear();
+  handleRetry = () => {
+    this.setState({ hasError: false, error: null });
+  };
+
+  handleResetDataKeepLogin = () => {
+    try {
+      // Clear data backups but PRESERVE user session if present
+      const session = localStorage.getItem("adpulse_user_session");
+      localStorage.clear();
+      if (session) localStorage.setItem("adpulse_user_session", session);
+    } catch (e) {
+      console.warn("Storage reset error:", e);
+    }
     window.location.reload();
   };
 
@@ -26,16 +37,24 @@ class ErrorBoundary extends React.Component {
     if (this.state.hasError) {
       return (
         <div style={{ padding: 40, textAlign: 'center', fontFamily: 'sans-serif', background: '#0F172A', color: '#FFFFFF', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-          <h2 style={{ color: '#F87171', fontSize: 24, marginBottom: 10 }}>AdPulse ERP System Error</h2>
-          <p style={{ color: '#94A3B8', maxWidth: 520, marginBottom: 20, fontSize: 14, background: '#1E293B', padding: 14, borderRadius: 8, border: '1px solid #334155' }}>
-            {this.state.error?.toString() || "A runtime render error occurred."}
+          <h2 style={{ color: '#F87171', fontSize: 24, marginBottom: 10 }}>AdPulse ERP Notice</h2>
+          <p style={{ color: '#94A3B8', maxWidth: 540, marginBottom: 20, fontSize: 14, background: '#1E293B', padding: 16, borderRadius: 10, border: '1px solid #334155', textAlign: 'left', fontFamily: 'monospace' }}>
+            {this.state.error?.toString() || "A minor display error occurred."}
           </p>
-          <button
-            onClick={this.handleReset}
-            style={{ background: '#B8860B', color: '#FFFFFF', border: 'none', padding: '12px 24px', borderRadius: 8, fontSize: 15, fontWeight: 700, cursor: 'pointer' }}
-          >
-            Clear Browser Cache &amp; Reload System
-          </button>
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
+            <button
+              onClick={this.handleRetry}
+              style={{ background: '#059669', color: '#FFFFFF', border: 'none', padding: '12px 24px', borderRadius: 8, fontSize: 14, fontWeight: 700, cursor: 'pointer' }}
+            >
+              🔄 Retry &amp; Continue Session
+            </button>
+            <button
+              onClick={this.handleResetDataKeepLogin}
+              style={{ background: '#B8860B', color: '#FFFFFF', border: 'none', padding: '12px 24px', borderRadius: 8, fontSize: 14, fontWeight: 700, cursor: 'pointer' }}
+            >
+              🧹 Reset Cache (Keep Login)
+            </button>
+          </div>
         </div>
       );
     }
