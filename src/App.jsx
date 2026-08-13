@@ -1006,9 +1006,11 @@ function buildInitialData() {
   const hoardings = seedHoardings();
   const employees = seedEmployees();
   const inventoryItems = seedInventoryItems();
+  const inventoryLogs = seedInventoryLogs(inventoryItems);
   const leaveRequests = seedLeaveRequests();
   const payrollRuns = seedPayrollRuns();
   const monthlyAttendance = seedMonthlyAttendance(employees);
+  const journal = buildInitialJournal(invoices, expenses, vouchers);
 
   return {
     clients,
@@ -1022,9 +1024,11 @@ function buildInitialData() {
     hoardings,
     employees,
     inventoryItems,
+    inventoryLogs,
     leaveRequests,
     payrollRuns,
     monthlyAttendance,
+    journal,
     documents: []
   };
 }
@@ -1188,7 +1192,7 @@ export default function App() {
   /* Financial & Operations state */
   const [seedData] = useState(buildInitialData);
 
-  const STORAGE_KEY = "adpulse_erp_financial_backup_v2";
+  const STORAGE_KEY = "adpulse_erp_financial_backup_v3";
 
   // Helper to load state from localStorage or fallback to default
   const getInitialState = (key, fallback) => {
@@ -1219,20 +1223,20 @@ export default function App() {
     });
     return merged;
   });
-  const [journal, setJournal] = useState(() => getInitialState("journal", []));
-  const [invoices, setInvoices] = useState(() => getInitialState("invoices", []));
-  const [expenses, setExpenses] = useState(() => getInitialState("expenses", []));
+  const [journal, setJournal] = useState(() => getInitialState("journal", seedData.journal || []));
+  const [invoices, setInvoices] = useState(() => getInitialState("invoices", seedData.invoices || []));
+  const [expenses, setExpenses] = useState(() => getInitialState("expenses", seedData.expenses || []));
   const [purchaseOrders, setPurchaseOrders] = useState(() => getInitialState("purchaseOrders", []));
-  const [projects, setProjects] = useState(() => getInitialState("projects", []));
+  const [projects, setProjects] = useState(() => getInitialState("projects", seedData.projects || []));
   const [bankAccounts, setBankAccounts] = useState(() => getInitialState("bankAccounts", seedData.bankAccounts || []));
-  const [hoardings, setHoardings] = useState(() => getInitialState("hoardings", seedData.hoardings));
+  const [hoardings, setHoardings] = useState(() => getInitialState("hoardings", seedData.hoardings || []));
   const [inventoryItems, setInventoryItems] = useState(() => getInitialState("inventoryItems", seedData.inventoryItems || []));
-  const [inventoryLogs, setInventoryLogs] = useState(() => getInitialState("inventoryLogs", []));
-  const [vouchers, setVouchers] = useState(() => getInitialState("vouchers", []));
+  const [inventoryLogs, setInventoryLogs] = useState(() => getInitialState("inventoryLogs", seedData.inventoryLogs || []));
+  const [vouchers, setVouchers] = useState(() => getInitialState("vouchers", seedData.vouchers || []));
   const [documents, setDocuments] = useState(() => getInitialState("documents", []));
-  const [employees, setEmployees] = useState(() => getInitialState("employees", seedData.employees));
+  const [employees, setEmployees] = useState(() => getInitialState("employees", seedData.employees || []));
   const [leaveRequests, setLeaveRequests] = useState(() => getInitialState("leaveRequests", seedData.leaveRequests || []));
-  const [payrollRuns, setPayrollRuns] = useState(() => getInitialState("payrollRuns", seedData.payrollRuns));
+  const [payrollRuns, setPayrollRuns] = useState(() => getInitialState("payrollRuns", seedData.payrollRuns || []));
   const [clients, setClients] = useState(() => getInitialState("clients", seedData.clients || []));
   const [vendors, setVendors] = useState(() => getInitialState("vendors", seedData.vendors || []));
   const [auditLogs, setAuditLogs] = useState(() => getInitialState("auditLogs", seedData.auditLogs || []));
