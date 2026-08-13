@@ -1008,6 +1008,7 @@ function buildInitialData() {
   const inventoryItems = seedInventoryItems();
   const leaveRequests = seedLeaveRequests();
   const payrollRuns = seedPayrollRuns();
+  const monthlyAttendance = seedMonthlyAttendance(employees);
 
   return {
     clients,
@@ -1023,6 +1024,7 @@ function buildInitialData() {
     inventoryItems,
     leaveRequests,
     payrollRuns,
+    monthlyAttendance,
     documents: []
   };
 }
@@ -1346,7 +1348,9 @@ export default function App() {
 
   const [hrView, setHrView] = useState("directory");
   const [attendanceSubView, setAttendanceSubView] = useState("grid");
-  const [monthlyAttendance, setMonthlyAttendance] = useState(() => getInitialState("monthly_attendance", () => seedMonthlyAttendance(seedEmployees())));
+  const [monthlyAttendance, setMonthlyAttendance] = useState(() => {
+    return getInitialState("monthlyAttendance", seedData.monthlyAttendance) || getInitialState("monthly_attendance", seedData.monthlyAttendance) || seedMonthlyAttendance(seedData.employees || []);
+  });
   const [showEmployeeForm, setShowEmployeeForm] = useState(false);
   const [showLeaveForm, setShowLeaveForm] = useState(false);
   const [employeeDetail, setEmployeeDetail] = useState(null);
@@ -1510,7 +1514,8 @@ export default function App() {
           usersList,
           clients,
           vendors,
-          auditLogs
+          auditLogs,
+          monthlyAttendance
         }
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
@@ -1520,7 +1525,7 @@ export default function App() {
   }, [
     journal, invoices, expenses, purchaseOrders, projects, bankAccounts,
     hoardings, inventoryItems, inventoryLogs, vouchers, documents,
-    employees, leaveRequests, payrollRuns, usersList, clients, vendors, auditLogs, currentUser
+    employees, leaveRequests, payrollRuns, usersList, clients, vendors, auditLogs, monthlyAttendance, currentUser
   ]);
 
   const handleExportBackup = () => {
