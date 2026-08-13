@@ -10,7 +10,7 @@ import {
   Lock, KeyRound, ShieldCheck, LogOut, User, Check, Eye, EyeOff,
   Package, Boxes, ArrowUpRight, ArrowDownLeft, Layers, SlidersHorizontal, AlertTriangle,
   Download, Upload, HardDrive, RefreshCw, FileJson, Cloud, CloudOff, Database, Save, Search,
-  Crown, ShieldAlert, LockKeyhole, Sparkles, Award
+  Crown, ShieldAlert, LockKeyhole, Sparkles, Award, Truck
 } from "lucide-react";
 import {
   getSupabaseConfig, saveSupabaseConfig, isSupabaseConfigured,
