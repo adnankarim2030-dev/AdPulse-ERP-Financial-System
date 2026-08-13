@@ -2061,6 +2061,63 @@ export default function App() {
     }
   }
 
+  /* Master Client & Vendor Handlers */
+  function handleSaveClient(clientData) {
+    if (editingClient) {
+      setClients(list => list.map(c => c.id === editingClient.id ? { ...c, ...clientData } : c));
+      postAuditLog("UPDATE_CLIENT", `Updated Client Master record: ${clientData.name}`);
+    } else {
+      const codeNum = (clients.length + 1).toString().padStart(3, "0");
+      const newClient = {
+        id: uid(),
+        clientCode: `CLI-${codeNum}`,
+        ...clientData,
+        createdAt: TODAY.toISOString().slice(0, 10)
+      };
+      setClients(list => [newClient, ...list]);
+      postAuditLog("CREATE_CLIENT", `Registered New Client Master: ${newClient.name} (${newClient.clientCode})`);
+    }
+    setShowClientModal(false);
+    setEditingClient(null);
+  }
+
+  function handleDeleteClient(id) {
+    const target = clients.find(c => c.id === id);
+    if (!target) return;
+    if (window.confirm(`Are you sure you want to remove Client Master '${target.name}'?`)) {
+      setClients(list => list.filter(c => c.id !== id));
+      postAuditLog("DELETE_CLIENT", `Removed Client Master: ${target.name}`);
+    }
+  }
+
+  function handleSaveVendor(vendorData) {
+    if (editingVendor) {
+      setVendors(list => list.map(v => v.id === editingVendor.id ? { ...v, ...vendorData } : v));
+      postAuditLog("UPDATE_VENDOR", `Updated Vendor Master record: ${vendorData.name}`);
+    } else {
+      const codeNum = (vendors.length + 1).toString().padStart(3, "0");
+      const newVendor = {
+        id: uid(),
+        vendorCode: `VEN-${codeNum}`,
+        ...vendorData,
+        createdAt: TODAY.toISOString().slice(0, 10)
+      };
+      setVendors(list => [newVendor, ...list]);
+      postAuditLog("CREATE_VENDOR", `Registered New Vendor Master: ${newVendor.name} (${newVendor.vendorCode})`);
+    }
+    setShowVendorModal(false);
+    setEditingVendor(null);
+  }
+
+  function handleDeleteVendor(id) {
+    const target = vendors.find(v => v.id === id);
+    if (!target) return;
+    if (window.confirm(`Are you sure you want to remove Vendor Master '${target.name}'?`)) {
+      setVendors(list => list.filter(v => v.id !== id));
+      postAuditLog("DELETE_VENDOR", `Removed Vendor Master: ${target.name}`);
+    }
+  }
+
   /* Financial Actions */
   function addInvoice({ projectId, client, description, amount, applySst, sstRate, sstAmount, applyWht, whtRate, whtAmount, totalAmount, issueDate, dueDate, notes }) {
     const inv = { id: uid(), projectId: projectId || null, client, description, amount, applySst, sstRate, sstAmount, applyWht, whtRate, whtAmount, totalAmount, issueDate, dueDate, notes, paid: false, paidVia: null };
