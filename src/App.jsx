@@ -10269,20 +10269,29 @@ function PrintPreviewModal({ doc, onClose }) {
         @media print {
           .no-print-header { display: none !important; }
           .modal-backdrop { background: none !important; padding: 0 !important; }
-          .modal { box-shadow: none !important; border: none !important; width: 100% !important; max-width: 100% !important; margin: 0 !important; }
+          .modal { box-shadow: none !important; border: none !important; width: 100% !important; max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
           .print-area {
             padding: 0 !important;
             border: none !important;
             border-radius: 0 !important;
             transform: scale(${parseInt(printScale) / 100});
             transform-origin: top left;
-            min-height: 275mm !important;
-            display: flex !important;
-            flex-direction: column !important;
-            justify-content: space-between !important;
+            width: 100% !important;
+            height: auto !important;
+            min-height: 0 !important;
+            display: block !important;
           }
           .print-area table, .print-area th, .print-area td, .print-area div { border-color: #000000 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-          .invoice-footer-banner { margin-top: auto !important; }
+          .invoice-footer-banner {
+            background: #A81C1C !important;
+            background-image: linear-gradient(90deg, #A81C1C 0%, #1D3B4E 100%) !important;
+            color: #ffffff !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            display: flex !important;
+            visibility: visible !important;
+            margin-top: 14px !important;
+          }
         }
       `}</style>
       <div className="modal" style={{ width: 880, maxWidth: "95vw", maxHeight: "92vh", overflowY: "auto" }} onClick={e => e.stopPropagation()}>
@@ -10367,36 +10376,36 @@ function PrintPreviewModal({ doc, onClose }) {
         </div>
 
         {/* PRINT AREA MATCHING PDF TEMPLATES */}
-        <div className="print-area" style={{ background: "#ffffff", color: "#000000", padding: "24px 20px 16px 20px", fontFamily: "'Calibri', 'Inter', sans-serif", border: "1px solid #E2E8F0", borderRadius: 8, position: "relative", boxSizing: "border-box", width: "100%", minHeight: "860px", display: "flex", flexDirection: "column", justifyContent: "space-between", overflowX: "hidden" }}>
+        <div className="print-area" style={{ background: "#ffffff", color: "#000000", padding: "16px 18px 12px 18px", fontFamily: "'Calibri', 'Inter', sans-serif", border: "1px solid #E2E8F0", borderRadius: 8, position: "relative", boxSizing: "border-box", width: "100%", overflowX: "hidden" }}>
           
           {/* HEADER SECTION - 3 COLUMN BALANCED GRID */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", marginBottom: 22 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", marginBottom: 16 }}>
             {/* Logo Branding (Clean Image Only, No Extra Text) */}
             <div style={{ display: "flex", justifyContent: "flex-start" }}>
-              <img src="/logo.png" alt="AdPulse Logo" style={{ height: 60, width: "auto", objectFit: "contain" }} onError={(e) => { e.target.style.display = 'none'; }} />
+              <img src="/logo.png" alt="AdPulse Logo" style={{ height: 55, width: "auto", objectFit: "contain" }} onError={(e) => { e.target.style.display = 'none'; }} />
             </div>
 
             {/* Center Heading (Mathematically Centered) */}
             <div style={{ textAlign: "center", padding: "0 10px" }}>
-              <h2 style={{ margin: 0, fontSize: 20, fontWeight: 800, textDecoration: "underline", letterSpacing: "1px", textTransform: "uppercase", color: doc.applySst ? "#A81C1C" : "#0F172A" }}>
+              <h2 style={{ margin: 0, fontSize: 19, fontWeight: 800, textDecoration: "underline", letterSpacing: "1px", textTransform: "uppercase", color: doc.applySst ? "#A81C1C" : "#0F172A" }}>
                 {doc.applySst ? "SALES TAX INVOICE (15% SST INCLUDED)" : "INVOICE"}
               </h2>
               {doc.applySst && (
-                <div style={{ fontSize: 11, fontWeight: 600, color: "#475569", marginTop: 3 }}>
+                <div style={{ fontSize: 10.5, fontWeight: 600, color: "#475569", marginTop: 2 }}>
                   Sindh Revenue Board (SRB) Regn. # SA054896-8
                 </div>
               )}
             </div>
 
             {/* Right Meta Info (Right-Aligned to Margin Edge) */}
-            <div style={{ textAlign: "right", fontSize: 13, fontWeight: 700, display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
-              <div style={{ marginBottom: 4 }}>DATE: <span style={{ fontWeight: 500 }}>{fmtDate(doc.date || doc.issueDate || TODAY)}</span></div>
+            <div style={{ textAlign: "right", fontSize: 12.5, fontWeight: 700, display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+              <div style={{ marginBottom: 3 }}>DATE: <span style={{ fontWeight: 500 }}>{fmtDate(doc.date || doc.issueDate || TODAY)}</span></div>
               <div>INVOICE NO: <span style={{ fontWeight: 800 }}>{cleanInvoiceNo(doc.voucherNo || doc.invoiceNo || doc.id)}</span></div>
             </div>
           </div>
 
           {/* CLIENT, PROJECT & SERVICE INFO CARD */}
-          <div style={{ fontSize: 11.5, fontWeight: 700, marginBottom: 18, display: "grid", gridTemplateColumns: "1fr 1.2fr 1fr", gap: 10, alignItems: "center", background: "#F8FAFC", padding: "10px 14px", border: "1px solid #000000", borderRadius: 6, boxSizing: "border-box" }}>
+          <div style={{ fontSize: 11, fontWeight: 700, marginBottom: 14, display: "grid", gridTemplateColumns: "1fr 1.2fr 1fr", gap: 10, alignItems: "center", background: "#F8FAFC", padding: "8px 12px", border: "1px solid #000000", borderRadius: 6, boxSizing: "border-box" }}>
             <div style={{ wordBreak: "break-word", textAlign: "left" }}>CLIENT: <span style={{ fontWeight: 600, color: "#0F172A" }}>{(doc.client || doc.party || "CLIENT NAME").toUpperCase()}</span></div>
             <div style={{ wordBreak: "break-word", textAlign: "left" }}>PROJECT: <span style={{ fontWeight: 600, color: "#0F172A" }}>{(doc.projectName || doc.project || (doc.description ? doc.description.replace(/^OOH Advertising\s*—\s*/i, "").replace(/\s*\(\d+\s*sites\)$/i, "") : "PROJECT SCOPE")).toUpperCase()}</span></div>
             <div style={{ wordBreak: "break-word", textAlign: "right" }}>SERVICE: <span style={{ fontWeight: 600, color: "#A81C1C" }}>{(() => {
@@ -10546,7 +10555,7 @@ function PrintPreviewModal({ doc, onClose }) {
           )}
 
           {/* TOTALS & TAX BREAKDOWN BLOCK - FULL WIDTH ALIGNED TO AMOUNT COLUMN */}
-          <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 20, border: "1px solid #000000", borderTop: "none", fontSize: 11, tableLayout: "fixed", boxSizing: "border-box" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", borderTop: "none", fontSize: 11, tableLayout: "fixed", boxSizing: "border-box" }}>
             <tbody>
               {doc.applySst ? (
                 <>
@@ -10587,13 +10596,13 @@ function PrintPreviewModal({ doc, onClose }) {
           </table>
 
           {/* AMOUNT IN WORDS */}
-          <div style={{ fontSize: 12, fontStyle: "italic", marginBottom: 18, background: "#F8FAFC", padding: "8px 12px", border: "1px solid #000000", borderRadius: 4 }}>
+          <div style={{ fontSize: 11.5, fontStyle: "italic", marginBottom: 12, background: "#F8FAFC", padding: "6px 10px", border: "1px solid #000000", borderRadius: 4 }}>
             Amount in words: <b style={{ fontStyle: "normal", color: "#000" }}>{amountInWords(totalAmt)}</b>
           </div>
 
           {/* SPECIAL NOTES & TERMS SECTION */}
-          <div style={{ fontSize: 11, lineHeight: 1.5, marginBottom: 24, color: "#1E293B", background: "#F8FAFC", padding: "10px 14px", border: "1px solid #000000", borderRadius: 6 }}>
-            <div style={{ fontWeight: 800, textDecoration: "underline", marginBottom: 4, color: "#0F172A", textTransform: "uppercase", fontSize: 10.5 }}>
+          <div style={{ fontSize: 10.5, lineHeight: 1.4, marginBottom: 14, color: "#1E293B", background: "#F8FAFC", padding: "8px 12px", border: "1px solid #000000", borderRadius: 6 }}>
+            <div style={{ fontWeight: 800, textDecoration: "underline", marginBottom: 3, color: "#0F172A", textTransform: "uppercase", fontSize: 10 }}>
               Special Notes &amp; Terms:
             </div>
             {specialNote ? (
@@ -10612,17 +10621,17 @@ function PrintPreviewModal({ doc, onClose }) {
           </div>
 
           {/* SIGNATURES */}
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", paddingTop: 30, marginBottom: 28, fontSize: 12, fontWeight: 700 }}>
-            <div style={{ textAlign: "center", width: 220 }}>
-              <div style={{ borderTop: "1.5px solid #000", paddingTop: 6 }}>ACCOUNTANT SIGNATURE</div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", paddingTop: 18, marginBottom: 16, fontSize: 11.5, fontWeight: 700 }}>
+            <div style={{ textAlign: "center", width: 200 }}>
+              <div style={{ borderTop: "1.5px solid #000", paddingTop: 4 }}>ACCOUNTANT SIGNATURE</div>
             </div>
-            <div style={{ textAlign: "center", width: 220 }}>
-              <div style={{ borderTop: "1.5px solid #000", paddingTop: 6 }}>RECEIVER'S SIGNATURE</div>
+            <div style={{ textAlign: "center", width: 200 }}>
+              <div style={{ borderTop: "1.5px solid #000", paddingTop: 4 }}>RECEIVER'S SIGNATURE</div>
             </div>
           </div>
 
           {/* FOOTER BRAND BANNER */}
-          <div className="invoice-footer-banner" style={{ background: "linear-gradient(90deg, #A81C1C 0%, #1D3B4E 100%)", color: "#FFFFFF", padding: "8px 16px", borderRadius: 4, display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 10.5, marginTop: "auto" }}>
+          <div className="invoice-footer-banner" style={{ background: "#A81C1C", backgroundImage: "linear-gradient(90deg, #A81C1C 0%, #1D3B4E 100%)", color: "#FFFFFF", padding: "6px 12px", borderRadius: 4, display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 10, fontWeight: 600, marginTop: 14, boxSizing: "border-box", WebkitPrintColorAdjust: "exact", printColorAdjust: "exact" }}>
             <div>📞 +92 21 37526834</div>
             <div>✉️ communication@adpulse.pk | 🌐 www.adpulse.pk</div>
             <div>📍 Office # 213, 2nd Floor, Park Tower, Block 5 Clifton, Karachi.</div>
