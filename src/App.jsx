@@ -1706,30 +1706,70 @@ export default function App() {
     e.target.value = "";
   };
 
-  const handleResetData = () => {
-    if (window.confirm("CONFIRMATION: Are you sure you want to clear ALL demo entries and start fresh with a clean system for real entry testing?")) {
-      const initial = buildInitialData();
-      setJournal([]);
-      setInvoices([]);
-      setExpenses([]);
-      setPurchaseOrders([]);
-      setProjects([]);
-      setBankAccounts(initial.bankAccounts || []);
-      setHoardings(initial.hoardings);
-      setInventoryItems(initial.inventoryItems || []);
-      setInventoryLogs([]);
-      setVouchers([]);
-      setDocuments([]);
-      setEmployees(initial.employees);
-      setLeaveRequests([]);
-      setPayrollRuns([]);
-      setUsersList(SEED_USERS);
-      localStorage.removeItem(STORAGE_KEY);
-      setLastBackupTime(null);
-      setBackupNotification({
-        type: "success",
-        text: "🧹 All sample demo data cleared successfully! System is now 100% clean and ready for your fresh entries."
-      });
+  const handleResetData = (mode = "clean") => {
+    const isClean = mode === "clean";
+    const msg = isClean
+      ? "CONFIRMATION: Are you sure you want to CLEAR ALL SAMPLE DATA (Clients, Vendors, Invoices, Expenses, Vouchers, Projects) to start 100% fresh for real data entry?"
+      : "CONFIRMATION: Are you sure you want to restore original Sample Demo Data?";
+    
+    if (window.confirm(msg)) {
+      if (isClean) {
+        setJournal([]);
+        setInvoices([]);
+        setExpenses([]);
+        setPurchaseOrders([]);
+        setProjects([]);
+        setClients([]);
+        setVendors([]);
+        setVouchers([]);
+        setDocuments([]);
+        setLeaveRequests([]);
+        setPayrollRuns([]);
+        setAuditLogs([]);
+        setInventoryLogs([]);
+        setHoardings([]);
+        setInventoryItems([]);
+        setEmployees([]);
+        setBankAccounts([
+          { id: "bank-hbl", bankName: "Habib Bank Limited (HBL)", accountTitle: "AdPulse IMC PVT LTD (Main Ops)", accountNumber: "0014-2289-1001", iban: "PK36HABB00001422891001", accountType: "Current Account", branch: "Shahrah-e-Faisal Branch", openingBalance: 0, color: "#059669" },
+          { id: "bank-mcb", bankName: "MCB Bank Ltd", accountTitle: "AdPulse Financial Services", accountNumber: "0088-1122-3344", iban: "PK91MUCB008811223344", accountType: "Corporate Account", branch: "II Chundrigar Road Branch", openingBalance: 0, color: "#0284C7" },
+          { id: "bank-cash", bankName: "Petty Cash Vault", accountTitle: "Office Petty Cash Custodian", accountNumber: "CASH-VAULT-01", iban: "N/A (Cash in Hand)", accountType: "Petty Cash", branch: "Main Office Counter", openingBalance: 0, color: "#D97706" }
+        ]);
+        setUsersList(SEED_USERS);
+        localStorage.removeItem(STORAGE_KEY);
+        try { localStorage.removeItem("adpulse_system_state_v1"); } catch(e) {}
+        setLastBackupTime(null);
+        setBackupNotification({
+          type: "success",
+          text: "✨ All sample demo data removed! System is now 100% clean and ready for your real data entry."
+        });
+      } else {
+        const initial = buildInitialData();
+        setJournal(initial.journal || []);
+        setInvoices(initial.invoices || []);
+        setExpenses(initial.expenses || []);
+        setPurchaseOrders([]);
+        setProjects(initial.projects || []);
+        setClients(initial.clients || []);
+        setVendors(initial.vendors || []);
+        setBankAccounts(initial.bankAccounts || []);
+        setHoardings(initial.hoardings || []);
+        setInventoryItems(initial.inventoryItems || []);
+        setInventoryLogs(initial.inventoryLogs || []);
+        setVouchers(initial.vouchers || []);
+        setDocuments([]);
+        setEmployees(initial.employees || []);
+        setLeaveRequests(initial.leaveRequests || []);
+        setPayrollRuns(initial.payrollRuns || []);
+        setAuditLogs(initial.auditLogs || []);
+        setUsersList(SEED_USERS);
+        localStorage.removeItem(STORAGE_KEY);
+        setLastBackupTime(null);
+        setBackupNotification({
+          type: "success",
+          text: "🔄 Sample demo dataset restored successfully."
+        });
+      }
       setTimeout(() => setBackupNotification(null), 5000);
     }
   };
@@ -3006,7 +3046,7 @@ export default function App() {
           filenameLower.includes(p.client.toLowerCase()) ||
           filenameLower.includes(p.name.toLowerCase()) ||
           filenameLower.includes(p.projectCode.toLowerCase())
-        ) || projects[0];
+        ) || (projects.length > 0 ? projects[0] : null);
 
         let cat = "Marketing & Advertising";
         let subcat = "Meta / Facebook Ads";
@@ -6956,9 +6996,14 @@ export default function App() {
                       </div>
                     </div>
                   </div>
-                  <button className="btn" style={{ width: "100%", justifyContent: "center", gap: 8, padding: "10px 14px", fontWeight: 700, color: "var(--rose)", borderColor: "#FCA5A5" }} onClick={handleResetData}>
-                    <RefreshCw size={16} /> Reset to Demo Data
-                  </button>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                    <button className="btn" style={{ width: "100%", justifyContent: "center", gap: 8, padding: "10px 14px", fontWeight: 700, background: "#EF4444", color: "#FFFFFF", border: "none" }} onClick={() => handleResetData("clean")}>
+                      <Trash2 size={16} /> Clear All Data (Start Fresh for Real Entry)
+                    </button>
+                    <button className="btn" style={{ width: "100%", justifyContent: "center", gap: 8, padding: "8px 12px", fontWeight: 600, color: "#475569", borderColor: "#CBD5E1" }} onClick={() => handleResetData("seed")}>
+                      <RefreshCw size={14} /> Restore Sample Demo Data
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
