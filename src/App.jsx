@@ -7848,10 +7848,15 @@ function UserModal({ initialData, onClose, onSubmit }) {
 
 /* ---------- OTHER FORM MODALS ---------- */
 
-function ModalShell({ title, onClose, children }) {
+function ModalShell({ title, onClose, width, maxWidth, style = {}, children }) {
+  const modalStyle = {
+    ...(width ? { width } : {}),
+    ...(maxWidth ? { maxWidth } : {}),
+    ...style
+  };
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal" onClick={e => e.stopPropagation()}>
+      <div className="modal" style={modalStyle} onClick={e => e.stopPropagation()}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
           <div className="section-title" style={{ margin: 0 }}>{title}</div>
           <button className="btn" style={{ padding: 5 }} onClick={onClose}><X size={15} /></button>
@@ -9153,7 +9158,7 @@ function DocumentReviewModal({ doc, projects = [], bankAccounts = [], onClose, o
   };
 
   return (
-    <ModalShell title={`AI Document Review & Accounting Entry — ${doc.fileName}`} onClose={onClose} width="95%" style={{ maxWidth: 1200 }}>
+    <ModalShell title={`AI Document Review & Accounting Entry — ${doc.fileName}`} onClose={onClose} width="94vw" style={{ maxWidth: 1300 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "var(--bg)", padding: "10px 14px", borderRadius: 8, marginBottom: 14, border: "1px solid var(--rule)" }}>
         <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
           <span style={{ fontWeight: 700, fontSize: 13, color: "var(--ink)" }}>Document Type: <span style={{ color: "#0284C7" }}>{extracted.documentType || "Invoice"}</span></span>
@@ -9196,7 +9201,7 @@ function DocumentReviewModal({ doc, projects = [], bankAccounts = [], onClose, o
         </div>
       )}
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18, maxHeight: "72vh", overflowY: "auto" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "380px 1fr", gap: 20, maxHeight: "78vh", overflowY: "auto", paddingRight: 6 }}>
         
         {/* LEFT COLUMN: ORIGINAL DOCUMENT PREVIEW */}
         <div style={{ background: "var(--bg)", border: "1px solid var(--rule)", borderRadius: 8, padding: 14, display: "flex", flexDirection: "column" }}>
