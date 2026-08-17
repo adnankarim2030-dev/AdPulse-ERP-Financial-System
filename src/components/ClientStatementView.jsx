@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { Printer, Download, Filter, FileText, Calendar, Building2, CheckCircle2, AlertCircle, Search } from "lucide-react";
+import { cleanInvoiceNo } from "../App.jsx";
 
 export default function ClientStatementView({
   clients = [],
@@ -83,7 +84,7 @@ export default function ClientStatementView({
         id: inv.id,
         date: inv.issueDate,
         dueDate: inv.dueDate,
-        ref: "INV-" + (inv.invoiceNo || inv.id.toUpperCase()),
+        ref: cleanInvoiceNo(inv.invoiceNo || inv.id),
         type: "Invoice",
         project: proj ? proj.name : (inv.description || "General"),
         debit: Number(inv.totalAmount || inv.amount) || 0,

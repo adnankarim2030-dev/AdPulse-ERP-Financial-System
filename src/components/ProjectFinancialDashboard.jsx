@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import { FolderKanban, DollarSign, TrendingUp, ArrowDownRight, ArrowUpRight, FileCheck, Truck, Receipt, CheckCircle, Clock } from "lucide-react";
+import { cleanInvoiceNo } from "../App.jsx";
 
 export default function ProjectFinancialDashboard({
   project,
@@ -55,7 +56,7 @@ export default function ProjectFinancialDashboard({
   // Activity Timeline
   const activityList = useMemo(() => {
     const list = [
-      ...projectInvoices.map(i => ({ date: i.issueDate, type: "Invoice", ref: "INV-" + (i.invoiceNo || i.id.toUpperCase()), party: i.client_name || i.client, debit: Number(i.totalAmount || i.amount) || 0, credit: 0, raw: i })),
+      ...projectInvoices.map(i => ({ date: i.issueDate, type: "Invoice", ref: cleanInvoiceNo(i.invoiceNo || i.id), party: i.client_name || i.client, debit: Number(i.totalAmount || i.amount) || 0, credit: 0, raw: i })),
       ...projectReceipts.map(r => ({ date: r.date, type: "Receipt", ref: r.voucherNo || ("RV-" + r.id.toUpperCase()), party: r.party, debit: 0, credit: Number(r.amount) || 0, raw: r })),
       ...projectExpenses.map(e => ({ date: e.date, type: "Expense", ref: e.expenseNo || ("EXP-" + e.id.toUpperCase()), party: e.vendor, debit: 0, credit: Number(e.amount) || 0, raw: e })),
       ...projectPayments.map(p => ({ date: p.date, type: "Payment", ref: p.voucherNo || ("PV-" + p.id.toUpperCase()), party: p.party, debit: Number(p.amount) || 0, credit: 0, raw: p }))

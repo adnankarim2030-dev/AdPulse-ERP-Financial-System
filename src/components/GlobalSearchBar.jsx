@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { Search, X, Building2, Truck, FolderKanban, FileText, Receipt, ArrowRight } from "lucide-react";
+import { cleanInvoiceNo } from "../App.jsx";
 
 export default function GlobalSearchBar({
   clients = [],
@@ -79,7 +80,7 @@ export default function GlobalSearchBar({
         results.push({
           type: "Invoice",
           id: i.id,
-          title: `INV-${invNo}`,
+          title: cleanInvoiceNo(invNo),
           subtitle: `Client: ${i.client} • Amount: PKR ${(i.totalAmount || i.amount).toLocaleString()}`,
           tab: "invoices",
           raw: i
