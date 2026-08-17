@@ -10277,9 +10277,11 @@ function PrintPreviewModal({ doc, onClose }) {
             transform: scale(${parseInt(printScale) / 100});
             transform-origin: top left;
             width: 100% !important;
-            height: auto !important;
-            min-height: 0 !important;
-            display: block !important;
+            min-height: 255mm !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: space-between !important;
+            box-sizing: border-box !important;
           }
           .print-area table, .print-area th, .print-area td, .print-area div { border-color: #000000 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
           .invoice-footer-banner {
@@ -10290,7 +10292,7 @@ function PrintPreviewModal({ doc, onClose }) {
             print-color-adjust: exact !important;
             display: flex !important;
             visibility: visible !important;
-            margin-top: 14px !important;
+            margin-top: auto !important;
           }
         }
       `}</style>
@@ -10376,7 +10378,7 @@ function PrintPreviewModal({ doc, onClose }) {
         </div>
 
         {/* PRINT AREA MATCHING PDF TEMPLATES */}
-        <div className="print-area" style={{ background: "#ffffff", color: "#000000", padding: "16px 18px 12px 18px", fontFamily: "'Calibri', 'Inter', sans-serif", border: "1px solid #E2E8F0", borderRadius: 8, position: "relative", boxSizing: "border-box", width: "100%", overflowX: "hidden" }}>
+        <div className="print-area" style={{ background: "#ffffff", color: "#000000", padding: "16px 18px 12px 18px", fontFamily: "'Calibri', 'Inter', sans-serif", border: "1px solid #E2E8F0", borderRadius: 8, position: "relative", boxSizing: "border-box", width: "100%", minHeight: "890px", display: "flex", flexDirection: "column", justifyContent: "space-between", overflowX: "hidden" }}>
           
           {/* HEADER SECTION - 3 COLUMN BALANCED GRID */}
           <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", marginBottom: 16 }}>
@@ -10631,7 +10633,7 @@ function PrintPreviewModal({ doc, onClose }) {
           </div>
 
           {/* FOOTER BRAND BANNER */}
-          <div className="invoice-footer-banner" style={{ background: "#A81C1C", backgroundImage: "linear-gradient(90deg, #A81C1C 0%, #1D3B4E 100%)", color: "#FFFFFF", padding: "6px 12px", borderRadius: 4, display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 10, fontWeight: 600, marginTop: 14, boxSizing: "border-box", WebkitPrintColorAdjust: "exact", printColorAdjust: "exact" }}>
+          <div className="invoice-footer-banner" style={{ background: "#A81C1C", backgroundImage: "linear-gradient(90deg, #A81C1C 0%, #1D3B4E 100%)", color: "#FFFFFF", padding: "6px 12px", borderRadius: 4, display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 10, fontWeight: 600, marginTop: "auto", boxSizing: "border-box", WebkitPrintColorAdjust: "exact", printColorAdjust: "exact" }}>
             <div>📞 +92 21 37526834</div>
             <div>✉️ communication@adpulse.pk | 🌐 www.adpulse.pk</div>
             <div>📍 Office # 213, 2nd Floor, Park Tower, Block 5 Clifton, Karachi.</div>
