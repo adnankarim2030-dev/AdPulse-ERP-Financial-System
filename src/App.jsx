@@ -1004,6 +1004,32 @@ function seedPayrollRuns() {
 }
 
 function buildInitialData() {
+  return {
+    clients: [],
+    vendors: [],
+    projects: [],
+    invoices: [],
+    expenses: [],
+    vouchers: [],
+    auditLogs: [],
+    bankAccounts: [
+      { id: "bank-hbl", bankName: "Habib Bank Limited (HBL)", accountTitle: "AdPulse IMC PVT LTD (Main Ops)", accountNumber: "0014-2289-1001", iban: "PK36HABB00001422891001", accountType: "Current Account", branch: "Shahrah-e-Faisal Branch", openingBalance: 0, color: "#059669" },
+      { id: "bank-mcb", bankName: "MCB Bank Ltd", accountTitle: "AdPulse Financial Services", accountNumber: "0088-1122-3344", iban: "PK91MUCB008811223344", accountType: "Corporate Account", branch: "II Chundrigar Road Branch", openingBalance: 0, color: "#0284C7" },
+      { id: "bank-cash", bankName: "Petty Cash Vault", accountTitle: "Office Petty Cash Custodian", accountNumber: "CASH-VAULT-01", iban: "N/A (Cash in Hand)", accountType: "Petty Cash", branch: "Main Office Counter", openingBalance: 0, color: "#D97706" }
+    ],
+    hoardings: [],
+    employees: [],
+    inventoryItems: [],
+    inventoryLogs: [],
+    leaveRequests: [],
+    payrollRuns: [],
+    monthlyAttendance: {},
+    journal: [],
+    documents: []
+  };
+}
+
+function buildSeedDemoData() {
   const clients = seedClients();
   const vendors = seedVendors();
   const projects = seedProjects();
@@ -1251,7 +1277,7 @@ export default function App() {
   /* Financial & Operations state */
   const [seedData] = useState(buildInitialData);
 
-  const STORAGE_KEY = "adpulse_erp_financial_backup_v3";
+  const STORAGE_KEY = "adpulse_erp_financial_backup_v5";
 
   // Helper to load state from localStorage or fallback to default
   const getInitialState = (key, fallback) => {
@@ -1732,7 +1758,7 @@ export default function App() {
           text: "✨ All sample demo data removed! System is now 100% clean and ready for your real data entry."
         });
       } else {
-        const initial = buildInitialData();
+        const initial = buildSeedDemoData();
         setJournal(initial.journal || []);
         setInvoices(initial.invoices || []);
         setExpenses(initial.expenses || []);
