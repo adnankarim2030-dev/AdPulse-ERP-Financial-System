@@ -514,6 +514,42 @@ const SEED_USERS = [
     department: "Finance & Accounts",
     allowedTabs: ALL_STAFF_TABS,
   },
+  {
+    id: "u-yaqoob",
+    name: "Adpulseyaqoob",
+    email: "yaqoob@adpulse.pk",
+    password: "yaqoob5458",
+    role: "Staff",
+    department: "OOH & Operations",
+    allowedTabs: ALL_STAFF_TABS,
+  },
+  {
+    id: "u-usman",
+    name: "Adpulseusman",
+    email: "usman@adpulse.pk",
+    password: "usman5458",
+    role: "Staff",
+    department: "Client Servicing",
+    allowedTabs: ALL_STAFF_TABS,
+  },
+  {
+    id: "u-sana",
+    name: "Adpulsesana",
+    email: "sana@adpulse.pk",
+    password: "sana5458",
+    role: "Staff",
+    department: "Media & Production",
+    allowedTabs: ALL_STAFF_TABS,
+  },
+  {
+    id: "u-aisha",
+    name: "Adpulseaisha",
+    email: "aisha@adpulse.pk",
+    password: "aisha5458",
+    role: "Staff",
+    department: "HR & Admin",
+    allowedTabs: ALL_STAFF_TABS,
+  },
 ];
 
 /* ---------- SEED FINANCIAL DATA ---------- */
