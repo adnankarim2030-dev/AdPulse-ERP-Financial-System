@@ -2,9 +2,12 @@ import { createClient } from "@supabase/supabase-js";
 
 const CONFIG_STORAGE_KEY = "adpulse_supabase_client_config";
 
+const DEFAULT_SUPABASE_URL = "https://rjhysdktkkeqjeeuelee.supabase.co";
+const DEFAULT_SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJqaHlzZGt0a2tlcWllZXVlbGVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY5MzEyMzYsImV4cCI6MjEwMjUwNzIzNn0.S5VUcWpPXaJFHXgZZfYG5is6uWkmc7LubhutxbzM9Kw";
+
 export function getSupabaseConfig() {
-  const envUrl = import.meta.env?.VITE_SUPABASE_URL || "";
-  const envKey = import.meta.env?.VITE_SUPABASE_ANON_KEY || "";
+  const envUrl = import.meta.env?.VITE_SUPABASE_URL || DEFAULT_SUPABASE_URL;
+  const envKey = import.meta.env?.VITE_SUPABASE_ANON_KEY || DEFAULT_SUPABASE_KEY;
 
   if (envUrl && envKey) {
     return { url: envUrl, key: envKey, source: "env" };
@@ -22,7 +25,7 @@ export function getSupabaseConfig() {
     console.warn("Could not parse saved Supabase config:", e);
   }
 
-  return { url: "", key: "", source: "none" };
+  return { url: DEFAULT_SUPABASE_URL, key: DEFAULT_SUPABASE_KEY, source: "default" };
 }
 
 export function saveSupabaseConfig(url, key) {
