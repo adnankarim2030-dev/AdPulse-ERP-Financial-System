@@ -502,7 +502,7 @@ const SEED_USERS = [
     email: "shawal@adpulse.pk",
     password: "shawal4548",
     role: "Staff",
-    department: "Digital Operations",
+    department: "Finance & Accounts",
     allowedTabs: ALL_STAFF_TABS,
   },
   {
