@@ -514,42 +514,6 @@ const SEED_USERS = [
     department: "Finance & Accounts",
     allowedTabs: ALL_STAFF_TABS,
   },
-  {
-    id: "u-yaqoob",
-    name: "Adpulseyaqoob",
-    email: "yaqoob@adpulse.pk",
-    password: "yaqoob5458",
-    role: "Staff",
-    department: "OOH & Operations",
-    allowedTabs: ALL_STAFF_TABS,
-  },
-  {
-    id: "u-usman",
-    name: "Adpulseusman",
-    email: "usman@adpulse.pk",
-    password: "usman5458",
-    role: "Staff",
-    department: "Client Servicing",
-    allowedTabs: ALL_STAFF_TABS,
-  },
-  {
-    id: "u-sana",
-    name: "Adpulsesana",
-    email: "sana@adpulse.pk",
-    password: "sana5458",
-    role: "Staff",
-    department: "Media & Production",
-    allowedTabs: ALL_STAFF_TABS,
-  },
-  {
-    id: "u-aisha",
-    name: "Adpulseaisha",
-    email: "aisha@adpulse.pk",
-    password: "aisha5458",
-    role: "Staff",
-    department: "HR & Admin",
-    allowedTabs: ALL_STAFF_TABS,
-  },
 ];
 
 /* ---------- SEED FINANCIAL DATA ---------- */
@@ -1305,19 +1269,7 @@ export default function App() {
     return typeof fallback === "function" ? fallback() : fallback;
   };
 
-  const [usersList, setUsersList] = useState(() => {
-    const saved = getInitialState("usersList", SEED_USERS);
-    const merged = Array.isArray(saved) ? [...saved] : [];
-    SEED_USERS.forEach(su => {
-      const idx = merged.findIndex(u => u.name.toLowerCase() === su.name.toLowerCase() || u.email.toLowerCase() === su.email.toLowerCase());
-      if (idx >= 0) {
-        merged[idx] = { ...merged[idx], password: su.password, role: su.role, allowedTabs: su.allowedTabs };
-      } else {
-        merged.push(su);
-      }
-    });
-    return merged;
-  });
+  const [usersList, setUsersList] = useState(() => SEED_USERS);
   const [journal, setJournal] = useState(() => getInitialState("journal", seedData.journal || []));
   const [invoices, setInvoices] = useState(() => getInitialState("invoices", seedData.invoices || []));
   const [expenses, setExpenses] = useState(() => getInitialState("expenses", seedData.expenses || []));
