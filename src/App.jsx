@@ -10266,6 +10266,11 @@ function PrintPreviewModal({ doc, onClose }) {
       <style>{`
         @page { size: ${PAGE_SIZES[pageSize] || pageSize} ${pageOrientation}; margin: ${pageMargin}; }
         .print-area table, .print-area th, .print-area td { border-color: #000000 !important; }
+        .no-print-header select option {
+          background-color: #1E293B !important;
+          color: #FFFFFF !important;
+          padding: 6px 10px !important;
+        }
         @media print {
           .no-print-header { display: none !important; }
           .modal-backdrop { background: none !important; padding: 0 !important; }
@@ -10304,12 +10309,12 @@ function PrintPreviewModal({ doc, onClose }) {
                 <FileText size={16} /> Document Layout:
               </span>
               <select value={template} onChange={e => setTemplate(e.target.value)} style={{ background: "#0F172A", color: "#fff", border: "1.5px solid #475569", borderRadius: 8, padding: "6px 12px", fontSize: 13, fontWeight: 600 }}>
-                <option value="GENERAL">General / Standard Agency Invoice</option>
-                <option value="PRINTING">OOH Printing &amp; Installation Invoice</option>
-                <option value="OOH">OOH Billboards Sales Tax Invoice</option>
-                <option value="PRINT_MEDIA">Print Media Sales Tax Invoice</option>
-                <option value="EVENT">Sales Tax Event Invoice</option>
-                <option value="BRANDING">Project Branding Invoice</option>
+                <option value="GENERAL" style={{ background: "#1E293B", color: "#FFFFFF" }}>General / Standard Agency Invoice</option>
+                <option value="PRINTING" style={{ background: "#1E293B", color: "#FFFFFF" }}>OOH Printing &amp; Installation Invoice</option>
+                <option value="OOH" style={{ background: "#1E293B", color: "#FFFFFF" }}>OOH Billboards Sales Tax Invoice</option>
+                <option value="PRINT_MEDIA" style={{ background: "#1E293B", color: "#FFFFFF" }}>Print Media Sales Tax Invoice</option>
+                <option value="EVENT" style={{ background: "#1E293B", color: "#FFFFFF" }}>Sales Tax Event Invoice</option>
+                <option value="BRANDING" style={{ background: "#1E293B", color: "#FFFFFF" }}>Project Branding Invoice</option>
               </select>
             </div>
 
@@ -10318,40 +10323,40 @@ function PrintPreviewModal({ doc, onClose }) {
               <div style={{ display: "flex", alignItems: "center", gap: 6, background: "#0F172A", padding: "4px 8px", borderRadius: 8, border: "1px solid #334155" }}>
                 <span style={{ fontSize: 11, color: "#94A3B8", fontWeight: 700 }}>Paper:</span>
                 <select value={pageSize} onChange={e => setPageSize(e.target.value)} style={{ background: "transparent", border: "none", color: "#FFF", fontSize: 12.5, fontWeight: 700, cursor: "pointer" }}>
-                  <option value="A4">A4 (210 x 297 mm)</option>
-                  <option value="A5">A5 (148 x 210 mm)</option>
-                  <option value="Letter">Letter (8.5 x 11 in)</option>
-                  <option value="Legal">Legal (8.5 x 14 in)</option>
-                  <option value="A3">A3 (297 x 420 mm)</option>
-                  <option value="Executive">Executive (7.25 x 10.5 in)</option>
+                  <option value="A4" style={{ background: "#1E293B", color: "#FFFFFF" }}>A4 (210 x 297 mm)</option>
+                  <option value="A5" style={{ background: "#1E293B", color: "#FFFFFF" }}>A5 (148 x 210 mm)</option>
+                  <option value="Letter" style={{ background: "#1E293B", color: "#FFFFFF" }}>Letter (8.5 x 11 in)</option>
+                  <option value="Legal" style={{ background: "#1E293B", color: "#FFFFFF" }}>Legal (8.5 x 14 in)</option>
+                  <option value="A3" style={{ background: "#1E293B", color: "#FFFFFF" }}>A3 (297 x 420 mm)</option>
+                  <option value="Executive" style={{ background: "#1E293B", color: "#FFFFFF" }}>Executive (7.25 x 10.5 in)</option>
                 </select>
               </div>
 
               <div style={{ display: "flex", alignItems: "center", gap: 6, background: "#0F172A", padding: "4px 8px", borderRadius: 8, border: "1px solid #334155" }}>
                 <span style={{ fontSize: 11, color: "#94A3B8", fontWeight: 700 }}>Orient:</span>
                 <select value={pageOrientation} onChange={e => setPageOrientation(e.target.value)} style={{ background: "transparent", border: "none", color: "#FFF", fontSize: 12.5, fontWeight: 700, cursor: "pointer" }}>
-                  <option value="portrait">Portrait 📄</option>
-                  <option value="landscape">Landscape 📑</option>
+                  <option value="portrait" style={{ background: "#1E293B", color: "#FFFFFF" }}>Portrait 📄</option>
+                  <option value="landscape" style={{ background: "#1E293B", color: "#FFFFFF" }}>Landscape 📑</option>
                 </select>
               </div>
 
               <div style={{ display: "flex", alignItems: "center", gap: 6, background: "#0F172A", padding: "4px 8px", borderRadius: 8, border: "1px solid #334155" }}>
                 <span style={{ fontSize: 11, color: "#94A3B8", fontWeight: 700 }}>Margin:</span>
                 <select value={pageMargin} onChange={e => setPageMargin(e.target.value)} style={{ background: "transparent", border: "none", color: "#FFF", fontSize: 12.5, fontWeight: 700, cursor: "pointer" }}>
-                  <option value="8mm">Compact (8mm)</option>
-                  <option value="15mm">Normal (15mm)</option>
-                  <option value="20mm">Wide (20mm)</option>
-                  <option value="0mm">Zero (0mm)</option>
+                  <option value="8mm" style={{ background: "#1E293B", color: "#FFFFFF" }}>Compact (8mm)</option>
+                  <option value="15mm" style={{ background: "#1E293B", color: "#FFFFFF" }}>Normal (15mm)</option>
+                  <option value="20mm" style={{ background: "#1E293B", color: "#FFFFFF" }}>Wide (20mm)</option>
+                  <option value="0mm" style={{ background: "#1E293B", color: "#FFFFFF" }}>Zero (0mm)</option>
                 </select>
               </div>
 
               <div style={{ display: "flex", alignItems: "center", gap: 6, background: "#0F172A", padding: "4px 8px", borderRadius: 8, border: "1px solid #334155" }}>
                 <span style={{ fontSize: 11, color: "#94A3B8", fontWeight: 700 }}>Scale:</span>
                 <select value={printScale} onChange={e => setPrintScale(e.target.value)} style={{ background: "transparent", border: "none", color: "#FFF", fontSize: 12.5, fontWeight: 700, cursor: "pointer" }}>
-                  <option value="100%">100%</option>
-                  <option value="95%">95%</option>
-                  <option value="90%">90%</option>
-                  <option value="85%">85%</option>
+                  <option value="100%" style={{ background: "#1E293B", color: "#FFFFFF" }}>100%</option>
+                  <option value="95%" style={{ background: "#1E293B", color: "#FFFFFF" }}>95%</option>
+                  <option value="90%" style={{ background: "#1E293B", color: "#FFFFFF" }}>90%</option>
+                  <option value="85%" style={{ background: "#1E293B", color: "#FFFFFF" }}>85%</option>
                 </select>
               </div>
 
@@ -10664,7 +10669,7 @@ function ClientStatementPrintModal({ clientName, invoices, projects, onClose }) 
           <div className="section-title" style={{ margin: 0 }}>Client Statement Preview</div>
           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
             <select value={pageSize} onChange={e => setPageSize(e.target.value)} style={{ background: "#FFFFFF", border: "1px solid #CBD5E1", borderRadius: 8, color: "#0F172A", fontSize: 13, padding: "6px 10px" }}>
-              {Object.keys(PAGE_SIZES).map(p => <option key={p}>{p}</option>)}
+              {Object.keys(PAGE_SIZES).map(p => <option key={p} style={{ background: "#FFFFFF", color: "#0F172A" }}>{p}</option>)}
             </select>
             <button className="btn btn-primary" style={{ padding: "6px 12px", fontSize: 13 }} onClick={() => window.print()}><Printer size={14} /> Print Statement</button>
             <button className="btn" style={{ padding: 5 }} onClick={onClose}><X size={15} /></button>
