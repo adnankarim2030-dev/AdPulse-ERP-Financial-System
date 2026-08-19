@@ -11301,26 +11301,26 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
             <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", fontSize: 8, boxSizing: "border-box", tableLayout: "fixed" }}>
               <colgroup>
                 <col style={{ width: "3.5%" }} />
-                <col style={{ width: "21%" }} />
-                <col style={{ width: "12%" }} />
-                <col style={{ width: "8.5%" }} />
+                <col style={{ width: "20.5%" }} />
+                <col style={{ width: "11%" }} />
+                <col style={{ width: "8%" }} />
                 <col style={{ width: "11%" }} />
                 <col style={{ width: "11%" }} />
                 <col style={{ width: "7%" }} />
-                <col style={{ width: "13%" }} />
-                <col style={{ width: "13%" }} />
+                <col style={{ width: "13.5%" }} />
+                <col style={{ width: "14.5%" }} />
               </colgroup>
               <thead>
                 <tr style={{ background: "#F1F5F9", color: "#0F172A" }}>
-                  <th style={{ border: "1px solid #000000", padding: "6px 2px", textAlign: "center", fontSize: 7.5, fontWeight: 800, verticalAlign: "middle", whiteSpace: "nowrap" }}>#</th>
-                  <th style={{ border: "1px solid #000000", padding: "6px 6px", textAlign: "left", fontSize: 7.5, fontWeight: 800, verticalAlign: "middle" }}>LOCATION / AREA</th>
-                  <th style={{ border: "1px solid #000000", padding: "6px 2px", textAlign: "center", fontSize: 7.5, fontWeight: 800, verticalAlign: "middle", whiteSpace: "nowrap" }}>SIZE (FT)</th>
-                  <th style={{ border: "1px solid #000000", padding: "6px 2px", textAlign: "center", fontSize: 7.5, fontWeight: 800, verticalAlign: "middle", whiteSpace: "nowrap" }}>SQ. FT.</th>
-                  <th style={{ border: "1px solid #000000", padding: "6px 2px", textAlign: "center", fontSize: 7.5, fontWeight: 800, verticalAlign: "middle", whiteSpace: "nowrap" }}>FROM DATE</th>
-                  <th style={{ border: "1px solid #000000", padding: "6px 2px", textAlign: "center", fontSize: 7.5, fontWeight: 800, verticalAlign: "middle", whiteSpace: "nowrap" }}>TO DATE</th>
-                  <th style={{ border: "1px solid #000000", padding: "6px 2px", textAlign: "center", fontSize: 7.5, fontWeight: 800, verticalAlign: "middle", whiteSpace: "nowrap" }}>DAYS</th>
-                  <th style={{ border: "1px solid #000000", padding: "6px 5px", textAlign: "right", fontSize: 7.5, fontWeight: 800, verticalAlign: "middle", whiteSpace: "nowrap" }}>RATE (PKR)</th>
-                  <th style={{ border: "1px solid #000000", padding: "6px 5px", textAlign: "right", fontSize: 7.5, fontWeight: 800, verticalAlign: "middle", whiteSpace: "nowrap" }}>AMOUNT (PKR)</th>
+                  <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontSize: 7.5, fontWeight: 800, verticalAlign: "middle" }}>#</th>
+                  <th style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "left", fontSize: 7.5, fontWeight: 800, verticalAlign: "middle" }}>LOCATION / AREA</th>
+                  <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontSize: 7.5, fontWeight: 800, verticalAlign: "middle" }}>SIZE (FT)</th>
+                  <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontSize: 7.5, fontWeight: 800, verticalAlign: "middle" }}>SQ. FT.</th>
+                  <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontSize: 7.5, fontWeight: 800, verticalAlign: "middle", lineHeight: 1.15 }}>FROM<br/>DATE</th>
+                  <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontSize: 7.5, fontWeight: 800, verticalAlign: "middle", lineHeight: 1.15 }}>TO<br/>DATE</th>
+                  <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontSize: 7.5, fontWeight: 800, verticalAlign: "middle" }}>DAYS</th>
+                  <th style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "right", fontSize: 7.5, fontWeight: 800, verticalAlign: "middle" }}>RATE (PKR)</th>
+                  <th style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "right", fontSize: 7.5, fontWeight: 800, verticalAlign: "middle" }}>AMOUNT (PKR)</th>
                 </tr>
               </thead>
               <tbody>
