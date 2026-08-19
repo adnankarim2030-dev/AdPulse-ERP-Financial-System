@@ -8738,7 +8738,15 @@ function InvoiceModal({ initialData, projects = [], clients = [], onClose, onSub
         <div className="field" style={{ flex: 1 }}><label>Due Date</label><input type="date" value={dueDate} onChange={e => setDueDate(e.target.value)} /></div>
       </div>
       <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 6 }} disabled={!valid}
-        onClick={() => valid && onSubmit(initialData ? { ...initialData, projectId, client, description, amount: amt, applySst, sstRate: Number(sstRate) || 0, sstAmount, applyWht, whtRate: Number(whtRate) || 0, whtAmount, totalAmount, issueDate, dueDate, notes, oohSites: enableOohSites ? oohSites : [], printMediaItems: enablePrintMedia ? printMediaItems : [], eventItems: enableEventItems ? eventItems : [], printingItems: enablePrintingItems ? printingItems : [], newspaperItems: enableNewspaperItems ? newspaperItems : [] } : { projectId, client, description, amount: amt, applySst, sstRate: Number(sstRate) || 0, sstAmount, applyWht, whtRate: Number(whtRate) || 0, whtAmount, totalAmount, issueDate, dueDate, notes, oohSites: enableOohSites ? oohSites : [], printMediaItems: enablePrintMedia ? printMediaItems : [], eventItems: enableEventItems ? eventItems : [], printingItems: enablePrintingItems ? printingItems : [], newspaperItems: enableNewspaperItems ? newspaperItems : [] })}>
+        onClick={() => {
+          const oohData = (enableOohSites || (oohSites && oohSites.length > 0 && oohSites.some(s => s.location || s.rate))) ? oohSites : [];
+          const printData = (enablePrintMedia || (printMediaItems && printMediaItems.length > 0 && printMediaItems.some(s => s.publication || s.rate))) ? printMediaItems : [];
+          const eventData = (enableEventItems || (eventItems && eventItems.length > 0 && eventItems.some(s => s.description || s.rate))) ? eventItems : [];
+          const printingData = (enablePrintingItems || (printingItems && printingItems.length > 0 && printingItems.some(s => s.description || s.rate))) ? printingItems : [];
+          const newspaperData = (enableNewspaperItems || (newspaperItems && newspaperItems.length > 0 && newspaperItems.some(s => s.newspaper || s.rateCcm))) ? newspaperItems : [];
+          const payload = { projectId, client, description, amount: amt, applySst, sstRate: Number(sstRate) || 0, sstAmount, applyWht, whtRate: Number(whtRate) || 0, whtAmount, totalAmount, issueDate, dueDate, notes, oohSites: oohData, printMediaItems: printData, eventItems: eventData, printingItems: printingData, newspaperItems: newspaperData };
+          if (valid) onSubmit(initialData ? { ...initialData, ...payload } : payload);
+        }}>
         {initialData ? "Save Invoice Changes" : "Generate & Post Invoice"}
       </button>
     </ModalShell>
@@ -11139,7 +11147,7 @@ function PrintPreviewModal({ doc, onClose }) {
               </tbody>
             </table>
           ) : template === "OOH" || (doc.oohSites && doc.oohSites.length > 0) ? (
-            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", fontSize: 11, boxSizing: "border-box" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", fontSize: 9, boxSizing: "border-box", tableLayout: "fixed" }}>
               <thead>
                 <tr style={{ background: "#F1F5F9", color: "#0F172A" }}>
                   <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", width: "3%", boxSizing: "border-box", fontSize: 8, fontWeight: 700, verticalAlign: "middle", letterSpacing: "-0.3px" }}>#</th>
@@ -11165,17 +11173,18 @@ function PrintPreviewModal({ doc, onClose }) {
                     if (!cleanLoc || cleanLoc.toLowerCase().includes("ooh advertising") || cleanLoc.toLowerCase().includes("back to school")) {
                       cleanLoc = idx === 0 ? "Shahrah-e-Faisal Site" : (idx === 1 ? "Clifton Billboard Site" : `OOH Location #${idx + 1}`);
                     }
+                    const cellBase = { border: "1px solid #000000", padding: "4px 2px", boxSizing: "border-box", verticalAlign: "middle", fontSize: 9, overflow: "hidden" };
                     return (
                       <tr key={idx}>
-                        <td style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", fontWeight: 700, boxSizing: "border-box", verticalAlign: "middle", fontSize: 9 }}>{idx + 1}</td>
-                        <td style={{ border: "1px solid #000000", padding: "4px 3px", textAlign: "left", fontWeight: 600, wordBreak: "break-word", boxSizing: "border-box", verticalAlign: "middle", fontSize: 9 }}>{cleanLoc}</td>
-                        <td style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", fontWeight: 600, boxSizing: "border-box", verticalAlign: "middle", fontSize: 9 }}>{w.toFixed(0)} × {h.toFixed(0)} ft</td>
-                        <td style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", fontWeight: 700, boxSizing: "border-box", verticalAlign: "middle", fontSize: 9 }}>{sqft.toFixed(2)}</td>
-                        <td style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", fontWeight: 600, boxSizing: "border-box", verticalAlign: "middle", fontSize: 9 }}>{site.fromDate || "-"}</td>
-                        <td style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", fontWeight: 600, boxSizing: "border-box", verticalAlign: "middle", fontSize: 9 }}>{site.toDate || "-"}</td>
-                        <td style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", fontWeight: 600, boxSizing: "border-box", verticalAlign: "middle", fontSize: 9 }}>{days}</td>
-                        <td style={{ border: "1px solid #000000", padding: "4px 3px", textAlign: "right", boxSizing: "border-box", verticalAlign: "middle", fontSize: 9 }}>{pkr(rate)}</td>
-                        <td style={{ border: "1px solid #000000", padding: "4px 3px", textAlign: "right", fontWeight: 700, boxSizing: "border-box", verticalAlign: "middle", fontSize: 9 }}>{pkr(site.amount !== undefined ? site.amount : ((rate / 30) * days))}</td>
+                        <td style={{ ...cellBase, textAlign: "center", fontWeight: 700 }}>{idx + 1}</td>
+                        <td style={{ ...cellBase, padding: "4px 3px", textAlign: "left", fontWeight: 600, wordBreak: "break-word" }}>{cleanLoc}</td>
+                        <td style={{ ...cellBase, textAlign: "center", fontWeight: 600 }}>{w.toFixed(0)}×{h.toFixed(0)}ft</td>
+                        <td style={{ ...cellBase, textAlign: "center", fontWeight: 700 }}>{sqft.toFixed(1)}</td>
+                        <td style={{ ...cellBase, textAlign: "center", fontWeight: 600 }}>{site.fromDate || "—"}</td>
+                        <td style={{ ...cellBase, textAlign: "center", fontWeight: 600 }}>{site.toDate || "—"}</td>
+                        <td style={{ ...cellBase, textAlign: "center", fontWeight: 600 }}>{days}</td>
+                        <td style={{ ...cellBase, padding: "4px 3px", textAlign: "right" }}>{pkr(rate)}</td>
+                        <td style={{ ...cellBase, padding: "4px 3px", textAlign: "right", fontWeight: 700 }}>{pkr(site.amount !== undefined && site.amount !== "" ? site.amount : ((rate / 30) * days))}</td>
                       </tr>
                     );
                   })
@@ -11183,13 +11192,13 @@ function PrintPreviewModal({ doc, onClose }) {
                   <tr>
                     <td style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", fontWeight: 700, boxSizing: "border-box", verticalAlign: "middle", fontSize: 9 }}>1</td>
                     <td style={{ border: "1px solid #000000", padding: "4px 3px", textAlign: "left", fontWeight: 600, wordBreak: "break-word", boxSizing: "border-box", verticalAlign: "middle", fontSize: 9 }}>
-                      {doc.location || "Shahrah-e-Faisal Billboard Site"}
+                      {doc.location || "N/A - Please edit invoice to add OOH location data"}
                     </td>
-                    <td style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", fontWeight: 600, boxSizing: "border-box", verticalAlign: "middle", fontSize: 9 }}>20 × 10 ft</td>
-                    <td style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", fontWeight: 700, boxSizing: "border-box", verticalAlign: "middle", fontSize: 9 }}>200.00</td>
-                    <td style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", fontWeight: 600, boxSizing: "border-box", verticalAlign: "middle", fontSize: 9 }}>-</td>
-                    <td style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", fontWeight: 600, boxSizing: "border-box", verticalAlign: "middle", fontSize: 9 }}>-</td>
-                    <td style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", fontWeight: 600, boxSizing: "border-box", verticalAlign: "middle", fontSize: 9 }}>30 Days</td>
+                    <td style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", fontWeight: 600, boxSizing: "border-box", verticalAlign: "middle", fontSize: 9 }}>—</td>
+                    <td style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", fontWeight: 700, boxSizing: "border-box", verticalAlign: "middle", fontSize: 9 }}>—</td>
+                    <td style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", fontWeight: 600, boxSizing: "border-box", verticalAlign: "middle", fontSize: 9 }}>—</td>
+                    <td style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", fontWeight: 600, boxSizing: "border-box", verticalAlign: "middle", fontSize: 9 }}>—</td>
+                    <td style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", fontWeight: 600, boxSizing: "border-box", verticalAlign: "middle", fontSize: 9 }}>—</td>
                     <td style={{ border: "1px solid #000000", padding: "4px 3px", textAlign: "right", boxSizing: "border-box", verticalAlign: "middle", fontSize: 9 }}>{pkr(netAmt)}</td>
                     <td style={{ border: "1px solid #000000", padding: "4px 3px", textAlign: "right", fontWeight: 700, boxSizing: "border-box", verticalAlign: "middle", fontSize: 9 }}>{pkr(netAmt)}</td>
                   </tr>
