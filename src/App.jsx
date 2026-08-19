@@ -11008,23 +11008,34 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
           padding: 6px 10px !important;
         }
         @media print {
+          html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+            background: #ffffff !important;
+            height: 100% !important;
+          }
           .no-print-header { display: none !important; }
-          .modal-backdrop { background: none !important; padding: 0 !important; }
-          .modal { box-shadow: none !important; border: none !important; width: 100% !important; max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
+          .modal-backdrop { background: none !important; padding: 0 !important; position: static !important; }
+          .modal { box-shadow: none !important; border: none !important; width: 100% !important; max-width: 100% !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; }
           .print-area {
             padding: 0 !important;
             border: none !important;
+            box-shadow: none !important;
             border-radius: 0 !important;
             transform: scale(${parseInt(printScale) / 100});
             transform-origin: top left;
             width: 100% !important;
-            min-height: 275mm !important;
+            min-height: 252mm !important;
+            max-height: 260mm !important;
+            height: 255mm !important;
             display: flex !important;
             flex-direction: column !important;
             justify-content: space-between !important;
             box-sizing: border-box !important;
+            page-break-after: avoid !important;
+            page-break-inside: avoid !important;
           }
-          .print-area table, .print-area th, .print-area td, .print-area div { border-color: #000000 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+          .print-area table, .print-area th, .print-area td { border-color: #000000 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
           .invoice-footer-banner {
             background: #A81C1C !important;
             background-image: linear-gradient(90deg, #A81C1C 0%, #1D3B4E 100%) !important;
@@ -11035,6 +11046,7 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
             visibility: visible !important;
             margin-top: auto !important;
             position: relative !important;
+            page-break-inside: avoid !important;
           }
         }
       `}</style>
@@ -11120,7 +11132,7 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
         </div>
 
         {/* PRINT AREA MATCHING PDF TEMPLATES */}
-        <div className="print-area" style={{ background: "#ffffff", color: "#000000", padding: "16px 18px 14px 18px", fontFamily: "'Calibri', 'Inter', sans-serif", border: "1px solid #E2E8F0", borderRadius: 8, position: "relative", boxSizing: "border-box", width: "100%", minHeight: "1000px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+        <div className="print-area" style={{ background: "#ffffff", color: "#000000", padding: "16px 18px 14px 18px", fontFamily: "'Calibri', 'Inter', sans-serif", border: "none", boxShadow: "0 2px 16px rgba(0,0,0,0.06)", borderRadius: 8, position: "relative", boxSizing: "border-box", width: "100%", minHeight: "920px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
           
           {/* HEADER SECTION - 3 COLUMN BALANCED GRID */}
           <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", marginBottom: 16 }}>
