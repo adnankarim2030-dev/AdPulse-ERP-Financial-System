@@ -72,3 +72,4 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 console.log('CACHE_BUST_1');
 console.log('CACHE_BUST_2');
 console.log('CACHE_BUST_3');
+console.log('CACHE_BUST_4');

@@ -10721,21 +10721,21 @@ function PrintPreviewModal({ doc, onClose }) {
           <React.Fragment>
             <tr>
               <td colSpan={colSpanAmount} style={{ border: "1px solid #000000", padding: "5px 8px", fontWeight: 700, textAlign: "right", boxSizing: "border-box" }}>Total Net Amount</td>
-              <td style={{ border: "1px solid #000000", padding: "5px 6px", textAlign: "right", fontWeight: 700, whiteSpace: "nowrap", boxSizing: "border-box", fontSize: 10 }}>{pkr(netAmt)}</td>
+              <td style={{ border: "1px solid #000000", padding: "5px 6px", textAlign: "right", fontWeight: 700, boxSizing: "border-box", fontSize: 10 }}>{pkr(netAmt)}</td>
             </tr>
             <tr>
               <td colSpan={colSpanAmount} style={{ border: "1px solid #000000", padding: "5px 8px", textAlign: "right", fontWeight: 600, boxSizing: "border-box" }}>15% Sindh Sales Tax (SRB)</td>
-              <td style={{ border: "1px solid #000000", padding: "5px 6px", textAlign: "right", fontWeight: 600, whiteSpace: "nowrap", boxSizing: "border-box", fontSize: 10 }}>{pkr(sstAmt || (netAmt * 0.15))}</td>
+              <td style={{ border: "1px solid #000000", padding: "5px 6px", textAlign: "right", fontWeight: 600, boxSizing: "border-box", fontSize: 10 }}>{pkr(sstAmt || (netAmt * 0.15))}</td>
             </tr>
             {doc.applyWht && (
               <tr>
                 <td colSpan={colSpanAmount} style={{ border: "1px solid #000000", padding: "5px 8px", textAlign: "right", color: "#059669", boxSizing: "border-box" }}>Less: WHT Deduction ({doc.whtRate || 0}%)</td>
-                <td style={{ border: "1px solid #000000", padding: "5px 6px", textAlign: "right", color: "#059669", whiteSpace: "nowrap", boxSizing: "border-box", fontSize: 10 }}>- {pkr(whtAmt)}</td>
+                <td style={{ border: "1px solid #000000", padding: "5px 6px", textAlign: "right", color: "#059669", boxSizing: "border-box", fontSize: 10 }}>- {pkr(whtAmt)}</td>
               </tr>
             )}
             <tr style={{ background: "#F1F5F9", fontWeight: 800 }}>
               <td colSpan={colSpanAmount} style={{ border: "1px solid #000000", padding: "6px 8px", fontSize: 11, textAlign: "right", boxSizing: "border-box" }}>Grand Total Payable</td>
-              <td style={{ border: "1px solid #000000", padding: "6px 6px", textAlign: "right", fontSize: 12, color: "#A81C1C", whiteSpace: "nowrap", boxSizing: "border-box" }}>{pkr(totalAmt)}</td>
+              <td style={{ border: "1px solid #000000", padding: "6px 6px", textAlign: "right", fontSize: 12, color: "#A81C1C", boxSizing: "border-box" }}>{pkr(totalAmt)}</td>
             </tr>
           </React.Fragment>
         ) : (
@@ -10743,12 +10743,12 @@ function PrintPreviewModal({ doc, onClose }) {
             {doc.applyWht && (
               <tr>
                 <td colSpan={colSpanAmount} style={{ border: "1px solid #000000", padding: "5px 8px", textAlign: "right", color: "#059669", boxSizing: "border-box" }}>Less: WHT Deduction ({doc.whtRate || 0}%)</td>
-                <td style={{ border: "1px solid #000000", padding: "5px 6px", textAlign: "right", color: "#059669", whiteSpace: "nowrap", boxSizing: "border-box", fontSize: 10 }}>- {pkr(whtAmt)}</td>
+                <td style={{ border: "1px solid #000000", padding: "5px 6px", textAlign: "right", color: "#059669", boxSizing: "border-box", fontSize: 10 }}>- {pkr(whtAmt)}</td>
               </tr>
             )}
             <tr style={{ background: "#F1F5F9", fontWeight: 800 }}>
               <td colSpan={colSpanAmount} style={{ border: "1px solid #000000", padding: "6px 8px", fontSize: 11, textAlign: "right", boxSizing: "border-box" }}>Grand Total Payable</td>
-              <td style={{ border: "1px solid #000000", padding: "6px 6px", textAlign: "right", fontSize: 12, color: "#0F172A", whiteSpace: "nowrap", boxSizing: "border-box" }}>{pkr(totalAmt || (netAmt - whtAmt))}</td>
+              <td style={{ border: "1px solid #000000", padding: "6px 6px", textAlign: "right", fontSize: 12, color: "#0F172A", boxSizing: "border-box" }}>{pkr(totalAmt || (netAmt - whtAmt))}</td>
             </tr>
           </React.Fragment>
         )}
@@ -11167,43 +11167,43 @@ function PrintPreviewModal({ doc, onClose }) {
                     }
                     return (
                       <tr key={idx}>
-                        <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 700, boxSizing: "border-box", verticalAlign: "middle" }}>{idx + 1}</td>
-                        <td style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "left", fontWeight: 600, wordBreak: "break-word", boxSizing: "border-box", verticalAlign: "middle" }}>{cleanLoc}</td>
-                        <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 600, whiteSpace: "nowrap", boxSizing: "border-box", verticalAlign: "middle" }}>{w.toFixed(0)} × {h.toFixed(0)} ft</td>
-                        <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 700, whiteSpace: "nowrap", boxSizing: "border-box", verticalAlign: "middle" }}>{sqft.toFixed(2)}</td>
-                        <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 600, whiteSpace: "nowrap", boxSizing: "border-box", verticalAlign: "middle", fontSize: 8 }}>{site.fromDate || "-"}</td>
-                        <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 600, whiteSpace: "nowrap", boxSizing: "border-box", verticalAlign: "middle", fontSize: 8 }}>{site.toDate || "-"}</td>
-                        <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 600, whiteSpace: "nowrap", boxSizing: "border-box", verticalAlign: "middle" }}>{days}</td>
-                        <td style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "right", whiteSpace: "nowrap", boxSizing: "border-box", verticalAlign: "middle" }}>{pkr(rate)}</td>
-                        <td style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "right", fontWeight: 700, whiteSpace: "nowrap", boxSizing: "border-box", verticalAlign: "middle" }}>{pkr(site.amount !== undefined ? site.amount : ((rate / 30) * days))}</td>
+                        <td style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", fontWeight: 700, boxSizing: "border-box", verticalAlign: "middle", fontSize: 9 }}>{idx + 1}</td>
+                        <td style={{ border: "1px solid #000000", padding: "4px 3px", textAlign: "left", fontWeight: 600, wordBreak: "break-word", boxSizing: "border-box", verticalAlign: "middle", fontSize: 9 }}>{cleanLoc}</td>
+                        <td style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", fontWeight: 600, boxSizing: "border-box", verticalAlign: "middle", fontSize: 9 }}>{w.toFixed(0)} × {h.toFixed(0)} ft</td>
+                        <td style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", fontWeight: 700, boxSizing: "border-box", verticalAlign: "middle", fontSize: 9 }}>{sqft.toFixed(2)}</td>
+                        <td style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", fontWeight: 600, boxSizing: "border-box", verticalAlign: "middle", fontSize: 9 }}>{site.fromDate || "-"}</td>
+                        <td style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", fontWeight: 600, boxSizing: "border-box", verticalAlign: "middle", fontSize: 9 }}>{site.toDate || "-"}</td>
+                        <td style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", fontWeight: 600, boxSizing: "border-box", verticalAlign: "middle", fontSize: 9 }}>{days}</td>
+                        <td style={{ border: "1px solid #000000", padding: "4px 3px", textAlign: "right", boxSizing: "border-box", verticalAlign: "middle", fontSize: 9 }}>{pkr(rate)}</td>
+                        <td style={{ border: "1px solid #000000", padding: "4px 3px", textAlign: "right", fontWeight: 700, boxSizing: "border-box", verticalAlign: "middle", fontSize: 9 }}>{pkr(site.amount !== undefined ? site.amount : ((rate / 30) * days))}</td>
                       </tr>
                     );
                   })
                 ) : (
                   <tr>
-                    <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 700, boxSizing: "border-box", verticalAlign: "middle" }}>1</td>
-                    <td style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "left", fontWeight: 600, wordBreak: "break-word", boxSizing: "border-box", verticalAlign: "middle" }}>
+                    <td style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", fontWeight: 700, boxSizing: "border-box", verticalAlign: "middle", fontSize: 9 }}>1</td>
+                    <td style={{ border: "1px solid #000000", padding: "4px 3px", textAlign: "left", fontWeight: 600, wordBreak: "break-word", boxSizing: "border-box", verticalAlign: "middle", fontSize: 9 }}>
                       {doc.location || "Shahrah-e-Faisal Billboard Site"}
                     </td>
-                    <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 600, whiteSpace: "nowrap", boxSizing: "border-box", verticalAlign: "middle" }}>20 × 10 ft</td>
-                    <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 700, whiteSpace: "nowrap", boxSizing: "border-box", verticalAlign: "middle" }}>200.00</td>
-                    <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 600, whiteSpace: "nowrap", boxSizing: "border-box", verticalAlign: "middle", fontSize: 8 }}>-</td>
-                    <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 600, whiteSpace: "nowrap", boxSizing: "border-box", verticalAlign: "middle", fontSize: 8 }}>-</td>
-                    <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 600, whiteSpace: "nowrap", boxSizing: "border-box", verticalAlign: "middle" }}>30 Days</td>
-                    <td style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "right", whiteSpace: "nowrap", boxSizing: "border-box", verticalAlign: "middle" }}>{pkr(netAmt)}</td>
-                    <td style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "right", fontWeight: 700, whiteSpace: "nowrap", boxSizing: "border-box", verticalAlign: "middle" }}>{pkr(netAmt)}</td>
+                    <td style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", fontWeight: 600, boxSizing: "border-box", verticalAlign: "middle", fontSize: 9 }}>20 × 10 ft</td>
+                    <td style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", fontWeight: 700, boxSizing: "border-box", verticalAlign: "middle", fontSize: 9 }}>200.00</td>
+                    <td style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", fontWeight: 600, boxSizing: "border-box", verticalAlign: "middle", fontSize: 9 }}>-</td>
+                    <td style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", fontWeight: 600, boxSizing: "border-box", verticalAlign: "middle", fontSize: 9 }}>-</td>
+                    <td style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", fontWeight: 600, boxSizing: "border-box", verticalAlign: "middle", fontSize: 9 }}>30 Days</td>
+                    <td style={{ border: "1px solid #000000", padding: "4px 3px", textAlign: "right", boxSizing: "border-box", verticalAlign: "middle", fontSize: 9 }}>{pkr(netAmt)}</td>
+                    <td style={{ border: "1px solid #000000", padding: "4px 3px", textAlign: "right", fontWeight: 700, boxSizing: "border-box", verticalAlign: "middle", fontSize: 9 }}>{pkr(netAmt)}</td>
                   </tr>
                 )}
                 <tr style={{ fontWeight: 800, background: "#F8FAFC" }}>
-                  <td colSpan={3} style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "center", boxSizing: "border-box", verticalAlign: "middle", fontSize: 9 }}>TOTAL OOH AREA &amp; AMOUNT</td>
-                  <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 700, whiteSpace: "nowrap", boxSizing: "border-box", verticalAlign: "middle", fontSize: 9 }}>
+                  <td colSpan={3} style={{ border: "1px solid #000000", padding: "4px 4px", textAlign: "center", boxSizing: "border-box", verticalAlign: "middle", fontSize: 9 }}>TOTAL OOH AREA &amp; AMOUNT</td>
+                  <td style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", fontWeight: 700, boxSizing: "border-box", verticalAlign: "middle", fontSize: 9 }}>
                     {doc.oohSites && doc.oohSites.length > 0 ? doc.oohSites.reduce((s, i) => s + (Number(i.sqft) || 0), 0).toFixed(2) : "200.00"} Sq. Ft.
                   </td>
-                  <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", boxSizing: "border-box", verticalAlign: "middle" }}>—</td>
-                  <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", boxSizing: "border-box", verticalAlign: "middle" }}>—</td>
-                  <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", boxSizing: "border-box", verticalAlign: "middle" }}>—</td>
-                  <td style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "right", boxSizing: "border-box", verticalAlign: "middle" }}>—</td>
-                  <td style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "right", color: "#A81C1C", whiteSpace: "nowrap", boxSizing: "border-box", verticalAlign: "middle", fontSize: 9.5 }}>{pkr(netAmt)}</td>
+                  <td style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", boxSizing: "border-box", verticalAlign: "middle" }}>—</td>
+                  <td style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", boxSizing: "border-box", verticalAlign: "middle" }}>—</td>
+                  <td style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", boxSizing: "border-box", verticalAlign: "middle" }}>—</td>
+                  <td style={{ border: "1px solid #000000", padding: "4px 3px", textAlign: "right", boxSizing: "border-box", verticalAlign: "middle" }}>—</td>
+                  <td style={{ border: "1px solid #000000", padding: "4px 3px", textAlign: "right", color: "#A81C1C", boxSizing: "border-box", verticalAlign: "middle", fontSize: 9 }}>{pkr(netAmt)}</td>
                 </tr>
                 {renderTotals(8)}
               </tbody>
