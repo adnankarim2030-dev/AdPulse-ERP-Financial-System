@@ -8201,21 +8201,22 @@ function InvoiceModal({ initialData, projects = [], clients = [], onClose, onSub
   const enablePrintingItems = description === "Printing & Installations";
   const [printingItems, setPrintingItems] = useState(() => {
     if (initialData?.printingItems?.length > 0) return initialData.printingItems;
-    return [{ description: "", size: "", qty: 1, unit: "Sq.Ft", printingRate: "", printingAmount: "", installationRate: "", installationAmount: "", amount: "" }];
+    return [{ description: "", height: "", width: "", totalSqFt: 0, qty: 1, rate: "", amount: 0 }];
   });
 
-  const addPrintingItem = () => setPrintingItems([...printingItems, { description: "", size: "", qty: 1, unit: "Sq.Ft", printingRate: "", printingAmount: "", installationRate: "", installationAmount: "", amount: "" }]);
+  const addPrintingItem = () => setPrintingItems([...printingItems, { description: "", height: "", width: "", totalSqFt: 0, qty: 1, rate: "", amount: 0 }]);
 
   const updatePrintingItem = (index, field, value) => {
     const updated = [...printingItems];
     const item = { ...updated[index], [field]: value };
-    if (field === "printingRate" || field === "installationRate" || field === "qty") {
-      const pr = parseFloat(item.printingRate) || 0;
-      const ir = parseFloat(item.installationRate) || 0;
+    if (["height", "width", "qty", "rate"].includes(field)) {
+      const h = parseFloat(item.height) || 0;
+      const w = parseFloat(item.width) || 0;
+      const sqft = h * w;
+      item.totalSqFt = sqft;
       const q = parseFloat(item.qty) || 1;
-      item.printingAmount = pr * q;
-      item.installationAmount = ir * q;
-      item.amount = item.printingAmount + item.installationAmount;
+      const r = parseFloat(item.rate) || 0;
+      item.amount = (sqft > 0 ? sqft : 1) * q * r;
     }
     updated[index] = item;
     setPrintingItems(updated);
@@ -8227,7 +8228,7 @@ function InvoiceModal({ initialData, projects = [], clients = [], onClose, onSub
 
   const removePrintingItem = (index) => {
     const updated = printingItems.filter((_, i) => i !== index);
-    const finalItems = updated.length > 0 ? updated : [{ description: "", size: "", qty: 1, unit: "Sq.Ft", printingRate: "", printingAmount: "", installationRate: "", installationAmount: "", amount: "" }];
+    const finalItems = updated.length > 0 ? updated : [{ description: "", height: "", width: "", totalSqFt: 0, qty: 1, rate: "", amount: 0 }];
     setPrintingItems(finalItems);
     if (enablePrintingItems) {
       const calcTotal = finalItems.reduce((sum, x) => sum + (parseFloat(x.amount) || 0), 0);
@@ -8538,16 +8539,14 @@ function InvoiceModal({ initialData, projects = [], clients = [], onClose, onSub
             <table style={{ width: "100%", fontSize: 12, borderCollapse: "collapse", background: "#FFFFFF", borderRadius: 6, overflow: "hidden", border: "1px solid #CBD5E1" }}>
               <thead>
                 <tr style={{ background: "#F8FAFC", borderBottom: "1px solid #CBD5E1", color: "#334155" }}>
-                  <th style={{ padding: "7px 8px", textAlign: "center", width: "3%" }}>Sr. No.</th>
-                  <th style={{ padding: "7px 8px", textAlign: "left", width: "22%" }}>Description / Item</th>
-                  <th style={{ padding: "7px 8px", textAlign: "left", width: "8%" }}>Size</th>
-                  <th style={{ padding: "7px 8px", textAlign: "center", width: "4%" }}>Qty</th>
-                  <th style={{ padding: "7px 8px", textAlign: "left", width: "5%" }}>Unit</th>
-                  <th style={{ padding: "7px 8px", textAlign: "right", width: "10%" }}>Prnt Rate</th>
-                  <th style={{ padding: "7px 8px", textAlign: "right", width: "11%" }}>Prnt Amount</th>
-                  <th style={{ padding: "7px 8px", textAlign: "right", width: "10%" }}>Inst Rate</th>
-                  <th style={{ padding: "7px 8px", textAlign: "right", width: "11%" }}>Inst Amount</th>
-                  <th style={{ padding: "7px 8px", textAlign: "right", width: "13%", color: "#059669" }}>Total</th>
+                  <th style={{ padding: "7px 8px", textAlign: "center", width: "4%" }}>S.No</th>
+                  <th style={{ padding: "7px 8px", textAlign: "left", width: "30%" }}>Description</th>
+                  <th style={{ padding: "7px 8px", textAlign: "center", width: "10%" }}>Height</th>
+                  <th style={{ padding: "7px 8px", textAlign: "center", width: "10%" }}>Width</th>
+                  <th style={{ padding: "7px 8px", textAlign: "right", width: "12%", color: "#0284C7" }}>Total Sq Ft</th>
+                  <th style={{ padding: "7px 8px", textAlign: "center", width: "8%" }}>Qty</th>
+                  <th style={{ padding: "7px 8px", textAlign: "right", width: "12%" }}>Rate</th>
+                  <th style={{ padding: "7px 8px", textAlign: "right", width: "14%", color: "#059669" }}>Total</th>
                   <th style={{ padding: "7px 4px", textAlign: "center", width: "3%" }}></th>
                 </tr>
               </thead>
@@ -8556,14 +8555,12 @@ function InvoiceModal({ initialData, projects = [], clients = [], onClose, onSub
                   <tr key={idx} style={{ borderBottom: "1px solid #F1F5F9" }}>
                     <td style={{ padding: "6px 8px", textAlign: "center", fontWeight: 700 }}>{idx + 1}</td>
                     <td style={{ padding: "6px 8px" }}><input style={{ width: "100%", padding: "10px 12px", fontSize: 13.5, borderRadius: 6, border: "1px solid #94A3B8" }} value={item.description} onChange={e => updatePrintingItem(idx, "description", e.target.value)} placeholder="Description" /></td>
-                    <td style={{ padding: "6px 8px" }}><input style={{ width: "100%", padding: "10px 12px", fontSize: 13.5, borderRadius: 6, border: "1px solid #94A3B8" }} value={item.size} onChange={e => updatePrintingItem(idx, "size", e.target.value)} placeholder="Size" /></td>
+                    <td style={{ padding: "6px 8px" }}><input type="number" min="0" step="0.01" style={{ width: "100%", padding: "10px 12px", fontSize: 13.5, textAlign: "center", borderRadius: 6, border: "1px solid #94A3B8" }} value={item.height} onChange={e => updatePrintingItem(idx, "height", e.target.value)} placeholder="Height" /></td>
+                    <td style={{ padding: "6px 8px" }}><input type="number" min="0" step="0.01" style={{ width: "100%", padding: "10px 12px", fontSize: 13.5, textAlign: "center", borderRadius: 6, border: "1px solid #94A3B8" }} value={item.width} onChange={e => updatePrintingItem(idx, "width", e.target.value)} placeholder="Width" /></td>
+                    <td style={{ padding: "6px 8px", textAlign: "right", fontWeight: 700, color: "#0284C7", verticalAlign: "middle" }}>{(Number(item.totalSqFt) || 0).toFixed(2)}</td>
                     <td style={{ padding: "6px 8px" }}><input type="number" min="1" style={{ width: "100%", padding: "10px 12px", fontSize: 13.5, textAlign: "center", borderRadius: 6, border: "1px solid #94A3B8" }} value={item.qty} onChange={e => updatePrintingItem(idx, "qty", e.target.value)} /></td>
-                    <td style={{ padding: "6px 8px" }}><input style={{ width: "100%", padding: "10px 12px", fontSize: 13.5, borderRadius: 6, border: "1px solid #94A3B8" }} value={item.unit} onChange={e => updatePrintingItem(idx, "unit", e.target.value)} placeholder="Sq.Ft" /></td>
-                    <td style={{ padding: "6px 8px" }}><input type="number" step="0.01" style={{ width: "100%", padding: "10px 12px", fontSize: 13.5, textAlign: "right", borderRadius: 6, border: "1px solid #94A3B8" }} value={item.printingRate} onChange={e => updatePrintingItem(idx, "printingRate", e.target.value)} /></td>
-                    <td style={{ padding: "6px 8px", textAlign: "right" }}>{pkr(Number(item.printingAmount) || 0)}</td>
-                    <td style={{ padding: "6px 8px" }}><input type="number" step="0.01" style={{ width: "100%", padding: "10px 12px", fontSize: 13.5, textAlign: "right", borderRadius: 6, border: "1px solid #94A3B8" }} value={item.installationRate} onChange={e => updatePrintingItem(idx, "installationRate", e.target.value)} /></td>
-                    <td style={{ padding: "6px 8px", textAlign: "right" }}>{pkr(Number(item.installationAmount) || 0)}</td>
-                    <td style={{ padding: "6px 8px", textAlign: "right", fontWeight: 700, color: "#059669" }}>{pkr(Number(item.amount) || 0)}</td>
+                    <td style={{ padding: "6px 8px" }}><input type="number" step="0.01" style={{ width: "100%", padding: "10px 12px", fontSize: 13.5, textAlign: "right", borderRadius: 6, border: "1px solid #94A3B8" }} value={item.rate} onChange={e => updatePrintingItem(idx, "rate", e.target.value)} placeholder="Rate" /></td>
+                    <td style={{ padding: "6px 8px", textAlign: "right", fontWeight: 700, color: "#059669", verticalAlign: "middle" }}>{pkr(Number(item.amount) || 0)}</td>
                     <td style={{ padding: "6px 4px", textAlign: "center" }}>
                       {printingItems.length > 1 && (
                         <button className="btn" type="button" style={{ padding: "6px 8px", color: "var(--rose)", borderColor: "#FCA5A5" }} onClick={() => removePrintingItem(idx)}>
@@ -11056,16 +11053,14 @@ function PrintPreviewModal({ doc, onClose }) {
             <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", wordWrap: "break-word", overflowWrap: "break-word", fontSize: 8, boxSizing: "border-box" }}>
               <thead>
                 <tr style={{ background: "#F1F5F9", color: "#0F172A" }}>
-                  <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", width: "4%", fontSize: 7, fontWeight: 700 }}>#</th>
-                  <th style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "left", width: "22%", fontSize: 7, fontWeight: 700 }}>DESC / ITEM</th>
-                  <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "left", width: "10%", fontSize: 7, fontWeight: 700 }}>SIZE</th>
-                  <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", width: "6%", fontSize: 7, fontWeight: 700 }}>QTY</th>
-                  <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", width: "6%", fontSize: 7, fontWeight: 700 }}>UNIT</th>
-                  <th style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "right", width: "9%", fontSize: 7, fontWeight: 700 }}>PRNT RATE</th>
-                  <th style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "right", width: "10%", fontSize: 7, fontWeight: 700 }}>PRNT AMT</th>
-                  <th style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "right", width: "9%", fontSize: 7, fontWeight: 700 }}>INST RATE</th>
-                  <th style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "right", width: "10%", fontSize: 7, fontWeight: 700 }}>INST AMT</th>
-                  <th style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "right", width: "14%", fontSize: 7, fontWeight: 700 }}>TOTAL</th>
+                  <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", width: "5%", fontSize: 7, fontWeight: 700 }}>S.NO</th>
+                  <th style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "left", width: "35%", fontSize: 7, fontWeight: 700 }}>DESCRIPTION</th>
+                  <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", width: "10%", fontSize: 7, fontWeight: 700 }}>HEIGHT</th>
+                  <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", width: "10%", fontSize: 7, fontWeight: 700 }}>WIDTH</th>
+                  <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", width: "10%", fontSize: 7, fontWeight: 700 }}>TOTAL SQ FT</th>
+                  <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", width: "5%", fontSize: 7, fontWeight: 700 }}>QTY</th>
+                  <th style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "right", width: "10%", fontSize: 7, fontWeight: 700 }}>RATE</th>
+                  <th style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "right", width: "15%", fontSize: 7, fontWeight: 700 }}>TOTAL</th>
                 </tr>
               </thead>
               <tbody>
@@ -11074,13 +11069,11 @@ function PrintPreviewModal({ doc, onClose }) {
                     <tr key={idx}>
                       <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 700 }}>{idx + 1}</td>
                       <td style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "left", fontWeight: 600 }}>{item.description || doc.description || `Printing Item #${idx + 1}`}</td>
-                      <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "left" }}>{item.size}</td>
+                      <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center" }}>{item.height}</td>
+                      <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center" }}>{item.width}</td>
+                      <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center" }}>{(Number(item.totalSqFt) || 0).toFixed(2)}</td>
                       <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center" }}>{item.qty}</td>
-                      <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center" }}>{item.unit}</td>
-                      <td style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "right" }}>{pkr(item.printingRate)}</td>
-                      <td style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "right" }}>{pkr(item.printingAmount)}</td>
-                      <td style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "right" }}>{pkr(item.installationRate)}</td>
-                      <td style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "right" }}>{pkr(item.installationAmount)}</td>
+                      <td style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "right" }}>{pkr(item.rate)}</td>
                       <td style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "right", fontWeight: 700 }}>{pkr(item.amount)}</td>
                     </tr>
                   ))
@@ -11088,21 +11081,19 @@ function PrintPreviewModal({ doc, onClose }) {
                   <tr>
                     <td style={{ border: "1px solid #000000", padding: "7px 2px", textAlign: "center", fontWeight: 700 }}>1</td>
                     <td style={{ border: "1px solid #000000", padding: "7px 4px", textAlign: "left", fontWeight: 600 }}>{doc.description || "PRINTING & INSTALLATION WORK"}</td>
-                    <td style={{ border: "1px solid #000000", padding: "7px 2px", textAlign: "left" }}>12x10</td>
+                    <td style={{ border: "1px solid #000000", padding: "7px 2px", textAlign: "center" }}>10</td>
+                    <td style={{ border: "1px solid #000000", padding: "7px 2px", textAlign: "center" }}>12</td>
+                    <td style={{ border: "1px solid #000000", padding: "7px 2px", textAlign: "center" }}>120</td>
                     <td style={{ border: "1px solid #000000", padding: "7px 2px", textAlign: "center" }}>1</td>
-                    <td style={{ border: "1px solid #000000", padding: "7px 2px", textAlign: "center" }}>Sq.Ft</td>
-                    <td style={{ border: "1px solid #000000", padding: "7px 4px", textAlign: "right" }}>{pkr(20)}</td>
-                    <td style={{ border: "1px solid #000000", padding: "7px 4px", textAlign: "right" }}>{pkr(2400)}</td>
-                    <td style={{ border: "1px solid #000000", padding: "7px 4px", textAlign: "right" }}>{pkr(10)}</td>
-                    <td style={{ border: "1px solid #000000", padding: "7px 4px", textAlign: "right" }}>{pkr(1200)}</td>
+                    <td style={{ border: "1px solid #000000", padding: "7px 4px", textAlign: "right" }}>{pkr(30)}</td>
                     <td style={{ border: "1px solid #000000", padding: "7px 4px", textAlign: "right", fontWeight: 700 }}>{pkr(netAmt)}</td>
                   </tr>
                 )}
                 <tr style={{ fontWeight: 800, background: "#F8FAFC" }}>
-                  <td colSpan={9} style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "right", fontSize: 9 }}>TOTAL AMOUNT</td>
+                  <td colSpan={7} style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "right", fontSize: 9 }}>TOTAL AMOUNT</td>
                   <td style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "right", fontWeight: 700, fontSize: 9 }}>{pkr(netAmt)}</td>
                 </tr>
-                {renderTotals(9)}
+                {renderTotals(7)}
               </tbody>
             </table>
           ) : template === "OOH" || (doc.oohSites && doc.oohSites.length > 0) ? (
