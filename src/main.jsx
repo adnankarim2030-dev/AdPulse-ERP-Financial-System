@@ -74,3 +74,4 @@ console.log('CACHE_BUST_2');
 console.log('CACHE_BUST_3');
 console.log('CACHE_BUST_4');
 console.log('CACHE_BUST_5');
+console.log('CACHE_BUST_6');

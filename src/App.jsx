@@ -11054,7 +11054,7 @@ function PrintPreviewModal({ doc, onClose }) {
 
           {/* DYNAMIC DATA TABLE BASED ON TEMPLATE */}
           {template === "NEWSPAPER" ? (
-            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", wordWrap: "break-word", overflowWrap: "break-word", fontSize: 10, boxSizing: "border-box" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", fontSize: 9, boxSizing: "border-box", tableLayout: "fixed" }}>
               <thead>
                 <tr style={{ background: "#F1F5F9", color: "#0F172A" }}>
                   <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "left", width: "16%", fontSize: 8, fontWeight: 700 }}>NEWSPAPER</th>
@@ -11100,7 +11100,7 @@ function PrintPreviewModal({ doc, onClose }) {
               </tbody>
             </table>
           ) : template === "PRINTING" ? (
-            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", wordWrap: "break-word", overflowWrap: "break-word", fontSize: 8, boxSizing: "border-box" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", fontSize: 8, boxSizing: "border-box", tableLayout: "fixed" }}>
               <thead>
                 <tr style={{ background: "#F1F5F9", color: "#0F172A" }}>
                   <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", width: "5%", fontSize: 7, fontWeight: 700 }}>S.NO</th>
@@ -11218,7 +11218,7 @@ function PrintPreviewModal({ doc, onClose }) {
               </tbody>
             </table>
           ) : template === "EVENT" ? (
-            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", fontSize: 11, boxSizing: "border-box" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", fontSize: 9, boxSizing: "border-box", tableLayout: "fixed" }}>
               <thead>
                 <tr style={{ background: "#F1F5F9", color: "#0F172A" }}>
                   <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", width: "5%", boxSizing: "border-box", fontSize: 8, fontWeight: 700, verticalAlign: "middle" }}>S.NO</th>
@@ -11255,7 +11255,7 @@ function PrintPreviewModal({ doc, onClose }) {
               </tbody>
             </table>
           ) : template === "PRINT_MEDIA" ? (
-            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", fontSize: 11, boxSizing: "border-box" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", fontSize: 9, boxSizing: "border-box", tableLayout: "fixed" }}>
               <thead>
                 <tr style={{ background: "#F1F5F9", color: "#0F172A" }}>
                   <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", width: "5%", fontSize: 8, fontWeight: 700 }}>S.NO</th>
@@ -11289,7 +11289,7 @@ function PrintPreviewModal({ doc, onClose }) {
               </tbody>
             </table>
           ) : (
-            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", fontSize: 11.5, boxSizing: "border-box" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", fontSize: 10, boxSizing: "border-box", tableLayout: "fixed" }}>
               <thead>
                 <tr style={{ background: "#F8FAFC", color: "#0F172A" }}>
                   <th style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "center", width: "4.5%", boxSizing: "border-box", fontSize: 8.5, fontWeight: 700, verticalAlign: "middle" }}>S #</th>
@@ -11307,8 +11307,8 @@ function PrintPreviewModal({ doc, onClose }) {
                     {doc.projectCode && <div style={{ fontSize: 10.5, color: "#64748B", marginTop: 4 }}>Project Reference: {doc.projectCode}</div>}
                   </td>
                   <td style={{ border: "1px solid #000000", padding: "10px 4px", textAlign: "center", verticalAlign: "top", fontWeight: 700, boxSizing: "border-box" }}>1</td>
-                  <td style={{ border: "1px solid #000000", padding: "10px 8px", textAlign: "right", verticalAlign: "top", fontWeight: 600, whiteSpace: "nowrap", boxSizing: "border-box" }}>{pkr(netAmt)}</td>
-                  <td style={{ border: "1px solid #000000", padding: "10px 8px", textAlign: "right", fontWeight: 700, verticalAlign: "top", whiteSpace: "nowrap", boxSizing: "border-box" }}>{pkr(netAmt)}</td>
+                  <td style={{ border: "1px solid #000000", padding: "10px 8px", textAlign: "right", verticalAlign: "top", fontWeight: 600, boxSizing: "border-box" }}>{pkr(netAmt)}</td>
+                  <td style={{ border: "1px solid #000000", padding: "10px 8px", textAlign: "right", fontWeight: 700, verticalAlign: "top", boxSizing: "border-box" }}>{pkr(netAmt)}</td>
                 </tr>
                 {renderTotals(4)}
               </tbody>
