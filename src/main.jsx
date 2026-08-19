@@ -80,3 +80,4 @@ console.log('CACHE_BUST_8');
 console.log('CACHE_BUST_9');
 console.log('CACHE_BUST_10');
 console.log('CACHE_BUST_11');
+console.log('CACHE_BUST_12');
