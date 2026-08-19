@@ -2777,6 +2777,11 @@ export default function App() {
       description: `${project.type} — ${project.name}${description ? ": " + description : ""}`,
       amount, applySst: true, sstAmount: sst, totalAmount: amount + sst,
       issueDate, dueDate, paid: false, paidVia: null, projectId: project.id,
+      oohSites: project.oohSites || [],
+      printMediaItems: project.printMediaItems || [],
+      eventItems: project.eventItems || [],
+      printingItems: project.printingItems || [],
+      newspaperItems: project.newspaperItems || []
     };
     setInvoices(list => [inv, ...list]);
     postEntry(issueDate, `Invoice - ${project.client} (${project.type} — ${project.name})`, [
@@ -8003,7 +8008,7 @@ function InvoiceModal({ initialData, projects = [], clients = [], onClose, onSub
   );
 
   // OOH Sites Multi-Location State inside InvoiceModal (Enabled by default so headers show immediately)
-  const enableOohSites = description === "OOH Advertising (Billboards, Streamers, etc.)";
+  const enableOohSites = (description || "").toUpperCase().includes("OOH");
   const [oohSites, setOohSites] = useState(() => {
     if (initialData?.oohSites && Array.isArray(initialData.oohSites) && initialData.oohSites.length > 0) {
       return initialData.oohSites.map(s => {
@@ -8088,7 +8093,7 @@ function InvoiceModal({ initialData, projects = [], clients = [], onClose, onSub
   const totalOohAmount = oohSites.reduce((sum, item) => sum + (item.amount !== undefined ? Number(item.amount) : ((parseFloat(item.rate) || 0) / 30 * (parseFloat(item.days) || 30))), 0);
 
   // Newspaper State
-  const enableNewspaperItems = description === "Newspaper / Print Media & Publication";
+  const enableNewspaperItems = (description || "").toUpperCase().includes("NEWSPAPER");
   const [newspaperItems, setNewspaperItems] = useState(() => {
     if (initialData?.newspaperItems?.length > 0) return initialData.newspaperItems;
     return [{ newspaper: "", edition: "", columns: "", height: "", totalCcm: "", rateCcm: "", mediaAmount: "", agencyFeePct: 15, agencyFee: "", amount: "" }];
@@ -8138,7 +8143,7 @@ function InvoiceModal({ initialData, projects = [], clients = [], onClose, onSub
   const totalNewspaperAmount = newspaperItems.reduce((sum, x) => sum + (Number(x.amount) || 0), 0);
 
   // Print Media State
-  const enablePrintMedia = description === "Print Media & Publications";
+  const enablePrintMedia = (description || "").toUpperCase().includes("PRINT MEDIA");
   const [printMediaItems, setPrintMediaItems] = useState(() => {
     if (initialData?.printMediaItems?.length > 0) return initialData.printMediaItems;
     return [{ description: "", publication: "", size: "", qty: 1, rate: "", amount: "" }];
@@ -8175,7 +8180,7 @@ function InvoiceModal({ initialData, projects = [], clients = [], onClose, onSub
   const totalPrintMediaAmount = printMediaItems.reduce((sum, x) => sum + (Number(x.amount) || 0), 0);
 
   // Event & Digital State
-  const enableEventItems = description === "Event Management & Activation" || description === "TVC Production" || description === "BTL Marketing" || description === "Digital & Social Media Marketing";
+  const enableEventItems = (description || "").toUpperCase().includes("EVENT") || (description || "").toUpperCase().includes("TVC") || (description || "").toUpperCase().includes("BTL") || (description || "").toUpperCase().includes("DIGITAL");
   const [eventItems, setEventItems] = useState(() => {
     if (initialData?.eventItems?.length > 0) return initialData.eventItems;
     return [{ description: "", qty: 1, unit: "NOS", rate: "", amount: "" }];
@@ -8212,7 +8217,7 @@ function InvoiceModal({ initialData, projects = [], clients = [], onClose, onSub
   const totalEventAmount = eventItems.reduce((sum, x) => sum + (Number(x.amount) || 0), 0);
 
   // Printing & Installations State
-  const enablePrintingItems = description === "Printing & Installations";
+  const enablePrintingItems = (description || "").toUpperCase().includes("PRINTING");
   const [printingItems, setPrintingItems] = useState(() => {
     if (initialData?.printingItems?.length > 0) return initialData.printingItems;
     return [{ description: "", height: "", width: "", totalSqFt: 0, qty: 1, rate: "", amount: 0 }];
@@ -11137,15 +11142,15 @@ function PrintPreviewModal({ doc, onClose }) {
             <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", fontSize: 11, boxSizing: "border-box" }}>
               <thead>
                 <tr style={{ background: "#F1F5F9", color: "#0F172A" }}>
-                  <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", width: "3%", boxSizing: "border-box", fontSize: 8, fontWeight: 700, verticalAlign: "middle", whiteSpace: "nowrap", overflow: "hidden", letterSpacing: "-0.3px" }}>#</th>
-                  <th style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "left", width: "18%", boxSizing: "border-box", fontSize: 8, fontWeight: 700, verticalAlign: "middle", letterSpacing: "-0.2px" }}>LOCATION / AREA</th>
-                  <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", width: "9%", boxSizing: "border-box", fontSize: 8, fontWeight: 700, verticalAlign: "middle", whiteSpace: "nowrap", overflow: "hidden", letterSpacing: "-0.3px" }}>SIZE (FT)</th>
-                  <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", width: "10%", boxSizing: "border-box", fontSize: 8, fontWeight: 700, verticalAlign: "middle", whiteSpace: "nowrap", overflow: "hidden", letterSpacing: "-0.3px" }}>TOTAL SQ. FT.</th>
-                  <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", width: "11%", boxSizing: "border-box", fontSize: 8, fontWeight: 700, verticalAlign: "middle", whiteSpace: "nowrap", overflow: "hidden", letterSpacing: "-0.3px" }}>FROM DATE</th>
-                  <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", width: "11%", boxSizing: "border-box", fontSize: 8, fontWeight: 700, verticalAlign: "middle", whiteSpace: "nowrap", overflow: "hidden", letterSpacing: "-0.3px" }}>TO DATE</th>
-                  <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", width: "9%", boxSizing: "border-box", fontSize: 8, fontWeight: 700, verticalAlign: "middle", whiteSpace: "nowrap", overflow: "hidden", letterSpacing: "-0.3px" }}>DAYS</th>
-                  <th style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "right", width: "14%", boxSizing: "border-box", fontSize: 8, fontWeight: 700, verticalAlign: "middle", whiteSpace: "nowrap", overflow: "hidden", letterSpacing: "-0.3px" }}>RATE (PKR)</th>
-                  <th style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "right", width: "15%", boxSizing: "border-box", fontSize: 8, fontWeight: 700, verticalAlign: "middle", whiteSpace: "nowrap", overflow: "hidden", letterSpacing: "-0.3px" }}>AMOUNT (PKR)</th>
+                  <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", width: "3%", boxSizing: "border-box", fontSize: 8, fontWeight: 700, verticalAlign: "middle", letterSpacing: "-0.3px" }}>#</th>
+                  <th style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "left", width: "19%", boxSizing: "border-box", fontSize: 8, fontWeight: 700, verticalAlign: "middle", letterSpacing: "-0.2px" }}>LOCATION / AREA</th>
+                  <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", width: "8%", boxSizing: "border-box", fontSize: 8, fontWeight: 700, verticalAlign: "middle", letterSpacing: "-0.3px" }}>SIZE(FT)</th>
+                  <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", width: "8%", boxSizing: "border-box", fontSize: 8, fontWeight: 700, verticalAlign: "middle", letterSpacing: "-0.3px" }}>SQ.FT.</th>
+                  <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", width: "11%", boxSizing: "border-box", fontSize: 8, fontWeight: 700, verticalAlign: "middle", letterSpacing: "-0.3px" }}>FROM DATE</th>
+                  <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", width: "11%", boxSizing: "border-box", fontSize: 8, fontWeight: 700, verticalAlign: "middle", letterSpacing: "-0.3px" }}>TO DATE</th>
+                  <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", width: "7%", boxSizing: "border-box", fontSize: 8, fontWeight: 700, verticalAlign: "middle", letterSpacing: "-0.3px" }}>DAYS</th>
+                  <th style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "right", width: "16%", boxSizing: "border-box", fontSize: 8, fontWeight: 700, verticalAlign: "middle", letterSpacing: "-0.3px" }}>RATE (PKR)</th>
+                  <th style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "right", width: "17%", boxSizing: "border-box", fontSize: 8, fontWeight: 700, verticalAlign: "middle", letterSpacing: "-0.3px" }}>AMOUNT</th>
                 </tr>
               </thead>
               <tbody>
