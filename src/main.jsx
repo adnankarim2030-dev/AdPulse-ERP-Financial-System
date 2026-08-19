@@ -70,3 +70,4 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   </React.StrictMode>,
 )
 console.log('CACHE_BUST_1');
+console.log('CACHE_BUST_2');

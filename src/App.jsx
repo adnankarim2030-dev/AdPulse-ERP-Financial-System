@@ -8023,20 +8023,34 @@ function InvoiceModal({ initialData, projects = [], clients = [], onClose, onSub
           width: s.width || (w > 0 ? w : ""),
           height: s.height || (h > 0 ? h : ""),
           sqft: sqft,
+          fromDate: s.fromDate || "",
+          toDate: s.toDate || "",
           days: days,
           rate: rate,
           amount: amount
         };
       });
     }
-    return [{ location: "", width: "", height: "", sqft: 0, days: 30, rate: "", amount: 0 }];
+    return [{ location: "", width: "", height: "", sqft: 0, fromDate: "", toDate: "", days: 30, rate: "", amount: 0 }];
   });
 
-  const addOohSite = () => setOohSites([...oohSites, { location: "", width: "", height: "", sqft: 0, days: 30, rate: "", amount: 0 }]);
+  const addOohSite = () => setOohSites([...oohSites, { location: "", width: "", height: "", sqft: 0, fromDate: "", toDate: "", days: 30, rate: "", amount: 0 }]);
 
   const updateOohSite = (index, field, value) => {
     const updated = [...oohSites];
     const item = { ...updated[index], [field]: value };
+
+    if (field === "fromDate" || field === "toDate") {
+      if (item.fromDate && item.toDate) {
+        const start = new Date(item.fromDate);
+        const end = new Date(item.toDate);
+        if (!isNaN(start.getTime()) && !isNaN(end.getTime()) && end >= start) {
+          const diffTime = Math.abs(end - start);
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+          item.days = diffDays;
+        }
+      }
+    }
 
     const w = parseFloat(item.width) || 0;
     const h = parseFloat(item.height) || 0;
@@ -8062,7 +8076,7 @@ function InvoiceModal({ initialData, projects = [], clients = [], onClose, onSub
 
   const removeOohSite = (index) => {
     const updated = oohSites.filter((_, i) => i !== index);
-    const finalSites = updated.length > 0 ? updated : [{ location: "", width: "", height: "", sqft: 0, days: 30, rate: "", amount: "" }];
+    const finalSites = updated.length > 0 ? updated : [{ location: "", width: "", height: "", sqft: 0, fromDate: "", toDate: "", days: 30, rate: "", amount: "" }];
     setOohSites(finalSites);
     if (enableOohSites) {
       const calcTotal = finalSites.reduce((sum, site) => sum + (site.amount !== undefined ? site.amount : ((parseFloat(site.rate) || 0) / 30 * (parseFloat(site.days) || 30))), 0);
@@ -8310,13 +8324,15 @@ function InvoiceModal({ initialData, projects = [], clients = [], onClose, onSub
               <table style={{ width: "100%", fontSize: 12, borderCollapse: "collapse", background: "#FFFFFF", borderRadius: 6, overflow: "hidden", border: "1px solid #CBD5E1" }}>
                 <thead>
                   <tr style={{ background: "#F8FAFC", borderBottom: "1px solid #CBD5E1", color: "#334155" }}>
-                    <th style={{ padding: "7px 8px", textAlign: "left", width: "24%" }}>Location / Area</th>
-                    <th style={{ padding: "7px 8px", textAlign: "left", width: "10%" }}>Width (ft)</th>
-                    <th style={{ padding: "7px 8px", textAlign: "left", width: "10%" }}>Height (ft)</th>
-                    <th style={{ padding: "7px 8px", textAlign: "right", width: "12%", color: "#0284C7" }}>Total Sq. Ft.</th>
-                    <th style={{ padding: "7px 8px", textAlign: "left", width: "12%" }}>Duration (Days)</th>
-                    <th style={{ padding: "7px 8px", textAlign: "right", width: "14%" }}>Monthly Rate</th>
-                    <th style={{ padding: "7px 8px", textAlign: "right", width: "14%", color: "#059669" }}>Amount (PKR)</th>
+                    <th style={{ padding: "7px 8px", textAlign: "left", width: "16%" }}>Location / Area</th>
+                    <th style={{ padding: "7px 8px", textAlign: "left", width: "7%" }}>Width</th>
+                    <th style={{ padding: "7px 8px", textAlign: "left", width: "7%" }}>Height</th>
+                    <th style={{ padding: "7px 8px", textAlign: "right", width: "9%", color: "#0284C7" }}>Sq. Ft.</th>
+                    <th style={{ padding: "7px 8px", textAlign: "left", width: "12%" }}>From Date</th>
+                    <th style={{ padding: "7px 8px", textAlign: "left", width: "12%" }}>To Date</th>
+                    <th style={{ padding: "7px 8px", textAlign: "left", width: "9%" }}>Days</th>
+                    <th style={{ padding: "7px 8px", textAlign: "right", width: "12%" }}>Rate/M</th>
+                    <th style={{ padding: "7px 8px", textAlign: "right", width: "12%", color: "#059669" }}>Amount</th>
                     <th style={{ padding: "7px 4px", textAlign: "center", width: "4%" }}></th>
                   </tr>
                 </thead>
@@ -8325,7 +8341,7 @@ function InvoiceModal({ initialData, projects = [], clients = [], onClose, onSub
                     <tr key={idx} style={{ borderBottom: "1px solid #F1F5F9" }}>
                       <td style={{ padding: "6px 8px" }}>
                         <input
-                          style={{ width: "100%", padding: "10px 12px", fontSize: 13.5, borderRadius: 6, border: "1px solid #94A3B8" }}
+                          style={{ width: "100%", padding: "10px 8px", fontSize: 13, borderRadius: 6, border: "1px solid #94A3B8" }}
                           value={site.location}
                           onChange={e => updateOohSite(idx, "location", e.target.value)}
                           placeholder="e.g. Shahrah-e-Faisal"
@@ -8336,10 +8352,10 @@ function InvoiceModal({ initialData, projects = [], clients = [], onClose, onSub
                           type="number"
                           min="0.01"
                           step="0.01"
-                          style={{ width: "100%", padding: "10px 12px", fontSize: 13.5, borderRadius: 6, border: "1px solid #94A3B8" }}
+                          style={{ width: "100%", padding: "10px 8px", fontSize: 13, borderRadius: 6, border: "1px solid #94A3B8" }}
                           value={site.width}
                           onChange={e => updateOohSite(idx, "width", e.target.value)}
-                          placeholder="Width"
+                          placeholder="W"
                         />
                       </td>
                       <td style={{ padding: "6px 8px" }}>
@@ -8347,10 +8363,10 @@ function InvoiceModal({ initialData, projects = [], clients = [], onClose, onSub
                           type="number"
                           min="0.01"
                           step="0.01"
-                          style={{ width: "100%", padding: "10px 12px", fontSize: 13.5, borderRadius: 6, border: "1px solid #94A3B8" }}
+                          style={{ width: "100%", padding: "10px 8px", fontSize: 13, borderRadius: 6, border: "1px solid #94A3B8" }}
                           value={site.height}
                           onChange={e => updateOohSite(idx, "height", e.target.value)}
-                          placeholder="Height"
+                          placeholder="H"
                         />
                       </td>
                       <td style={{ padding: "6px 8px", textAlign: "right" }}>
@@ -8358,15 +8374,31 @@ function InvoiceModal({ initialData, projects = [], clients = [], onClose, onSub
                           type="text"
                           readOnly
                           disabled
-                          style={{ width: "100%", padding: "10px 12px", fontSize: 13.5, borderRadius: 6, border: "1px solid #E2E8F0", background: "#F1F5F9", textAlign: "right", fontWeight: 700, color: "#0284C7" }}
+                          style={{ width: "100%", padding: "10px 8px", fontSize: 13, borderRadius: 6, border: "1px solid #E2E8F0", background: "#F1F5F9", textAlign: "right", fontWeight: 700, color: "#0284C7" }}
                           value={(Number(site.sqft) || 0).toFixed(2)}
+                        />
+                      </td>
+                      <td style={{ padding: "6px 8px" }}>
+                        <input
+                          type="date"
+                          style={{ width: "100%", padding: "10px 8px", fontSize: 12.5, borderRadius: 6, border: "1px solid #94A3B8" }}
+                          value={site.fromDate}
+                          onChange={e => updateOohSite(idx, "fromDate", e.target.value)}
+                        />
+                      </td>
+                      <td style={{ padding: "6px 8px" }}>
+                        <input
+                          type="date"
+                          style={{ width: "100%", padding: "10px 8px", fontSize: 12.5, borderRadius: 6, border: "1px solid #94A3B8" }}
+                          value={site.toDate}
+                          onChange={e => updateOohSite(idx, "toDate", e.target.value)}
                         />
                       </td>
                       <td style={{ padding: "6px 8px" }}>
                         <input
                           type="number"
                           min="1"
-                          style={{ width: "100%", padding: "10px 12px", fontSize: 13.5, borderRadius: 6, border: "1px solid #94A3B8" }}
+                          style={{ width: "100%", padding: "10px 8px", fontSize: 13, borderRadius: 6, border: "1px solid #94A3B8" }}
                           value={site.days}
                           onChange={e => updateOohSite(idx, "days", e.target.value)}
                           placeholder="30"
@@ -8377,7 +8409,7 @@ function InvoiceModal({ initialData, projects = [], clients = [], onClose, onSub
                           type="number"
                           min="0"
                           step="0.01"
-                          style={{ width: "100%", padding: "10px 12px", fontSize: 13.5, borderRadius: 6, border: "1px solid #94A3B8" }}
+                          style={{ width: "100%", padding: "10px 8px", fontSize: 13, borderRadius: 6, border: "1px solid #94A3B8" }}
                           value={site.rate}
                           onChange={e => updateOohSite(idx, "rate", e.target.value)}
                           placeholder="Rate"
@@ -10312,7 +10344,9 @@ function ProjectDetailModal({ project, invoices, expenses, sites, onClose, onSta
                       <th>Location / Area</th>
                       <th style={{ textAlign: "right" }}>Width (ft)</th>
                       <th style={{ textAlign: "right" }}>Height (ft)</th>
-                      <th style={{ textAlign: "right", color: "#0284C7" }}>Total Sq. Ft.</th>
+                      <th style={{ textAlign: "right", color: "#0284C7" }}>Sq. Ft.</th>
+                      <th style={{ textAlign: "left" }}>From Date</th>
+                      <th style={{ textAlign: "left" }}>To Date</th>
                       <th style={{ textAlign: "right", color: "#059669" }}>Rate (PKR)</th>
                     </tr>
                   </thead>
@@ -10324,6 +10358,8 @@ function ProjectDetailModal({ project, invoices, expenses, sites, onClose, onSta
                         <td className="mono" style={{ textAlign: "right" }}>{Number(site.width || (site.size ? site.size.split("x")[0] : 0)).toFixed(2)}</td>
                         <td className="mono" style={{ textAlign: "right" }}>{Number(site.height || (site.size ? site.size.split("x")[1] : 0)).toFixed(2)}</td>
                         <td className="mono" style={{ textAlign: "right", fontWeight: 700, color: "#0284C7" }}>{Number(site.sqft || 0).toFixed(2)}</td>
+                        <td className="mono" style={{ fontSize: 11 }}>{site.fromDate || "-"}</td>
+                        <td className="mono" style={{ fontSize: 11 }}>{site.toDate || "-"}</td>
                         <td className="mono" style={{ textAlign: "right", fontWeight: 700, color: "#059669" }}>{pkr(site.rate || site.pricePerMonth)}</td>
                       </tr>
                     ))}
@@ -10334,6 +10370,7 @@ function ProjectDetailModal({ project, invoices, expenses, sites, onClose, onSta
                       <td className="mono" style={{ textAlign: "right", color: "#0284C7" }}>
                         {(project.totalOohSqft || project.oohSites.reduce((s, i) => s + (Number(i.sqft) || 0), 0)).toFixed(2)} Sq. Ft.
                       </td>
+                      <td colSpan={2}></td>
                       <td className="mono" style={{ textAlign: "right", color: "#059669", fontSize: 14 }}>
                         {pkr(project.budget || project.oohSites.reduce((s, i) => s + (Number(i.rate || i.pricePerMonth) || 0), 0))}
                       </td>
@@ -11100,13 +11137,15 @@ function PrintPreviewModal({ doc, onClose }) {
             <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", fontSize: 11, boxSizing: "border-box" }}>
               <thead>
                 <tr style={{ background: "#F1F5F9", color: "#0F172A" }}>
-                  <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", width: "4%", boxSizing: "border-box", fontSize: 8, fontWeight: 700, verticalAlign: "middle", whiteSpace: "nowrap", overflow: "hidden", letterSpacing: "-0.3px" }}>#</th>
-                  <th style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "left", width: "22%", boxSizing: "border-box", fontSize: 8, fontWeight: 700, verticalAlign: "middle", letterSpacing: "-0.2px" }}>LOCATION / AREA</th>
-                  <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", width: "11%", boxSizing: "border-box", fontSize: 8, fontWeight: 700, verticalAlign: "middle", whiteSpace: "nowrap", overflow: "hidden", letterSpacing: "-0.3px" }}>SIZE (FT)</th>
-                  <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", width: "15%", boxSizing: "border-box", fontSize: 8, fontWeight: 700, verticalAlign: "middle", whiteSpace: "nowrap", overflow: "hidden", letterSpacing: "-0.3px" }}>TOTAL SQ. FT.</th>
-                  <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", width: "14%", boxSizing: "border-box", fontSize: 8, fontWeight: 700, verticalAlign: "middle", whiteSpace: "nowrap", overflow: "hidden", letterSpacing: "-0.3px" }}>DURATION</th>
-                  <th style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "right", width: "17%", boxSizing: "border-box", fontSize: 8, fontWeight: 700, verticalAlign: "middle", whiteSpace: "nowrap", overflow: "hidden", letterSpacing: "-0.3px" }}>RATE (PKR)</th>
-                  <th style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "right", width: "17%", boxSizing: "border-box", fontSize: 8, fontWeight: 700, verticalAlign: "middle", whiteSpace: "nowrap", overflow: "hidden", letterSpacing: "-0.3px" }}>AMOUNT (PKR)</th>
+                  <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", width: "3%", boxSizing: "border-box", fontSize: 8, fontWeight: 700, verticalAlign: "middle", whiteSpace: "nowrap", overflow: "hidden", letterSpacing: "-0.3px" }}>#</th>
+                  <th style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "left", width: "18%", boxSizing: "border-box", fontSize: 8, fontWeight: 700, verticalAlign: "middle", letterSpacing: "-0.2px" }}>LOCATION / AREA</th>
+                  <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", width: "9%", boxSizing: "border-box", fontSize: 8, fontWeight: 700, verticalAlign: "middle", whiteSpace: "nowrap", overflow: "hidden", letterSpacing: "-0.3px" }}>SIZE (FT)</th>
+                  <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", width: "10%", boxSizing: "border-box", fontSize: 8, fontWeight: 700, verticalAlign: "middle", whiteSpace: "nowrap", overflow: "hidden", letterSpacing: "-0.3px" }}>TOTAL SQ. FT.</th>
+                  <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", width: "11%", boxSizing: "border-box", fontSize: 8, fontWeight: 700, verticalAlign: "middle", whiteSpace: "nowrap", overflow: "hidden", letterSpacing: "-0.3px" }}>FROM DATE</th>
+                  <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", width: "11%", boxSizing: "border-box", fontSize: 8, fontWeight: 700, verticalAlign: "middle", whiteSpace: "nowrap", overflow: "hidden", letterSpacing: "-0.3px" }}>TO DATE</th>
+                  <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", width: "9%", boxSizing: "border-box", fontSize: 8, fontWeight: 700, verticalAlign: "middle", whiteSpace: "nowrap", overflow: "hidden", letterSpacing: "-0.3px" }}>DAYS</th>
+                  <th style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "right", width: "14%", boxSizing: "border-box", fontSize: 8, fontWeight: 700, verticalAlign: "middle", whiteSpace: "nowrap", overflow: "hidden", letterSpacing: "-0.3px" }}>RATE (PKR)</th>
+                  <th style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "right", width: "15%", boxSizing: "border-box", fontSize: 8, fontWeight: 700, verticalAlign: "middle", whiteSpace: "nowrap", overflow: "hidden", letterSpacing: "-0.3px" }}>AMOUNT (PKR)</th>
                 </tr>
               </thead>
               <tbody>
@@ -11127,7 +11166,9 @@ function PrintPreviewModal({ doc, onClose }) {
                         <td style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "left", fontWeight: 600, wordBreak: "break-word", boxSizing: "border-box", verticalAlign: "middle" }}>{cleanLoc}</td>
                         <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 600, whiteSpace: "nowrap", boxSizing: "border-box", verticalAlign: "middle" }}>{w.toFixed(0)} × {h.toFixed(0)} ft</td>
                         <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 700, whiteSpace: "nowrap", boxSizing: "border-box", verticalAlign: "middle" }}>{sqft.toFixed(2)}</td>
-                        <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 600, whiteSpace: "nowrap", boxSizing: "border-box", verticalAlign: "middle" }}>{days} Days</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 600, whiteSpace: "nowrap", boxSizing: "border-box", verticalAlign: "middle", fontSize: 8 }}>{site.fromDate || "-"}</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 600, whiteSpace: "nowrap", boxSizing: "border-box", verticalAlign: "middle", fontSize: 8 }}>{site.toDate || "-"}</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 600, whiteSpace: "nowrap", boxSizing: "border-box", verticalAlign: "middle" }}>{days}</td>
                         <td style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "right", whiteSpace: "nowrap", boxSizing: "border-box", verticalAlign: "middle" }}>{pkr(rate)}</td>
                         <td style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "right", fontWeight: 700, whiteSpace: "nowrap", boxSizing: "border-box", verticalAlign: "middle" }}>{pkr(site.amount !== undefined ? site.amount : ((rate / 30) * days))}</td>
                       </tr>
@@ -11141,6 +11182,8 @@ function PrintPreviewModal({ doc, onClose }) {
                     </td>
                     <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 600, whiteSpace: "nowrap", boxSizing: "border-box", verticalAlign: "middle" }}>20 × 10 ft</td>
                     <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 700, whiteSpace: "nowrap", boxSizing: "border-box", verticalAlign: "middle" }}>200.00</td>
+                    <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 600, whiteSpace: "nowrap", boxSizing: "border-box", verticalAlign: "middle", fontSize: 8 }}>-</td>
+                    <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 600, whiteSpace: "nowrap", boxSizing: "border-box", verticalAlign: "middle", fontSize: 8 }}>-</td>
                     <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 600, whiteSpace: "nowrap", boxSizing: "border-box", verticalAlign: "middle" }}>30 Days</td>
                     <td style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "right", whiteSpace: "nowrap", boxSizing: "border-box", verticalAlign: "middle" }}>{pkr(netAmt)}</td>
                     <td style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "right", fontWeight: 700, whiteSpace: "nowrap", boxSizing: "border-box", verticalAlign: "middle" }}>{pkr(netAmt)}</td>
@@ -11152,10 +11195,12 @@ function PrintPreviewModal({ doc, onClose }) {
                     {doc.oohSites && doc.oohSites.length > 0 ? doc.oohSites.reduce((s, i) => s + (Number(i.sqft) || 0), 0).toFixed(2) : "200.00"} Sq. Ft.
                   </td>
                   <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", boxSizing: "border-box", verticalAlign: "middle" }}>—</td>
+                  <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", boxSizing: "border-box", verticalAlign: "middle" }}>—</td>
+                  <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", boxSizing: "border-box", verticalAlign: "middle" }}>—</td>
                   <td style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "right", boxSizing: "border-box", verticalAlign: "middle" }}>—</td>
                   <td style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "right", color: "#A81C1C", whiteSpace: "nowrap", boxSizing: "border-box", verticalAlign: "middle", fontSize: 9.5 }}>{pkr(netAmt)}</td>
                 </tr>
-                {renderTotals(6)}
+                {renderTotals(8)}
               </tbody>
             </table>
           ) : template === "EVENT" ? (
