@@ -11120,7 +11120,7 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
         </div>
 
         {/* PRINT AREA MATCHING PDF TEMPLATES */}
-        <div className="print-area" style={{ background: "#ffffff", color: "#000000", padding: "16px 18px 14px 18px", fontFamily: "'Calibri', 'Inter', sans-serif", border: "1px solid #E2E8F0", borderRadius: 8, position: "relative", boxSizing: "border-box", width: "100%", minHeight: "1000px", display: "flex", flexDirection: "column", justifyContent: "space-between", overflowX: "hidden" }}>
+        <div className="print-area" style={{ background: "#ffffff", color: "#000000", padding: "16px 18px 14px 18px", fontFamily: "'Calibri', 'Inter', sans-serif", border: "1px solid #E2E8F0", borderRadius: 8, position: "relative", boxSizing: "border-box", width: "100%", minHeight: "1000px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
           
           {/* HEADER SECTION - 3 COLUMN BALANCED GRID */}
           <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", marginBottom: 16 }}>
@@ -11267,15 +11267,15 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
           ) : template === "OOH" || (doc.oohSites && doc.oohSites.length > 0) ? (
             <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", fontSize: 8.5, boxSizing: "border-box", tableLayout: "fixed" }}>
               <colgroup>
-                <col style={{ width: "4%" }} />
-                <col style={{ width: "22%" }} />
-                <col style={{ width: "12%" }} />
-                <col style={{ width: "9%" }} />
-                <col style={{ width: "10.5%" }} />
-                <col style={{ width: "10.5%" }} />
-                <col style={{ width: "7%" }} />
-                <col style={{ width: "12.5%" }} />
-                <col style={{ width: "12.5%" }} />
+                <col style={{ width: "3.5%" }} />
+                <col style={{ width: "21.5%" }} />
+                <col style={{ width: "10%" }} />
+                <col style={{ width: "8%" }} />
+                <col style={{ width: "11%" }} />
+                <col style={{ width: "11%" }} />
+                <col style={{ width: "6%" }} />
+                <col style={{ width: "14%" }} />
+                <col style={{ width: "15%" }} />
               </colgroup>
               <thead>
                 <tr style={{ background: "#F1F5F9", color: "#0F172A" }}>
@@ -11283,11 +11283,11 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
                   <th style={{ border: "1px solid #000000", padding: "6px 6px", textAlign: "left", fontSize: 7.5, fontWeight: 800, verticalAlign: "middle" }}>LOCATION / AREA</th>
                   <th style={{ border: "1px solid #000000", padding: "6px 2px", textAlign: "center", fontSize: 7.5, fontWeight: 800, verticalAlign: "middle", whiteSpace: "nowrap" }}>SIZE (FT)</th>
                   <th style={{ border: "1px solid #000000", padding: "6px 2px", textAlign: "center", fontSize: 7.5, fontWeight: 800, verticalAlign: "middle", whiteSpace: "nowrap" }}>SQ. FT.</th>
-                  <th style={{ border: "1px solid #000000", padding: "6px 2px", textAlign: "center", fontSize: 7.5, fontWeight: 800, verticalAlign: "middle", whiteSpace: "nowrap" }}>FROM DATE</th>
-                  <th style={{ border: "1px solid #000000", padding: "6px 2px", textAlign: "center", fontSize: 7.5, fontWeight: 800, verticalAlign: "middle", whiteSpace: "nowrap" }}>TO DATE</th>
+                  <th style={{ border: "1px solid #000000", padding: "6px 2px", textAlign: "center", fontSize: 7, fontWeight: 800, verticalAlign: "middle", whiteSpace: "nowrap" }}>FROM DATE</th>
+                  <th style={{ border: "1px solid #000000", padding: "6px 2px", textAlign: "center", fontSize: 7, fontWeight: 800, verticalAlign: "middle", whiteSpace: "nowrap" }}>TO DATE</th>
                   <th style={{ border: "1px solid #000000", padding: "6px 2px", textAlign: "center", fontSize: 7.5, fontWeight: 800, verticalAlign: "middle", whiteSpace: "nowrap" }}>DAYS</th>
                   <th style={{ border: "1px solid #000000", padding: "6px 5px", textAlign: "right", fontSize: 7.5, fontWeight: 800, verticalAlign: "middle", whiteSpace: "nowrap" }}>RATE (PKR)</th>
-                  <th style={{ border: "1px solid #000000", padding: "6px 5px", textAlign: "right", fontSize: 7.5, fontWeight: 800, verticalAlign: "middle", whiteSpace: "nowrap" }}>AMOUNT (PKR)</th>
+                  <th style={{ border: "1px solid #000000", padding: "6px 6px", textAlign: "right", fontSize: 7.5, fontWeight: 800, verticalAlign: "middle", whiteSpace: "nowrap" }}>AMOUNT (PKR)</th>
                 </tr>
               </thead>
               <tbody>
@@ -11313,7 +11313,7 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
                         <td style={{ ...cellBase, textAlign: "center", fontWeight: 600, fontSize: 8 }}>{fmtDocDate(site.toDate)}</td>
                         <td style={{ ...cellBase, textAlign: "center", fontWeight: 600 }}>{days}</td>
                         <td style={{ ...cellBase, padding: "7px 5px", textAlign: "right" }}>{pkr(rate)}</td>
-                        <td style={{ ...cellBase, padding: "7px 5px", textAlign: "right", fontWeight: 700, color: "#0F172A" }}>{pkr(site.amount !== undefined && site.amount !== "" ? site.amount : ((rate / 30) * days))}</td>
+                        <td style={{ ...cellBase, padding: "7px 6px", textAlign: "right", fontWeight: 700, color: "#0F172A" }}>{pkr(site.amount !== undefined && site.amount !== "" ? site.amount : ((rate / 30) * days))}</td>
                       </tr>
                     );
                   })
@@ -11329,7 +11329,7 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
                     <td style={{ border: "1px solid #000000", padding: "7px 2px", textAlign: "center", fontWeight: 600, boxSizing: "border-box", verticalAlign: "middle", fontSize: 8, whiteSpace: "nowrap" }}>—</td>
                     <td style={{ border: "1px solid #000000", padding: "7px 2px", textAlign: "center", fontWeight: 600, boxSizing: "border-box", verticalAlign: "middle", fontSize: 8.5, whiteSpace: "nowrap" }}>30</td>
                     <td style={{ border: "1px solid #000000", padding: "7px 5px", textAlign: "right", boxSizing: "border-box", verticalAlign: "middle", fontSize: 8.5, whiteSpace: "nowrap" }}>{pkr(netAmt)}</td>
-                    <td style={{ border: "1px solid #000000", padding: "7px 5px", textAlign: "right", fontWeight: 700, boxSizing: "border-box", verticalAlign: "middle", fontSize: 8.5, whiteSpace: "nowrap" }}>{pkr(netAmt)}</td>
+                    <td style={{ border: "1px solid #000000", padding: "7px 6px", textAlign: "right", fontWeight: 700, boxSizing: "border-box", verticalAlign: "middle", fontSize: 8.5, whiteSpace: "nowrap" }}>{pkr(netAmt)}</td>
                   </tr>
                 )}
                 <tr style={{ fontWeight: 800, background: "#F8FAFC" }}>
@@ -11342,7 +11342,7 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
                   <td colSpan={4} style={{ border: "1px solid #000000", padding: "6px 8px", textAlign: "right", fontSize: 8.5, fontWeight: 700, color: "#334155" }}>
                     TOTAL NET AMOUNT:
                   </td>
-                  <td style={{ border: "1px solid #000000", padding: "6px 5px", textAlign: "right", color: "#0F172A", fontWeight: 800, fontSize: 9.5, whiteSpace: "nowrap" }}>
+                  <td style={{ border: "1px solid #000000", padding: "6px 6px", textAlign: "right", color: "#0F172A", fontWeight: 800, fontSize: 9.5, whiteSpace: "nowrap" }}>
                     {pkr(netAmt)}
                   </td>
                 </tr>
