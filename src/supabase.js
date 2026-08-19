@@ -2,7 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 
 const CONFIG_STORAGE_KEY = "adpulse_supabase_client_config";
 
-const DEFAULT_SUPABASE_URL = "https://rjhysdktkkeqjeeuelee.supabase.co";
+const DEFAULT_SUPABASE_URL = "https://rjhysdktkkeqieeuelee.supabase.co";
 const DEFAULT_SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJqaHlzZGt0a2tlcWllZXVlbGVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY5MzEyMzYsImV4cCI6MjEwMjUwNzIzNn0.S5VUcWpPXaJFHXgZZfYG5is6uWkmc7LubhutxbzM9Kw";
 
 export function getSupabaseConfig() {

@@ -191,7 +191,7 @@ CREATE TABLE IF NOT EXISTS bank_accounts (
 
 -- Row Level Security (RLS) Enable
 ALTER TABLE system_snapshots ENABLE ROW LEVEL SECURITY;
-ALTER TABLE app_users ENABLE ROW LEVEL SECURITY;
+
 ALTER TABLE clients ENABLE ROW LEVEL SECURITY;
 ALTER TABLE vendors ENABLE ROW LEVEL SECURITY;
 ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
@@ -206,8 +206,7 @@ ALTER TABLE bank_accounts ENABLE ROW LEVEL SECURITY;
 -- Allow Public Access Policies (for Anon API Key usage)
 DROP POLICY IF EXISTS "Allow anon all" ON system_snapshots;
 CREATE POLICY "Allow anon all" ON system_snapshots FOR ALL USING (true);
-DROP POLICY IF EXISTS "Allow anon users" ON app_users;
-CREATE POLICY "Allow anon users" ON app_users FOR ALL USING (true);
+
 DROP POLICY IF EXISTS "Allow anon clients" ON clients;
 CREATE POLICY "Allow anon clients" ON clients FOR ALL USING (true);
 DROP POLICY IF EXISTS "Allow anon vendors" ON vendors;
