@@ -5148,7 +5148,29 @@ export default function App() {
                               <Edit size={13} />
                             </button>
                             <button className="btn" style={{ padding: "4px 7px", fontSize: 12 }}
-                              onClick={() => setPrintDoc({ voucherNo: cleanInvoiceNo(inv.invoiceNo || inv.id), type: "Invoice", date: inv.issueDate, party: inv.client, description: inv.description, amount: inv.amount, applySst: inv.applySst, sstRate: inv.sstRate, sstAmount: inv.sstAmount, applyWht: inv.applyWht, whtRate: inv.whtRate, whtAmount: inv.whtAmount, totalAmount: inv.totalAmount || inv.amount, notes: inv.notes || inv.specialNotes, projectCode: projects.find(p => p.id === inv.projectId)?.projectCode })}>
+                              onClick={() => setPrintDoc({
+                                ...inv,
+                                voucherNo: cleanInvoiceNo(inv.invoiceNo || inv.id),
+                                type: "Invoice",
+                                date: inv.issueDate,
+                                party: inv.client,
+                                description: inv.description,
+                                amount: inv.amount,
+                                applySst: inv.applySst,
+                                sstRate: inv.sstRate,
+                                sstAmount: inv.sstAmount,
+                                applyWht: inv.applyWht,
+                                whtRate: inv.whtRate,
+                                whtAmount: inv.whtAmount,
+                                totalAmount: inv.totalAmount || inv.amount,
+                                notes: inv.notes || inv.specialNotes,
+                                projectCode: projects.find(p => p.id === inv.projectId)?.projectCode,
+                                oohSites: inv.oohSites || [],
+                                printingItems: inv.printingItems || [],
+                                newspaperItems: inv.newspaperItems || [],
+                                printMediaItems: inv.printMediaItems || [],
+                                eventItems: inv.eventItems || []
+                              })}>
                               <Printer size={13} />
                             </button>
                           </td>
@@ -7197,7 +7219,7 @@ export default function App() {
                           <td style={{ fontSize: 12 }}>{selectedStaffDrilldown.name}</td>
                           <td><span className="badge-mini" style={{ background: "#D1FAE5", color: "#065F46" }}>Posted</span></td>
                           <td style={{ textAlign: "center" }}>
-                            <button className="btn" style={{ padding: "3px 10px", fontSize: 11.5, fontWeight: 700 }} onClick={() => setPrintDoc({ type: "Invoice", data: inv })}>
+                            <button className="btn" style={{ padding: "3px 10px", fontSize: 11.5, fontWeight: 700 }} onClick={() => setPrintDoc({ ...inv, voucherNo: cleanInvoiceNo(inv.invoiceNo || inv.id), type: "Invoice", date: inv.issueDate, party: inv.client })}>
                               View Detail
                             </button>
                           </td>
@@ -8007,8 +8029,14 @@ function InvoiceModal({ initialData, projects = [], clients = [], onClose, onSub
     "• ABOVE MENTIONED AMOUNT IS BASED ON NET. ALL TAXES WOULD BE CHARGED OVER & ABOVE.\n• PAYMENT TO BE MADE IN THE FAVOR OF \"ADPULSE IMC (PRIVATE) LTD\"\n• NTN: A0654656-8 / STRN: SA054896-8"
   );
 
-  // OOH Sites Multi-Location State inside InvoiceModal (Enabled by default so headers show immediately)
-  const enableOohSites = (description || "").toUpperCase().includes("OOH");
+  // OOH Sites Multi-Location State inside InvoiceModal
+  const selectedProj = projects.find(p => p.id === projectId);
+  const enableOohSites = (description || "").toUpperCase().includes("OOH") || 
+    (description || "").toUpperCase().includes("OUTDOOR") || 
+    (description || "").toUpperCase().includes("BILLBOARD") || 
+    (selectedProj?.type || "").toUpperCase().includes("OOH") || 
+    (initialData?.oohSites && initialData.oohSites.length > 0) || 
+    (initialData?.description || "").toUpperCase().includes("OOH");
   const [oohSites, setOohSites] = useState(() => {
     if (initialData?.oohSites && Array.isArray(initialData.oohSites) && initialData.oohSites.length > 0) {
       return initialData.oohSites.map(s => {
@@ -8081,7 +8109,7 @@ function InvoiceModal({ initialData, projects = [], clients = [], onClose, onSub
 
   const removeOohSite = (index) => {
     const updated = oohSites.filter((_, i) => i !== index);
-    const finalSites = updated.length > 0 ? updated : [{ location: "", width: "", height: "", sqft: 0, fromDate: "", toDate: "", days: 30, rate: "", amount: "" }];
+    const finalSites = updated.length > 0 ? updated : [{ location: "", width: "", height: "", sqft: 0, fromDate: "", toDate: "", days: 30, rate: "", amount: 0 }];
     setOohSites(finalSites);
     if (enableOohSites) {
       const calcTotal = finalSites.reduce((sum, site) => sum + (site.amount !== undefined ? site.amount : ((parseFloat(site.rate) || 0) / 30 * (parseFloat(site.days) || 30))), 0);
@@ -8093,7 +8121,9 @@ function InvoiceModal({ initialData, projects = [], clients = [], onClose, onSub
   const totalOohAmount = oohSites.reduce((sum, item) => sum + (item.amount !== undefined ? Number(item.amount) : ((parseFloat(item.rate) || 0) / 30 * (parseFloat(item.days) || 30))), 0);
 
   // Newspaper State
-  const enableNewspaperItems = (description || "").toUpperCase().includes("NEWSPAPER");
+  const enableNewspaperItems = (description || "").toUpperCase().includes("NEWSPAPER") || 
+    (selectedProj?.type || "").toUpperCase().includes("PRINT MEDIA") || 
+    (initialData?.newspaperItems && initialData.newspaperItems.length > 0);
   const [newspaperItems, setNewspaperItems] = useState(() => {
     if (initialData?.newspaperItems?.length > 0) return initialData.newspaperItems;
     return [{ newspaper: "", edition: "", columns: "", height: "", totalCcm: "", rateCcm: "", mediaAmount: "", agencyFeePct: 15, agencyFee: "", amount: "" }];
@@ -8143,7 +8173,9 @@ function InvoiceModal({ initialData, projects = [], clients = [], onClose, onSub
   const totalNewspaperAmount = newspaperItems.reduce((sum, x) => sum + (Number(x.amount) || 0), 0);
 
   // Print Media State
-  const enablePrintMedia = (description || "").toUpperCase().includes("PRINT MEDIA");
+  const enablePrintMedia = (description || "").toUpperCase().includes("PRINT MEDIA") || 
+    (description || "").toUpperCase().includes("PUBLICATION") || 
+    (initialData?.printMediaItems && initialData.printMediaItems.length > 0);
   const [printMediaItems, setPrintMediaItems] = useState(() => {
     if (initialData?.printMediaItems?.length > 0) return initialData.printMediaItems;
     return [{ description: "", publication: "", size: "", qty: 1, rate: "", amount: "" }];
@@ -8180,7 +8212,12 @@ function InvoiceModal({ initialData, projects = [], clients = [], onClose, onSub
   const totalPrintMediaAmount = printMediaItems.reduce((sum, x) => sum + (Number(x.amount) || 0), 0);
 
   // Event & Digital State
-  const enableEventItems = (description || "").toUpperCase().includes("EVENT") || (description || "").toUpperCase().includes("TVC") || (description || "").toUpperCase().includes("BTL") || (description || "").toUpperCase().includes("DIGITAL");
+  const enableEventItems = (description || "").toUpperCase().includes("EVENT") || 
+    (description || "").toUpperCase().includes("TVC") || 
+    (description || "").toUpperCase().includes("BTL") || 
+    (description || "").toUpperCase().includes("DIGITAL") || 
+    (selectedProj?.type || "").toUpperCase().includes("EVENT") || 
+    (initialData?.eventItems && initialData.eventItems.length > 0);
   const [eventItems, setEventItems] = useState(() => {
     if (initialData?.eventItems?.length > 0) return initialData.eventItems;
     return [{ description: "", qty: 1, unit: "NOS", rate: "", amount: "" }];
@@ -8217,7 +8254,11 @@ function InvoiceModal({ initialData, projects = [], clients = [], onClose, onSub
   const totalEventAmount = eventItems.reduce((sum, x) => sum + (Number(x.amount) || 0), 0);
 
   // Printing & Installations State
-  const enablePrintingItems = (description || "").toUpperCase().includes("PRINTING");
+  const enablePrintingItems = (description || "").toUpperCase().includes("PRINTING") || 
+    (description || "").toUpperCase().includes("FLEX") || 
+    (description || "").toUpperCase().includes("INSTALLATION") || 
+    (selectedProj?.type || "").toUpperCase().includes("PRINTING") || 
+    (initialData?.printingItems && initialData.printingItems.length > 0);
   const [printingItems, setPrintingItems] = useState(() => {
     if (initialData?.printingItems?.length > 0) return initialData.printingItems;
     return [{ description: "", height: "", width: "", totalSqFt: 0, qty: 1, rate: "", amount: 0 }];
@@ -10460,7 +10501,29 @@ function ProjectDetailModal({ project, invoices, expenses, sites, onClose, onSta
                     <td style={{ display: "flex", gap: 4 }}>
                       {!inv.paid && <button className="btn" style={{ padding: "4px 8px", fontSize: 12 }} onClick={() => onMarkPaid(inv)}>Mark Paid</button>}
                       <button className="btn" style={{ padding: "4px 7px", fontSize: 12 }}
-                        onClick={() => onPrint({ voucherNo: cleanInvoiceNo(inv.invoiceNo || inv.id), type: "Invoice", date: inv.issueDate, party: inv.client, description: inv.description, amount: inv.amount, applySst: inv.applySst, sstRate: inv.sstRate, sstAmount: inv.sstAmount, applyWht: inv.applyWht, whtRate: inv.whtRate, whtAmount: inv.whtAmount, totalAmount: inv.totalAmount || inv.amount, notes: inv.notes || inv.specialNotes })}>
+                        onClick={() => onPrint({
+                          ...inv,
+                          voucherNo: cleanInvoiceNo(inv.invoiceNo || inv.id),
+                          type: "Invoice",
+                          date: inv.issueDate,
+                          party: inv.client,
+                          description: inv.description,
+                          amount: inv.amount,
+                          applySst: inv.applySst,
+                          sstRate: inv.sstRate,
+                          sstAmount: inv.sstAmount,
+                          applyWht: inv.applyWht,
+                          whtRate: inv.whtRate,
+                          whtAmount: inv.whtAmount,
+                          totalAmount: inv.totalAmount || inv.amount,
+                          notes: inv.notes || inv.specialNotes,
+                          projectCode: project?.projectCode,
+                          oohSites: inv.oohSites || [],
+                          printingItems: inv.printingItems || [],
+                          newspaperItems: inv.newspaperItems || [],
+                          printMediaItems: inv.printMediaItems || [],
+                          eventItems: inv.eventItems || []
+                        })}>
                         <Printer size={13} />
                       </button>
                     </td>
@@ -10691,7 +10754,8 @@ function PayrollConfirmModal({ activeEmployees = [], monthlyAttendance = {}, onC
   );
 }
 
-function PrintPreviewModal({ doc, onClose }) {
+function PrintPreviewModal({ doc: incomingDoc, onClose }) {
+  const doc = incomingDoc?.data ? { ...incomingDoc.data, ...incomingDoc } : (incomingDoc || {});
 
   const [pageSize, setPageSize] = useState("A4");
   const [pageOrientation, setPageOrientation] = useState("portrait");
