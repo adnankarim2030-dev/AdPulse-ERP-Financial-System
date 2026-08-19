@@ -10935,11 +10935,11 @@ function PrintPreviewModal({ doc, onClose }) {
               </span>
               <select value={template} onChange={e => setTemplate(e.target.value)} style={{ background: "#0F172A", color: "#fff", border: "1.5px solid #475569", borderRadius: 8, padding: "6px 12px", fontSize: 13, fontWeight: 600 }}>
                 <option value="GENERAL" style={{ background: "#1E293B", color: "#FFFFFF" }}>General / Standard Agency Invoice</option>
-                <option value="PRINTING" style={{ background: "#1E293B", color: "#FFFFFF" }}>OOH Printing &amp; Installation Invoice</option>
                 <option value="OOH" style={{ background: "#1E293B", color: "#FFFFFF" }}>OOH Billboards Sales Tax Invoice</option>
+                <option value="PRINTING" style={{ background: "#1E293B", color: "#FFFFFF" }}>OOH Printing &amp; Installation Invoice</option>
+                <option value="NEWSPAPER" style={{ background: "#1E293B", color: "#FFFFFF" }}>Newspaper / Print Media Publication</option>
                 <option value="PRINT_MEDIA" style={{ background: "#1E293B", color: "#FFFFFF" }}>Print Media Sales Tax Invoice</option>
                 <option value="EVENT" style={{ background: "#1E293B", color: "#FFFFFF" }}>Sales Tax Event Invoice</option>
-                <option value="BRANDING" style={{ background: "#1E293B", color: "#FFFFFF" }}>Project Branding Invoice</option>
               </select>
             </div>
 
@@ -11285,7 +11285,7 @@ function PrintPreviewModal({ doc, onClose }) {
                     <td colSpan={7} style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "center" }}>No print media items found.</td>
                   </tr>
                 )}
-                {renderTotals(7)}
+                {renderTotals(6)}
               </tbody>
             </table>
           ) : (
