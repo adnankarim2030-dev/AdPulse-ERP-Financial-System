@@ -751,11 +751,26 @@ tr:last-child td {
    PRINT ENGINE STYLES (Individual Client / Project Statements)
    ======================================================== */
 
+@page {
+  size: A4 portrait;
+  margin: 6mm 6mm 6mm 6mm;
+}
+
 @media print {
+  *, *:before, *:after {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+    box-sizing: border-box !important;
+  }
+
   body, html, #root {
     background: #ffffff !important;
     color: #000000 !important;
     height: auto !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
     overflow: visible !important;
   }
 
@@ -767,6 +782,7 @@ tr:last-child td {
   .erp-root, .main {
     display: block !important;
     height: auto !important;
+    width: 100% !important;
     overflow: visible !important;
     background: #ffffff !important;
     padding: 0 !important;
@@ -800,12 +816,26 @@ tr:last-child td {
     visibility: visible !important;
     position: static !important;
     width: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    padding: 6px 8px !important;
     box-shadow: none !important;
     border: none !important;
     background: #ffffff !important;
     color: #0F172A !important;
+    font-size: 8.5pt !important;
+  }
+
+  .print-area table {
+    width: 100% !important;
+    max-width: 100% !important;
+    table-layout: fixed !important;
+    border-collapse: collapse !important;
+  }
+
+  .print-area th, .print-area td {
+    word-wrap: break-word !important;
+    box-sizing: border-box !important;
   }
 }
 
