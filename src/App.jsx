@@ -11240,24 +11240,24 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
             <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", fontSize: 6.0, boxSizing: "border-box", tableLayout: "fixed" }}>
               <colgroup>
                 <col style={{ width: "4%" }} />
-                <col style={{ width: "32%" }} />
-                <col style={{ width: "9%" }} />
-                <col style={{ width: "9%" }} />
-                <col style={{ width: "12%" }} />
+                <col style={{ width: "28%" }} />
+                <col style={{ width: "11%" }} />
+                <col style={{ width: "11%" }} />
+                <col style={{ width: "13%" }} />
                 <col style={{ width: "7%" }} />
                 <col style={{ width: "12%" }} />
-                <col style={{ width: "15%" }} />
+                <col style={{ width: "14%" }} />
               </colgroup>
               <thead>
                 <tr style={{ background: "#F1F5F9", color: "#0F172A" }}>
                   <th style={{ border: "1px solid #000000", padding: "4px 1px", textAlign: "center", fontSize: 6.0, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", whiteSpace: "nowrap" }}>#</th>
-                  <th style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", fontSize: 6.0, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", wordBreak: "break-word" }}>DESCRIPTION / SPECIFICATION</th>
-                  <th style={{ border: "1px solid #000000", padding: "4px 1px", textAlign: "center", fontSize: 6.0, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", whiteSpace: "nowrap" }}>HEIGHT (FT)</th>
-                  <th style={{ border: "1px solid #000000", padding: "4px 1px", textAlign: "center", fontSize: 6.0, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", whiteSpace: "nowrap" }}>WIDTH (FT)</th>
-                  <th style={{ border: "1px solid #000000", padding: "4px 1px", textAlign: "center", fontSize: 6.0, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", whiteSpace: "nowrap" }}>TOTAL SQ. FT.</th>
+                  <th style={{ border: "1px solid #000000", padding: "4px 3px", textAlign: "center", fontSize: 6.0, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", wordBreak: "break-word" }}>DESCRIPTION / SPECIFICATION</th>
+                  <th style={{ border: "1px solid #000000", padding: "3px 1px", textAlign: "center", fontSize: 5.8, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", lineHeight: 1.15 }}>HEIGHT<br/>(FT)</th>
+                  <th style={{ border: "1px solid #000000", padding: "3px 1px", textAlign: "center", fontSize: 5.8, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", lineHeight: 1.15 }}>WIDTH<br/>(FT)</th>
+                  <th style={{ border: "1px solid #000000", padding: "3px 1px", textAlign: "center", fontSize: 5.8, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", lineHeight: 1.15 }}>TOTAL<br/>SQ. FT.</th>
                   <th style={{ border: "1px solid #000000", padding: "4px 1px", textAlign: "center", fontSize: 6.0, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", whiteSpace: "nowrap" }}>QTY</th>
-                  <th style={{ border: "1px solid #000000", padding: "4px 1px", textAlign: "center", fontSize: 6.0, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", whiteSpace: "nowrap" }}>RATE (PKR)</th>
-                  <th style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", fontSize: 6.0, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", whiteSpace: "nowrap" }}>TOTAL (PKR)</th>
+                  <th style={{ border: "1px solid #000000", padding: "3px 1px", textAlign: "center", fontSize: 5.8, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", lineHeight: 1.15 }}>RATE<br/>(PKR)</th>
+                  <th style={{ border: "1px solid #000000", padding: "3px 2px", textAlign: "center", fontSize: 5.8, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", lineHeight: 1.15 }}>TOTAL<br/>(PKR)</th>
                 </tr>
               </thead>
               <tbody>
