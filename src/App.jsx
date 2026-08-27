@@ -1433,7 +1433,11 @@ export default function App() {
       const saved = localStorage.getItem("adpulse_user_session");
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (parsed && parsed.email) return parsed;
+        if (parsed && parsed.email) {
+          const isCeo = (parsed.role === "Admin" || parsed.role === "CEO" || parsed.email === "admin@adpulse.pk" || parsed.email === "ceo@adpulse.pk");
+          parsed.allowedTabs = isCeo ? ALL_MODULE_TABS.map(t => t.key) : ALL_MODULE_TABS.map(t => t.key).filter(k => k !== "ceo-dashboard");
+          return parsed;
+        }
       }
     } catch (e) {
       console.warn("Could not load user session:", e);
@@ -3439,9 +3443,16 @@ export default function App() {
 
   const NAV = useMemo(() => {
     if (!currentUser) return [];
-    const isCeoUser = currentUser.role === "Admin" || currentUser.role === "CEO" || currentUser.email === "admin@adpulse.pk";
+    const isCeoUser = currentUser.role === "Admin" || currentUser.role === "CEO" || currentUser.email === "admin@adpulse.pk" || currentUser.email === "ceo@adpulse.pk";
     
-    const allowed = Array.isArray(currentUser.allowedTabs) ? currentUser.allowedTabs : ALL_MODULE_TABS.map(t => t.key);
+    let allowed = Array.isArray(currentUser.allowedTabs) ? [...currentUser.allowedTabs] : ALL_MODULE_TABS.map(t => t.key);
+    if (isCeoUser) {
+      allowed = ALL_MODULE_TABS.map(t => t.key);
+    } else {
+      if (!allowed.includes("release-orders")) {
+        allowed.push("release-orders");
+      }
+    }
     let items = ALL_NAV_ITEMS.filter(n => allowed.includes(n.key) || (isCeoUser && n.key === "ceo-dashboard"));
     
     // Privacy Guard: Only Admin or CEO role can view CEO Executive Suite!
