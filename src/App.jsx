@@ -323,17 +323,16 @@ const EXPENSE_CLASSIFICATION = {
   "Office & Administration": {
     code: "B",
     subcategories: [
+      { name: "Pantry / Tea & Refreshments", accountKey: "expense" },
+      { name: "Office Supplies & Stationery", accountKey: "office_supplies" },
+      { name: "Office Maintenance & Repairs", accountKey: "office_maint" },
+      { name: "Cleaning & Janitorial Supplies", accountKey: "office_maint" },
+      { name: "Courier & Postage Services", accountKey: "courier_exp" },
       { name: "Office Rent", accountKey: "rent" },
-      { name: "Office Maintenance", accountKey: "office_maint" },
-      { name: "Office Supplies", accountKey: "office_supplies" },
-      { name: "Stationery", accountKey: "office_supplies" },
       { name: "Printing & Photocopying", accountKey: "office_supplies" },
-      { name: "Cleaning & Janitorial", accountKey: "office_maint" },
       { name: "Security Services", accountKey: "office_maint" },
       { name: "Office Furniture", accountKey: "equipment" },
-      { name: "Office Equipment", accountKey: "equipment" },
-      { name: "Pantry / Refreshments", accountKey: "expense" },
-      { name: "Courier & Postage", accountKey: "courier_exp" }
+      { name: "Office Equipment", accountKey: "equipment" }
     ]
   },
   "Utilities": {
@@ -9122,9 +9121,14 @@ function InvoiceModal({ initialData, projects = [], clients = [], invoices = [],
 function ExpenseModal({ initialData, projects = [], vendors = [], expenses = [], onClose, onSubmit }) {
   const [projectId, setProjectId] = useState(initialData?.projectId || "");
   const [vendor, setVendor] = useState(initialData?.vendor || "");
+  const [isCustomVendor, setIsCustomVendor] = useState(() => {
+    if (initialData?.vendor && !vendors.some(v => v.name === initialData.vendor)) return true;
+    return false;
+  });
+  const [customVendorName, setCustomVendorName] = useState(initialData?.vendor || "");
   const [category, setCategory] = useState(initialData?.category || "Office & Administration");
   const [subcategory, setSubcategory] = useState(
-    initialData?.subcategory || EXPENSE_CLASSIFICATION[initialData?.category || "Office & Administration"]?.subcategories[0]?.name || "Office Rent"
+    initialData?.subcategory || EXPENSE_CLASSIFICATION[initialData?.category || "Office & Administration"]?.subcategories[0]?.name || "Pantry / Tea & Refreshments"
   );
   const [searchQuery, setSearchQuery] = useState("");
   const [description, setDescription] = useState(initialData?.description || "");
@@ -9132,7 +9136,7 @@ function ExpenseModal({ initialData, projects = [], vendors = [], expenses = [],
   const [amount, setAmount] = useState(initialData?.amount || "");
   const [date, setDate] = useState(initialData?.date || TODAY_STR);
   const [status, setStatus] = useState(initialData?.status || "paid");
-  const [paidVia, setPaidVia] = useState(initialData?.paidVia || "Bank");
+  const [paidVia, setPaidVia] = useState(initialData?.paidVia || "Cash");
 
   // Filtered subcategories based on category
   const currentCategoryObj = EXPENSE_CLASSIFICATION[category] || EXPENSE_CLASSIFICATION["Office & Administration"];
@@ -9176,6 +9180,7 @@ function ExpenseModal({ initialData, projects = [], vendors = [], expenses = [],
 
         if (!vendor.trim()) {
           setVendor(selectedProj.client);
+          setCustomVendorName(selectedProj.client);
         }
       }
     }
@@ -9187,7 +9192,8 @@ function ExpenseModal({ initialData, projects = [], vendors = [], expenses = [],
     setSearchQuery("");
   };
 
-  const valid = vendor && Number(amount) > 0 && category && subcategory;
+  const effectiveVendor = isCustomVendor ? customVendorName : vendor;
+  const valid = effectiveVendor && Number(amount) > 0 && category && subcategory;
 
   return (
     <ModalShell title={initialData ? "Edit Operating Expense" : "Record Operating Expense"} onClose={onClose}>
@@ -9197,7 +9203,7 @@ function ExpenseModal({ initialData, projects = [], vendors = [], expenses = [],
         <input
           value={searchQuery}
           onChange={e => setSearchQuery(e.target.value)}
-          placeholder="Type e.g. 'electric', 'facebook', 'rent', 'fuel'..."
+          placeholder="Type e.g. 'tea', 'stationery', 'fuel', 'rent', 'clean'..."
         />
         {searchResults.length > 0 && (
           <div style={{ background: "var(--card-bg)", border: "1px solid var(--rule)", borderRadius: 6, marginTop: 4, maxHeight: 160, overflowY: "auto", boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}>
@@ -9261,14 +9267,48 @@ function ExpenseModal({ initialData, projects = [], vendors = [], expenses = [],
         </div>
       )}
 
+      {/* Vendor / Payee Name with Custom Typing Toggle */}
       <div className="field">
-        <label>Vendor / Payee Name *</label>
-        <select value={vendor} onChange={e => setVendor(e.target.value)}>
-          <option value="">— Select a Vendor —</option>
-          {vendors.map(v => (
-            <option key={v.id} value={v.name}>{v.name}</option>
-          ))}
-        </select>
+        <label style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <span>Vendor / Payee Name *</span>
+          <span style={{ fontSize: 11, color: "var(--primary)", cursor: "pointer", fontWeight: 600 }} onClick={() => setIsCustomVendor(!isCustomVendor)}>
+            {isCustomVendor ? "Select from List" : "+ Type Custom Payee / Staff Name"}
+          </span>
+        </label>
+        {isCustomVendor ? (
+          <input
+            value={customVendorName}
+            onChange={e => { setCustomVendorName(e.target.value); setVendor(e.target.value); }}
+            placeholder="e.g. Tea Boy, Maktaba Stationery, Electrician, Fuel Pump..."
+            autoFocus
+          />
+        ) : (
+          <select value={vendor} onChange={e => {
+            if (e.target.value === "__custom__") {
+              setIsCustomVendor(true);
+              setVendor("");
+            } else {
+              setIsCustomVendor(false);
+              setVendor(e.target.value);
+              setCustomVendorName(e.target.value);
+            }
+          }}>
+            <option value="">— Select a Payee / Vendor —</option>
+            <optgroup label="🏢 Common Office / Petty Cash Payees">
+              <option value="Petty Cash Custodian">Petty Cash Custodian (Office Expense)</option>
+              <option value="Office Tea Boy / Refreshment">Office Tea Boy / Refreshment</option>
+              <option value="Local Stationery / Printing Shop">Local Stationery / Printing Shop</option>
+              <option value="Office Driver / Fuel Custodian">Office Driver / Fuel Custodian</option>
+              <option value="Electrician / Maintenance Tech">Electrician / Maintenance Tech</option>
+            </optgroup>
+            <optgroup label="📋 Registered Vendors Master">
+              {vendors.map(v => (
+                <option key={v.id} value={v.name}>{v.name}</option>
+              ))}
+            </optgroup>
+            <option value="__custom__">+ Type Custom Payee / Staff Name...</option>
+          </select>
+        )}
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: 10 }}>
@@ -9315,7 +9355,7 @@ function ExpenseModal({ initialData, projects = [], vendors = [], expenses = [],
         onClick={() => {
           if (!valid) return;
           const expData = {
-            projectId, vendor, category, subcategory, accountKey: glKey,
+            projectId, vendor: effectiveVendor, category, subcategory, accountKey: glKey,
             description, refNo, amount: Number(amount), date, status, paidVia: status === "paid" ? paidVia : null
           };
           onSubmit(initialData ? { ...initialData, ...expData } : expData);
