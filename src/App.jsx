@@ -3865,6 +3865,8 @@ export default function App() {
                     </div>
                     {[
                       { label: "View Projects", tabKey: "projects", icon: Briefcase },
+                      { label: "View Release Orders (RO)", tabKey: "release-orders", icon: ScrollText },
+                      { label: "View Purchase Orders (PO)", tabKey: "purchase-orders", icon: ShoppingCart },
                       { label: "View Financial Transactions", tabKey: "vouchers", icon: ClipboardList },
                       { label: "View Receivables (AR)", tabKey: "invoices", icon: FileText },
                       { label: "View Payables (AP)", tabKey: "expenses", icon: Receipt },
@@ -4847,7 +4849,9 @@ export default function App() {
             <>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
                 <div className="section-title" style={{ margin: 0 }}>Agency Quick Actions</div>
-                <div style={{ display: "flex", gap: 8 }}>
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                  <button className="btn" onClick={() => setShowROForm(true)} style={{ color: "#0284C7", borderColor: "#BAE6FD", fontWeight: 700 }}><ScrollText size={14} /> + Release Order (RO)</button>
+                  <button className="btn" onClick={() => setShowPOForm(true)}><ShoppingCart size={14} /> + PO</button>
                   <button className="btn" onClick={() => setShowExpenseForm(true)}><Plus size={14} /> Expense</button>
                   <button className="btn" onClick={() => setShowInvoiceForm(true)}><Plus size={14} /> Invoice</button>
                   <button className="btn btn-primary" onClick={() => setShowProjectForm(true)}><Plus size={14} /> Project</button>
