@@ -762,6 +762,16 @@ tr:last-child td {
     print-color-adjust: exact !important;
     color-adjust: exact !important;
     box-sizing: border-box !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  *::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
   }
 
   body, html, #root {
@@ -783,6 +793,7 @@ tr:last-child td {
     display: block !important;
     height: auto !important;
     width: 100% !important;
+    max-width: 100% !important;
     overflow: visible !important;
     background: #ffffff !important;
     padding: 0 !important;
@@ -796,6 +807,10 @@ tr:last-child td {
     padding: 0 !important;
     display: block !important;
     animation: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    overflow: visible !important;
   }
 
   .modal {
@@ -809,21 +824,27 @@ tr:last-child td {
     background: transparent !important;
     display: block !important;
     animation: none !important;
+    overflow: visible !important;
+    max-height: none !important;
+    height: auto !important;
   }
 
   .print-area {
-    display: block !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
     visibility: visible !important;
     position: static !important;
     width: 100% !important;
     max-width: 100% !important;
-    margin: 0 auto !important;
-    padding: 6px 8px !important;
+    margin: 0 !important;
+    padding: 0 !important;
     box-shadow: none !important;
     border: none !important;
+    border-radius: 0 !important;
     background: #ffffff !important;
     color: #0F172A !important;
-    font-size: 8.5pt !important;
+    overflow: visible !important;
   }
 
   .print-area table {
