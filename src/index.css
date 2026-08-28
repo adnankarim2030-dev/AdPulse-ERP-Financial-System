@@ -784,9 +784,19 @@ tr:last-child td {
     overflow: visible !important;
   }
 
-  /* Hide main application background during print */
-  .sidebar, .topbar, .mobile-toggle, .btn, .no-print, .no-print-header, .content {
+  /* Hide navigation, topbars, buttons and headers during print */
+  .sidebar, .topbar, .mobile-toggle, .btn, .no-print, .no-print-header {
     display: none !important;
+  }
+
+  .content {
+    display: block !important;
+    background: #ffffff !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    height: auto !important;
+    width: 100% !important;
   }
 
   .erp-root, .main {

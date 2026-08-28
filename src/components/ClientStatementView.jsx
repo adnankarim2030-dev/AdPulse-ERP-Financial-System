@@ -1,6 +1,379 @@
-import React, { useState, useMemo, useEffect } from "react";
-import { Printer, Download, Filter, FileText, Calendar, Building2, CheckCircle2, AlertCircle, Search } from "lucide-react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
+import { Printer, Download, Filter, FileText, Calendar, Building2, CheckCircle2, AlertCircle, Search, X } from "lucide-react";
 import { cleanInvoiceNo } from "../App.jsx";
+
+function amountInWords(num) {
+  const n = Math.round(Math.abs(Number(num) || 0));
+  if (n === 0) return "Zero Rupees Only";
+  const a = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
+  const b = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
+  const inWordsHelper = (val) => {
+    if (val < 20) return a[val];
+    const digit = val % 10;
+    return b[Math.floor(val / 10)] + (digit ? " " + a[digit] : "");
+  };
+  let str = "";
+  const crore = Math.floor(n / 10000000);
+  const lakh = Math.floor((n % 10000000) / 100000);
+  const thousand = Math.floor((n % 100000) / 1000);
+  const hundred = Math.floor((n % 1000) / 100);
+  const rem = n % 100;
+  if (crore) str += inWordsHelper(crore) + " Crore ";
+  if (lakh) str += inWordsHelper(lakh) + " Lakh ";
+  if (thousand) str += inWordsHelper(thousand) + " Thousand ";
+  if (hundred) str += inWordsHelper(hundred) + " Hundred ";
+  if (rem) str += inWordsHelper(rem) + " ";
+  return (str.trim() + " Rupees Only");
+}
+
+function exportClientStatementToExcel({ client, dateFrom, dateTo, statementData }) {
+  const cName = client.companyName || client.name;
+  const filename = `Client_Statement_${cName.replace(/[^a-zA-Z0-9]/g, "_")}_${dateFrom}_to_${dateTo}.xls`;
+
+  let rowsHtml = `
+    <tr>
+      <td style="border: 1px solid #CBD5E1; padding: 6px; font-family: monospace;">${dateFrom}</td>
+      <td style="border: 1px solid #CBD5E1; padding: 6px; font-family: monospace; font-weight: bold;">OB-000</td>
+      <td style="border: 1px solid #CBD5E1; padding: 6px;">Opening Balance</td>
+      <td style="border: 1px solid #CBD5E1; padding: 6px;">—</td>
+      <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: right;">—</td>
+      <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: right;">—</td>
+      <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: right; font-weight: bold; mso-number-format:'\\#\\,\\#\\#0';">${statementData.openingBalance}</td>
+    </tr>
+  `;
+
+  statementData.rows.forEach((r, idx) => {
+    const bg = idx % 2 === 0 ? "#FFFFFF" : "#F8FAFC";
+    rowsHtml += `
+      <tr style="background-color: ${bg};">
+        <td style="border: 1px solid #CBD5E1; padding: 6px; font-family: monospace;">${r.date}</td>
+        <td style="border: 1px solid #CBD5E1; padding: 6px; font-family: monospace; font-weight: bold;">${r.ref}</td>
+        <td style="border: 1px solid #CBD5E1; padding: 6px; font-weight: bold; color: ${r.type === 'Invoice' ? '#0284C7' : '#059669'};">${r.type}</td>
+        <td style="border: 1px solid #CBD5E1; padding: 6px;">${r.project || 'General'}</td>
+        <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: right; color: #0284C7; mso-number-format:'\\#\\,\\#\\#0';">${r.debit > 0 ? r.debit : '—'}</td>
+        <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: right; color: #059669; mso-number-format:'\\#\\,\\#\\#0';">${r.credit > 0 ? r.credit : '—'}</td>
+        <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: right; font-weight: bold; color: ${r.runningBalance > 0 ? '#0284C7' : '#059669'}; mso-number-format:'\\#\\,\\#\\#0';">${r.runningBalance}</td>
+      </tr>
+    `;
+  });
+
+  const tableHtml = `
+    <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+    <head>
+      <!--[if gte mso 9]>
+      <xml>
+        <x:ExcelWorkbook>
+          <x:ExcelWorksheets>
+            <x:ExcelWorksheet>
+              <x:Name>Client Statement</x:Name>
+              <x:WorksheetOptions>
+                <x:DisplayGridlines/>
+              </x:WorksheetOptions>
+            </x:ExcelWorksheet>
+          </x:ExcelWorksheets>
+        </x:ExcelWorkbook>
+      </xml>
+      <![endif]-->
+      <meta http-equiv="content-type" content="text/plain; charset=UTF-8"/>
+      <style>
+        body { font-family: Calibri, 'Segoe UI', Arial, sans-serif; font-size: 11pt; color: #0F172A; }
+      </style>
+    </head>
+    <body>
+      <table style="width: 100%; border-collapse: collapse;">
+        <tr>
+          <td colspan="7" style="font-size: 16pt; font-weight: bold; color: #1E293B; padding-bottom: 4px;">AdPulse IMC (Private) Ltd</td>
+        </tr>
+        <tr>
+          <td colspan="7" style="font-size: 12pt; font-weight: bold; color: #0284C7; padding-bottom: 12px;">CLIENT STATEMENT / ACCOUNTS RECEIVABLE SUB-LEDGER</td>
+        </tr>
+        <tr style="background-color: #F8FAFC;">
+          <td colspan="4" style="border: 1px solid #CBD5E1; padding: 6px;"><b>Client:</b> ${cName} (${client.clientCode || client.id})</td>
+          <td colspan="3" style="border: 1px solid #CBD5E1; padding: 6px;"><b>Statement Period:</b> ${dateFrom} to ${dateTo}</td>
+        </tr>
+        <tr style="background-color: #F8FAFC;">
+          <td colspan="4" style="border: 1px solid #CBD5E1; padding: 6px;"><b>Contact:</b> ${client.contactPerson || 'N/A'} | ${client.phone || 'N/A'}</td>
+          <td colspan="3" style="border: 1px solid #CBD5E1; padding: 6px;"><b>Address:</b> ${client.address || 'Karachi, Pakistan'}</td>
+        </tr>
+        <tr><td colspan="7" style="height: 14px;"></td></tr>
+        <tr style="background-color: #F1F5F9; font-weight: bold;">
+          <td colspan="2" style="border: 1px solid #CBD5E1; padding: 8px; text-align: center;">Opening Balance: PKR ${statementData.openingBalance.toLocaleString()}</td>
+          <td colspan="2" style="border: 1px solid #CBD5E1; padding: 8px; text-align: center; color: #0284C7;">Total Invoiced (+): PKR ${statementData.totalInvoiced.toLocaleString()}</td>
+          <td colspan="2" style="border: 1px solid #CBD5E1; padding: 8px; text-align: center; color: #059669;">Total Received (-): PKR ${statementData.totalReceived.toLocaleString()}</td>
+          <td style="border: 1.5px solid #0284C7; padding: 8px; text-align: center; background-color: #E0F2FE; color: #0369A1;">Closing Outstanding: PKR ${statementData.closingBalance.toLocaleString()}</td>
+        </tr>
+        <tr><td colspan="7" style="height: 14px;"></td></tr>
+        <tr style="background-color: #0F172A; color: #FFFFFF; font-weight: bold; text-align: center;">
+          <th style="border: 1px solid #000; padding: 8px; width: 110px;">Date</th>
+          <th style="border: 1px solid #000; padding: 8px; width: 110px;">Reference</th>
+          <th style="border: 1px solid #000; padding: 8px; width: 130px;">Type</th>
+          <th style="border: 1px solid #000; padding: 8px; width: 220px;">Project / Scope</th>
+          <th style="border: 1px solid #000; padding: 8px; width: 140px; text-align: right;">Debit / Invoiced (PKR)</th>
+          <th style="border: 1px solid #000; padding: 8px; width: 140px; text-align: right;">Credit / Received (PKR)</th>
+          <th style="border: 1px solid #000; padding: 8px; width: 150px; text-align: right;">Running Balance (PKR)</th>
+        </tr>
+        ${rowsHtml}
+        <tr style="background-color: #0F172A; color: #FFFFFF; font-weight: bold;">
+          <td colspan="4" style="border: 1px solid #000; padding: 8px;">Closing Balance Summary</td>
+          <td style="border: 1px solid #000; padding: 8px; text-align: right; color: #38BDF8; mso-number-format:'\\#\\,\\#\\#0';">${statementData.totalInvoiced}</td>
+          <td style="border: 1px solid #000; padding: 8px; text-align: right; color: #34D399; mso-number-format:'\\#\\,\\#\\#0';">${statementData.totalReceived}</td>
+          <td style="border: 1px solid #000; padding: 8px; text-align: right; color: #BAE6FD; font-size: 12pt; mso-number-format:'\\#\\,\\#\\#0';">${statementData.closingBalance}</td>
+        </tr>
+        <tr><td colspan="7" style="height: 18px;"></td></tr>
+        <tr>
+          <td colspan="7" style="font-size: 10pt; font-style: italic; color: #64748B;">Generated from AdPulse Financial Management System on ${new Date().toLocaleDateString()}</td>
+        </tr>
+      </table>
+    </body>
+    </html>
+  `;
+
+  const blob = new Blob([tableHtml], { type: "application/vnd.ms-excel;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.setAttribute("href", url);
+  link.setAttribute("download", filename);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
+export function ClientStatementPrintModal({ client, dateFrom, dateTo, statementData, onClose }) {
+  const [pageSize, setPageSize] = useState("A4");
+  const printRef = useRef(null);
+
+  const pkr = (val) => "PKR " + (Number(val) || 0).toLocaleString("en-PK", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+
+  const handleExportPDF = () => {
+    const printEl = printRef.current;
+    if (!printEl) return;
+    const cName = (client.companyName || client.name).replace(/[^a-zA-Z0-9]/g, "_");
+
+    const triggerPdf = () => {
+      if (window.html2pdf) {
+        const opt = {
+          margin: 8,
+          filename: `Client_Statement_${cName}_${dateFrom}_to_${dateTo}.pdf`,
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { scale: 2, useCORS: true },
+          jsPDF: { unit: 'mm', format: (pageSize || "A4").toLowerCase(), orientation: "portrait" }
+        };
+        window.html2pdf().set(opt).from(printEl).save();
+      } else {
+        window.print();
+      }
+    };
+
+    if (window.html2pdf) {
+      triggerPdf();
+    } else {
+      const script = document.createElement("script");
+      script.src = "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
+      script.onload = triggerPdf;
+      script.onerror = () => window.print();
+      document.head.appendChild(script);
+    }
+  };
+
+  const handleExportExcel = () => {
+    exportClientStatementToExcel({ client, dateFrom, dateTo, statementData });
+  };
+
+  return (
+    <div className="modal-backdrop" onClick={onClose}>
+      <style>{`
+        @page { size: ${pageSize} portrait; margin: 8mm; }
+        @media print {
+          .no-print-header, .sidebar, .topbar, .btn, .mobile-toggle { display: none !important; }
+          .modal-backdrop { background: none !important; padding: 0 !important; position: static !important; display: block !important; width: 100% !important; max-width: 100% !important; margin: 0 !important; }
+          .modal { box-shadow: none !important; border: none !important; width: 100% !important; max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
+          .print-area { padding: 0 !important; border: none !important; min-height: 880px !important; display: flex !important; flex-direction: column !important; justify-content: space-between !important; }
+          .invoice-footer-banner { background: #A81C1C !important; background-image: linear-gradient(90deg, #A81C1C 0%, #1D3B4E 100%) !important; color: #ffffff !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; display: flex !important; margin-top: auto !important; }
+        }
+      `}</style>
+      <div className="modal" style={{ width: 880, maxWidth: "98vw", maxHeight: "92vh", overflowY: "auto" }} onClick={e => e.stopPropagation()}>
+        {/* MODAL TOP TOOLBAR */}
+        <div className="no-print-header" style={{ marginBottom: 14, background: "#1E293B", padding: "12px 16px", borderRadius: 10, color: "#fff", border: "1px solid #334155", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 10 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <span style={{ fontWeight: 800, fontSize: 13.5, color: "#0284C7", display: "flex", alignItems: "center", gap: 5 }}>
+              <FileText size={16} /> Client Statement Preview
+            </span>
+          </div>
+
+          <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+            <select value={pageSize} onChange={e => setPageSize(e.target.value)} style={{ background: "#0F172A", border: "1px solid #334155", borderRadius: 8, color: "#FFF", fontSize: 12.5, fontWeight: 700, padding: "5px 10px", cursor: "pointer" }}>
+              <option value="A4" style={{ background: "#1E293B", color: "#FFFFFF" }}>A4 (210 x 297 mm)</option>
+              <option value="Letter" style={{ background: "#1E293B", color: "#FFFFFF" }}>Letter (8.5 x 11 in)</option>
+              <option value="Legal" style={{ background: "#1E293B", color: "#FFFFFF" }}>Legal (8.5 x 14 in)</option>
+            </select>
+            <button className="btn btn-primary" style={{ padding: "6px 12px", fontSize: 12.5, fontWeight: 700, background: "#0284C7", borderColor: "#0284C7" }} onClick={handleExportPDF}>
+              <Download size={14} /> Download PDF
+            </button>
+            <button className="btn" style={{ background: "#059669", color: "#FFFFFF", border: "none", padding: "6px 12px", fontSize: 12.5, fontWeight: 700 }} onClick={handleExportExcel}>
+              <Download size={14} /> Download Excel
+            </button>
+            <button className="btn" style={{ background: "#475569", color: "#FFFFFF", border: "none", padding: "6px 12px", fontSize: 12.5, fontWeight: 700 }} onClick={() => window.print()}>
+              <Printer size={14} /> Print
+            </button>
+            <button className="btn" style={{ background: "var(--rose)", color: "#fff", border: "none", padding: "5px 9px" }} onClick={onClose}><X size={15} /></button>
+          </div>
+        </div>
+
+        {/* PRINTABLE AREA */}
+        <div ref={printRef} className="print-area" style={{ background: "#ffffff", color: "#0F172A", borderRadius: 10, padding: "20px 24px", fontFamily: "'Calibri', 'Inter', sans-serif", minHeight: "880px", display: "flex", flexDirection: "column", justifyContent: "space-between", boxSizing: "border-box" }}>
+          <div>
+            {/* TOP HEADER */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "2px solid #0F172A", paddingBottom: 10, marginBottom: 14 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <img src="./logo.png" alt="AdPulse Logo" style={{ maxHeight: 48, width: "auto" }} onError={(e) => { e.target.style.display = 'none'; }} />
+                <div>
+                  <div style={{ fontSize: 19, fontWeight: 800, color: "#0F172A", letterSpacing: "-0.3px" }}>AdPulse IMC (Private) Ltd</div>
+                  <div style={{ fontSize: 10.5, color: "#475569" }}>Financial Management &amp; Client Ledger Activity</div>
+                </div>
+              </div>
+              <div style={{ textAlign: "right" }}>
+                <div style={{ fontSize: 14.5, fontWeight: 800, color: "#0284C7", textTransform: "uppercase" }}>CLIENT STATEMENT</div>
+                <div className="mono" style={{ fontSize: 12, fontWeight: 700, color: "#0F172A" }}>STMT-CLI-{(client.clientCode || client.id || "").toUpperCase()}</div>
+              </div>
+            </div>
+
+            {/* CLIENT & PERIOD INFO */}
+            <table style={{ width: "100%", fontSize: 11.5, marginBottom: 12, borderCollapse: "collapse" }}>
+              <tbody>
+                <tr>
+                  <td style={{ padding: "3px 0", color: "#475569", width: 120 }}>Client Account:</td>
+                  <td style={{ fontWeight: 800, fontSize: 13, color: "#0F172A" }}>{client.companyName || client.name}</td>
+                  <td style={{ padding: "3px 0", color: "#475569", width: 120, textAlign: "right" }}>Statement Period:</td>
+                  <td style={{ fontWeight: 700, textAlign: "right", color: "#0F172A" }}>{dateFrom} to {dateTo}</td>
+                </tr>
+                <tr>
+                  <td style={{ padding: "3px 0", color: "#475569" }}>Contact Person:</td>
+                  <td style={{ fontWeight: 600 }}>{client.contactPerson || "N/A"} ({client.phone || "N/A"})</td>
+                  <td style={{ padding: "3px 0", color: "#475569", textAlign: "right" }}>Payment Terms:</td>
+                  <td style={{ fontWeight: 600, textAlign: "right" }}>{client.paymentTerms || "Net 30"}</td>
+                </tr>
+                <tr>
+                  <td style={{ padding: "3px 0", color: "#475569" }}>Address / Tax:</td>
+                  <td colSpan={3} style={{ fontWeight: 600 }}>{client.address || "Karachi, Pakistan"} &middot; NTN: {client.ntn || "N/A"} | STRN: {client.strn || "N/A"}</td>
+                </tr>
+              </tbody>
+            </table>
+
+            {/* 4 SUMMARY METRIC CARDS */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10, marginBottom: 14 }}>
+              <div style={{ background: "#F8FAFC", padding: "8px 12px", borderRadius: 6, border: "1px solid #CBD5E1" }}>
+                <div style={{ fontSize: 10, color: "#475569", fontWeight: 700, textTransform: "uppercase" }}>Opening Balance</div>
+                <div style={{ fontSize: 13.5, fontWeight: 800, color: "#1E293B", marginTop: 2 }}>{pkr(statementData.openingBalance)}</div>
+              </div>
+              <div style={{ background: "#F8FAFC", padding: "8px 12px", borderRadius: 6, border: "1px solid #CBD5E1" }}>
+                <div style={{ fontSize: 10, color: "#0284C7", fontWeight: 700, textTransform: "uppercase" }}>Total Invoiced (+)</div>
+                <div style={{ fontSize: 13.5, fontWeight: 800, color: "#0284C7", marginTop: 2 }}>{pkr(statementData.totalInvoiced)}</div>
+              </div>
+              <div style={{ background: "#F8FAFC", padding: "8px 12px", borderRadius: 6, border: "1px solid #CBD5E1" }}>
+                <div style={{ fontSize: 10, color: "#059669", fontWeight: 700, textTransform: "uppercase" }}>Total Received (-)</div>
+                <div style={{ fontSize: 13.5, fontWeight: 800, color: "#059669", marginTop: 2 }}>{pkr(statementData.totalReceived)}</div>
+              </div>
+              <div style={{ background: "#E0F2FE", padding: "8px 12px", borderRadius: 6, border: "1.5px solid #0284C7" }}>
+                <div style={{ fontSize: 10, color: "#0369A1", fontWeight: 800, textTransform: "uppercase" }}>Closing Outstanding</div>
+                <div style={{ fontSize: 14, fontWeight: 900, color: "#0369A1", marginTop: 2 }}>{pkr(statementData.closingBalance)}</div>
+              </div>
+            </div>
+
+            {/* TRANSACTIONS TABLE */}
+            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 12, fontSize: 10, tableLayout: "fixed" }}>
+              <colgroup>
+                <col style={{ width: "13%" }} />
+                <col style={{ width: "14%" }} />
+                <col style={{ width: "16%" }} />
+                <col style={{ width: "23%" }} />
+                <col style={{ width: "17%" }} />
+                <col style={{ width: "17%" }} />
+              </colgroup>
+              <thead>
+                <tr style={{ background: "#F1F5F9", color: "#0F172A" }}>
+                  <th style={{ border: "1px solid #000", padding: "5px 4px", textAlign: "left", fontSize: 9.5, fontWeight: 800 }}>DATE</th>
+                  <th style={{ border: "1px solid #000", padding: "5px 4px", textAlign: "left", fontSize: 9.5, fontWeight: 800 }}>REF NO</th>
+                  <th style={{ border: "1px solid #000", padding: "5px 4px", textAlign: "left", fontSize: 9.5, fontWeight: 800 }}>TYPE</th>
+                  <th style={{ border: "1px solid #000", padding: "5px 4px", textAlign: "left", fontSize: 9.5, fontWeight: 800 }}>PROJECT / SCOPE</th>
+                  <th style={{ border: "1px solid #000", padding: "5px 4px", textAlign: "right", fontSize: 9.5, fontWeight: 800 }}>INVOICED / REC (PKR)</th>
+                  <th style={{ border: "1px solid #000", padding: "5px 4px", textAlign: "right", fontSize: 9.5, fontWeight: 800 }}>BALANCE (PKR)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style={{ background: "#F8FAFC", fontWeight: 600 }}>
+                  <td style={{ border: "1px solid #000", padding: "5px 4px" }}>{dateFrom}</td>
+                  <td style={{ border: "1px solid #000", padding: "5px 4px", fontWeight: 700 }}>OB-000</td>
+                  <td style={{ border: "1px solid #000", padding: "5px 4px" }}>Opening Balance</td>
+                  <td style={{ border: "1px solid #000", padding: "5px 4px" }}>—</td>
+                  <td style={{ border: "1px solid #000", padding: "5px 4px", textAlign: "right" }}>—</td>
+                  <td style={{ border: "1px solid #000", padding: "5px 4px", textAlign: "right", fontWeight: 800 }}>{pkr(statementData.openingBalance)}</td>
+                </tr>
+
+                {statementData.rows.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} style={{ border: "1px solid #000", textAlign: "center", padding: 16, color: "#64748B" }}>
+                      No client statement transactions recorded within this date range.
+                    </td>
+                  </tr>
+                ) : (
+                  statementData.rows.map((row, idx) => (
+                    <tr key={idx}>
+                      <td style={{ border: "1px solid #000", padding: "5px 4px" }}>{row.date}</td>
+                      <td style={{ border: "1px solid #000", padding: "5px 4px", fontWeight: 700, fontFamily: "monospace" }}>{row.ref}</td>
+                      <td style={{ border: "1px solid #000", padding: "5px 4px", fontWeight: 600, color: row.type === "Invoice" ? "#0284C7" : "#059669" }}>
+                        {row.type}
+                      </td>
+                      <td style={{ border: "1px solid #000", padding: "5px 4px", wordBreak: "break-word" }}>{row.project}</td>
+                      <td style={{ border: "1px solid #000", padding: "5px 4px", textAlign: "right", color: row.debit > 0 ? "#0284C7" : row.credit > 0 ? "#059669" : "inherit", fontWeight: 600 }}>
+                        {row.debit > 0 ? pkr(row.debit) : row.credit > 0 ? pkr(row.credit) : "—"}
+                      </td>
+                      <td style={{ border: "1px solid #000", padding: "5px 4px", textAlign: "right", fontWeight: 800, color: row.runningBalance > 0 ? "#0284C7" : "#059669" }}>
+                        {pkr(row.runningBalance)}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+              <tfoot>
+                <tr style={{ background: "#F1F5F9", fontWeight: 800 }}>
+                  <td colSpan={4} style={{ border: "1px solid #000", padding: "6px 6px", textAlign: "right" }}>Closing Outstanding Balance</td>
+                  <td style={{ border: "1px solid #000", padding: "6px 6px", textAlign: "right", color: "#0284C7" }}>{pkr(statementData.totalInvoiced)}</td>
+                  <td style={{ border: "1px solid #000", padding: "6px 6px", textAlign: "right", color: "#0369A1", fontSize: 11 }}>{pkr(statementData.closingBalance)}</td>
+                </tr>
+              </tfoot>
+            </table>
+
+            {/* AMOUNT IN WORDS */}
+            <div style={{ fontSize: 10.5, fontStyle: "italic", color: "#334155", marginBottom: 16, background: "#F8FAFC", padding: "6px 10px", borderRadius: 4, border: "1px solid #000" }}>
+              Closing Outstanding Balance in words: <b style={{ color: "#0F172A", fontStyle: "normal" }}>{amountInWords(statementData.closingBalance)}</b>
+            </div>
+
+            {/* SIGNATURES */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginTop: 20, marginBottom: 12, fontSize: 10, fontWeight: 700 }}>
+              <div style={{ textAlign: "center", width: 170 }}>
+                <div style={{ borderTop: "1.5px solid #000", paddingTop: 4 }}>PREPARED BY</div>
+              </div>
+              <div style={{ textAlign: "center", width: 170 }}>
+                <div style={{ borderTop: "1.5px solid #000", paddingTop: 4 }}>ACCOUNTS MANAGER</div>
+              </div>
+              <div style={{ textAlign: "center", width: 170 }}>
+                <div style={{ borderTop: "1.5px solid #000", paddingTop: 4 }}>AUTHORIZED SIGNATORY</div>
+              </div>
+            </div>
+          </div>
+
+          {/* FOOTER BANNER */}
+          <div className="invoice-footer-banner" style={{ background: "#A81C1C", backgroundImage: "linear-gradient(90deg, #A81C1C 0%, #1D3B4E 100%)", color: "#FFFFFF", padding: "6px 12px", borderRadius: 4, display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 9, fontWeight: 600, marginTop: "auto", boxSizing: "border-box" }}>
+            <div>📞 +92 21 37526834</div>
+            <div>✉️ communication@adpulse.pk | 🌐 www.adpulse.pk</div>
+            <div>📍 Office # 213, 2nd Floor, Park Tower, Block 5 Clifton, Karachi.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function ClientStatementView({
   clients = [],
@@ -16,6 +389,7 @@ export default function ClientStatementView({
   const [dateTo, setDateTo] = useState("2026-08-31");
   const [selectedProjectId, setSelectedProjectId] = useState("all");
   const [selectedTxType, setSelectedTxType] = useState("all");
+  const [showPrintModal, setShowPrintModal] = useState(false);
 
   useEffect(() => {
     if (selectedClientId) {
@@ -42,7 +416,6 @@ export default function ClientStatementView({
     }
 
     const clientNameNorm = (selectedClient.name || "").toLowerCase();
-    const clientCodeNorm = (selectedClient.clientCode || selectedClient.id || "").toLowerCase();
 
     // Helper: is transaction related to selected client?
     const isClientMatch = (item) => {
@@ -192,31 +565,9 @@ export default function ClientStatementView({
 
   const pkr = (val) => "PKR " + (Number(val) || 0).toLocaleString("en-PK", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 
-  const handlePrint = () => {
-    window.print();
-  };
-
-  const handleExportCSV = () => {
+  const handleExportExcel = () => {
     if (!selectedClient) return;
-    let csv = `Client Statement - ${selectedClient.name}\n`;
-    csv += `Period: ${dateFrom} to ${dateTo}\n`;
-    csv += `Opening Balance,${statementData.openingBalance}\n\n`;
-    csv += `Date,Reference,Type,Project,Debit (PKR),Credit (PKR),Balance (PKR)\n`;
-
-    statementData.rows.forEach(r => {
-      csv += `${r.date},"${r.ref}","${r.type}","${r.project}",${r.debit},${r.credit},${r.runningBalance}\n`;
-    });
-
-    csv += `\nClosing Outstanding,,,,,${statementData.closingBalance}\n`;
-
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.setAttribute("href", url);
-    link.setAttribute("download", `Client_Statement_${selectedClient.name.replace(/\s+/g, "_")}_${dateFrom}_to_${dateTo}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    exportClientStatementToExcel({ client: selectedClient, dateFrom, dateTo, statementData });
   };
 
   return (
@@ -233,7 +584,7 @@ export default function ClientStatementView({
             <select className="form-select" value={activeClientId} onChange={e => { setActiveClientId(e.target.value); if (onSelectClient) onSelectClient(e.target.value); }}>
               {clients.map(c => (
                 <option key={c.id} value={c.id}>
-                  {c.clientCode || c.id} &mdash; {c.name} ({c.companyName || "No Company"})
+                  {c.clientCode || c.id} — {c.name} ({c.companyName || "No Company"})
                 </option>
               ))}
             </select>
@@ -270,10 +621,10 @@ export default function ClientStatementView({
         </div>
 
         <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginTop: 14, borderTop: "1px solid var(--rule)", paddingTop: 10 }}>
-          <button className="btn" onClick={handleExportCSV} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13 }}>
-            <Download size={15} /> Export CSV / Excel
+          <button className="btn" onClick={handleExportExcel} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, background: "#059669", borderColor: "#059669", color: "#FFFFFF" }}>
+            <Download size={15} /> Export Excel
           </button>
-          <button className="btn btn-primary" onClick={handlePrint} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13 }}>
+          <button className="btn btn-primary" onClick={() => setShowPrintModal(true)} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, background: "#0284C7", borderColor: "#0284C7" }}>
             <Printer size={15} /> Print / Save PDF Statement
           </button>
         </div>
@@ -345,15 +696,15 @@ export default function ClientStatementView({
                 <div style={{ fontSize: 14, fontWeight: 800, color: "#047857", marginTop: 2 }}>{pkr(agingReport.current)}</div>
               </div>
               <div style={{ background: "rgba(245, 158, 11, 0.08)", padding: 10, borderRadius: 6, border: "1px solid rgba(245, 158, 11, 0.3)" }}>
-                <div style={{ fontSize: 11, color: "#B45309", fontWeight: 700 }}>1 &ndash; 30 Days Overdue</div>
+                <div style={{ fontSize: 11, color: "#B45309", fontWeight: 700 }}>1 – 30 Days Overdue</div>
                 <div style={{ fontSize: 14, fontWeight: 800, color: "#B45309", marginTop: 2 }}>{pkr(agingReport.days30)}</div>
               </div>
               <div style={{ background: "rgba(234, 88, 12, 0.08)", padding: 10, borderRadius: 6, border: "1px solid rgba(234, 88, 12, 0.3)" }}>
-                <div style={{ fontSize: 11, color: "#C2410C", fontWeight: 700 }}>31 &ndash; 60 Days Overdue</div>
+                <div style={{ fontSize: 11, color: "#C2410C", fontWeight: 700 }}>31 – 60 Days Overdue</div>
                 <div style={{ fontSize: 14, fontWeight: 800, color: "#C2410C", marginTop: 2 }}>{pkr(agingReport.days60)}</div>
               </div>
               <div style={{ background: "rgba(225, 29, 72, 0.08)", padding: 10, borderRadius: 6, border: "1px solid rgba(225, 29, 72, 0.3)" }}>
-                <div style={{ fontSize: 11, color: "#BE123C", fontWeight: 700 }}>61 &ndash; 90 Days Overdue</div>
+                <div style={{ fontSize: 11, color: "#BE123C", fontWeight: 700 }}>61 – 90 Days Overdue</div>
                 <div style={{ fontSize: 14, fontWeight: 800, color: "#BE123C", marginTop: 2 }}>{pkr(agingReport.days90)}</div>
               </div>
               <div style={{ background: "rgba(153, 27, 27, 0.12)", padding: 10, borderRadius: 6, border: "1px solid rgba(153, 27, 27, 0.4)" }}>
@@ -387,9 +738,9 @@ export default function ClientStatementView({
                   <td>{dateFrom}</td>
                   <td>OB-000</td>
                   <td>Opening Balance</td>
-                  <td>&mdash;</td>
-                  <td style={{ textAlign: "right" }}>&mdash;</td>
-                  <td style={{ textAlign: "right" }}>&mdash;</td>
+                  <td>—</td>
+                  <td style={{ textAlign: "right" }}>—</td>
+                  <td style={{ textAlign: "right" }}>—</td>
                   <td style={{ textAlign: "right", fontWeight: 800 }}>{pkr(statementData.openingBalance)}</td>
                 </tr>
 
@@ -415,10 +766,10 @@ export default function ClientStatementView({
                       </td>
                       <td>{row.project}</td>
                       <td style={{ textAlign: "right", color: row.debit > 0 ? "#0284C7" : "inherit", fontWeight: row.debit > 0 ? 700 : 400 }}>
-                        {row.debit > 0 ? pkr(row.debit) : "&mdash;"}
+                        {row.debit > 0 ? pkr(row.debit) : "—"}
                       </td>
                       <td style={{ textAlign: "right", color: row.credit > 0 ? "#059669" : "inherit", fontWeight: row.credit > 0 ? 700 : 400 }}>
-                        {row.credit > 0 ? pkr(row.credit) : "&mdash;"}
+                        {row.credit > 0 ? pkr(row.credit) : "—"}
                       </td>
                       <td style={{ textAlign: "right", fontWeight: 800, color: row.runningBalance > 0 ? "#0284C7" : "#059669" }}>
                         {pkr(row.runningBalance)}
@@ -477,6 +828,17 @@ export default function ClientStatementView({
         <div style={{ textAlign: "center", padding: 40, color: "var(--ink-muted)" }}>
           No client selected. Please register or select a client above.
         </div>
+      )}
+
+      {/* RENDER DEDICATED PRINT/PDF MODAL */}
+      {showPrintModal && selectedClient && (
+        <ClientStatementPrintModal
+          client={selectedClient}
+          dateFrom={dateFrom}
+          dateTo={dateTo}
+          statementData={statementData}
+          onClose={() => setShowPrintModal(false)}
+        />
       )}
     </div>
   );
