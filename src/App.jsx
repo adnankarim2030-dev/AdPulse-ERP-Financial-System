@@ -12983,388 +12983,374 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
         </div>
 
         {/* PRINT AREA MATCHING PDF TEMPLATES */}
-        <div className="print-area" style={{ background: "#ffffff", color: "#000000", padding: "18px 24px 14px 24px", fontFamily: "'Calibri', 'Inter', sans-serif", border: "none", boxShadow: "0 2px 16px rgba(0,0,0,0.06)", borderRadius: 8, position: "relative", boxSizing: "border-box", width: "100%", minHeight: "auto", display: "flex", flexDirection: "column" }}>
+        <div className="print-area" style={{ background: "#ffffff", color: "#000000", padding: "18px 24px 14px 24px", fontFamily: "'Calibri', 'Inter', sans-serif", border: "none", boxShadow: "0 2px 16px rgba(0,0,0,0.06)", borderRadius: 8, position: "relative", boxSizing: "border-box", width: "100%", minHeight: "920px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
           
-          {/* HEADER SECTION - 3 COLUMN BALANCED GRID */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", marginBottom: 16 }}>
-            {/* Left Logo */}
-            <div style={{ display: "flex", justifyContent: "flex-start" }}>
-              <img src="./logo.png" alt="AdPulse Logo" style={{ height: 55, width: "auto", objectFit: "contain" }} onError={(e) => { e.target.style.display = 'none'; }} />
-            </div>
+          {/* TOP CONTENT: HEADER, CLIENT INFO, TABLE, AMOUNT IN WORDS & SPECIAL NOTES */}
+          <div>
+            {/* HEADER SECTION - 3 COLUMN BALANCED GRID */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", marginBottom: 16 }}>
+              {/* Left Logo */}
+              <div style={{ display: "flex", justifyContent: "flex-start" }}>
+                <img src="./logo.png" alt="AdPulse Logo" style={{ height: 55, width: "auto", objectFit: "contain" }} onError={(e) => { e.target.style.display = 'none'; }} />
+              </div>
 
-            {/* Center Heading (Mathematically Centered) */}
-            <div style={{ textAlign: "center", padding: "0 10px" }}>
-              <h2 style={{ margin: 0, fontSize: 19, fontWeight: 800, textDecoration: "underline", letterSpacing: "1px", textTransform: "uppercase", color: (docTitle.includes("RELEASE") || docTitle.includes("PURCHASE")) ? "#1E3A8A" : docTitle.includes("TAX") ? "#A81C1C" : "#0F172A" }}>
-                {docTitle}
-              </h2>
-              {docTitle.includes("TAX") && (
-                <div style={{ fontSize: 10.5, fontWeight: 600, color: "#475569", marginTop: 2 }}>
-                  Sindh Revenue Board (SRB) Regn. # SA054896-8
+              {/* Center Heading (Mathematically Centered) */}
+              <div style={{ textAlign: "center", padding: "0 10px" }}>
+                <h2 style={{ margin: 0, fontSize: 19, fontWeight: 800, textDecoration: "underline", letterSpacing: "1px", textTransform: "uppercase", color: (docTitle.includes("RELEASE") || docTitle.includes("PURCHASE")) ? "#1E3A8A" : docTitle.includes("TAX") ? "#A81C1C" : "#0F172A" }}>
+                  {docTitle}
+                </h2>
+                {docTitle.includes("TAX") && (
+                  <div style={{ fontSize: 10.5, fontWeight: 600, color: "#475569", marginTop: 2 }}>
+                    Sindh Revenue Board (SRB) Regn. # SA054896-8
+                  </div>
+                )}
+              </div>
+
+              {/* Right Meta Info */}
+              <div style={{ textAlign: "right", fontSize: 12.5, fontWeight: 700, display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+                <div style={{ marginBottom: 3 }}>DATE: <span style={{ fontWeight: 500 }}>{fmtDate(doc.date || doc.issueDate || TODAY)}</span></div>
+                <div>
+                  {doc.type === "RELEASE ORDER" ? "RO NO:" : doc.type === "PURCHASE ORDER" ? "PO NO:" : "INVOICE NO:"}{" "}
+                  <span style={{ fontWeight: 800 }}>{cleanInvoiceNo(doc.roNumber || doc.voucherNo || doc.poNumber || doc.invoiceNo || doc.id)}</span>
                 </div>
-              )}
-            </div>
-
-            {/* Right Meta Info */}
-            <div style={{ textAlign: "right", fontSize: 12.5, fontWeight: 700, display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
-              <div style={{ marginBottom: 3 }}>DATE: <span style={{ fontWeight: 500 }}>{fmtDate(doc.date || doc.issueDate || TODAY)}</span></div>
-              <div>
-                {doc.type === "RELEASE ORDER" ? "RO NO:" : doc.type === "PURCHASE ORDER" ? "PO NO:" : "INVOICE NO:"}{" "}
-                <span style={{ fontWeight: 800 }}>{cleanInvoiceNo(doc.roNumber || doc.voucherNo || doc.poNumber || doc.invoiceNo || doc.id)}</span>
               </div>
             </div>
-          </div>
 
-          {/* CLIENT, PROJECT & SERVICE INFO CARD */}
-          <div style={{ fontSize: 11, fontWeight: 700, marginBottom: 14, display: "grid", gridTemplateColumns: "1fr 1.2fr 1fr", gap: 10, alignItems: "center", background: "#F8FAFC", padding: "8px 12px", border: "1px solid #000000", borderRadius: 6, boxSizing: "border-box" }}>
-            <div style={{ wordBreak: "break-word", textAlign: "left" }}>CLIENT: <span style={{ fontWeight: 600, color: "#0F172A" }}>{(doc.client || doc.party || "CLIENT NAME").toUpperCase()}</span></div>
-            <div style={{ wordBreak: "break-word", textAlign: "left" }}>PROJECT: <span style={{ fontWeight: 600, color: "#0F172A" }}>{(doc.projectName || doc.project || (doc.description ? doc.description.replace(/^OOH Advertising\s*—\s*/i, "").replace(/\s*\(\d+\s*sites\)$/i, "") : "PROJECT SCOPE")).toUpperCase()}</span></div>
-            <div style={{ wordBreak: "break-word", textAlign: "right" }}>SERVICE: <span style={{ fontWeight: 600, color: "#A81C1C" }}>{(() => {
-              const svc = doc.serviceCategory;
-              if (svc && svc.toUpperCase() !== "INVOICE") return svc.toUpperCase();
-              const typ = doc.type;
-              if (typ && typ.toUpperCase() !== "INVOICE" && typ.toUpperCase() !== "SALES TAX INVOICE") return typ.toUpperCase();
-              if (template === "OOH") return "OOH ADVERTISING";
-              if (template === "PRINTING") return "PRINTING & INSTALLATION";
-              if (template === "NEWSPAPER") return "NEWSPAPER / PRINT MEDIA & PUBLICATION";
-              return "COMMERCIAL SERVICE";
-            })()}</span></div>
-          </div>
+            {/* CLIENT, PROJECT & SERVICE INFO CARD */}
+            <div style={{ fontSize: 11, fontWeight: 700, marginBottom: 14, display: "grid", gridTemplateColumns: "1fr 1.2fr 1fr", gap: 10, alignItems: "center", background: "#F8FAFC", padding: "8px 12px", border: "1px solid #000000", borderRadius: 6, boxSizing: "border-box" }}>
+              <div style={{ wordBreak: "break-word", textAlign: "left" }}>CLIENT: <span style={{ fontWeight: 600, color: "#0F172A" }}>{(doc.client || doc.party || "CLIENT NAME").toUpperCase()}</span></div>
+              <div style={{ wordBreak: "break-word", textAlign: "left" }}>PROJECT: <span style={{ fontWeight: 600, color: "#0F172A" }}>{(doc.projectName || doc.project || (doc.description ? doc.description.replace(/^OOH Advertising\s*—\s*/i, "").replace(/\s*\(\d+\s*sites\)$/i, "") : "PROJECT SCOPE")).toUpperCase()}</span></div>
+              <div style={{ wordBreak: "break-word", textAlign: "right" }}>SERVICE: <span style={{ fontWeight: 600, color: "#A81C1C" }}>{(() => {
+                const svc = doc.serviceCategory;
+                if (svc && svc.toUpperCase() !== "INVOICE") return svc.toUpperCase();
+                const typ = doc.type;
+                if (typ && typ.toUpperCase() !== "INVOICE" && typ.toUpperCase() !== "SALES TAX INVOICE") return typ.toUpperCase();
+                if (template === "OOH") return "OOH ADVERTISING";
+                if (template === "PRINTING") return "PRINTING & INSTALLATION";
+                if (template === "NEWSPAPER") return "NEWSPAPER / PRINT MEDIA & PUBLICATION";
+                return "COMMERCIAL SERVICE";
+              })()}</span></div>
+            </div>
 
-          {/* DYNAMIC DATA TABLE BASED ON TEMPLATE */}
-          {template === "NEWSPAPER" ? (
-            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", fontSize: 9, boxSizing: "border-box", tableLayout: "fixed" }}>
-              <colgroup>
-                <col style={{ width: "18%" }} />
-                <col style={{ width: "11%" }} />
-                <col style={{ width: "6%" }} />
-                <col style={{ width: "8.5%" }} />
-                <col style={{ width: "8.5%" }} />
-                <col style={{ width: "11%" }} />
-                <col style={{ width: "11%" }} />
-                <col style={{ width: "10.5%" }} />
-                <col style={{ width: "15.5%" }} />
-              </colgroup>
-              <thead>
-                <tr style={{ background: "#F1F5F9", color: "#0F172A" }}>
-                  <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", wordBreak: "break-word" }}>NEWSPAPER</th>
-                  <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box" }}>EDITION</th>
-                  <th style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box" }}>COLS</th>
-                  <th style={{ border: "1px solid #000000", padding: "4px 1px", textAlign: "center", fontSize: 8.2, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", lineHeight: 1.15 }}>HEIGHT<br/>(CM)</th>
-                  <th style={{ border: "1px solid #000000", padding: "4px 1px", textAlign: "center", fontSize: 8.2, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", lineHeight: 1.15 }}>TOTAL<br/>CCM</th>
-                  <th style={{ border: "1px solid #000000", padding: "4px 1px", textAlign: "center", fontSize: 8.2, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", lineHeight: 1.15 }}>RATE /<br/>CCM</th>
-                  <th style={{ border: "1px solid #000000", padding: "4px 1px", textAlign: "center", fontSize: 8.2, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", lineHeight: 1.15 }}>MEDIA<br/>AMT</th>
-                  <th style={{ border: "1px solid #000000", padding: "4px 1px", textAlign: "center", fontSize: 8.2, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", lineHeight: 1.15 }}>AG.<br/>FEE</th>
-                  <th style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", fontSize: 8.2, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", lineHeight: 1.15 }}>TOTAL<br/>(PKR)</th>
-                </tr>
-              </thead>
-              <tbody>
-                {doc.newspaperItems && doc.newspaperItems.length > 0 ? (
-                  doc.newspaperItems.map((item, idx) => (
-                    <tr key={idx} style={{ minHeight: 28 }}>
-                      <td style={{ border: "1px solid #000000", padding: "5px 3px", textAlign: "center", fontWeight: 700, verticalAlign: "middle", boxSizing: "border-box", wordBreak: "break-word", fontSize: 9 }}>{item.newspaper}</td>
-                      <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 600, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{item.edition}</td>
-                      <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{item.columns}</td>
-                      <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{item.height}</td>
-                      <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", fontWeight: 700, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{(Number(item.totalCcm) || 0).toFixed(0)}</td>
-                      <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{pkr(item.rateCcm)}</td>
-                      <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{pkr(item.mediaAmount)}</td>
-                      <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{pkr(item.agencyFee)} <span style={{ fontSize: 7.5 }}>({item.agencyFeePct}%)</span></td>
-                      <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 700, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{pkr(item.amount)}</td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td style={{ border: "1px solid #000000", padding: "5px 3px", textAlign: "center", fontWeight: 700, verticalAlign: "middle", boxSizing: "border-box", wordBreak: "break-word", fontSize: 9 }}>Daily Newspaper</td>
-                    <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 600, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>Karachi</td>
-                    <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>4</td>
-                    <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>12</td>
-                    <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", fontWeight: 700, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>48</td>
-                    <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>2,500</td>
-                    <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>120,000</td>
-                    <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>12,000 <span style={{ fontSize: 7.5 }}>(10%)</span></td>
-                    <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 700, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>132,000</td>
+            {/* DYNAMIC DATA TABLE BASED ON TEMPLATE */}
+            {template === "NEWSPAPER" ? (
+              <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", fontSize: 9, boxSizing: "border-box", tableLayout: "fixed" }}>
+                <colgroup>
+                  <col style={{ width: "18%" }} />
+                  <col style={{ width: "11%" }} />
+                  <col style={{ width: "6%" }} />
+                  <col style={{ width: "8.5%" }} />
+                  <col style={{ width: "8.5%" }} />
+                  <col style={{ width: "11%" }} />
+                  <col style={{ width: "11%" }} />
+                  <col style={{ width: "10.5%" }} />
+                  <col style={{ width: "15.5%" }} />
+                </colgroup>
+                <thead>
+                  <tr style={{ background: "#F1F5F9", color: "#0F172A" }}>
+                    <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", wordBreak: "break-word" }}>NEWSPAPER</th>
+                    <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box" }}>EDITION</th>
+                    <th style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box" }}>COLS</th>
+                    <th style={{ border: "1px solid #000000", padding: "4px 1px", textAlign: "center", fontSize: 8.2, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", lineHeight: 1.15 }}>HEIGHT<br/>(CM)</th>
+                    <th style={{ border: "1px solid #000000", padding: "4px 1px", textAlign: "center", fontSize: 8.2, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", lineHeight: 1.15 }}>TOTAL<br/>CCM</th>
+                    <th style={{ border: "1px solid #000000", padding: "4px 1px", textAlign: "center", fontSize: 8.2, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", lineHeight: 1.15 }}>RATE /<br/>CCM</th>
+                    <th style={{ border: "1px solid #000000", padding: "4px 1px", textAlign: "center", fontSize: 8.2, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", lineHeight: 1.15 }}>MEDIA<br/>AMT</th>
+                    <th style={{ border: "1px solid #000000", padding: "4px 1px", textAlign: "center", fontSize: 8.2, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", lineHeight: 1.15 }}>AG.<br/>FEE</th>
+                    <th style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", fontSize: 8.2, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", lineHeight: 1.15 }}>TOTAL<br/>(PKR)</th>
                   </tr>
-                )}
-                {renderTotals(8)}
-              </tbody>
-            </table>
-          ) : template === "PRINTING" ? (
-            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", fontSize: 9, boxSizing: "border-box", tableLayout: "fixed" }}>
-              <colgroup>
-                <col style={{ width: "4%" }} />
-                <col style={{ width: "30%" }} />
-                <col style={{ width: "9%" }} />
-                <col style={{ width: "9%" }} />
-                <col style={{ width: "11%" }} />
-                <col style={{ width: "7%" }} />
-                <col style={{ width: "14%" }} />
-                <col style={{ width: "16%" }} />
-              </colgroup>
-              <thead>
-                <tr style={{ background: "#F1F5F9", color: "#0F172A" }}>
-                  <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box" }}>#</th>
-                  <th style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", wordBreak: "break-word" }}>DESCRIPTION / SPECIFICATION</th>
-                  <th style={{ border: "1px solid #000000", padding: "4px 1px", textAlign: "center", fontSize: 8.2, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", lineHeight: 1.15 }}>HEIGHT<br/>(FT)</th>
-                  <th style={{ border: "1px solid #000000", padding: "4px 1px", textAlign: "center", fontSize: 8.2, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", lineHeight: 1.15 }}>WIDTH<br/>(FT)</th>
-                  <th style={{ border: "1px solid #000000", padding: "4px 1px", textAlign: "center", fontSize: 8.2, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", lineHeight: 1.15 }}>TOTAL<br/>SQ. FT.</th>
-                  <th style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box" }}>QTY</th>
-                  <th style={{ border: "1px solid #000000", padding: "4px 1px", textAlign: "center", fontSize: 8.2, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", lineHeight: 1.15 }}>RATE<br/>(PKR)</th>
-                  <th style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", fontSize: 8.2, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", lineHeight: 1.15 }}>TOTAL<br/>(PKR)</th>
-                </tr>
-              </thead>
-              <tbody>
-                {doc.printingItems && doc.printingItems.length > 0 ? (
-                  doc.printingItems.map((item, idx) => (
-                    <tr key={idx} style={{ minHeight: 28 }}>
-                      <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 700, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{idx + 1}</td>
-                      <td style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "center", fontWeight: 600, wordBreak: "break-word", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{item.description || doc.description || `Printing Item #${idx + 1}`}</td>
-                      <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{item.height}</td>
-                      <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{item.width}</td>
-                      <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", fontWeight: 700, color: "#0284C7", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{(Number(item.totalSqFt) || 0).toFixed(2)}</td>
-                      <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{item.qty}</td>
-                      <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{pkr(item.rate)}</td>
-                      <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 700, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{pkr(item.amount)}</td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 700, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>1</td>
-                    <td style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "center", fontWeight: 600, wordBreak: "break-word", boxSizing: "border-box", fontSize: 9 }}>{doc.description || "PRINTING & INSTALLATION WORK"}</td>
-                    <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>10</td>
-                    <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>12</td>
-                    <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", fontWeight: 700, color: "#0284C7", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>120.00</td>
-                    <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>1</td>
-                    <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{pkr(30)}</td>
-                    <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 700, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{pkr(netAmt)}</td>
-                  </tr>
-                )}
-                <tr style={{ fontWeight: 800, background: "#F8FAFC" }}>
-                  <td colSpan={4} style={{ border: "1px solid #000000", padding: "6px 4px", textAlign: "center", fontSize: 9, boxSizing: "border-box" }}>TOTAL PRINTING &amp; INSTALLATION</td>
-                  <td style={{ border: "1px solid #000000", padding: "6px 2px", textAlign: "center", fontWeight: 800, fontSize: 9, color: "#0369A1", boxSizing: "border-box" }}>
-                    {doc.printingItems && doc.printingItems.length > 0 ? doc.printingItems.reduce((s, i) => s + (Number(i.totalSqFt) || 0), 0).toFixed(1) : "120.0"} <span style={{ fontSize: 7.5 }}>SQ.FT</span>
-                  </td>
-                  <td colSpan={2} style={{ border: "1px solid #000000", padding: "6px 4px", textAlign: "center", fontSize: 9, color: "#475569", boxSizing: "border-box" }}>Subtotal:</td>
-                  <td style={{ border: "1px solid #000000", padding: "6px 2px", textAlign: "center", fontWeight: 800, fontSize: 9, boxSizing: "border-box" }}>{pkr(netAmt)}</td>
-                </tr>
-                {renderTotals(7)}
-              </tbody>
-            </table>
-          ) : template === "OOH" || (doc.oohSites && doc.oohSites.length > 0) ? (
-            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", fontSize: 9, boxSizing: "border-box", tableLayout: "fixed" }}>
-              <colgroup>
-                <col style={{ width: "4%" }} />
-                <col style={{ width: "22%" }} />
-                <col style={{ width: "11%" }} />
-                <col style={{ width: "9%" }} />
-                <col style={{ width: "10.5%" }} />
-                <col style={{ width: "10.5%" }} />
-                <col style={{ width: "7%" }} />
-                <col style={{ width: "12.5%" }} />
-                <col style={{ width: "13.5%" }} />
-              </colgroup>
-              <thead>
-                <tr style={{ background: "#F1F5F9", color: "#0F172A" }}>
-                  <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box" }}>#</th>
-                  <th style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box" }}>LOCATION / AREA</th>
-                  <th style={{ border: "1px solid #000000", padding: "4px 1px", textAlign: "center", fontSize: 8.2, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", lineHeight: 1.15 }}>SIZE<br/>(FT)</th>
-                  <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box" }}>SQ. FT.</th>
-                  <th style={{ border: "1px solid #000000", padding: "4px 1px", textAlign: "center", fontSize: 8.2, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", lineHeight: 1.15 }}>FROM<br/>DATE</th>
-                  <th style={{ border: "1px solid #000000", padding: "4px 1px", textAlign: "center", fontSize: 8.2, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", lineHeight: 1.15 }}>TO<br/>DATE</th>
-                  <th style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box" }}>DAYS</th>
-                  <th style={{ border: "1px solid #000000", padding: "4px 1px", textAlign: "center", fontSize: 8.2, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", lineHeight: 1.15 }}>RATE<br/>(PKR)</th>
-                  <th style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", fontSize: 8.2, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", lineHeight: 1.15 }}>AMOUNT<br/>(PKR)</th>
-                </tr>
-              </thead>
-              <tbody>
-                {doc.oohSites && doc.oohSites.length > 0 ? (
-                  doc.oohSites.map((site, idx) => {
-                    const w = Number(site.width || (site.size ? site.size.split("x")[0] : 0)) || 20;
-                    const h = Number(site.height || (site.size ? site.size.split("x")[1] : 0)) || 10;
-                    const sqft = Number(site.sqft) || (w * h);
-                    const days = Number(site.days || site.duration) || 30;
-                    const rate = Number(site.rate !== undefined && site.rate !== "" ? site.rate : site.pricePerMonth) || 0;
-                    let cleanLoc = site.location || site.area || site.name || "";
-                    if (!cleanLoc || cleanLoc.toLowerCase().includes("ooh advertising") || cleanLoc.toLowerCase().includes("back to school")) {
-                      cleanLoc = idx === 0 ? "Shahrah-e-Faisal Site" : (idx === 1 ? "Clifton Billboard Site" : `OOH Location #${idx + 1}`);
-                    }
-                    const cellBase = { border: "1px solid #000000", padding: "5px 3px", boxSizing: "border-box", verticalAlign: "middle", fontSize: 9, textAlign: "center" };
-                    return (
+                </thead>
+                <tbody>
+                  {doc.newspaperItems && doc.newspaperItems.length > 0 ? (
+                    doc.newspaperItems.map((item, idx) => (
                       <tr key={idx} style={{ minHeight: 28 }}>
-                        <td style={{ ...cellBase, fontWeight: 700 }}>{idx + 1}</td>
-                        <td style={{ ...cellBase, padding: "5px 4px", fontWeight: 600, wordBreak: "break-word", whiteSpace: "normal" }}>{cleanLoc}</td>
-                        <td style={{ ...cellBase, fontWeight: 600, fontSize: 8.8 }}>{w.toFixed(0)} × {h.toFixed(0)}</td>
-                        <td style={{ ...cellBase, fontWeight: 700, color: "#0284C7", fontSize: 9 }}>{sqft.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 1 })}</td>
-                        <td style={{ ...cellBase, fontWeight: 600, fontSize: 8.5 }}>{fmtDocDate(site.fromDate)}</td>
-                        <td style={{ ...cellBase, fontWeight: 600, fontSize: 8.5 }}>{fmtDocDate(site.toDate)}</td>
-                        <td style={{ ...cellBase, fontWeight: 600, fontSize: 9 }}>{days}</td>
-                        <td style={{ ...cellBase, padding: "5px 2px", fontSize: 8.8 }}>{pkr(rate)}</td>
-                        <td style={{ ...cellBase, padding: "5px 2px", fontWeight: 700, color: "#0F172A", fontSize: 8.8 }}>{pkr(site.amount !== undefined && site.amount !== "" ? site.amount : ((rate / 30) * days))}</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 3px", textAlign: "center", fontWeight: 700, verticalAlign: "middle", boxSizing: "border-box", wordBreak: "break-word", fontSize: 9 }}>{item.newspaper}</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 600, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{item.edition}</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{item.columns}</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{item.height}</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", fontWeight: 700, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{(Number(item.totalCcm) || 0).toFixed(0)}</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{pkr(item.rateCcm)}</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{pkr(item.mediaAmount)}</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{pkr(item.agencyFee)} <span style={{ fontSize: 7.5 }}>({item.agencyFeePct}%)</span></td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 700, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{pkr(item.amount)}</td>
                       </tr>
-                    );
-                  })
-                ) : (
-                  <tr>
-                    <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 700, boxSizing: "border-box", verticalAlign: "middle", fontSize: 9 }}>1</td>
-                    <td style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "center", fontWeight: 600, wordBreak: "break-word", boxSizing: "border-box", verticalAlign: "middle", fontSize: 9 }}>
-                      {doc.location || "Shahrah-e-Faisal Billboard Site"}
+                    ))
+                  ) : (
+                    <tr>
+                      <td style={{ border: "1px solid #000000", padding: "5px 3px", textAlign: "center", fontWeight: 700, verticalAlign: "middle", boxSizing: "border-box", wordBreak: "break-word", fontSize: 9 }}>Daily Newspaper</td>
+                      <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 600, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>Karachi</td>
+                      <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>4</td>
+                      <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>12</td>
+                      <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", fontWeight: 700, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>48</td>
+                      <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>2,500</td>
+                      <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>120,000</td>
+                      <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>12,000 <span style={{ fontSize: 7.5 }}>(10%)</span></td>
+                      <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 700, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>132,000</td>
+                    </tr>
+                  )}
+                  {renderTotals(8)}
+                </tbody>
+              </table>
+            ) : template === "PRINTING" ? (
+              <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", fontSize: 9, boxSizing: "border-box", tableLayout: "fixed" }}>
+                <colgroup>
+                  <col style={{ width: "4%" }} />
+                  <col style={{ width: "30%" }} />
+                  <col style={{ width: "9%" }} />
+                  <col style={{ width: "9%" }} />
+                  <col style={{ width: "11%" }} />
+                  <col style={{ width: "7%" }} />
+                  <col style={{ width: "14%" }} />
+                  <col style={{ width: "16%" }} />
+                </colgroup>
+                <thead>
+                  <tr style={{ background: "#F1F5F9", color: "#0F172A" }}>
+                    <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box" }}>#</th>
+                    <th style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", wordBreak: "break-word" }}>DESCRIPTION / SPECIFICATION</th>
+                    <th style={{ border: "1px solid #000000", padding: "4px 1px", textAlign: "center", fontSize: 8.2, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", lineHeight: 1.15 }}>HEIGHT<br/>(FT)</th>
+                    <th style={{ border: "1px solid #000000", padding: "4px 1px", textAlign: "center", fontSize: 8.2, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", lineHeight: 1.15 }}>WIDTH<br/>(FT)</th>
+                    <th style={{ border: "1px solid #000000", padding: "4px 1px", textAlign: "center", fontSize: 8.2, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", lineHeight: 1.15 }}>TOTAL<br/>SQ. FT.</th>
+                    <th style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box" }}>QTY</th>
+                    <th style={{ border: "1px solid #000000", padding: "4px 1px", textAlign: "center", fontSize: 8.2, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", lineHeight: 1.15 }}>RATE<br/>(PKR)</th>
+                    <th style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", fontSize: 8.2, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", lineHeight: 1.15 }}>TOTAL<br/>(PKR)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {doc.printingItems && doc.printingItems.length > 0 ? (
+                    doc.printingItems.map((item, idx) => (
+                      <tr key={idx} style={{ minHeight: 28 }}>
+                        <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 700, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{idx + 1}</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "center", fontWeight: 600, wordBreak: "break-word", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{item.description || doc.description || `Printing Item #${idx + 1}`}</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{item.height}</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{item.width}</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", fontWeight: 700, color: "#0284C7", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{(Number(item.totalSqFt) || 0).toFixed(2)}</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{item.qty}</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{pkr(item.rate)}</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 700, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{pkr(item.amount)}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 700, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>1</td>
+                      <td style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "center", fontWeight: 600, wordBreak: "break-word", boxSizing: "border-box", fontSize: 9 }}>{doc.description || "PRINTING & INSTALLATION WORK"}</td>
+                      <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>10</td>
+                      <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>12</td>
+                      <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", fontWeight: 700, color: "#0284C7", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>120.00</td>
+                      <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>1</td>
+                      <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{pkr(30)}</td>
+                      <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 700, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{pkr(netAmt)}</td>
+                    </tr>
+                  )}
+                  <tr style={{ fontWeight: 800, background: "#F8FAFC" }}>
+                    <td colSpan={4} style={{ border: "1px solid #000000", padding: "6px 4px", textAlign: "center", fontSize: 9, boxSizing: "border-box" }}>TOTAL PRINTING &amp; INSTALLATION</td>
+                    <td style={{ border: "1px solid #000000", padding: "6px 2px", textAlign: "center", fontWeight: 800, fontSize: 9, color: "#0369A1", boxSizing: "border-box" }}>
+                      {doc.printingItems && doc.printingItems.length > 0 ? doc.printingItems.reduce((s, i) => s + (Number(i.totalSqFt) || 0), 0).toFixed(1) : "120.0"} <span style={{ fontSize: 7.5 }}>SQ.FT</span>
                     </td>
-                    <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", fontWeight: 600, boxSizing: "border-box", verticalAlign: "middle", fontSize: 8.8 }}>20 × 10</td>
-                    <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", fontWeight: 700, boxSizing: "border-box", verticalAlign: "middle", fontSize: 9 }}>200</td>
-                    <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", fontWeight: 600, boxSizing: "border-box", verticalAlign: "middle", fontSize: 8.5 }}>—</td>
-                    <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", fontWeight: 600, boxSizing: "border-box", verticalAlign: "middle", fontSize: 8.5 }}>—</td>
-                    <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", fontWeight: 600, boxSizing: "border-box", verticalAlign: "middle", fontSize: 9 }}>30</td>
-                    <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", boxSizing: "border-box", verticalAlign: "middle", fontSize: 8.8 }}>{pkr(netAmt)}</td>
-                    <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 700, boxSizing: "border-box", verticalAlign: "middle", fontSize: 8.8 }}>{pkr(netAmt)}</td>
+                    <td colSpan={2} style={{ border: "1px solid #000000", padding: "6px 4px", textAlign: "center", fontSize: 9, color: "#475569", boxSizing: "border-box" }}>Subtotal:</td>
+                    <td style={{ border: "1px solid #000000", padding: "6px 2px", textAlign: "center", fontWeight: 800, fontSize: 9, boxSizing: "border-box" }}>{pkr(netAmt)}</td>
                   </tr>
-                )}
-                <tr style={{ fontWeight: 800, background: "#F8FAFC" }}>
-                  <td colSpan={3} style={{ border: "1px solid #000000", padding: "6px 4px", textAlign: "center", fontSize: 9, fontWeight: 700, boxSizing: "border-box" }}>
-                    TOTAL CAMPAIGN SQ.FT:
-                  </td>
-                  <td style={{ border: "1px solid #000000", padding: "6px 2px", textAlign: "center", fontWeight: 800, fontSize: 9, color: "#0284C7", boxSizing: "border-box" }}>
-                    {oohCalculatedSqft > 0 ? oohCalculatedSqft.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 1 }) : (doc.oohSites && doc.oohSites.length > 0 ? doc.oohSites.reduce((s, i) => s + (Number(i.sqft) || 0), 0).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 1 }) : "200")}
-                  </td>
-                  <td colSpan={4} style={{ border: "1px solid #000000", padding: "6px 4px", textAlign: "center", fontSize: 9, fontWeight: 700, color: "#334155", boxSizing: "border-box" }}>
-                    TOTAL NET AMOUNT:
-                  </td>
-                  <td style={{ border: "1px solid #000000", padding: "6px 2px", textAlign: "center", color: "#0F172A", fontWeight: 800, fontSize: 9, boxSizing: "border-box" }}>
-                    {pkr(netAmt)}
-                  </td>
-                </tr>
-                {renderTotals(8)}
-              </tbody>
-            </table>
-          ) : template === "EVENT" ? (
-            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", fontSize: 9, boxSizing: "border-box", tableLayout: "fixed" }}>
-              <colgroup>
-                <col style={{ width: "5%" }} />
-                <col style={{ width: "41%" }} />
-                <col style={{ width: "8%" }} />
-                <col style={{ width: "8%" }} />
-                <col style={{ width: "18%" }} />
-                <col style={{ width: "20%" }} />
-              </colgroup>
-              <thead>
-                <tr style={{ background: "#F1F5F9", color: "#0F172A" }}>
-                  <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box" }}>S.NO</th>
-                  <th style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", wordBreak: "break-word" }}>SERVICE / DESCRIPTION</th>
-                  <th style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box" }}>QTY</th>
-                  <th style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box" }}>UNIT</th>
-                  <th style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", fontSize: 8.2, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", lineHeight: 1.15 }}>RATE<br/>(PKR)</th>
-                  <th style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", fontSize: 8.2, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", lineHeight: 1.15 }}>AMOUNT<br/>(PKR)</th>
-                </tr>
-              </thead>
-              <tbody>
-                {doc.eventItems && doc.eventItems.length > 0 ? (
-                  doc.eventItems.map((item, idx) => (
-                    <tr key={idx} style={{ minHeight: 28 }}>
-                      <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 700, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{idx + 1}</td>
-                      <td style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "center", fontWeight: 600, boxSizing: "border-box", wordBreak: "break-word", verticalAlign: "middle", fontSize: 9 }}>{item.description}</td>
-                      <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", fontWeight: 700, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{item.qty}</td>
-                      <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{item.unit}</td>
-                      <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{pkr(item.rate)}</td>
-                      <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 700, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{pkr(item.amount)}</td>
+                  {renderTotals(7)}
+                </tbody>
+              </table>
+            ) : template === "OOH" || (doc.oohSites && doc.oohSites.length > 0) ? (
+              <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", fontSize: 9, boxSizing: "border-box", tableLayout: "fixed" }}>
+                <colgroup>
+                  <col style={{ width: "4%" }} />
+                  <col style={{ width: "22%" }} />
+                  <col style={{ width: "11%" }} />
+                  <col style={{ width: "9%" }} />
+                  <col style={{ width: "10.5%" }} />
+                  <col style={{ width: "10.5%" }} />
+                  <col style={{ width: "6%" }} />
+                  <col style={{ width: "13%" }} />
+                  <col style={{ width: "14%" }} />
+                </colgroup>
+                <thead>
+                  <tr style={{ background: "#F1F5F9", color: "#0F172A" }}>
+                    <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box" }}>#</th>
+                    <th style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", wordBreak: "break-word" }}>LOCATION / AREA</th>
+                    <th style={{ border: "1px solid #000000", padding: "4px 1px", textAlign: "center", fontSize: 8.2, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", lineHeight: 1.15 }}>SIZE<br/>(W x H)</th>
+                    <th style={{ border: "1px solid #000000", padding: "4px 1px", textAlign: "center", fontSize: 8.2, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", lineHeight: 1.15 }}>TOTAL<br/>SQ. FT.</th>
+                    <th style={{ border: "1px solid #000000", padding: "4px 1px", textAlign: "center", fontSize: 8.2, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", lineHeight: 1.15 }}>FROM<br/>DATE</th>
+                    <th style={{ border: "1px solid #000000", padding: "4px 1px", textAlign: "center", fontSize: 8.2, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", lineHeight: 1.15 }}>TO<br/>DATE</th>
+                    <th style={{ border: "1px solid #000000", padding: "4px 1px", textAlign: "center", fontSize: 8.2, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", lineHeight: 1.15 }}>DAYS</th>
+                    <th style={{ border: "1px solid #000000", padding: "4px 1px", textAlign: "center", fontSize: 8.2, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", lineHeight: 1.15 }}>MONTHLY<br/>RATE</th>
+                    <th style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", fontSize: 8.2, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", lineHeight: 1.15 }}>AMOUNT<br/>(PKR)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {doc.oohSites && doc.oohSites.length > 0 ? (
+                    doc.oohSites.map((site, idx) => (
+                      <tr key={idx} style={{ minHeight: 28 }}>
+                        <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 700, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{idx + 1}</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "center", fontWeight: 600, wordBreak: "break-word", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{site.location || site.name || `OOH Site #${idx + 1}`}</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{site.width && site.height ? `${site.width} x ${site.height}` : (site.size || "10 x 20")}</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", fontWeight: 700, color: "#0284C7", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{site.sqft || (site.width && site.height ? site.width * site.height : 200)}</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 8.5 }}>{fmtDate(site.fromDate || doc.date || TODAY)}</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 8.5 }}>{fmtDate(site.toDate || doc.dueDate || TODAY)}</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", fontWeight: 700, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{site.days || site.duration || 30}</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{pkr(site.rate || site.pricePerMonth || 0)}</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 700, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{pkr(site.amount !== undefined ? site.amount : (((Number(site.rate || site.pricePerMonth) || 0) / 30) * (Number(site.days || site.duration) || 30)))}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 700, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>1</td>
+                      <td style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "center", fontWeight: 600, wordBreak: "break-word", boxSizing: "border-box", fontSize: 9 }}>{doc.description || "OOH Billboard Display"}</td>
+                      <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>10 x 20</td>
+                      <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", fontWeight: 700, color: "#0284C7", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>200</td>
+                      <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 8.5 }}>{fmtDate(doc.date || TODAY)}</td>
+                      <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 8.5 }}>{fmtDate(doc.dueDate || TODAY)}</td>
+                      <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", fontWeight: 700, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>30</td>
+                      <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{pkr(netAmt)}</td>
+                      <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 700, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{pkr(netAmt)}</td>
                     </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 700, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>1</td>
-                    <td style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "center", fontWeight: 600, verticalAlign: "middle", boxSizing: "border-box", wordBreak: "break-word", fontSize: 9 }}>{doc.description || "Event Execution Service"}</td>
-                    <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", fontWeight: 700, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>1</td>
-                    <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>NOS</td>
-                    <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{pkr(netAmt)}</td>
-                    <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 700, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{pkr(netAmt)}</td>
+                  )}
+                  <tr style={{ fontWeight: 800, background: "#F8FAFC" }}>
+                    <td colSpan={3} style={{ border: "1px solid #000000", padding: "6px 4px", textAlign: "center", fontSize: 9, fontWeight: 700, boxSizing: "border-box" }}>
+                      TOTAL CAMPAIGN SQ.FT:
+                    </td>
+                    <td style={{ border: "1px solid #000000", padding: "6px 2px", textAlign: "center", fontWeight: 800, fontSize: 9, color: "#0284C7", boxSizing: "border-box" }}>
+                      {oohCalculatedSqft > 0 ? oohCalculatedSqft.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 1 }) : (doc.oohSites && doc.oohSites.length > 0 ? doc.oohSites.reduce((s, i) => s + (Number(i.sqft) || 0), 0).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 1 }) : "200")}
+                    </td>
+                    <td colSpan={4} style={{ border: "1px solid #000000", padding: "6px 4px", textAlign: "center", fontSize: 9, fontWeight: 700, color: "#334155", boxSizing: "border-box" }}>
+                      TOTAL NET AMOUNT:
+                    </td>
+                    <td style={{ border: "1px solid #000000", padding: "6px 2px", textAlign: "center", color: "#0F172A", fontWeight: 800, fontSize: 9, boxSizing: "border-box" }}>
+                      {pkr(netAmt)}
+                    </td>
                   </tr>
-                )}
-                {renderTotals(5)}
-              </tbody>
-            </table>
-          ) : template === "PRINT_MEDIA" ? (
-            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", fontSize: 9, boxSizing: "border-box", tableLayout: "fixed" }}>
-              <colgroup>
-                <col style={{ width: "5%" }} />
-                <col style={{ width: "28%" }} />
-                <col style={{ width: "18%" }} />
-                <col style={{ width: "12%" }} />
-                <col style={{ width: "7%" }} />
-                <col style={{ width: "14%" }} />
-                <col style={{ width: "16%" }} />
-              </colgroup>
-              <thead>
-                <tr style={{ background: "#F1F5F9", color: "#0F172A" }}>
-                  <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box" }}>S.NO</th>
-                  <th style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", wordBreak: "break-word" }}>SERVICE / DESCRIPTION</th>
-                  <th style={{ border: "1px solid #000000", padding: "5px 3px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", wordBreak: "break-word" }}>PUBLICATION / MEDIA</th>
-                  <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box" }}>SIZE / FORMAT</th>
-                  <th style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box" }}>QTY</th>
-                  <th style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", fontSize: 8.2, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", lineHeight: 1.15 }}>RATE<br/>(PKR)</th>
-                  <th style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", fontSize: 8.2, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", lineHeight: 1.15 }}>AMOUNT<br/>(PKR)</th>
-                </tr>
-              </thead>
-              <tbody>
-                {doc.printMediaItems && doc.printMediaItems.length > 0 ? (
-                  doc.printMediaItems.map((item, idx) => (
-                    <tr key={idx} style={{ minHeight: 28 }}>
-                      <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 700, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{idx + 1}</td>
-                      <td style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "center", fontWeight: 600, wordBreak: "break-word", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{item.description || doc.description}</td>
-                      <td style={{ border: "1px solid #000000", padding: "5px 3px", textAlign: "center", verticalAlign: "middle", wordBreak: "break-word", boxSizing: "border-box", fontSize: 9 }}>{item.publication}</td>
-                      <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{item.size}</td>
-                      <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", fontWeight: 700, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{item.qty}</td>
-                      <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{pkr(item.rate)}</td>
-                      <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 700, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{pkr(item.amount)}</td>
+                  {renderTotals(8)}
+                </tbody>
+              </table>
+            ) : template === "EVENT" ? (
+              <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", fontSize: 9, boxSizing: "border-box", tableLayout: "fixed" }}>
+                <colgroup>
+                  <col style={{ width: "5%" }} />
+                  <col style={{ width: "41%" }} />
+                  <col style={{ width: "8%" }} />
+                  <col style={{ width: "8%" }} />
+                  <col style={{ width: "18%" }} />
+                  <col style={{ width: "20%" }} />
+                </colgroup>
+                <thead>
+                  <tr style={{ background: "#F1F5F9", color: "#0F172A" }}>
+                    <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box" }}>S.NO</th>
+                    <th style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", wordBreak: "break-word" }}>SERVICE / DESCRIPTION</th>
+                    <th style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box" }}>QTY</th>
+                    <th style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box" }}>UNIT</th>
+                    <th style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", fontSize: 8.2, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", lineHeight: 1.15 }}>RATE<br/>(PKR)</th>
+                    <th style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", fontSize: 8.2, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", lineHeight: 1.15 }}>AMOUNT<br/>(PKR)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {doc.eventItems && doc.eventItems.length > 0 ? (
+                    doc.eventItems.map((item, idx) => (
+                      <tr key={idx} style={{ minHeight: 28 }}>
+                        <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 700, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{idx + 1}</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "center", fontWeight: 600, boxSizing: "border-box", wordBreak: "break-word", verticalAlign: "middle", fontSize: 9 }}>{item.description}</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", fontWeight: 700, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{item.qty}</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{item.unit}</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{pkr(item.rate)}</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 700, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{pkr(item.amount)}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 700, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>1</td>
+                      <td style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "center", fontWeight: 600, verticalAlign: "middle", boxSizing: "border-box", wordBreak: "break-word", fontSize: 9 }}>{doc.description || "Event Execution Service"}</td>
+                      <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", fontWeight: 700, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>1</td>
+                      <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>NOS</td>
+                      <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{pkr(netAmt)}</td>
+                      <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 700, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{pkr(netAmt)}</td>
                     </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={7} style={{ border: "1px solid #000000", padding: "6px 4px", textAlign: "center", color: "#64748B", boxSizing: "border-box", fontSize: 9 }}>No print media items found.</td>
+                  )}
+                  {renderTotals(5)}
+                </tbody>
+              </table>
+            ) : template === "PRINT_MEDIA" ? (
+              <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", fontSize: 9, boxSizing: "border-box", tableLayout: "fixed" }}>
+                <colgroup>
+                  <col style={{ width: "5%" }} />
+                  <col style={{ width: "24%" }} />
+                  <col style={{ width: "19%" }} />
+                  <col style={{ width: "15%" }} />
+                  <col style={{ width: "8%" }} />
+                  <col style={{ width: "14%" }} />
+                  <col style={{ width: "15%" }} />
+                </colgroup>
+                <thead>
+                  <tr style={{ background: "#F1F5F9", color: "#0F172A" }}>
+                    <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box" }}>S.NO</th>
+                    <th style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", wordBreak: "break-word" }}>SERVICE / DESCRIPTION</th>
+                    <th style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", fontSize: 8.2, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", lineHeight: 1.15 }}>PUBLICATION /<br/>MEDIA</th>
+                    <th style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", fontSize: 8.2, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", lineHeight: 1.15 }}>SIZE /<br/>FORMAT</th>
+                    <th style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box" }}>QTY</th>
+                    <th style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", fontSize: 8.2, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", lineHeight: 1.15 }}>RATE<br/>(PKR)</th>
+                    <th style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", fontSize: 8.2, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", lineHeight: 1.15 }}>AMOUNT<br/>(PKR)</th>
                   </tr>
-                )}
-                {renderTotals(6)}
-              </tbody>
-            </table>
-          ) : (
-            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", fontSize: 9.5, boxSizing: "border-box", tableLayout: "fixed" }}>
-              <colgroup>
-                <col style={{ width: "5%" }} />
-                <col style={{ width: "47%" }} />
-                <col style={{ width: "8%" }} />
-                <col style={{ width: "18%" }} />
-                <col style={{ width: "22%" }} />
-              </colgroup>
-              <thead>
-                <tr style={{ background: "#F8FAFC", color: "#0F172A" }}>
-                  <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box" }}>S #</th>
-                  <th style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", wordBreak: "break-word" }}>DESCRIPTION / SCOPE PARTICULARS</th>
-                  <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box" }}>QTY</th>
-                  <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box" }}>RATE (PKR)</th>
-                  <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box" }}>AMOUNT (PKR)</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr style={{ minHeight: 50 }}>
-                  <td style={{ border: "1px solid #000000", padding: "6px 2px", textAlign: "center", verticalAlign: "middle", fontWeight: 700, boxSizing: "border-box", fontSize: 9 }}>1</td>
-                  <td style={{ border: "1px solid #000000", padding: "6px 5px", textAlign: "center", verticalAlign: "middle", wordBreak: "break-word", boxSizing: "border-box" }}>
-                    <div style={{ fontWeight: 700, fontSize: 10.5 }}>{doc.description || "Media & Production Scope"}</div>
-                    {doc.projectCode && <div style={{ fontSize: 9, color: "#64748B", marginTop: 2 }}>Project Reference: {doc.projectCode}</div>}
-                  </td>
-                  <td style={{ border: "1px solid #000000", padding: "6px 2px", textAlign: "center", verticalAlign: "middle", fontWeight: 700, boxSizing: "border-box", fontSize: 9 }}>1</td>
-                  <td style={{ border: "1px solid #000000", padding: "6px 2px", textAlign: "center", verticalAlign: "middle", fontWeight: 600, boxSizing: "border-box", fontSize: 9 }}>{pkr(netAmt)}</td>
-                  <td style={{ border: "1px solid #000000", padding: "6px 2px", textAlign: "center", fontWeight: 700, boxSizing: "border-box", fontSize: 9 }}>{pkr(netAmt)}</td>
-                </tr>
-                {renderTotals(4)}
-              </tbody>
-            </table>
-          )}
+                </thead>
+                <tbody>
+                  {doc.printMediaItems && doc.printMediaItems.length > 0 ? (
+                    doc.printMediaItems.map((item, idx) => (
+                      <tr key={idx} style={{ minHeight: 28 }}>
+                        <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 700, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{idx + 1}</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "center", fontWeight: 600, wordBreak: "break-word", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{item.description || doc.description}</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 3px", textAlign: "center", verticalAlign: "middle", wordBreak: "break-word", boxSizing: "border-box", fontSize: 9 }}>{item.publication}</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{item.size}</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", fontWeight: 700, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{item.qty}</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{pkr(item.rate)}</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 700, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{pkr(item.amount)}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={7} style={{ border: "1px solid #000000", padding: "6px 4px", textAlign: "center", color: "#64748B", boxSizing: "border-box", fontSize: 9 }}>No print media items found.</td>
+                    </tr>
+                  )}
+                  {renderTotals(6)}
+                </tbody>
+              </table>
+            ) : (
+              <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", fontSize: 9.5, boxSizing: "border-box", tableLayout: "fixed" }}>
+                <colgroup>
+                  <col style={{ width: "5%" }} />
+                  <col style={{ width: "47%" }} />
+                  <col style={{ width: "8%" }} />
+                  <col style={{ width: "18%" }} />
+                  <col style={{ width: "22%" }} />
+                </colgroup>
+                <thead>
+                  <tr style={{ background: "#F8FAFC", color: "#0F172A" }}>
+                    <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box" }}>S #</th>
+                    <th style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box", wordBreak: "break-word" }}>DESCRIPTION / SCOPE PARTICULARS</th>
+                    <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box" }}>QTY</th>
+                    <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box" }}>RATE (PKR)</th>
+                    <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box" }}>AMOUNT (PKR)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr style={{ minHeight: 50 }}>
+                    <td style={{ border: "1px solid #000000", padding: "6px 2px", textAlign: "center", verticalAlign: "middle", fontWeight: 700, boxSizing: "border-box", fontSize: 9 }}>1</td>
+                    <td style={{ border: "1px solid #000000", padding: "6px 5px", textAlign: "center", verticalAlign: "middle", wordBreak: "break-word", boxSizing: "border-box" }}>
+                      <div style={{ fontWeight: 700, fontSize: 10.5 }}>{doc.description || "Media & Production Scope"}</div>
+                      {doc.projectCode && <div style={{ fontSize: 9, color: "#64748B", marginTop: 2 }}>Project Reference: {doc.projectCode}</div>}
+                    </td>
+                    <td style={{ border: "1px solid #000000", padding: "6px 2px", textAlign: "center", verticalAlign: "middle", fontWeight: 700, boxSizing: "border-box", fontSize: 9 }}>1</td>
+                    <td style={{ border: "1px solid #000000", padding: "6px 2px", textAlign: "center", verticalAlign: "middle", fontWeight: 600, boxSizing: "border-box", fontSize: 9 }}>{pkr(netAmt)}</td>
+                    <td style={{ border: "1px solid #000000", padding: "6px 2px", textAlign: "center", fontWeight: 700, boxSizing: "border-box", fontSize: 9 }}>{pkr(netAmt)}</td>
+                  </tr>
+                  {renderTotals(4)}
+                </tbody>
+              </table>
+            )}
 
-          {/* BOTTOM SECTION: AMOUNT IN WORDS, NOTES, SIGNATURES & FOOTER */}
-          <div style={{ marginTop: 8 }}>
             {/* AMOUNT IN WORDS */}
             <div style={{ fontSize: 10.5, fontStyle: "italic", marginBottom: 8, background: "#F8FAFC", padding: "5px 10px", border: "1px solid #000000", borderRadius: 4 }}>
               Amount in words: <b style={{ fontStyle: "normal", color: "#000000" }}>{amountInWords(totalAmt)}</b>
             </div>
 
             {/* SPECIAL NOTES & TERMS SECTION */}
-            <div style={{ fontSize: 9.2, lineHeight: 1.35, marginBottom: 12, color: "#1E293B", background: "#F8FAFC", padding: "6px 10px", border: "1px solid #000000", borderRadius: 6 }}>
+            <div style={{ fontSize: 9.2, lineHeight: 1.35, color: "#1E293B", background: "#F8FAFC", padding: "6px 10px", border: "1px solid #000000", borderRadius: 6 }}>
               <div style={{ fontWeight: 800, textDecoration: "underline", marginBottom: 3, color: "#0F172A", textTransform: "uppercase", fontSize: 9.5 }}>
                 Special Notes &amp; Terms:
               </div>
@@ -13382,19 +13368,22 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
                 </>
               )}
             </div>
+          </div>
 
-            {/* SIGNATURES - BROUGHT UP NEATLY WITH PROFESSIONAL SPACING */}
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginTop: 18, marginBottom: 14, fontSize: 10.5, fontWeight: 700 }}>
+          {/* BOTTOM PINNED FOOTER: SIGNATURES & RED BANNER (DIRECTLY TOGETHER AT BOTTOM) */}
+          <div style={{ marginTop: "auto", paddingTop: 16 }}>
+            {/* SIGNATURES - DIRECTLY ABOVE RED BANNER */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 12, fontSize: 10.5, fontWeight: 700 }}>
               <div style={{ textAlign: "center", width: 210 }}>
-                <div style={{ borderTop: "1.5px solid #000000", paddingTop: 5, letterSpacing: "0.4px" }}>ACCOUNTANT SIGNATURE</div>
+                <div style={{ borderTop: "1.5px solid #000000", paddingTop: 4, letterSpacing: "0.3px" }}>ACCOUNTANT SIGNATURE</div>
               </div>
               <div style={{ textAlign: "center", width: 210 }}>
-                <div style={{ borderTop: "1.5px solid #000000", paddingTop: 5, letterSpacing: "0.4px" }}>RECEIVER'S SIGNATURE</div>
+                <div style={{ borderTop: "1.5px solid #000000", paddingTop: 4, letterSpacing: "0.3px" }}>RECEIVER'S SIGNATURE</div>
               </div>
             </div>
 
             {/* FOOTER BRAND BANNER */}
-            <div className="invoice-footer-banner" style={{ background: "#A81C1C", backgroundImage: "linear-gradient(90deg, #A81C1C 0%, #1D3B4E 100%)", color: "#FFFFFF", padding: "6px 12px", borderRadius: 4, display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 9.5, fontWeight: 600, marginTop: 8, boxSizing: "border-box", WebkitPrintColorAdjust: "exact", printColorAdjust: "exact" }}>
+            <div className="invoice-footer-banner" style={{ background: "#A81C1C", backgroundImage: "linear-gradient(90deg, #A81C1C 0%, #1D3B4E 100%)", color: "#FFFFFF", padding: "6px 12px", borderRadius: 4, display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 9.5, fontWeight: 600, boxSizing: "border-box", WebkitPrintColorAdjust: "exact", printColorAdjust: "exact" }}>
               <div>📞 +92 21 37526834</div>
               <div>✉️ communication@adpulse.pk | 🌐 www.adpulse.pk</div>
               <div>📍 Office # 213, 2nd Floor, Park Tower, Block 5 Clifton, Karachi.</div>
