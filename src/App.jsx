@@ -13399,94 +13399,240 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
 
 
 
+function exportProjectStatementToExcel({ project, invoices, expenses, totalBilled, totalCost, netMargin }) {
+  const pName = (project.name || "Project").replace(/[^a-zA-Z0-9]/g, "_");
+  const filename = `Project_Statement_${pName}_${project.projectCode || project.id || ""}.xls`;
+
+  let rowsHtml = "";
+  invoices.forEach((inv, idx) => {
+    const bg = idx % 2 === 0 ? "#FFFFFF" : "#F8FAFC";
+    rowsHtml += `
+      <tr style="background-color: ${bg};">
+        <td style="border: 1px solid #CBD5E1; padding: 6px; font-family: monospace; text-align: center;">${inv.issueDate}</td>
+        <td style="border: 1px solid #CBD5E1; padding: 6px; font-family: monospace; font-weight: bold; text-align: center;">${inv.invoiceNo || inv.id}</td>
+        <td style="border: 1px solid #CBD5E1; padding: 6px;">${inv.description || "Milestone Deliverable"}</td>
+        <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: right; mso-number-format:'\\#\\,\\#\\#0';">${inv.amount || 0}</td>
+        <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: right; mso-number-format:'\\#\\,\\#\\#0';">${inv.applySst ? (inv.sstAmount || 0) : 0}</td>
+        <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: right; font-weight: bold; mso-number-format:'\\#\\,\\#\\#0';">${inv.totalAmount || inv.amount || 0}</td>
+      </tr>
+    `;
+  });
+
+  const tableHtml = `
+    <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+    <head>
+      <meta http-equiv="content-type" content="text/plain; charset=UTF-8"/>
+      <style>
+        body { font-family: Calibri, 'Segoe UI', Arial, sans-serif; font-size: 11pt; color: #0F172A; }
+      </style>
+    </head>
+    <body>
+      <table style="width: 100%; border-collapse: collapse;">
+        <tr>
+          <td colspan="6" style="font-size: 16pt; font-weight: bold; color: #1E293B; padding-bottom: 4px;">AdPulse IMC (Private) Ltd</td>
+        </tr>
+        <tr>
+          <td colspan="6" style="font-size: 12pt; font-weight: bold; color: #1E3A8A; padding-bottom: 12px;">PROJECT FINANCIAL STATEMENT & DELIVERABLES</td>
+        </tr>
+        <tr style="background-color: #F8FAFC;">
+          <td colspan="3" style="border: 1px solid #CBD5E1; padding: 6px;"><b>Project:</b> ${project.name} (${project.projectCode || project.id})</td>
+          <td colspan="3" style="border: 1px solid #CBD5E1; padding: 6px;"><b>Client:</b> ${project.client}</td>
+        </tr>
+        <tr style="background-color: #F8FAFC;">
+          <td colspan="3" style="border: 1px solid #CBD5E1; padding: 6px;"><b>Service Line:</b> ${project.type}</td>
+          <td colspan="3" style="border: 1px solid #CBD5E1; padding: 6px;"><b>Timeline:</b> ${project.startDate} to ${project.endDate}</td>
+        </tr>
+        <tr><td colspan="6" style="height: 14px;"></td></tr>
+        <tr style="background-color: #F1F5F9; font-weight: bold;">
+          <td colspan="2" style="border: 1px solid #CBD5E1; padding: 8px; text-align: center; color: #0284C7;">Total Billed: PKR ${totalBilled.toLocaleString()}</td>
+          <td colspan="2" style="border: 1px solid #CBD5E1; padding: 8px; text-align: center; color: #DC2626;">Production Cost: PKR ${totalCost.toLocaleString()}</td>
+          <td colspan="2" style="border: 1.5px solid #059669; padding: 8px; text-align: center; background-color: #D1FAE5; color: #047857;">Agency Net Margin: PKR ${netMargin.toLocaleString()}</td>
+        </tr>
+        <tr><td colspan="6" style="height: 14px;"></td></tr>
+        <tr style="background-color: #0F172A; color: #FFFFFF; font-weight: bold; text-align: center;">
+          <th style="border: 1px solid #000; padding: 8px; width: 110px;">Date</th>
+          <th style="border: 1px solid #000; padding: 8px; width: 110px;">Invoice Ref</th>
+          <th style="border: 1px solid #000; padding: 8px; width: 260px;">Milestone / Deliverable</th>
+          <th style="border: 1px solid #000; padding: 8px; width: 130px; text-align: right;">Gross (PKR)</th>
+          <th style="border: 1px solid #000; padding: 8px; width: 110px; text-align: right;">SST 15% (PKR)</th>
+          <th style="border: 1px solid #000; padding: 8px; width: 140px; text-align: right;">Net Billed (PKR)</th>
+        </tr>
+        ${rowsHtml}
+        <tr style="background-color: #0F172A; color: #FFFFFF; font-weight: bold;">
+          <td colspan="5" style="border: 1px solid #000; padding: 8px; text-align: right;">Total Billed Project Net</td>
+          <td style="border: 1px solid #000; padding: 8px; text-align: right; color: #BAE6FD; font-size: 12pt; mso-number-format:'\\#\\,\\#\\#0';">${totalBilled}</td>
+        </tr>
+      </table>
+    </body>
+    </html>
+  `;
+
+  const blob = new Blob([tableHtml], { type: "application/vnd.ms-excel;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
 function ClientStatementPrintModal({ clientName, invoices, projects, onClose }) {
   const [pageSize, setPageSize] = useState("A4");
-  const clientInvoices = invoices.filter(i => i.client.toLowerCase() === clientName.toLowerCase());
-  const clientProjects = projects.filter(p => p.client.toLowerCase() === clientName.toLowerCase());
-  const totalBilled = clientInvoices.reduce((s, i) => s + (i.totalAmount || i.amount), 0);
-  const totalPaid = clientInvoices.filter(i => i.paid).reduce((s, i) => s + (i.totalAmount || i.amount), 0);
+  const printRef = useRef(null);
+
+  const clientInvoices = invoices.filter(i => (i.client || "").toLowerCase() === (clientName || "").toLowerCase());
+  const clientProjects = projects.filter(p => (p.client || "").toLowerCase() === (clientName || "").toLowerCase());
+  const totalBilled = clientInvoices.reduce((s, i) => s + (Number(i.totalAmount || i.amount) || 0), 0);
+  const totalPaid = clientInvoices.filter(i => i.paid).reduce((s, i) => s + (Number(i.totalAmount || i.amount) || 0), 0);
   const totalOutstanding = totalBilled - totalPaid;
-  const statementPrintHeightMm = pageContentHeightMm(pageSize, "portrait", "8mm");
+
+  const handleExportPDF = () => {
+    const printEl = printRef.current;
+    if (!printEl) return;
+    const cName = (clientName || "Client").replace(/[^a-zA-Z0-9]/g, "_");
+
+    const triggerPdf = () => {
+      if (window.html2pdf) {
+        const opt = {
+          margin: 8,
+          filename: `Client_Statement_${cName}.pdf`,
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { scale: 2, useCORS: true },
+          jsPDF: { unit: 'mm', format: (pageSize || "A4").toLowerCase(), orientation: "portrait" }
+        };
+        window.html2pdf().set(opt).from(printEl).save();
+      } else {
+        window.print();
+      }
+    };
+
+    if (window.html2pdf) {
+      triggerPdf();
+    } else {
+      const script = document.createElement("script");
+      script.src = "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
+      script.onload = triggerPdf;
+      script.onerror = () => window.print();
+      document.head.appendChild(script);
+    }
+  };
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <style>{`
-        @page { size: ${PAGE_SIZES[pageSize]}; margin: 8mm; }
+        @page { size: ${pageSize} portrait; margin: 8mm; }
         @media print {
-          .no-print-header { display: none !important; }
-          .modal-backdrop { background: none !important; padding: 0 !important; }
+          .no-print-header, .sidebar, .topbar, .btn, .mobile-toggle { display: none !important; }
+          .modal-backdrop { background: none !important; padding: 0 !important; position: static !important; display: block !important; width: 100% !important; max-width: 100% !important; margin: 0 !important; }
           .modal { box-shadow: none !important; border: none !important; width: 100% !important; max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
-          .print-area { padding: 0 !important; border: none !important; min-height: ${statementPrintHeightMm}mm !important; display: flex !important; flex-direction: column !important; justify-content: space-between !important; }
+          .print-area { padding: 0 !important; border: none !important; min-height: 880px !important; display: flex !important; flex-direction: column !important; justify-content: space-between !important; }
           .invoice-footer-banner { background: #A81C1C !important; background-image: linear-gradient(90deg, #A81C1C 0%, #1D3B4E 100%) !important; color: #ffffff !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; display: flex !important; margin-top: auto !important; }
         }
       `}</style>
-      <div className="modal" style={{ width: 780, maxWidth: "95vw" }} onClick={e => e.stopPropagation()}>
-        <div className="no-print-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
-          <div className="section-title" style={{ margin: 0 }}>Client Statement Preview</div>
-          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-            <select value={pageSize} onChange={e => setPageSize(e.target.value)} style={{ background: "#FFFFFF", border: "1px solid #CBD5E1", borderRadius: 8, color: "#0F172A", fontSize: 13, padding: "6px 10px" }}>
-              {Object.keys(PAGE_SIZES).map(p => <option key={p} style={{ background: "#FFFFFF", color: "#0F172A" }}>{p}</option>)}
+      <div className="modal" style={{ width: 900, maxWidth: "98vw", maxHeight: "94vh", overflowY: "auto" }} onClick={e => e.stopPropagation()}>
+        {/* MODAL TOP TOOLBAR */}
+        <div className="no-print-header" style={{ marginBottom: 14, background: "#1E293B", padding: "12px 16px", borderRadius: 10, color: "#fff", border: "1px solid #334155", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 10 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <span style={{ fontWeight: 800, fontSize: 13.5, color: "#0284C7", display: "flex", alignItems: "center", gap: 5 }}>
+              <FileText size={16} /> Client Statement Preview
+            </span>
+          </div>
+
+          <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+            <select value={pageSize} onChange={e => setPageSize(e.target.value)} style={{ background: "#0F172A", border: "1px solid #334155", borderRadius: 8, color: "#FFF", fontSize: 12.5, fontWeight: 700, padding: "5px 10px", cursor: "pointer" }}>
+              <option value="A4" style={{ background: "#1E293B", color: "#FFFFFF" }}>A4 (210 x 297 mm)</option>
+              <option value="Letter" style={{ background: "#1E293B", color: "#FFFFFF" }}>Letter (8.5 x 11 in)</option>
+              <option value="Legal" style={{ background: "#1E293B", color: "#FFFFFF" }}>Legal (8.5 x 14 in)</option>
             </select>
-            <button className="btn btn-primary" style={{ padding: "6px 12px", fontSize: 13 }} onClick={() => window.print()}><Printer size={14} /> Print Statement</button>
-            <button className="btn" style={{ padding: 5 }} onClick={onClose}><X size={15} /></button>
+            <button className="btn btn-primary" style={{ padding: "6px 12px", fontSize: 12.5, fontWeight: 700, background: "#0284C7", borderColor: "#0284C7" }} onClick={handleExportPDF}>
+              <Download size={14} /> Download PDF
+            </button>
+            <button className="btn" style={{ background: "#475569", color: "#FFFFFF", border: "none", padding: "6px 12px", fontSize: 12.5, fontWeight: 700 }} onClick={() => window.print()}>
+              <Printer size={14} /> Print
+            </button>
+            <button className="btn" style={{ background: "var(--rose)", color: "#fff", border: "none", padding: "5px 9px" }} onClick={onClose}><X size={15} /></button>
           </div>
         </div>
 
-        <div className="print-area" style={{ background: "#ffffff", color: "#0F172A", borderRadius: 10, padding: 24, fontFamily: "'Calibri', 'Inter', sans-serif", minHeight: "880px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+        {/* PRINTABLE AREA */}
+        <div ref={printRef} className="print-area" style={{ background: "#ffffff", color: "#0F172A", borderRadius: 10, padding: "20px 24px", fontFamily: "'Calibri', 'Inter', sans-serif", minHeight: "880px", display: "flex", flexDirection: "column", justifyContent: "space-between", boxSizing: "border-box" }}>
           <div>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "2px solid #0F172A", paddingBottom: 12, marginBottom: 16 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                <img src="./logo.png" alt="AdPulse Logo" style={{ maxHeight: 50, width: "auto" }} onError={(e) => { e.target.style.display = 'none'; }} />
+            {/* TOP HEADER */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "2px solid #0F172A", paddingBottom: 10, marginBottom: 12 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <img src="./logo.png" alt="AdPulse Logo" style={{ maxHeight: 46, width: "auto" }} onError={(e) => { e.target.style.display = 'none'; }} />
                 <div>
-                  <div style={{ fontSize: 20, fontWeight: 800, color: "#0F172A", letterSpacing: "-0.3px" }}>AdPulse IMC PVT LTD</div>
-                  <div style={{ fontSize: 11, color: "#475569" }}>Financial Management &amp; Client Ledger</div>
+                  <div style={{ fontSize: 18, fontWeight: 800, color: "#0F172A", letterSpacing: "-0.3px" }}>AdPulse IMC (Private) Ltd</div>
+                  <div style={{ fontSize: 10.5, color: "#475569" }}>Financial Management &amp; Client Ledger Activity</div>
                 </div>
               </div>
               <div style={{ textAlign: "right" }}>
-                <div style={{ fontSize: 15, fontWeight: 800, color: "#B8860B", textTransform: "uppercase" }}>CLIENT STATEMENT</div>
-                <div className="mono" style={{ fontSize: 12.5, fontWeight: 700, color: "#0F172A" }}>STMT-{clientName.replace(/\s+/g, "").toUpperCase().slice(0, 6)}</div>
+                <div style={{ fontSize: 14, fontWeight: 800, color: "#0284C7", textTransform: "uppercase" }}>CLIENT STATEMENT</div>
+                <div className="mono" style={{ fontSize: 11.5, fontWeight: 700, color: "#0F172A" }}>STMT-{clientName.replace(/\s+/g, "").toUpperCase().slice(0, 6)}</div>
               </div>
             </div>
 
-            <table style={{ width: "100%", fontSize: 12.5, marginBottom: 16, minWidth: 0 }}>
-              <tbody>
-                <tr><td style={{ padding: "3px 0", color: "#475569", width: 140 }}>Client Account:</td><td style={{ fontWeight: 800, fontSize: 14 }}>{clientName}</td></tr>
-                <tr><td style={{ padding: "3px 0", color: "#475569" }}>Statement Date:</td><td className="mono">{fmtDate(TODAY)}</td></tr>
-                <tr><td style={{ padding: "3px 0", color: "#475569" }}>Active Campaigns:</td><td>{clientProjects.map(p => p.name).join(", ") || "General Account"}</td></tr>
-              </tbody>
-            </table>
+            {/* CLIENT & PERIOD INFO BOX */}
+            <div style={{ background: "#F8FAFC", border: "1px solid #000000", borderRadius: 6, padding: "8px 12px", marginBottom: 12, display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: 10, fontSize: 10.5 }}>
+              <div>
+                <div style={{ marginBottom: 3 }}><b>Client Account:</b> <span style={{ fontWeight: 700, fontSize: 11, color: "#0F172A" }}>{clientName}</span></div>
+                <div><b>Active Campaigns:</b> {clientProjects.map(p => p.name).join(", ") || "General Account"}</div>
+              </div>
+              <div style={{ textAlign: "right" }}>
+                <div style={{ marginBottom: 3 }}><b>Statement Date:</b> <span style={{ fontWeight: 700 }}>{fmtDate(TODAY)}</span></div>
+                <div><b>Payment Terms:</b> Net 30</div>
+              </div>
+            </div>
 
-            <div style={{ fontSize: 12.5, fontWeight: 700, marginBottom: 8, color: "#0F172A" }}>Individual Invoice Ledger &amp; Billings</div>
-            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 16, minWidth: 0, fontSize: 11.5, tableLayout: "fixed" }}>
+            {/* SUMMARY CARDS */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8, marginBottom: 12 }}>
+              <div style={{ background: "#FFFFFF", padding: "6px 10px", borderRadius: 5, border: "1px solid #000000", textAlign: "center" }}>
+                <div style={{ fontSize: 8.5, color: "#0284C7", fontWeight: 700, textTransform: "uppercase" }}>Total Invoiced (+)</div>
+                <div style={{ fontSize: 11.5, fontWeight: 800, color: "#0284C7", marginTop: 2 }}>{pkr(totalBilled)}</div>
+              </div>
+              <div style={{ background: "#FFFFFF", padding: "6px 10px", borderRadius: 5, border: "1px solid #000000", textAlign: "center" }}>
+                <div style={{ fontSize: 8.5, color: "#059669", fontWeight: 700, textTransform: "uppercase" }}>Total Received (-)</div>
+                <div style={{ fontSize: 11.5, fontWeight: 800, color: "#059669", marginTop: 2 }}>{pkr(totalPaid)}</div>
+              </div>
+              <div style={{ background: "#E0F2FE", padding: "6px 10px", borderRadius: 5, border: "1.5px solid #0284C7", textAlign: "center" }}>
+                <div style={{ fontSize: 8.5, color: "#0369A1", fontWeight: 800, textTransform: "uppercase" }}>Net Outstanding</div>
+                <div style={{ fontSize: 12, fontWeight: 900, color: "#0369A1", marginTop: 2 }}>{pkr(totalOutstanding)}</div>
+              </div>
+            </div>
+
+            {/* TRANSACTIONS TABLE */}
+            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 12, fontSize: 9.5, tableLayout: "fixed" }}>
               <colgroup>
-                <col style={{ width: "15%" }} />
-                <col style={{ width: "35%" }} />
+                <col style={{ width: "14%" }} />
+                <col style={{ width: "36%" }} />
                 <col style={{ width: "12%" }} />
                 <col style={{ width: "12%" }} />
-                <col style={{ width: "13%" }} />
-                <col style={{ width: "13%" }} />
+                <col style={{ width: "12%" }} />
+                <col style={{ width: "14%" }} />
               </colgroup>
               <thead>
-                <tr style={{ background: "#F1F5F9" }}>
-                  <th style={{ textAlign: "left", border: "1px solid #000", padding: "6px 6px", fontSize: 10, fontWeight: 800 }}>ISSUE DATE</th>
-                  <th style={{ textAlign: "left", border: "1px solid #000", padding: "6px 6px", fontSize: 10, fontWeight: 800 }}>DESCRIPTION / SCOPE</th>
-                  <th style={{ textAlign: "center", border: "1px solid #000", padding: "6px 4px", fontSize: 10, fontWeight: 800 }}>STATUS</th>
-                  <th style={{ textAlign: "right", border: "1px solid #000", padding: "6px 6px", fontSize: 10, fontWeight: 800 }}>GROSS (PKR)</th>
-                  <th style={{ textAlign: "right", border: "1px solid #000", padding: "6px 6px", fontSize: 10, fontWeight: 800 }}>SST (15%)</th>
-                  <th style={{ textAlign: "right", border: "1px solid #000", padding: "6px 6px", fontSize: 10, fontWeight: 800 }}>NET BILLED</th>
+                <tr style={{ background: "#F1F5F9", color: "#0F172A" }}>
+                  <th style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "center", fontSize: 8.5, fontWeight: 800 }}>ISSUE DATE</th>
+                  <th style={{ border: "1px solid #000", padding: "5px 5px", textAlign: "left", fontSize: 8.5, fontWeight: 800 }}>DESCRIPTION / SCOPE</th>
+                  <th style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "center", fontSize: 8.5, fontWeight: 800 }}>STATUS</th>
+                  <th style={{ border: "1px solid #000", padding: "4px 3px", textAlign: "right", fontSize: 8, fontWeight: 800 }}>GROSS (PKR)</th>
+                  <th style={{ border: "1px solid #000", padding: "4px 3px", textAlign: "right", fontSize: 8, fontWeight: 800 }}>SST (15%)</th>
+                  <th style={{ border: "1px solid #000", padding: "4px 3px", textAlign: "right", fontSize: 8, fontWeight: 800 }}>NET BILLED</th>
                 </tr>
               </thead>
               <tbody>
                 {clientInvoices.map(inv => (
                   <tr key={inv.id}>
-                    <td className="mono" style={{ border: "1px solid #000", padding: "6px 6px", fontSize: 10.5 }}>{fmtDate(inv.issueDate)}</td>
-                    <td style={{ border: "1px solid #000", padding: "6px 6px", fontSize: 11, wordBreak: "break-word" }}>{inv.description}</td>
-                    <td style={{ border: "1px solid #000", padding: "6px 4px", textAlign: "center", fontSize: 10.5 }}>
-                      <span style={{ color: inv.paid ? "#059669" : "#D97706", fontWeight: 700 }}>{inv.paid ? "PAID" : "UNPAID"}</span>
+                    <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "center", fontSize: 9, whiteSpace: "nowrap" }}>{fmtDate(inv.issueDate)}</td>
+                    <td style={{ border: "1px solid #000", padding: "5px 5px", fontSize: 9, wordBreak: "break-word" }}>{inv.description}</td>
+                    <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "center", fontSize: 8.8, fontWeight: 700, color: inv.paid ? "#059669" : "#D97706" }}>
+                      {inv.paid ? "PAID" : "UNPAID"}
                     </td>
-                    <td className="mono" style={{ border: "1px solid #000", textAlign: "right", padding: "6px 6px", color: "#475569", fontSize: 10.5 }}>{pkr(inv.amount)}</td>
-                    <td className="mono" style={{ border: "1px solid #000", textAlign: "right", padding: "6px 6px", color: "#475569", fontSize: 10.5 }}>{inv.applySst ? pkr(inv.sstAmount) : "—"}</td>
-                    <td className="mono" style={{ border: "1px solid #000", textAlign: "right", padding: "6px 6px", fontWeight: 700, fontSize: 11 }}>{pkr(inv.totalAmount || inv.amount)}</td>
+                    <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "right", fontSize: 9, color: "#475569" }}>{pkr(inv.amount)}</td>
+                    <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "right", fontSize: 9, color: "#475569" }}>{inv.applySst ? pkr(inv.sstAmount) : "—"}</td>
+                    <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "right", fontWeight: 700, fontSize: 9.2, color: "#0F172A" }}>{pkr(inv.totalAmount || inv.amount)}</td>
                   </tr>
                 ))}
                 {clientInvoices.length === 0 && (
@@ -13494,36 +13640,48 @@ function ClientStatementPrintModal({ clientName, invoices, projects, onClose }) 
                 )}
               </tbody>
               <tfoot>
-                <tr style={{ background: "#F8FAFC" }}>
-                  <td colSpan={5} style={{ border: "1px solid #000", padding: "6px 8px", fontWeight: 700, textAlign: "right", fontSize: 11 }}>Total Billed</td>
-                  <td className="mono" style={{ border: "1px solid #000", textAlign: "right", padding: "6px 6px", fontWeight: 700, fontSize: 11.5 }}>{pkr(totalBilled)}</td>
+                <tr style={{ background: "#F8FAFC", fontWeight: 700 }}>
+                  <td colSpan={5} style={{ border: "1px solid #000", padding: "5px 6px", textAlign: "right", fontSize: 9 }}>Total Billed</td>
+                  <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "right", fontSize: 9.2 }}>{pkr(totalBilled)}</td>
                 </tr>
-                <tr style={{ background: "#F8FAFC" }}>
-                  <td colSpan={5} style={{ border: "1px solid #000", padding: "6px 8px", fontWeight: 700, fontSize: 11, color: "#059669", textAlign: "right" }}>Total Payments Received</td>
-                  <td className="mono" style={{ border: "1px solid #000", textAlign: "right", padding: "6px 6px", fontWeight: 700, fontSize: 11.5, color: "#059669" }}>({pkr(totalPaid)})</td>
+                <tr style={{ background: "#F8FAFC", fontWeight: 700 }}>
+                  <td colSpan={5} style={{ border: "1px solid #000", padding: "5px 6px", textAlign: "right", fontSize: 9, color: "#059669" }}>Total Payments Received</td>
+                  <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "right", fontSize: 9.2, color: "#059669" }}>({pkr(totalPaid)})</td>
                 </tr>
-                <tr style={{ background: "#F1F5F9" }}>
-                  <td colSpan={5} style={{ border: "1px solid #000", padding: "8px 8px", fontWeight: 800, fontSize: 12, textAlign: "right" }}>Net Balance Payable</td>
-                  <td className="mono" style={{ border: "1px solid #000", textAlign: "right", padding: "8px 6px", fontWeight: 800, fontSize: 13, color: "#B8860B" }}>{pkr(totalOutstanding)}</td>
+                <tr style={{ background: "#F1F5F9", fontWeight: 800 }}>
+                  <td colSpan={5} style={{ border: "1px solid #000", padding: "5px 6px", textAlign: "right", fontSize: 9.5 }}>Net Balance Payable</td>
+                  <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "right", fontSize: 10, color: "#0284C7" }}>{pkr(totalOutstanding)}</td>
                 </tr>
               </tfoot>
             </table>
 
-            <div style={{ fontSize: 11.5, fontStyle: "italic", color: "#334155", marginBottom: 20, background: "#F1F5F9", padding: "8px 12px", borderRadius: 6, border: "1px solid #000" }}>
-              Outstanding Balance in words: <b style={{ color: "#0F172A" }}>{amountInWords(totalOutstanding)}</b>
-            </div>
-
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#475569", paddingTop: 10 }}>
-              <div>Prepared by: ______________</div>
-              <div>Accounts Manager: ______________</div>
-              <div>Authorized Signatory: ______________</div>
+            {/* AMOUNT IN WORDS */}
+            <div style={{ fontSize: 9.5, fontStyle: "italic", color: "#334155", marginBottom: 12, background: "#F8FAFC", padding: "5px 8px", borderRadius: 4, border: "1px solid #000" }}>
+              Outstanding Balance in words: <b style={{ color: "#0F172A", fontStyle: "normal" }}>{amountInWords(totalOutstanding)}</b>
             </div>
           </div>
 
-          <div className="invoice-footer-banner" style={{ background: "#A81C1C", backgroundImage: "linear-gradient(90deg, #A81C1C 0%, #1D3B4E 100%)", color: "#FFFFFF", padding: "6px 12px", borderRadius: 4, display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 9.5, fontWeight: 600, marginTop: "auto", boxSizing: "border-box" }}>
-            <div>📞 +92 21 37526834</div>
-            <div>✉️ communication@adpulse.pk | 🌐 www.adpulse.pk</div>
-            <div>📍 Office # 213, 2nd Floor, Park Tower, Block 5 Clifton, Karachi.</div>
+          {/* BOTTOM PINNED: SIGNATURES & FOOTER */}
+          <div style={{ marginTop: "auto", paddingTop: 14 }}>
+            {/* SIGNATURES */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 10, fontSize: 9.5, fontWeight: 700 }}>
+              <div style={{ textAlign: "center", width: 190 }}>
+                <div style={{ borderTop: "1.5px solid #000000", paddingTop: 4, letterSpacing: "0.3px" }}>PREPARED BY</div>
+              </div>
+              <div style={{ textAlign: "center", width: 190 }}>
+                <div style={{ borderTop: "1.5px solid #000000", paddingTop: 4, letterSpacing: "0.3px" }}>ACCOUNTS MANAGER</div>
+              </div>
+              <div style={{ textAlign: "center", width: 190 }}>
+                <div style={{ borderTop: "1.5px solid #000000", paddingTop: 4, letterSpacing: "0.3px" }}>AUTHORIZED SIGNATORY</div>
+              </div>
+            </div>
+
+            {/* FOOTER BANNER */}
+            <div className="invoice-footer-banner" style={{ background: "#A81C1C", backgroundImage: "linear-gradient(90deg, #A81C1C 0%, #1D3B4E 100%)", color: "#FFFFFF", padding: "5px 12px", borderRadius: 4, display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 8.8, fontWeight: 600, boxSizing: "border-box" }}>
+              <div>📞 +92 21 37526834</div>
+              <div>✉️ communication@adpulse.pk | 🌐 www.adpulse.pk</div>
+              <div>📍 Office # 213, 2nd Floor, Park Tower, Block 5 Clifton, Karachi.</div>
+            </div>
           </div>
         </div>
       </div>
@@ -13533,120 +13691,217 @@ function ClientStatementPrintModal({ clientName, invoices, projects, onClose }) 
 
 function ProjectStatementPrintModal({ project, invoices, expenses, onClose }) {
   const [pageSize, setPageSize] = useState("A4");
+  const printRef = useRef(null);
+
   const projInvoices = invoices.filter(i => i.projectId === project.id);
   const projExpenses = expenses.filter(e => e.projectId === project.id);
-  const totalBilled = projInvoices.reduce((s, i) => s + (i.totalAmount || i.amount), 0);
-  const totalCost = projExpenses.reduce((s, e) => s + e.amount, 0);
+  const totalBilled = projInvoices.reduce((s, i) => s + (Number(i.totalAmount || i.amount) || 0), 0);
+  const totalCost = projExpenses.reduce((s, e) => s + (Number(e.amount) || 0), 0);
   const netMargin = totalBilled - totalCost;
-  const statementPrintHeightMm = pageContentHeightMm(pageSize, "portrait", "8mm");
+
+  const pkr = (val) => "PKR " + (Number(val) || 0).toLocaleString("en-PK", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+
+  const handleExportPDF = () => {
+    const printEl = printRef.current;
+    if (!printEl) return;
+    const pCode = (project.projectCode || project.id || "PRJ").replace(/[^a-zA-Z0-9]/g, "_");
+
+    const triggerPdf = () => {
+      if (window.html2pdf) {
+        const opt = {
+          margin: 8,
+          filename: `Project_Statement_${pCode}.pdf`,
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { scale: 2, useCORS: true },
+          jsPDF: { unit: 'mm', format: (pageSize || "A4").toLowerCase(), orientation: "portrait" }
+        };
+        window.html2pdf().set(opt).from(printEl).save();
+      } else {
+        window.print();
+      }
+    };
+
+    if (window.html2pdf) {
+      triggerPdf();
+    } else {
+      const script = document.createElement("script");
+      script.src = "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
+      script.onload = triggerPdf;
+      script.onerror = () => window.print();
+      document.head.appendChild(script);
+    }
+  };
+
+  const handleExportExcel = () => {
+    exportProjectStatementToExcel({ project, invoices: projInvoices, expenses: projExpenses, totalBilled, totalCost, netMargin });
+  };
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <style>{`
-        @page { size: ${PAGE_SIZES[pageSize]}; margin: 8mm; }
+        @page { size: ${pageSize} portrait; margin: 8mm; }
         @media print {
-          .no-print-header { display: none !important; }
-          .modal-backdrop { background: none !important; padding: 0 !important; }
+          .no-print-header, .sidebar, .topbar, .btn, .mobile-toggle { display: none !important; }
+          .modal-backdrop { background: none !important; padding: 0 !important; position: static !important; display: block !important; width: 100% !important; max-width: 100% !important; margin: 0 !important; }
           .modal { box-shadow: none !important; border: none !important; width: 100% !important; max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
-          .print-area { padding: 0 !important; border: none !important; min-height: ${statementPrintHeightMm}mm !important; display: flex !important; flex-direction: column !important; justify-content: space-between !important; }
+          .print-area { padding: 0 !important; border: none !important; min-height: 880px !important; display: flex !important; flex-direction: column !important; justify-content: space-between !important; }
           .invoice-footer-banner { background: #A81C1C !important; background-image: linear-gradient(90deg, #A81C1C 0%, #1D3B4E 100%) !important; color: #ffffff !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; display: flex !important; margin-top: auto !important; }
         }
       `}</style>
-      <div className="modal" style={{ width: 780, maxWidth: "95vw" }} onClick={e => e.stopPropagation()}>
-        <div className="no-print-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
-          <div className="section-title" style={{ margin: 0 }}>Project Statement Preview</div>
-          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-            <select value={pageSize} onChange={e => setPageSize(e.target.value)} style={{ background: "#FFFFFF", border: "1px solid #CBD5E1", borderRadius: 8, color: "#0F172A", fontSize: 13, padding: "6px 10px" }}>
-              {Object.keys(PAGE_SIZES).map(p => <option key={p}>{p}</option>)}
+      <div className="modal" style={{ width: 900, maxWidth: "98vw", maxHeight: "94vh", overflowY: "auto" }} onClick={e => e.stopPropagation()}>
+        {/* MODAL TOP TOOLBAR */}
+        <div className="no-print-header" style={{ marginBottom: 14, background: "#1E293B", padding: "12px 16px", borderRadius: 10, color: "#fff", border: "1px solid #334155", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 10 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <span style={{ fontWeight: 800, fontSize: 13.5, color: "#38BDF8", display: "flex", alignItems: "center", gap: 5 }}>
+              <FileText size={16} /> Project Statement Preview
+            </span>
+          </div>
+
+          <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+            <select value={pageSize} onChange={e => setPageSize(e.target.value)} style={{ background: "#0F172A", border: "1px solid #334155", borderRadius: 8, color: "#FFF", fontSize: 12.5, fontWeight: 700, padding: "5px 10px", cursor: "pointer" }}>
+              <option value="A4" style={{ background: "#1E293B", color: "#FFFFFF" }}>A4 (210 x 297 mm)</option>
+              <option value="Letter" style={{ background: "#1E293B", color: "#FFFFFF" }}>Letter (8.5 x 11 in)</option>
+              <option value="Legal" style={{ background: "#1E293B", color: "#FFFFFF" }}>Legal (8.5 x 14 in)</option>
             </select>
-            <button className="btn btn-primary" style={{ padding: "6px 12px", fontSize: 13 }} onClick={() => window.print()}><Printer size={14} /> Print Project Invoice</button>
-            <button className="btn" style={{ padding: 5 }} onClick={onClose}><X size={15} /></button>
+            <button className="btn btn-primary" style={{ padding: "6px 12px", fontSize: 12.5, fontWeight: 700, background: "#0284C7", borderColor: "#0284C7" }} onClick={handleExportPDF}>
+              <Download size={14} /> Download PDF
+            </button>
+            <button className="btn" style={{ background: "#059669", color: "#FFFFFF", border: "none", padding: "6px 12px", fontSize: 12.5, fontWeight: 700 }} onClick={handleExportExcel}>
+              <Download size={14} /> Download Excel
+            </button>
+            <button className="btn" style={{ background: "#475569", color: "#FFFFFF", border: "none", padding: "6px 12px", fontSize: 12.5, fontWeight: 700 }} onClick={() => window.print()}>
+              <Printer size={14} /> Print
+            </button>
+            <button className="btn" style={{ background: "var(--rose)", color: "#fff", border: "none", padding: "5px 9px" }} onClick={onClose}><X size={15} /></button>
           </div>
         </div>
 
-        <div className="print-area" style={{ background: "#ffffff", color: "#0F172A", borderRadius: 10, padding: 24, fontFamily: "'Calibri', 'Inter', sans-serif", minHeight: "880px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+        {/* PRINTABLE AREA */}
+        <div ref={printRef} className="print-area" style={{ background: "#ffffff", color: "#0F172A", borderRadius: 10, padding: "20px 24px", fontFamily: "'Calibri', 'Inter', sans-serif", minHeight: "880px", display: "flex", flexDirection: "column", justifyContent: "space-between", boxSizing: "border-box" }}>
           <div>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "2px solid #0F172A", paddingBottom: 12, marginBottom: 16 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                <img src="./logo.png" alt="AdPulse Logo" style={{ maxHeight: 50, width: "auto" }} onError={(e) => { e.target.style.display = 'none'; }} />
+            {/* TOP HEADER */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "2px solid #0F172A", paddingBottom: 10, marginBottom: 12 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <img src="./logo.png" alt="AdPulse Logo" style={{ maxHeight: 46, width: "auto" }} onError={(e) => { e.target.style.display = 'none'; }} />
                 <div>
-                  <div style={{ fontSize: 20, fontWeight: 800, color: "#0F172A", letterSpacing: "-0.3px" }}>AdPulse IMC PVT LTD</div>
-                  <div style={{ fontSize: 11, color: "#475569" }}>Project Financial Scope &amp; Deliverables</div>
+                  <div style={{ fontSize: 18, fontWeight: 800, color: "#0F172A", letterSpacing: "-0.3px" }}>AdPulse IMC (Private) Ltd</div>
+                  <div style={{ fontSize: 10.5, color: "#475569" }}>Creative Strategy, Media Planning &amp; Execution Agency</div>
                 </div>
               </div>
               <div style={{ textAlign: "right" }}>
-                <div style={{ fontSize: 15, fontWeight: 800, color: "#B8860B", textTransform: "uppercase" }}>PROJECT STATEMENT</div>
-                <div className="mono" style={{ fontSize: 12.5, fontWeight: 700, color: "#0F172A" }}>{project.projectCode || `PROJ-${project.name.replace(/\s+/g, "").toUpperCase().slice(0, 6)}`}</div>
+                <div style={{ fontSize: 14, fontWeight: 800, color: "#1E3A8A", textTransform: "uppercase" }}>PROJECT STATEMENT</div>
+                <div className="mono" style={{ fontSize: 11.5, fontWeight: 700, color: "#0F172A" }}>{project.projectCode || `PRJ-${project.name.replace(/\s+/g, "").toUpperCase().slice(0, 6)}`}</div>
               </div>
             </div>
 
-            <table style={{ width: "100%", fontSize: 12.5, marginBottom: 16, minWidth: 0 }}>
-              <tbody>
-                <tr><td style={{ padding: "3px 0", color: "#475569", width: 140 }}>Project Title:</td><td style={{ fontWeight: 800, fontSize: 14 }}>{project.name}</td></tr>
-                <tr><td style={{ padding: "3px 0", color: "#475569" }}>Client Account:</td><td style={{ fontWeight: 700 }}>{project.client}</td></tr>
-                <tr><td style={{ padding: "3px 0", color: "#475569" }}>Service Line:</td><td>{project.type}</td></tr>
-                <tr><td style={{ padding: "3px 0", color: "#475569" }}>Project Timeline:</td><td className="mono">{fmtDate(project.startDate)} – {fmtDate(project.endDate)}</td></tr>
-              </tbody>
-            </table>
+            {/* PROJECT & CLIENT INFO BOX */}
+            <div style={{ background: "#F8FAFC", border: "1px solid #000000", borderRadius: 6, padding: "8px 12px", marginBottom: 12, display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: 10, fontSize: 10.5 }}>
+              <div>
+                <div style={{ marginBottom: 3 }}><b>Project Title:</b> <span style={{ fontWeight: 700, fontSize: 11, color: "#0F172A" }}>{project.name}</span></div>
+                <div style={{ marginBottom: 3 }}><b>Client Account:</b> <span style={{ fontWeight: 600 }}>{project.client}</span></div>
+                <div><b>Service Line:</b> {project.type}</div>
+              </div>
+              <div style={{ textAlign: "right" }}>
+                <div style={{ marginBottom: 3 }}><b>Project Timeline:</b> <span style={{ fontWeight: 700 }}>{fmtDate(project.startDate)} – {fmtDate(project.endDate)}</span></div>
+                <div style={{ marginBottom: 3 }}><b>Project Status:</b> <span style={{ fontWeight: 700, color: project.status === "Completed" ? "#059669" : "#D97706" }}>{project.status || "Active"}</span></div>
+                <div><b>Project Ref:</b> <span className="mono">{project.projectCode || project.id}</span></div>
+              </div>
+            </div>
 
-            <div style={{ fontSize: 12.5, fontWeight: 700, marginBottom: 8, color: "#0F172A" }}>Project Billing Milestones &amp; Deliverables</div>
-            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 16, minWidth: 0, fontSize: 11.5, tableLayout: "fixed" }}>
+            {/* 4 SUMMARY METRIC CARDS */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, marginBottom: 12 }}>
+              <div style={{ background: "#FFFFFF", padding: "6px 10px", borderRadius: 5, border: "1px solid #000000", textAlign: "center" }}>
+                <div style={{ fontSize: 8.5, color: "#475569", fontWeight: 700, textTransform: "uppercase" }}>Project Budget</div>
+                <div style={{ fontSize: 11.5, fontWeight: 800, color: "#1E293B", marginTop: 2 }}>{pkr(project.budget || totalBilled)}</div>
+              </div>
+              <div style={{ background: "#FFFFFF", padding: "6px 10px", borderRadius: 5, border: "1px solid #000000", textAlign: "center" }}>
+                <div style={{ fontSize: 8.5, color: "#0284C7", fontWeight: 700, textTransform: "uppercase" }}>Total Billed (Net)</div>
+                <div style={{ fontSize: 11.5, fontWeight: 800, color: "#0284C7", marginTop: 2 }}>{pkr(totalBilled)}</div>
+              </div>
+              <div style={{ background: "#FFFFFF", padding: "6px 10px", borderRadius: 5, border: "1px solid #000000", textAlign: "center" }}>
+                <div style={{ fontSize: 8.5, color: "#DC2626", fontWeight: 700, textTransform: "uppercase" }}>Production Cost</div>
+                <div style={{ fontSize: 11.5, fontWeight: 800, color: "#DC2626", marginTop: 2 }}>{pkr(totalCost)}</div>
+              </div>
+              <div style={{ background: "#D1FAE5", padding: "6px 10px", borderRadius: 5, border: "1.5px solid #059669", textAlign: "center" }}>
+                <div style={{ fontSize: 8.5, color: "#047857", fontWeight: 800, textTransform: "uppercase" }}>Net Margin</div>
+                <div style={{ fontSize: 12, fontWeight: 900, color: "#047857", marginTop: 2 }}>{pkr(netMargin)}</div>
+              </div>
+            </div>
+
+            {/* MILESTONES & DELIVERABLES TABLE */}
+            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 12, fontSize: 9.5, tableLayout: "fixed" }}>
               <colgroup>
-                <col style={{ width: "15%" }} />
-                <col style={{ width: "40%" }} />
-                <col style={{ width: "15%" }} />
-                <col style={{ width: "15%" }} />
+                <col style={{ width: "14%" }} />
+                <col style={{ width: "13%" }} />
+                <col style={{ width: "35%" }} />
+                <col style={{ width: "12%" }} />
+                <col style={{ width: "11%" }} />
                 <col style={{ width: "15%" }} />
               </colgroup>
               <thead>
-                <tr style={{ background: "#F1F5F9" }}>
-                  <th style={{ textAlign: "left", border: "1px solid #000", padding: "6px 6px", fontSize: 10, fontWeight: 800 }}>DATE</th>
-                  <th style={{ textAlign: "left", border: "1px solid #000", padding: "6px 6px", fontSize: 10, fontWeight: 800 }}>MILESTONE DESCRIPTION</th>
-                  <th style={{ textAlign: "right", border: "1px solid #000", padding: "6px 6px", fontSize: 10, fontWeight: 800 }}>GROSS (PKR)</th>
-                  <th style={{ textAlign: "right", border: "1px solid #000", padding: "6px 6px", fontSize: 10, fontWeight: 800 }}>SST (15%)</th>
-                  <th style={{ textAlign: "right", border: "1px solid #000", padding: "6px 6px", fontSize: 10, fontWeight: 800 }}>AMOUNT (PKR)</th>
+                <tr style={{ background: "#F1F5F9", color: "#0F172A" }}>
+                  <th style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "center", fontSize: 8.5, fontWeight: 800 }}>DATE</th>
+                  <th style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "center", fontSize: 8.5, fontWeight: 800 }}>INVOICE REF</th>
+                  <th style={{ border: "1px solid #000", padding: "5px 5px", textAlign: "left", fontSize: 8.5, fontWeight: 800 }}>MILESTONE DESCRIPTION</th>
+                  <th style={{ border: "1px solid #000", padding: "4px 3px", textAlign: "right", fontSize: 8, fontWeight: 800 }}>GROSS (PKR)</th>
+                  <th style={{ border: "1px solid #000", padding: "4px 3px", textAlign: "right", fontSize: 8, fontWeight: 800 }}>SST (15%)</th>
+                  <th style={{ border: "1px solid #000", padding: "4px 3px", textAlign: "right", fontSize: 8, fontWeight: 800 }}>NET BILLED</th>
                 </tr>
               </thead>
               <tbody>
-                {projInvoices.map(inv => (
-                  <tr key={inv.id}>
-                    <td className="mono" style={{ border: "1px solid #000", padding: "6px 6px", fontSize: 10.5 }}>{fmtDate(inv.issueDate)}</td>
-                    <td style={{ border: "1px solid #000", padding: "6px 6px", fontSize: 11, wordBreak: "break-word" }}>{inv.description}</td>
-                    <td className="mono" style={{ border: "1px solid #000", textAlign: "right", padding: "6px 6px", color: "#475569", fontSize: 10.5 }}>{pkr(inv.amount)}</td>
-                    <td className="mono" style={{ border: "1px solid #000", textAlign: "right", padding: "6px 6px", color: "#475569", fontSize: 10.5 }}>{inv.applySst ? pkr(inv.sstAmount) : "—"}</td>
-                    <td className="mono" style={{ border: "1px solid #000", textAlign: "right", padding: "6px 6px", fontWeight: 700, fontSize: 11 }}>{pkr(inv.totalAmount || inv.amount)}</td>
+                {projInvoices.map((inv, idx) => (
+                  <tr key={inv.id || idx}>
+                    <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "center", fontSize: 9, whiteSpace: "nowrap" }}>{fmtDate(inv.issueDate)}</td>
+                    <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "center", fontWeight: 700, fontFamily: "monospace", fontSize: 8.8, whiteSpace: "nowrap" }}>{cleanInvoiceNo(inv.invoiceNo || inv.id)}</td>
+                    <td style={{ border: "1px solid #000", padding: "5px 5px", fontSize: 9, wordBreak: "break-word" }}>{inv.description}</td>
+                    <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "right", fontSize: 9, color: "#475569" }}>{pkr(inv.amount)}</td>
+                    <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "right", fontSize: 9, color: "#475569" }}>{inv.applySst ? pkr(inv.sstAmount) : "—"}</td>
+                    <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "right", fontWeight: 700, fontSize: 9.2, color: "#0F172A" }}>{pkr(inv.totalAmount || inv.amount)}</td>
                   </tr>
                 ))}
                 {projInvoices.length === 0 && (
-                  <tr><td colSpan={5} style={{ border: "1px solid #000", textAlign: "center", padding: 14, color: "#64748B" }}>No billings logged for this project.</td></tr>
+                  <tr><td colSpan={6} style={{ border: "1px solid #000", textAlign: "center", padding: 14, color: "#64748B" }}>No billings logged for this project.</td></tr>
                 )}
               </tbody>
               <tfoot>
-                <tr style={{ background: "#F1F5F9" }}>
-                  <td colSpan={4} style={{ border: "1px solid #000", padding: "8px 8px", fontWeight: 800, fontSize: 12, textAlign: "right" }}>Total Billed Project Net</td>
-                  <td className="mono" style={{ border: "1px solid #000", textAlign: "right", padding: "8px 6px", fontWeight: 800, fontSize: 13, color: "#B8860B" }}>{pkr(totalBilled)}</td>
+                <tr style={{ background: "#F1F5F9", fontWeight: 800 }}>
+                  <td colSpan={5} style={{ border: "1px solid #000", padding: "5px 6px", textAlign: "right", fontSize: 9.5 }}>Total Billed Project Net</td>
+                  <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "right", fontSize: 10, color: "#1E3A8A" }}>{pkr(totalBilled)}</td>
                 </tr>
               </tfoot>
             </table>
 
-            <div style={{ fontSize: 11.5, fontStyle: "italic", color: "#334155", marginBottom: 20, background: "#F1F5F9", padding: "8px 12px", borderRadius: 6, border: "1px solid #000" }}>
-              Project Amount in words: <b style={{ color: "#0F172A" }}>{amountInWords(totalBilled)}</b>
-            </div>
-
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#475569", paddingTop: 10 }}>
-              <div>Project Lead: ______________</div>
-              <div>Finance Manager: ______________</div>
-              <div>Approved by: ______________</div>
+            {/* AMOUNT IN WORDS */}
+            <div style={{ fontSize: 9.5, fontStyle: "italic", color: "#334155", marginBottom: 12, background: "#F8FAFC", padding: "5px 8px", borderRadius: 4, border: "1px solid #000" }}>
+              Total Project Billed Amount in words: <b style={{ color: "#0F172A", fontStyle: "normal" }}>{amountInWords(totalBilled)}</b>
             </div>
           </div>
 
-          <div className="invoice-footer-banner" style={{ background: "#A81C1C", backgroundImage: "linear-gradient(90deg, #A81C1C 0%, #1D3B4E 100%)", color: "#FFFFFF", padding: "6px 12px", borderRadius: 4, display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 9.5, fontWeight: 600, marginTop: "auto", boxSizing: "border-box" }}>
-            <div>📞 +92 21 37526834</div>
-            <div>✉️ communication@adpulse.pk | 🌐 www.adpulse.pk</div>
-            <div>📍 Office # 213, 2nd Floor, Park Tower, Block 5 Clifton, Karachi.</div>
+          {/* BOTTOM PINNED: SIGNATURES & FOOTER */}
+          <div style={{ marginTop: "auto", paddingTop: 14 }}>
+            {/* SIGNATURES */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 10, fontSize: 9.5, fontWeight: 700 }}>
+              <div style={{ textAlign: "center", width: 190 }}>
+                <div style={{ borderTop: "1.5px solid #000000", paddingTop: 4, letterSpacing: "0.3px" }}>PROJECT LEAD</div>
+              </div>
+              <div style={{ textAlign: "center", width: 190 }}>
+                <div style={{ borderTop: "1.5px solid #000000", paddingTop: 4, letterSpacing: "0.3px" }}>FINANCE MANAGER</div>
+              </div>
+              <div style={{ textAlign: "center", width: 190 }}>
+                <div style={{ borderTop: "1.5px solid #000000", paddingTop: 4, letterSpacing: "0.3px" }}>AUTHORIZED SIGNATORY</div>
+              </div>
+            </div>
+
+            {/* FOOTER BANNER */}
+            <div className="invoice-footer-banner" style={{ background: "#A81C1C", backgroundImage: "linear-gradient(90deg, #A81C1C 0%, #1D3B4E 100%)", color: "#FFFFFF", padding: "5px 12px", borderRadius: 4, display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 8.8, fontWeight: 600, boxSizing: "border-box" }}>
+              <div>📞 +92 21 37526834</div>
+              <div>✉️ communication@adpulse.pk | 🌐 www.adpulse.pk</div>
+              <div>📍 Office # 213, 2nd Floor, Park Tower, Block 5 Clifton, Karachi.</div>
+            </div>
           </div>
         </div>
       </div>
     </div>
   );
 }
+
