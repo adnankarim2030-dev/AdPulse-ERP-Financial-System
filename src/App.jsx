@@ -8320,12 +8320,15 @@ function ModalShell({ title, onClose, width, maxWidth, style = {}, children }) {
 
 function InvoiceModal({ initialData, projects = [], clients = [], invoices = [], onClose, onSubmit }) {
   const [invoiceNo, setInvoiceNo] = useState(initialData?.invoiceNo || initialData?.voucherNo || getNextInvoiceNo(invoices));
+  const [docHeading, setDocHeading] = useState(
+    initialData?.docHeading || (initialData?.applySst ? "SALES TAX INVOICE (15% SST)" : "SALES INVOICE")
+  );
   const [projectId, setProjectId] = useState(initialData?.projectId || "");
   const [client, setClient] = useState(initialData?.client || "");
   const [description, setDescription] = useState(initialData?.description || "");
   const [amount, setAmount] = useState(initialData?.amount || "");
-  const [applySst, setApplySst] = useState(initialData?.applySst || false);
-  const [sstRate, setSstRate] = useState(initialData?.sstRate || "");
+  const [applySst, setApplySst] = useState(initialData?.applySst || (initialData?.docHeading ? initialData.docHeading.includes("TAX") : false));
+  const [sstRate, setSstRate] = useState(initialData?.sstRate || (initialData?.applySst ? "15" : ""));
   const [applyWht, setApplyWht] = useState(initialData?.applyWht || false);
   const [whtRate, setWhtRate] = useState(initialData?.whtRate || "");
   const [issueDate, setIssueDate] = useState(initialData?.issueDate || TODAY_STR);
@@ -8335,6 +8338,16 @@ function InvoiceModal({ initialData, projects = [], clients = [], invoices = [],
     initialData?.specialNotes ||
     "• ABOVE MENTIONED AMOUNT IS BASED ON NET. ALL TAXES WOULD BE CHARGED OVER & ABOVE.\n• PAYMENT TO BE MADE IN THE FAVOR OF \"ADPULSE IMC (PRIVATE) LTD\"\n• NTN: A0654656-8 / STRN: SA054896-8"
   );
+
+  const handleDocHeadingChange = (val) => {
+    setDocHeading(val);
+    if (val.includes("TAX")) {
+      setApplySst(true);
+      if (!sstRate) setSstRate("15");
+    } else {
+      setApplySst(false);
+    }
+  };
 
   // OOH Sites Multi-Location State inside InvoiceModal
   const selectedProj = projects.find(p => p.id === projectId);
@@ -8623,8 +8636,8 @@ function InvoiceModal({ initialData, projects = [], clients = [], invoices = [],
   return (
     <ModalShell title={initialData ? "Edit Client Invoice" : "Create New Client Invoice"} onClose={onClose} width={1500} maxWidth="98vw">
       
-      {/* TOP 4 FIELDS: INVOICE #, CLIENT, PROJECT, SERVICE */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1.3fr 1.2fr 1.5fr", gap: 12, marginBottom: 14 }}>
+      {/* TOP 5 FIELDS: INVOICE #, DOCUMENT TITLE, CLIENT, PROJECT, SERVICE */}
+      <div style={{ display: "grid", gridTemplateColumns: "0.9fr 1.3fr 1.2fr 1.1fr 1.3fr", gap: 10, marginBottom: 14 }}>
         <div className="field" style={{ margin: 0 }}>
           <label style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <span>Invoice # *</span>
@@ -8636,6 +8649,16 @@ function InvoiceModal({ initialData, projects = [], clients = [], invoices = [],
             placeholder="e.g. INV-26-001"
             style={{ fontWeight: 700, color: "var(--primary)" }}
           />
+        </div>
+        <div className="field" style={{ margin: 0 }}>
+          <label style={{ color: "#D97706", fontWeight: 700 }}>Document Title / Header *</label>
+          <select value={docHeading} onChange={e => handleDocHeadingChange(e.target.value)} style={{ fontWeight: 700 }}>
+            <option value="SALES INVOICE">SALES INVOICE (Standard)</option>
+            <option value="SALES TAX INVOICE (15% SST)">SALES TAX INVOICE (15% SST)</option>
+            <option value="SALES TAX INVOICE (15% SST INCLUDED)">SALES TAX INVOICE (15% SST INCLUDED)</option>
+            <option value="COMMERCIAL INVOICE">COMMERCIAL INVOICE</option>
+            <option value="PROFORMA INVOICE">PROFORMA INVOICE</option>
+          </select>
         </div>
         <div className="field" style={{ margin: 0 }}>
           <label>Client Name *</label>
@@ -8656,7 +8679,7 @@ function InvoiceModal({ initialData, projects = [], clients = [], invoices = [],
           </select>
         </div>
         <div className="field" style={{ margin: 0 }}>
-          <label>Service / Scope Particulars *</label>
+          <label>Service / Scope *</label>
           <select value={description} onChange={e => setDescription(e.target.value)}>
             <option value="">— Select Service Type —</option>
             <option value="TVC Production">TVC Production</option>
@@ -9109,7 +9132,7 @@ function InvoiceModal({ initialData, projects = [], clients = [], invoices = [],
           const eventData = (enableEventItems || (eventItems && eventItems.length > 0 && eventItems.some(s => s.description || s.rate))) ? eventItems : [];
           const printingData = (enablePrintingItems || (printingItems && printingItems.length > 0 && printingItems.some(s => s.description || s.rate))) ? printingItems : [];
           const newspaperData = (enableNewspaperItems || (newspaperItems && newspaperItems.length > 0 && newspaperItems.some(s => s.newspaper || s.rateCcm))) ? newspaperItems : [];
-          const payload = { invoiceNo: invoiceNo || getNextInvoiceNo(invoices), projectId, client, description, amount: amt, applySst, sstRate: Number(sstRate) || 0, sstAmount, applyWht, whtRate: Number(whtRate) || 0, whtAmount, totalAmount, issueDate, dueDate, notes, oohSites: oohData, printMediaItems: printData, eventItems: eventData, printingItems: printingData, newspaperItems: newspaperData };
+          const payload = { invoiceNo: invoiceNo || getNextInvoiceNo(invoices), docHeading, projectId, client, description, amount: amt, applySst, sstRate: Number(sstRate) || 0, sstAmount, applyWht, whtRate: Number(whtRate) || 0, whtAmount, totalAmount, issueDate, dueDate, notes, oohSites: oohData, printMediaItems: printData, eventItems: eventData, printingItems: printingData, newspaperItems: newspaperData };
           if (valid) onSubmit(initialData ? { ...initialData, ...payload } : payload);
         }}>
         {initialData ? "Save Invoice Changes" : "Generate & Post Invoice"}
@@ -12535,6 +12558,13 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
     if (desc.includes("printing") || typeStr.includes("printing") || desc.includes("flex") || desc.includes("installation")) return "PRINTING";
     return "GENERAL";
   });
+  const [docTitle, setDocTitle] = useState(() => {
+    if (doc.type === "RELEASE ORDER") return "MEDIA RELEASE ORDER (RO)";
+    if (doc.type === "PURCHASE ORDER") return "PURCHASE ORDER (PO)";
+    if (doc.docHeading) return doc.docHeading;
+    if (doc.applySst) return doc.taxIncluded ? "SALES TAX INVOICE (15% SST INCLUDED)" : "SALES TAX INVOICE (15% SST)";
+    return "SALES INVOICE";
+  });
   const [specialNote, setSpecialNote] = useState(
     doc.notes || doc.specialNotes || doc.specialNote || doc.note ||
     `• ABOVE MENTIONED AMOUNT IS BASED ON NET. ALL TAXES WOULD BE CHARGED OVER & ABOVE.\n• PAYMENT TO BE MADE IN THE FAVOR OF "ADPULSE IMC (PRIVATE) LTD"\n• NTN: A0654656-8 / STRN: SA054896-8`
@@ -12861,7 +12891,7 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10, flexWrap: "wrap", gap: 10 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
               <span style={{ fontWeight: 800, fontSize: 13.5, color: "#F59E0B", display: "flex", alignItems: "center", gap: 5 }}>
-                <FileText size={16} /> Document Layout:
+                <FileText size={16} /> Layout:
               </span>
               <select value={template} onChange={e => setTemplate(e.target.value)} style={{ background: "#0F172A", color: "#fff", border: "1.5px solid #475569", borderRadius: 8, padding: "6px 12px", fontSize: 13, fontWeight: 600 }}>
                 <option value="GENERAL" style={{ background: "#1E293B", color: "#FFFFFF" }}>General / Standard Agency Invoice</option>
@@ -12871,6 +12901,21 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
                 <option value="PRINT_MEDIA" style={{ background: "#1E293B", color: "#FFFFFF" }}>Print Media Sales Tax Invoice</option>
                 <option value="EVENT" style={{ background: "#1E293B", color: "#FFFFFF" }}>Sales Tax Event Invoice</option>
               </select>
+
+              {/* HEADING / TITLE SELECTOR (SALE INVOICE vs SALES TAX INVOICE) */}
+              <div style={{ display: "flex", alignItems: "center", gap: 6, background: "#0F172A", padding: "4px 8px", borderRadius: 8, border: "1px solid #D97706" }}>
+                <span style={{ fontSize: 11, color: "#FBBF24", fontWeight: 700 }}>Title:</span>
+                <select value={docTitle} onChange={e => setDocTitle(e.target.value)} style={{ background: "transparent", border: "none", color: "#FDE68A", fontSize: 12.5, fontWeight: 700, cursor: "pointer" }}>
+                  <option value="SALES INVOICE" style={{ background: "#1E293B", color: "#FFFFFF" }}>SALES INVOICE (Standard / Commercial)</option>
+                  <option value="SALES TAX INVOICE (15% SST)" style={{ background: "#1E293B", color: "#FFFFFF" }}>SALES TAX INVOICE (15% SST)</option>
+                  <option value="SALES TAX INVOICE (15% SST INCLUDED)" style={{ background: "#1E293B", color: "#FFFFFF" }}>SALES TAX INVOICE (15% SST INCLUDED)</option>
+                  <option value="COMMERCIAL INVOICE" style={{ background: "#1E293B", color: "#FFFFFF" }}>COMMERCIAL INVOICE</option>
+                  <option value="PROFORMA INVOICE" style={{ background: "#1E293B", color: "#FFFFFF" }}>PROFORMA INVOICE</option>
+                  <option value="TAX INVOICE" style={{ background: "#1E293B", color: "#FFFFFF" }}>TAX INVOICE</option>
+                  {doc.type === "RELEASE ORDER" && <option value="MEDIA RELEASE ORDER (RO)" style={{ background: "#1E293B", color: "#FFFFFF" }}>MEDIA RELEASE ORDER (RO)</option>}
+                  {doc.type === "PURCHASE ORDER" && <option value="PURCHASE ORDER (PO)" style={{ background: "#1E293B", color: "#FFFFFF" }}>PURCHASE ORDER (PO)</option>}
+                </select>
+              </div>
             </div>
 
             {/* PAGE SETTING CONTROLS */}
@@ -12938,7 +12983,7 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
         </div>
 
         {/* PRINT AREA MATCHING PDF TEMPLATES */}
-        <div className="print-area" style={{ background: "#ffffff", color: "#000000", padding: "18px 24px 14px 24px", fontFamily: "'Calibri', 'Inter', sans-serif", border: "none", boxShadow: "0 2px 16px rgba(0,0,0,0.06)", borderRadius: 8, position: "relative", boxSizing: "border-box", width: "100%", minHeight: "920px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+        <div className="print-area" style={{ background: "#ffffff", color: "#000000", padding: "18px 24px 14px 24px", fontFamily: "'Calibri', 'Inter', sans-serif", border: "none", boxShadow: "0 2px 16px rgba(0,0,0,0.06)", borderRadius: 8, position: "relative", boxSizing: "border-box", width: "100%", minHeight: "auto", display: "flex", flexDirection: "column" }}>
           
           {/* HEADER SECTION - 3 COLUMN BALANCED GRID */}
           <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", marginBottom: 16 }}>
@@ -12949,16 +12994,10 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
 
             {/* Center Heading (Mathematically Centered) */}
             <div style={{ textAlign: "center", padding: "0 10px" }}>
-              <h2 style={{ margin: 0, fontSize: 19, fontWeight: 800, textDecoration: "underline", letterSpacing: "1px", textTransform: "uppercase", color: (doc.type === "RELEASE ORDER" || doc.type === "PURCHASE ORDER") ? "#1E3A8A" : doc.applySst ? "#A81C1C" : "#0F172A" }}>
-                {doc.type === "RELEASE ORDER"
-                  ? "MEDIA RELEASE ORDER (RO)"
-                  : doc.type === "PURCHASE ORDER"
-                  ? "PURCHASE ORDER (PO)"
-                  : doc.applySst
-                  ? (doc.taxIncluded ? "SALES TAX INVOICE (15% SST INCLUDED)" : "SALES TAX INVOICE (15% SST)")
-                  : (doc.type || "INVOICE")}
+              <h2 style={{ margin: 0, fontSize: 19, fontWeight: 800, textDecoration: "underline", letterSpacing: "1px", textTransform: "uppercase", color: (docTitle.includes("RELEASE") || docTitle.includes("PURCHASE")) ? "#1E3A8A" : docTitle.includes("TAX") ? "#A81C1C" : "#0F172A" }}>
+                {docTitle}
               </h2>
-              {doc.applySst && doc.type !== "RELEASE ORDER" && doc.type !== "PURCHASE ORDER" && (
+              {docTitle.includes("TAX") && (
                 <div style={{ fontSize: 10.5, fontWeight: 600, color: "#475569", marginTop: 2 }}>
                   Sindh Revenue Board (SRB) Regn. # SA054896-8
                 </div>
@@ -13317,46 +13356,49 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
             </table>
           )}
 
-          {/* AMOUNT IN WORDS */}
-          <div style={{ fontSize: 11, fontStyle: "italic", marginBottom: 10, background: "#F8FAFC", padding: "6px 10px", border: "1px solid #000000", borderRadius: 4 }}>
-            Amount in words: <b style={{ fontStyle: "normal", color: "#000" }}>{amountInWords(totalAmt)}</b>
-          </div>
-
-          {/* SPECIAL NOTES & TERMS SECTION */}
-          <div style={{ fontSize: 9.5, lineHeight: 1.4, marginBottom: 12, color: "#1E293B", background: "#F8FAFC", padding: "6px 10px", border: "1px solid #000000", borderRadius: 6 }}>
-            <div style={{ fontWeight: 800, textDecoration: "underline", marginBottom: 2, color: "#0F172A", textTransform: "uppercase", fontSize: 9.5 }}>
-              Special Notes &amp; Terms:
+          {/* BOTTOM SECTION: AMOUNT IN WORDS, NOTES, SIGNATURES & FOOTER */}
+          <div style={{ marginTop: 8 }}>
+            {/* AMOUNT IN WORDS */}
+            <div style={{ fontSize: 10.5, fontStyle: "italic", marginBottom: 8, background: "#F8FAFC", padding: "5px 10px", border: "1px solid #000000", borderRadius: 4 }}>
+              Amount in words: <b style={{ fontStyle: "normal", color: "#000000" }}>{amountInWords(totalAmt)}</b>
             </div>
-            {specialNote ? (
-              specialNote.split("\n").map((line, idx) => (
-                <div key={idx} style={{ fontWeight: line.startsWith("•") || line.startsWith("-") ? 500 : 600 }}>
-                  {line}
-                </div>
-              ))
-            ) : (
-              <>
-                <div>• ABOVE MENTIONED AMOUNT IS BASED ON NET. ALL TAXES WOULD BE CHARGED OVER &amp; ABOVE.</div>
-                <div>• PAYMENT TO BE MADE IN THE FAVOR OF <b>"ADPULSE IMC (PRIVATE) LTD"</b></div>
-                <div>• NTN: <b>A0654656-8</b> / STRN: <b>SA054896-8</b></div>
-              </>
-            )}
-          </div>
 
-          {/* SIGNATURES */}
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", paddingTop: 14, marginBottom: 14, fontSize: 10.5, fontWeight: 700 }}>
-            <div style={{ textAlign: "center", width: 190 }}>
-              <div style={{ borderTop: "1.5px solid #000", paddingTop: 4 }}>ACCOUNTANT SIGNATURE</div>
+            {/* SPECIAL NOTES & TERMS SECTION */}
+            <div style={{ fontSize: 9.2, lineHeight: 1.35, marginBottom: 12, color: "#1E293B", background: "#F8FAFC", padding: "6px 10px", border: "1px solid #000000", borderRadius: 6 }}>
+              <div style={{ fontWeight: 800, textDecoration: "underline", marginBottom: 3, color: "#0F172A", textTransform: "uppercase", fontSize: 9.5 }}>
+                Special Notes &amp; Terms:
+              </div>
+              {specialNote ? (
+                specialNote.split("\n").map((line, idx) => (
+                  <div key={idx} style={{ fontWeight: line.startsWith("•") || line.startsWith("-") ? 500 : 600 }}>
+                    {line}
+                  </div>
+                ))
+              ) : (
+                <>
+                  <div>• ABOVE MENTIONED AMOUNT IS BASED ON NET. ALL TAXES WOULD BE CHARGED OVER &amp; ABOVE.</div>
+                  <div>• PAYMENT TO BE MADE IN THE FAVOR OF <b>"ADPULSE IMC (PRIVATE) LTD"</b></div>
+                  <div>• NTN: <b>A0654656-8</b> / STRN: <b>SA054896-8</b></div>
+                </>
+              )}
             </div>
-            <div style={{ textAlign: "center", width: 190 }}>
-              <div style={{ borderTop: "1.5px solid #000", paddingTop: 4 }}>RECEIVER'S SIGNATURE</div>
-            </div>
-          </div>
 
-          {/* FOOTER BRAND BANNER */}
-          <div className="invoice-footer-banner" style={{ background: "#A81C1C", backgroundImage: "linear-gradient(90deg, #A81C1C 0%, #1D3B4E 100%)", color: "#FFFFFF", padding: "6px 12px", borderRadius: 4, display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 9.5, fontWeight: 600, marginTop: "auto", boxSizing: "border-box", WebkitPrintColorAdjust: "exact", printColorAdjust: "exact" }}>
-            <div>📞 +92 21 37526834</div>
-            <div>✉️ communication@adpulse.pk | 🌐 www.adpulse.pk</div>
-            <div>📍 Office # 213, 2nd Floor, Park Tower, Block 5 Clifton, Karachi.</div>
+            {/* SIGNATURES - BROUGHT UP NEATLY WITH PROFESSIONAL SPACING */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginTop: 18, marginBottom: 14, fontSize: 10.5, fontWeight: 700 }}>
+              <div style={{ textAlign: "center", width: 210 }}>
+                <div style={{ borderTop: "1.5px solid #000000", paddingTop: 5, letterSpacing: "0.4px" }}>ACCOUNTANT SIGNATURE</div>
+              </div>
+              <div style={{ textAlign: "center", width: 210 }}>
+                <div style={{ borderTop: "1.5px solid #000000", paddingTop: 5, letterSpacing: "0.4px" }}>RECEIVER'S SIGNATURE</div>
+              </div>
+            </div>
+
+            {/* FOOTER BRAND BANNER */}
+            <div className="invoice-footer-banner" style={{ background: "#A81C1C", backgroundImage: "linear-gradient(90deg, #A81C1C 0%, #1D3B4E 100%)", color: "#FFFFFF", padding: "6px 12px", borderRadius: 4, display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 9.5, fontWeight: 600, marginTop: 8, boxSizing: "border-box", WebkitPrintColorAdjust: "exact", printColorAdjust: "exact" }}>
+              <div>📞 +92 21 37526834</div>
+              <div>✉️ communication@adpulse.pk | 🌐 www.adpulse.pk</div>
+              <div>📍 Office # 213, 2nd Floor, Park Tower, Block 5 Clifton, Karachi.</div>
+            </div>
           </div>
 
         </div>
