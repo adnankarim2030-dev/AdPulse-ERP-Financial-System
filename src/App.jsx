@@ -12902,7 +12902,7 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
                 <option value="EVENT" style={{ background: "#1E293B", color: "#FFFFFF" }}>Sales Tax Event Invoice</option>
               </select>
 
-              {/* HEADING / TITLE SELECTOR (SALE INVOICE vs SALES TAX INVOICE) */}
+              {/* HEADING / TITLE SELECTOR (SALE INVOICE vs SALES TAX INVOICE vs PO/RO/VOUCHERS) */}
               <div style={{ display: "flex", alignItems: "center", gap: 6, background: "#0F172A", padding: "4px 8px", borderRadius: 8, border: "1px solid #D97706" }}>
                 <span style={{ fontSize: 11, color: "#FBBF24", fontWeight: 700 }}>Title:</span>
                 <select value={docTitle} onChange={e => setDocTitle(e.target.value)} style={{ background: "transparent", border: "none", color: "#FDE68A", fontSize: 12.5, fontWeight: 700, cursor: "pointer" }}>
@@ -12912,8 +12912,12 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
                   <option value="COMMERCIAL INVOICE" style={{ background: "#1E293B", color: "#FFFFFF" }}>COMMERCIAL INVOICE</option>
                   <option value="PROFORMA INVOICE" style={{ background: "#1E293B", color: "#FFFFFF" }}>PROFORMA INVOICE</option>
                   <option value="TAX INVOICE" style={{ background: "#1E293B", color: "#FFFFFF" }}>TAX INVOICE</option>
-                  {doc.type === "RELEASE ORDER" && <option value="MEDIA RELEASE ORDER (RO)" style={{ background: "#1E293B", color: "#FFFFFF" }}>MEDIA RELEASE ORDER (RO)</option>}
-                  {doc.type === "PURCHASE ORDER" && <option value="PURCHASE ORDER (PO)" style={{ background: "#1E293B", color: "#FFFFFF" }}>PURCHASE ORDER (PO)</option>}
+                  <option value="MEDIA RELEASE ORDER (RO)" style={{ background: "#1E293B", color: "#FFFFFF" }}>MEDIA RELEASE ORDER (RO)</option>
+                  <option value="PURCHASE ORDER (PO)" style={{ background: "#1E293B", color: "#FFFFFF" }}>PURCHASE ORDER (PO)</option>
+                  <option value="PAYMENT VOUCHER (PV)" style={{ background: "#1E293B", color: "#FFFFFF" }}>PAYMENT VOUCHER (PV)</option>
+                  <option value="RECEIPT VOUCHER (RV)" style={{ background: "#1E293B", color: "#FFFFFF" }}>RECEIPT VOUCHER (RV)</option>
+                  <option value="JOURNAL VOUCHER (JV)" style={{ background: "#1E293B", color: "#FFFFFF" }}>JOURNAL VOUCHER (JV)</option>
+                  <option value="EXPENSE PAYMENT VOUCHER" style={{ background: "#1E293B", color: "#FFFFFF" }}>EXPENSE PAYMENT VOUCHER</option>
                 </select>
               </div>
             </div>
@@ -12996,7 +13000,7 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
 
               {/* Center Heading (Mathematically Centered) */}
               <div style={{ textAlign: "center", padding: "0 10px" }}>
-                <h2 style={{ margin: 0, fontSize: 19, fontWeight: 800, textDecoration: "underline", letterSpacing: "1px", textTransform: "uppercase", color: (docTitle.includes("RELEASE") || docTitle.includes("PURCHASE")) ? "#1E3A8A" : docTitle.includes("TAX") ? "#A81C1C" : "#0F172A" }}>
+                <h2 style={{ margin: 0, fontSize: 19, fontWeight: 800, textDecoration: "underline", letterSpacing: "1px", textTransform: "uppercase", color: (docTitle.includes("RELEASE") || docTitle.includes("PURCHASE")) ? "#1E3A8A" : docTitle.includes("TAX") ? "#A81C1C" : docTitle.includes("VOUCHER") ? "#059669" : "#0F172A" }}>
                   {docTitle}
                 </h2>
                 {docTitle.includes("TAX") && (
@@ -13010,26 +13014,37 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
               <div style={{ textAlign: "right", fontSize: 12.5, fontWeight: 700, display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
                 <div style={{ marginBottom: 3 }}>DATE: <span style={{ fontWeight: 500 }}>{fmtDate(doc.date || doc.issueDate || TODAY)}</span></div>
                 <div>
-                  {doc.type === "RELEASE ORDER" ? "RO NO:" : doc.type === "PURCHASE ORDER" ? "PO NO:" : "INVOICE NO:"}{" "}
-                  <span style={{ fontWeight: 800 }}>{cleanInvoiceNo(doc.roNumber || doc.voucherNo || doc.poNumber || doc.invoiceNo || doc.id)}</span>
+                  {docTitle.includes("RELEASE") || doc.type === "RELEASE ORDER" ? "RO NO:" :
+                   docTitle.includes("PURCHASE") || doc.type === "PURCHASE ORDER" ? "PO NO:" :
+                   docTitle.includes("PAYMENT") || doc.type === "PV" ? "PV NO:" :
+                   docTitle.includes("RECEIPT") || doc.type === "RV" ? "RV NO:" :
+                   docTitle.includes("JOURNAL") || doc.type === "JV" ? "JV NO:" :
+                   doc.type === "EXPENSE" ? "EXP NO:" : "INVOICE NO:"}{" "}
+                  <span style={{ fontWeight: 800 }}>{cleanInvoiceNo(doc.roNumber || doc.voucherNo || doc.poNumber || doc.invoiceNo || doc.expenseNo || doc.id)}</span>
                 </div>
               </div>
             </div>
 
-            {/* CLIENT, PROJECT & SERVICE INFO CARD */}
+            {/* CLIENT / PARTY, PROJECT & SERVICE INFO CARD */}
             <div style={{ fontSize: 11, fontWeight: 700, marginBottom: 14, display: "grid", gridTemplateColumns: "1fr 1.2fr 1fr", gap: 10, alignItems: "center", background: "#F8FAFC", padding: "8px 12px", border: "1px solid #000000", borderRadius: 6, boxSizing: "border-box" }}>
-              <div style={{ wordBreak: "break-word", textAlign: "left" }}>CLIENT: <span style={{ fontWeight: 600, color: "#0F172A" }}>{(doc.client || doc.party || "CLIENT NAME").toUpperCase()}</span></div>
-              <div style={{ wordBreak: "break-word", textAlign: "left" }}>PROJECT: <span style={{ fontWeight: 600, color: "#0F172A" }}>{(doc.projectName || doc.project || (doc.description ? doc.description.replace(/^OOH Advertising\s*—\s*/i, "").replace(/\s*\(\d+\s*sites\)$/i, "") : "PROJECT SCOPE")).toUpperCase()}</span></div>
-              <div style={{ wordBreak: "break-word", textAlign: "right" }}>SERVICE: <span style={{ fontWeight: 600, color: "#A81C1C" }}>{(() => {
-                const svc = doc.serviceCategory;
-                if (svc && svc.toUpperCase() !== "INVOICE") return svc.toUpperCase();
-                const typ = doc.type;
-                if (typ && typ.toUpperCase() !== "INVOICE" && typ.toUpperCase() !== "SALES TAX INVOICE") return typ.toUpperCase();
-                if (template === "OOH") return "OOH ADVERTISING";
-                if (template === "PRINTING") return "PRINTING & INSTALLATION";
-                if (template === "NEWSPAPER") return "NEWSPAPER / PRINT MEDIA & PUBLICATION";
-                return "COMMERCIAL SERVICE";
-              })()}</span></div>
+              <div style={{ wordBreak: "break-word", textAlign: "left" }}>
+                {(docTitle.includes("PURCHASE") || docTitle.includes("RELEASE") || doc.type === "PV" || doc.type === "EXPENSE") ? "VENDOR / PARTY:" : (docTitle.includes("RECEIPT") || doc.type === "RV" ? "RECEIVED FROM:" : "CLIENT:")} <span style={{ fontWeight: 600, color: "#0F172A" }}>{(doc.client || doc.party || doc.vendor || doc.payee || "CLIENT / PARTY").toUpperCase()}</span>
+              </div>
+              <div style={{ wordBreak: "break-word", textAlign: "left" }}>
+                PROJECT / SCOPE: <span style={{ fontWeight: 600, color: "#0F172A" }}>{(doc.projectName || doc.project || (doc.description ? doc.description.replace(/^OOH Advertising\s*—\s*/i, "").replace(/\s*\(\d+\s*sites\)$/i, "") : "PROJECT SCOPE")).toUpperCase()}</span>
+              </div>
+              <div style={{ wordBreak: "break-word", textAlign: "right" }}>
+                SERVICE / TYPE: <span style={{ fontWeight: 600, color: "#A81C1C" }}>{(() => {
+                  const svc = doc.serviceCategory;
+                  if (svc && svc.toUpperCase() !== "INVOICE") return svc.toUpperCase();
+                  const typ = doc.type;
+                  if (typ && typ.toUpperCase() !== "INVOICE" && typ.toUpperCase() !== "SALES TAX INVOICE") return typ.toUpperCase();
+                  if (template === "OOH") return "OOH ADVERTISING";
+                  if (template === "PRINTING") return "PRINTING & INSTALLATION";
+                  if (template === "NEWSPAPER") return "NEWSPAPER / PRINT MEDIA & PUBLICATION";
+                  return "COMMERCIAL SERVICE";
+                })()}</span>
+              </div>
             </div>
 
             {/* DYNAMIC DATA TABLE BASED ON TEMPLATE */}
