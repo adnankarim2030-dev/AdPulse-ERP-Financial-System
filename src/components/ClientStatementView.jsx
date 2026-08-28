@@ -32,9 +32,9 @@ function exportClientStatementToExcel({ client, dateFrom, dateTo, statementData 
 
   let rowsHtml = `
     <tr>
-      <td style="border: 1px solid #CBD5E1; padding: 6px; font-family: monospace;">${dateFrom}</td>
-      <td style="border: 1px solid #CBD5E1; padding: 6px; font-family: monospace; font-weight: bold;">OB-000</td>
-      <td style="border: 1px solid #CBD5E1; padding: 6px;">Opening Balance</td>
+      <td style="border: 1px solid #CBD5E1; padding: 6px; font-family: monospace; text-align: center;">${dateFrom}</td>
+      <td style="border: 1px solid #CBD5E1; padding: 6px; font-family: monospace; font-weight: bold; text-align: center;">OB-000</td>
+      <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: center;">Opening Balance</td>
       <td style="border: 1px solid #CBD5E1; padding: 6px;">—</td>
       <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: right;">—</td>
       <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: right;">—</td>
@@ -46,9 +46,9 @@ function exportClientStatementToExcel({ client, dateFrom, dateTo, statementData 
     const bg = idx % 2 === 0 ? "#FFFFFF" : "#F8FAFC";
     rowsHtml += `
       <tr style="background-color: ${bg};">
-        <td style="border: 1px solid #CBD5E1; padding: 6px; font-family: monospace;">${r.date}</td>
-        <td style="border: 1px solid #CBD5E1; padding: 6px; font-family: monospace; font-weight: bold;">${r.ref}</td>
-        <td style="border: 1px solid #CBD5E1; padding: 6px; font-weight: bold; color: ${r.type === 'Invoice' ? '#0284C7' : '#059669'};">${r.type}</td>
+        <td style="border: 1px solid #CBD5E1; padding: 6px; font-family: monospace; text-align: center;">${r.date}</td>
+        <td style="border: 1px solid #CBD5E1; padding: 6px; font-family: monospace; font-weight: bold; text-align: center;">${r.ref}</td>
+        <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: center; font-weight: bold; color: ${r.type === 'Invoice' ? '#0284C7' : '#059669'};">${r.type}</td>
         <td style="border: 1px solid #CBD5E1; padding: 6px;">${r.project || 'General'}</td>
         <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: right; color: #0284C7; mso-number-format:'\\#\\,\\#\\#0';">${r.debit > 0 ? r.debit : '—'}</td>
         <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: right; color: #059669; mso-number-format:'\\#\\,\\#\\#0';">${r.credit > 0 ? r.credit : '—'}</td>
@@ -192,7 +192,7 @@ export function ClientStatementPrintModal({ client, dateFrom, dateTo, statementD
           .invoice-footer-banner { background: #A81C1C !important; background-image: linear-gradient(90deg, #A81C1C 0%, #1D3B4E 100%) !important; color: #ffffff !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; display: flex !important; margin-top: auto !important; }
         }
       `}</style>
-      <div className="modal" style={{ width: 880, maxWidth: "98vw", maxHeight: "92vh", overflowY: "auto" }} onClick={e => e.stopPropagation()}>
+      <div className="modal" style={{ width: 900, maxWidth: "98vw", maxHeight: "94vh", overflowY: "auto" }} onClick={e => e.stopPropagation()}>
         {/* MODAL TOP TOOLBAR */}
         <div className="no-print-header" style={{ marginBottom: 14, background: "#1E293B", padding: "12px 16px", borderRadius: 10, color: "#fff", border: "1px solid #334155", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 10 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -224,111 +224,109 @@ export function ClientStatementPrintModal({ client, dateFrom, dateTo, statementD
         <div ref={printRef} className="print-area" style={{ background: "#ffffff", color: "#0F172A", borderRadius: 10, padding: "20px 24px", fontFamily: "'Calibri', 'Inter', sans-serif", minHeight: "880px", display: "flex", flexDirection: "column", justifyContent: "space-between", boxSizing: "border-box" }}>
           <div>
             {/* TOP HEADER */}
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "2px solid #0F172A", paddingBottom: 10, marginBottom: 14 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "2px solid #0F172A", paddingBottom: 10, marginBottom: 12 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                <img src="./logo.png" alt="AdPulse Logo" style={{ maxHeight: 48, width: "auto" }} onError={(e) => { e.target.style.display = 'none'; }} />
+                <img src="./logo.png" alt="AdPulse Logo" style={{ maxHeight: 46, width: "auto" }} onError={(e) => { e.target.style.display = 'none'; }} />
                 <div>
-                  <div style={{ fontSize: 19, fontWeight: 800, color: "#0F172A", letterSpacing: "-0.3px" }}>AdPulse IMC (Private) Ltd</div>
-                  <div style={{ fontSize: 10.5, color: "#475569" }}>Financial Management &amp; Client Ledger Activity</div>
+                  <div style={{ fontSize: 18, fontWeight: 800, color: "#0F172A", letterSpacing: "-0.3px" }}>AdPulse IMC (Private) Ltd</div>
+                  <div style={{ fontSize: 10.5, color: "#475569" }}>Financial Management &amp; Client Accounts Receivable Sub-Ledger</div>
                 </div>
               </div>
               <div style={{ textAlign: "right" }}>
-                <div style={{ fontSize: 14.5, fontWeight: 800, color: "#0284C7", textTransform: "uppercase" }}>CLIENT STATEMENT</div>
-                <div className="mono" style={{ fontSize: 12, fontWeight: 700, color: "#0F172A" }}>STMT-CLI-{(client.clientCode || client.id || "").toUpperCase()}</div>
+                <div style={{ fontSize: 14, fontWeight: 800, color: "#0284C7", textTransform: "uppercase" }}>CLIENT STATEMENT</div>
+                <div className="mono" style={{ fontSize: 11.5, fontWeight: 700, color: "#0F172A" }}>STMT-{(client.clientCode || client.id || "").toUpperCase()}</div>
               </div>
             </div>
 
-            {/* CLIENT & PERIOD INFO */}
-            <table style={{ width: "100%", fontSize: 11.5, marginBottom: 12, borderCollapse: "collapse" }}>
-              <tbody>
-                <tr>
-                  <td style={{ padding: "3px 0", color: "#475569", width: 120 }}>Client Account:</td>
-                  <td style={{ fontWeight: 800, fontSize: 13, color: "#0F172A" }}>{client.companyName || client.name}</td>
-                  <td style={{ padding: "3px 0", color: "#475569", width: 120, textAlign: "right" }}>Statement Period:</td>
-                  <td style={{ fontWeight: 700, textAlign: "right", color: "#0F172A" }}>{dateFrom} to {dateTo}</td>
-                </tr>
-                <tr>
-                  <td style={{ padding: "3px 0", color: "#475569" }}>Contact Person:</td>
-                  <td style={{ fontWeight: 600 }}>{client.contactPerson || "N/A"} ({client.phone || "N/A"})</td>
-                  <td style={{ padding: "3px 0", color: "#475569", textAlign: "right" }}>Payment Terms:</td>
-                  <td style={{ fontWeight: 600, textAlign: "right" }}>{client.paymentTerms || "Net 30"}</td>
-                </tr>
-                <tr>
-                  <td style={{ padding: "3px 0", color: "#475569" }}>Address / Tax:</td>
-                  <td colSpan={3} style={{ fontWeight: 600 }}>{client.address || "Karachi, Pakistan"} &middot; NTN: {client.ntn || "N/A"} | STRN: {client.strn || "N/A"}</td>
-                </tr>
-              </tbody>
-            </table>
+            {/* CLIENT & PERIOD INFO BOX */}
+            <div style={{ background: "#F8FAFC", border: "1px solid #000000", borderRadius: 6, padding: "8px 12px", marginBottom: 12, display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: 10, fontSize: 10.5 }}>
+              <div>
+                <div style={{ marginBottom: 3 }}><b>Client Account:</b> <span style={{ fontWeight: 700, fontSize: 11, color: "#0F172A" }}>{client.companyName || client.name}</span> <span style={{ color: "#64748B" }}>({client.clientCode || client.id})</span></div>
+                <div style={{ marginBottom: 3 }}><b>Contact Person:</b> {client.contactPerson || "N/A"} {client.phone ? `(${client.phone})` : ""}</div>
+                <div><b>Address:</b> {client.address || "Karachi, Pakistan"}</div>
+              </div>
+              <div style={{ textAlign: "right" }}>
+                <div style={{ marginBottom: 3 }}><b>Statement Period:</b> <span style={{ fontWeight: 700 }}>{dateFrom} to {dateTo}</span></div>
+                <div style={{ marginBottom: 3 }}><b>Payment Terms:</b> {client.paymentTerms || "Net 30"}</div>
+                <div><b>NTN / STRN:</b> {client.ntn || "N/A"} {client.strn ? `/ ${client.strn}` : ""}</div>
+              </div>
+            </div>
 
             {/* 4 SUMMARY METRIC CARDS */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10, marginBottom: 14 }}>
-              <div style={{ background: "#F8FAFC", padding: "8px 12px", borderRadius: 6, border: "1px solid #CBD5E1" }}>
-                <div style={{ fontSize: 10, color: "#475569", fontWeight: 700, textTransform: "uppercase" }}>Opening Balance</div>
-                <div style={{ fontSize: 13.5, fontWeight: 800, color: "#1E293B", marginTop: 2 }}>{pkr(statementData.openingBalance)}</div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, marginBottom: 12 }}>
+              <div style={{ background: "#FFFFFF", padding: "6px 10px", borderRadius: 5, border: "1px solid #000000", textAlign: "center" }}>
+                <div style={{ fontSize: 8.5, color: "#475569", fontWeight: 700, textTransform: "uppercase" }}>Opening Balance</div>
+                <div style={{ fontSize: 11.5, fontWeight: 800, color: "#1E293B", marginTop: 2 }}>{pkr(statementData.openingBalance)}</div>
               </div>
-              <div style={{ background: "#F8FAFC", padding: "8px 12px", borderRadius: 6, border: "1px solid #CBD5E1" }}>
-                <div style={{ fontSize: 10, color: "#0284C7", fontWeight: 700, textTransform: "uppercase" }}>Total Invoiced (+)</div>
-                <div style={{ fontSize: 13.5, fontWeight: 800, color: "#0284C7", marginTop: 2 }}>{pkr(statementData.totalInvoiced)}</div>
+              <div style={{ background: "#FFFFFF", padding: "6px 10px", borderRadius: 5, border: "1px solid #000000", textAlign: "center" }}>
+                <div style={{ fontSize: 8.5, color: "#0284C7", fontWeight: 700, textTransform: "uppercase" }}>Total Invoiced (+)</div>
+                <div style={{ fontSize: 11.5, fontWeight: 800, color: "#0284C7", marginTop: 2 }}>{pkr(statementData.totalInvoiced)}</div>
               </div>
-              <div style={{ background: "#F8FAFC", padding: "8px 12px", borderRadius: 6, border: "1px solid #CBD5E1" }}>
-                <div style={{ fontSize: 10, color: "#059669", fontWeight: 700, textTransform: "uppercase" }}>Total Received (-)</div>
-                <div style={{ fontSize: 13.5, fontWeight: 800, color: "#059669", marginTop: 2 }}>{pkr(statementData.totalReceived)}</div>
+              <div style={{ background: "#FFFFFF", padding: "6px 10px", borderRadius: 5, border: "1px solid #000000", textAlign: "center" }}>
+                <div style={{ fontSize: 8.5, color: "#059669", fontWeight: 700, textTransform: "uppercase" }}>Total Received (-)</div>
+                <div style={{ fontSize: 11.5, fontWeight: 800, color: "#059669", marginTop: 2 }}>{pkr(statementData.totalReceived)}</div>
               </div>
-              <div style={{ background: "#E0F2FE", padding: "8px 12px", borderRadius: 6, border: "1.5px solid #0284C7" }}>
-                <div style={{ fontSize: 10, color: "#0369A1", fontWeight: 800, textTransform: "uppercase" }}>Closing Outstanding</div>
-                <div style={{ fontSize: 14, fontWeight: 900, color: "#0369A1", marginTop: 2 }}>{pkr(statementData.closingBalance)}</div>
+              <div style={{ background: "#E0F2FE", padding: "6px 10px", borderRadius: 5, border: "1.5px solid #0284C7", textAlign: "center" }}>
+                <div style={{ fontSize: 8.5, color: "#0369A1", fontWeight: 800, textTransform: "uppercase" }}>Closing Outstanding</div>
+                <div style={{ fontSize: 12, fontWeight: 900, color: "#0369A1", marginTop: 2 }}>{pkr(statementData.closingBalance)}</div>
               </div>
             </div>
 
-            {/* TRANSACTIONS TABLE */}
-            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 12, fontSize: 10, tableLayout: "fixed" }}>
+            {/* TRANSACTIONS TABLE - 7 STANDARD SUB-LEDGER COLUMNS */}
+            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 12, fontSize: 9.5, tableLayout: "fixed" }}>
               <colgroup>
+                <col style={{ width: "11%" }} />
+                <col style={{ width: "13%" }} />
+                <col style={{ width: "13%" }} />
+                <col style={{ width: "23%" }} />
+                <col style={{ width: "13%" }} />
                 <col style={{ width: "13%" }} />
                 <col style={{ width: "14%" }} />
-                <col style={{ width: "16%" }} />
-                <col style={{ width: "23%" }} />
-                <col style={{ width: "17%" }} />
-                <col style={{ width: "17%" }} />
               </colgroup>
               <thead>
                 <tr style={{ background: "#F1F5F9", color: "#0F172A" }}>
-                  <th style={{ border: "1px solid #000", padding: "5px 4px", textAlign: "left", fontSize: 9.5, fontWeight: 800 }}>DATE</th>
-                  <th style={{ border: "1px solid #000", padding: "5px 4px", textAlign: "left", fontSize: 9.5, fontWeight: 800 }}>REF NO</th>
-                  <th style={{ border: "1px solid #000", padding: "5px 4px", textAlign: "left", fontSize: 9.5, fontWeight: 800 }}>TYPE</th>
-                  <th style={{ border: "1px solid #000", padding: "5px 4px", textAlign: "left", fontSize: 9.5, fontWeight: 800 }}>PROJECT / SCOPE</th>
-                  <th style={{ border: "1px solid #000", padding: "5px 4px", textAlign: "right", fontSize: 9.5, fontWeight: 800 }}>INVOICED / REC (PKR)</th>
-                  <th style={{ border: "1px solid #000", padding: "5px 4px", textAlign: "right", fontSize: 9.5, fontWeight: 800 }}>BALANCE (PKR)</th>
+                  <th style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "center", fontSize: 8.5, fontWeight: 800 }}>DATE</th>
+                  <th style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "center", fontSize: 8.5, fontWeight: 800 }}>REF NO</th>
+                  <th style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "center", fontSize: 8.5, fontWeight: 800 }}>TYPE</th>
+                  <th style={{ border: "1px solid #000", padding: "5px 5px", textAlign: "left", fontSize: 8.5, fontWeight: 800 }}>PROJECT / SCOPE</th>
+                  <th style={{ border: "1px solid #000", padding: "4px 3px", textAlign: "right", fontSize: 8, fontWeight: 800, lineHeight: 1.15 }}>DEBIT / INVOICED<br/>(PKR)</th>
+                  <th style={{ border: "1px solid #000", padding: "4px 3px", textAlign: "right", fontSize: 8, fontWeight: 800, lineHeight: 1.15 }}>CREDIT / RECEIVED<br/>(PKR)</th>
+                  <th style={{ border: "1px solid #000", padding: "4px 3px", textAlign: "right", fontSize: 8, fontWeight: 800, lineHeight: 1.15 }}>RUNNING BALANCE<br/>(PKR)</th>
                 </tr>
               </thead>
               <tbody>
                 <tr style={{ background: "#F8FAFC", fontWeight: 600 }}>
-                  <td style={{ border: "1px solid #000", padding: "5px 4px" }}>{dateFrom}</td>
-                  <td style={{ border: "1px solid #000", padding: "5px 4px", fontWeight: 700 }}>OB-000</td>
-                  <td style={{ border: "1px solid #000", padding: "5px 4px" }}>Opening Balance</td>
-                  <td style={{ border: "1px solid #000", padding: "5px 4px" }}>—</td>
-                  <td style={{ border: "1px solid #000", padding: "5px 4px", textAlign: "right" }}>—</td>
-                  <td style={{ border: "1px solid #000", padding: "5px 4px", textAlign: "right", fontWeight: 800 }}>{pkr(statementData.openingBalance)}</td>
+                  <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "center" }}>{dateFrom}</td>
+                  <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "center", fontWeight: 700, fontFamily: "monospace" }}>OB-000</td>
+                  <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "center" }}>Opening Balance</td>
+                  <td style={{ border: "1px solid #000", padding: "5px 5px" }}>—</td>
+                  <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "right" }}>—</td>
+                  <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "right" }}>—</td>
+                  <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "right", fontWeight: 800 }}>{pkr(statementData.openingBalance)}</td>
                 </tr>
 
                 {statementData.rows.length === 0 ? (
                   <tr>
-                    <td colSpan={6} style={{ border: "1px solid #000", textAlign: "center", padding: 16, color: "#64748B" }}>
+                    <td colSpan={7} style={{ border: "1px solid #000", textAlign: "center", padding: 14, color: "#64748B" }}>
                       No client statement transactions recorded within this date range.
                     </td>
                   </tr>
                 ) : (
                   statementData.rows.map((row, idx) => (
                     <tr key={idx}>
-                      <td style={{ border: "1px solid #000", padding: "5px 4px" }}>{row.date}</td>
-                      <td style={{ border: "1px solid #000", padding: "5px 4px", fontWeight: 700, fontFamily: "monospace" }}>{row.ref}</td>
-                      <td style={{ border: "1px solid #000", padding: "5px 4px", fontWeight: 600, color: row.type === "Invoice" ? "#0284C7" : "#059669" }}>
+                      <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "center", fontSize: 9 }}>{row.date}</td>
+                      <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "center", fontWeight: 700, fontFamily: "monospace", fontSize: 8.8, whiteSpace: "nowrap" }}>{row.ref}</td>
+                      <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "center", fontWeight: 600, fontSize: 8.8, color: row.type === "Invoice" ? "#0284C7" : "#059669" }}>
                         {row.type}
                       </td>
-                      <td style={{ border: "1px solid #000", padding: "5px 4px", wordBreak: "break-word" }}>{row.project}</td>
-                      <td style={{ border: "1px solid #000", padding: "5px 4px", textAlign: "right", color: row.debit > 0 ? "#0284C7" : row.credit > 0 ? "#059669" : "inherit", fontWeight: 600 }}>
-                        {row.debit > 0 ? pkr(row.debit) : row.credit > 0 ? pkr(row.credit) : "—"}
+                      <td style={{ border: "1px solid #000", padding: "5px 5px", wordBreak: "break-word", fontSize: 9 }}>{row.project}</td>
+                      <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "right", color: row.debit > 0 ? "#0284C7" : "inherit", fontSize: 9, fontWeight: row.debit > 0 ? 700 : 400 }}>
+                        {row.debit > 0 ? pkr(row.debit) : "—"}
                       </td>
-                      <td style={{ border: "1px solid #000", padding: "5px 4px", textAlign: "right", fontWeight: 800, color: row.runningBalance > 0 ? "#0284C7" : "#059669" }}>
+                      <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "right", color: row.credit > 0 ? "#059669" : "inherit", fontSize: 9, fontWeight: row.credit > 0 ? 700 : 400 }}>
+                        {row.credit > 0 ? pkr(row.credit) : "—"}
+                      </td>
+                      <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "right", fontWeight: 800, color: row.runningBalance > 0 ? "#0284C7" : "#059669", fontSize: 9.2 }}>
                         {pkr(row.runningBalance)}
                       </td>
                     </tr>
@@ -337,37 +335,41 @@ export function ClientStatementPrintModal({ client, dateFrom, dateTo, statementD
               </tbody>
               <tfoot>
                 <tr style={{ background: "#F1F5F9", fontWeight: 800 }}>
-                  <td colSpan={4} style={{ border: "1px solid #000", padding: "6px 6px", textAlign: "right" }}>Closing Outstanding Balance</td>
-                  <td style={{ border: "1px solid #000", padding: "6px 6px", textAlign: "right", color: "#0284C7" }}>{pkr(statementData.totalInvoiced)}</td>
-                  <td style={{ border: "1px solid #000", padding: "6px 6px", textAlign: "right", color: "#0369A1", fontSize: 11 }}>{pkr(statementData.closingBalance)}</td>
+                  <td colSpan={4} style={{ border: "1px solid #000", padding: "5px 6px", textAlign: "right", fontSize: 9 }}>Closing Balance Summary</td>
+                  <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "right", color: "#0284C7", fontSize: 9 }}>{pkr(statementData.totalInvoiced)}</td>
+                  <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "right", color: "#059669", fontSize: 9 }}>{pkr(statementData.totalReceived)}</td>
+                  <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "right", color: "#0369A1", fontSize: 9.5 }}>{pkr(statementData.closingBalance)}</td>
                 </tr>
               </tfoot>
             </table>
 
             {/* AMOUNT IN WORDS */}
-            <div style={{ fontSize: 10.5, fontStyle: "italic", color: "#334155", marginBottom: 16, background: "#F8FAFC", padding: "6px 10px", borderRadius: 4, border: "1px solid #000" }}>
+            <div style={{ fontSize: 9.5, fontStyle: "italic", color: "#334155", marginBottom: 12, background: "#F8FAFC", padding: "5px 8px", borderRadius: 4, border: "1px solid #000" }}>
               Closing Outstanding Balance in words: <b style={{ color: "#0F172A", fontStyle: "normal" }}>{amountInWords(statementData.closingBalance)}</b>
-            </div>
-
-            {/* SIGNATURES */}
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginTop: 20, marginBottom: 12, fontSize: 10, fontWeight: 700 }}>
-              <div style={{ textAlign: "center", width: 170 }}>
-                <div style={{ borderTop: "1.5px solid #000", paddingTop: 4 }}>PREPARED BY</div>
-              </div>
-              <div style={{ textAlign: "center", width: 170 }}>
-                <div style={{ borderTop: "1.5px solid #000", paddingTop: 4 }}>ACCOUNTS MANAGER</div>
-              </div>
-              <div style={{ textAlign: "center", width: 170 }}>
-                <div style={{ borderTop: "1.5px solid #000", paddingTop: 4 }}>AUTHORIZED SIGNATORY</div>
-              </div>
             </div>
           </div>
 
-          {/* FOOTER BANNER */}
-          <div className="invoice-footer-banner" style={{ background: "#A81C1C", backgroundImage: "linear-gradient(90deg, #A81C1C 0%, #1D3B4E 100%)", color: "#FFFFFF", padding: "6px 12px", borderRadius: 4, display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 9, fontWeight: 600, marginTop: "auto", boxSizing: "border-box" }}>
-            <div>📞 +92 21 37526834</div>
-            <div>✉️ communication@adpulse.pk | 🌐 www.adpulse.pk</div>
-            <div>📍 Office # 213, 2nd Floor, Park Tower, Block 5 Clifton, Karachi.</div>
+          {/* BOTTOM PINNED: SIGNATURES & FOOTER */}
+          <div style={{ marginTop: "auto", paddingTop: 14 }}>
+            {/* SIGNATURES - CLEANLY ALIGNED WITH PROPER SPACING */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 10, fontSize: 9.5, fontWeight: 700 }}>
+              <div style={{ textAlign: "center", width: 190 }}>
+                <div style={{ borderTop: "1.5px solid #000000", paddingTop: 4, letterSpacing: "0.3px" }}>PREPARED BY</div>
+              </div>
+              <div style={{ textAlign: "center", width: 190 }}>
+                <div style={{ borderTop: "1.5px solid #000000", paddingTop: 4, letterSpacing: "0.3px" }}>ACCOUNTS MANAGER</div>
+              </div>
+              <div style={{ textAlign: "center", width: 190 }}>
+                <div style={{ borderTop: "1.5px solid #000000", paddingTop: 4, letterSpacing: "0.3px" }}>AUTHORIZED SIGNATORY</div>
+              </div>
+            </div>
+
+            {/* FOOTER BANNER */}
+            <div className="invoice-footer-banner" style={{ background: "#A81C1C", backgroundImage: "linear-gradient(90deg, #A81C1C 0%, #1D3B4E 100%)", color: "#FFFFFF", padding: "5px 12px", borderRadius: 4, display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 8.8, fontWeight: 600, boxSizing: "border-box" }}>
+              <div>📞 +92 21 37526834</div>
+              <div>✉️ communication@adpulse.pk | 🌐 www.adpulse.pk</div>
+              <div>📍 Office # 213, 2nd Floor, Park Tower, Block 5 Clifton, Karachi.</div>
+            </div>
           </div>
         </div>
       </div>
