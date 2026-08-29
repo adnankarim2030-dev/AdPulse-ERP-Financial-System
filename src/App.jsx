@@ -4,7 +4,7 @@ import {
   Plus, X, CheckCircle2, Clock, AlertCircle, Wallet, Landmark, ShoppingCart,
   TrendingUp, TrendingDown, ScrollText, Building2, ClipboardList,
   UploadCloud, Printer, MapPin, Ruler, Loader2, FileCheck2,
-  Briefcase, Video, PartyPopper, Megaphone, Users, Newspaper,
+  Briefcase, Video, PartyPopper, Megaphone, Users, Newspaper, Radio,
   ChevronRight, Coins, Menu, UserPlus, UserCheck, UserX, CalendarCheck,
   CalendarX, Banknote, Contact, Phone, Mail, Edit, Trash2, Settings,
   Lock, KeyRound, ShieldCheck, LogOut, User, Check, Eye, EyeOff,
@@ -862,7 +862,12 @@ function seedInvoices() {
     { 
       id: "inv-101", invoiceNo: "INV-001", clientId: "cli-101", projectId: "prj-008", client: "Imtiaz Retail", 
       description: "Back to School Campaign Media & Production", 
-      amount: 450000, applySst: true, applyWht: true, whtRate: 10, sstAmount: 67500, whtAmount: 45000, totalAmount: 472500, 
+      amount: 450000, grossAmount: 450000,
+      applyDiscount: true, discountPercent: "4.4", discountAmount: 20000,
+      applyAgencyCommission: true, agencyCommissionRate: 10, agencyCommissionAmount: 43000,
+      applySst: true, sstRate: 15, sstAmount: 70950,
+      applyWht: false, whtRate: 0, whtAmount: 0,
+      totalAmount: 543950,
       issueDate: "2026-08-05", dueDate: "2026-08-20", paid: false, paidVia: null, status: "Posted",
       template: "PRINTING",
       printingItems: [
@@ -874,7 +879,11 @@ function seedInvoices() {
     { 
       id: "inv-102", invoiceNo: "INV-002", clientId: "cli-102", projectId: "prj-002", client: "Prime Estate Enterprises", 
       description: "Project Launch Event Management Package", 
-      amount: 450000, applySst: true, sstAmount: 67500, totalAmount: 517500, 
+      amount: 450000, grossAmount: 450000,
+      applyDiscount: true, discountPercent: "2.2", discountAmount: 10000,
+      applyAgencyCommission: true, agencyCommissionRate: 10, agencyCommissionAmount: 44000,
+      applySst: true, sstRate: 15, sstAmount: 72600,
+      totalAmount: 556600, 
       issueDate: "2026-07-05", dueDate: "2026-07-20", paid: true, paidVia: "Bank", status: "Posted",
       template: "EVENT",
       eventItems: [
@@ -886,7 +895,10 @@ function seedInvoices() {
     { 
       id: "inv-103", invoiceNo: "INV-003", clientId: "cli-101", projectId: "prj-003", client: "Imtiaz Retail", 
       description: "Q3 Ramzan Drive Billboard Retainer", 
-      amount: 1250000, applySst: true, sstAmount: 187500, totalAmount: 1437500, 
+      amount: 1250000, grossAmount: 1250000,
+      applyDiscount: false, discountPercent: 0, discountAmount: 0,
+      applyAgencyCommission: true, agencyCommissionRate: 10, agencyCommissionAmount: 125000,
+      applySst: true, sstRate: 15, sstAmount: 206250, totalAmount: 1581250, 
       issueDate: "2026-07-10", dueDate: "2026-07-25", paid: false, paidVia: null, status: "Posted",
       template: "OOH",
       oohSites: [
@@ -898,7 +910,10 @@ function seedInvoices() {
     { 
       id: "inv-104", invoiceNo: "INV-004", clientId: "cli-103", projectId: "prj-001", client: "Kinza Beverages", 
       description: "Summer Refresh TVC Shoot & Post-Production", 
-      amount: 680000, applySst: true, sstAmount: 102000, totalAmount: 782000, 
+      amount: 680000, grossAmount: 680000,
+      applyDiscount: true, discountPercent: "5.0", discountAmount: 34000,
+      applyAgencyCommission: true, agencyCommissionRate: 15, agencyCommissionAmount: 96900,
+      applySst: true, sstRate: 15, sstAmount: 111435, totalAmount: 854335, 
       issueDate: "2026-06-15", dueDate: "2026-06-30", paid: false, paidVia: null, status: "Posted",
       template: "NEWSPAPER",
       newspaperItems: [
@@ -909,7 +924,10 @@ function seedInvoices() {
     { 
       id: "inv-105", invoiceNo: "INV-005", clientId: "cli-104", projectId: "prj-005", client: "North Town Residency", 
       description: "Commercial Units Digital Marketing Push", 
-      amount: 320000, applySst: true, sstAmount: 48000, totalAmount: 368000, 
+      amount: 320000, grossAmount: 320000,
+      applyDiscount: false, discountPercent: 0, discountAmount: 0,
+      applyAgencyCommission: true, agencyCommissionRate: 10, agencyCommissionAmount: 32000,
+      applySst: true, sstRate: 15, sstAmount: 52800, totalAmount: 404800, 
       issueDate: "2026-07-15", dueDate: "2026-07-30", paid: false, paidVia: null, status: "Posted",
       template: "PRINT_MEDIA",
       printMediaItems: [
@@ -920,9 +938,145 @@ function seedInvoices() {
     { 
       id: "inv-106", invoiceNo: "INV-006", clientId: "cli-105", projectId: "prj-006", client: "Magnitude", 
       description: "Retail Activation Logo & BTL Design Package", 
-      amount: 85000, applySst: true, sstAmount: 12750, totalAmount: 97750, 
+      amount: 85000, grossAmount: 85000,
+      applyDiscount: false, discountPercent: 0, discountAmount: 0,
+      applyAgencyCommission: true, agencyCommissionRate: 10, agencyCommissionAmount: 8500,
+      applySst: true, sstRate: 15, sstAmount: 14025, totalAmount: 107525, 
       issueDate: "2026-06-20", dueDate: "2026-07-05", paid: true, paidVia: "Cash", status: "Posted",
       template: "GENERAL"
+    }
+  ];
+}
+
+function seedReleaseOrders() {
+  return [
+    {
+      id: "ro-101",
+      roNumber: "RO-26-001",
+      vendor: "Daily Jang (Jang Media Group)",
+      client: "Imtiaz Retail",
+      category: "Print Media",
+      campaignTitle: "Back to School Campaign (Print Media Release)",
+      issueDate: "2026-08-10",
+      releaseDate: "2026-08-15",
+      instructions: "Front Page Solus Position, Strict Color Accuracy, Voucher copy required with invoice.",
+      materialStatus: "Artwork Attached via Cloud",
+      amount: 150000,
+      grossAmount: 150000,
+      applyDiscount: true,
+      discountPercent: "5",
+      discountAmount: 7500,
+      totalAmountAfterDiscount: 142500,
+      applyAgencyCommission: true,
+      applyCommission: true,
+      agencyCommissionRate: 15,
+      agencyCommissionAmount: 21375,
+      grossAmountWithComm: 163875,
+      applySst: true,
+      sstRate: 15,
+      sstAmount: 24581,
+      totalAmount: 188456,
+      netAmount: 188456,
+      newspaperItems: [
+        { publicationDate: "2026-08-15", newspaper: "Daily Jang", edition: "Karachi", position: "Front Page Solus", columns: 4, height: 25, totalCcm: 100, rateCcm: 1500, grossAmount: 150000, commissionPct: 15, commissionAmt: 22500, netAmount: 127500 }
+      ],
+      status: "Issued"
+    },
+    {
+      id: "ro-102",
+      roNumber: "RO-26-002",
+      vendor: "Geo Television Network",
+      client: "Kinza Beverages",
+      category: "Electronic",
+      campaignTitle: "Summer Refresh TV Campaign (Electronic Media)",
+      issueDate: "2026-08-12",
+      releaseDate: "2026-08-18",
+      instructions: "Prime Time 9:00 PM News Bulletin & Drama OST Slot, Telecast Certificate mandatory.",
+      materialStatus: "Master HD Tape Delivered",
+      amount: 350000,
+      grossAmount: 350000,
+      applyDiscount: false,
+      discountPercent: 0,
+      discountAmount: 0,
+      totalAmountAfterDiscount: 350000,
+      applyAgencyCommission: true,
+      applyCommission: true,
+      agencyCommissionRate: 15,
+      agencyCommissionAmount: 52500,
+      grossAmountWithComm: 402500,
+      applySst: true,
+      sstRate: 15,
+      sstAmount: 60375,
+      totalAmount: 462875,
+      netAmount: 462875,
+      broadcastItems: [
+        { telecastDate: "2026-08-18", channel: "Geo News", programSlot: "Prime Time News Bulletin (9:00 PM)", durationSec: 30, totalSpots: 10, ratePerSpot: 35000, grossAmount: 350000, commissionPct: 15, commissionAmt: 52500, netAmount: 297500 }
+      ],
+      status: "Issued"
+    },
+    {
+      id: "ro-103",
+      roNumber: "RO-26-003",
+      vendor: "Meta Marketing Partner",
+      client: "Prime Estate Enterprises",
+      category: "Digital",
+      campaignTitle: "Project Launch Digital Push (Meta & YouTube)",
+      issueDate: "2026-08-14",
+      releaseDate: "2026-08-20",
+      instructions: "Optimized for In-Feed Video Ads and Lead Generation.",
+      materialStatus: "Video creatives uploaded",
+      amount: 200000,
+      grossAmount: 200000,
+      applyDiscount: true,
+      discountPercent: "10",
+      discountAmount: 20000,
+      totalAmountAfterDiscount: 180000,
+      applyAgencyCommission: true,
+      applyCommission: true,
+      agencyCommissionRate: 15,
+      agencyCommissionAmount: 27000,
+      grossAmountWithComm: 207000,
+      applySst: true,
+      sstRate: 15,
+      sstAmount: 31050,
+      totalAmount: 238050,
+      netAmount: 238050,
+      digitalItems: [
+        { platform: "Meta (Facebook / Instagram)", format: "Lead Gen & Video Reach Campaign", campaignDates: "2026-08-20 to 2026-09-05", impressions: "1,000,000 Reach", grossBudget: 200000, commissionPct: 15, commissionAmt: 30000, netAmount: 170000 }
+      ],
+      status: "Issued"
+    },
+    {
+      id: "ro-104",
+      roNumber: "RO-26-004",
+      vendor: "City FM 89",
+      client: "Magnitude",
+      category: "Radio",
+      campaignTitle: "FM Radio Morning Drive Commercials",
+      issueDate: "2026-08-15",
+      releaseDate: "2026-08-22",
+      instructions: "Morning Drive Time 8:00 AM - 10:00 AM broadcast, broadcast log required.",
+      materialStatus: "Audio MP3 file sent",
+      amount: 85000,
+      grossAmount: 85000,
+      applyDiscount: false,
+      discountPercent: 0,
+      discountAmount: 0,
+      totalAmountAfterDiscount: 85000,
+      applyAgencyCommission: true,
+      applyCommission: true,
+      agencyCommissionRate: 15,
+      agencyCommissionAmount: 12750,
+      grossAmountWithComm: 97750,
+      applySst: true,
+      sstRate: 15,
+      sstAmount: 14663,
+      totalAmount: 112413,
+      netAmount: 112413,
+      radioItems: [
+        { broadcastDate: "2026-08-22", station: "City FM 89", programSlot: "Morning Drive Time (8:00 AM - 10:00 AM)", durationSec: 30, totalSpots: 10, ratePerSpot: 8500, grossAmount: 85000, commissionPct: 15, commissionAmt: 12750, netAmount: 72250 }
+      ],
+      status: "Issued"
     }
   ];
 }
@@ -1476,7 +1630,11 @@ export default function App() {
   const [invoices, setInvoices] = useState(() => getInitialState("invoices", seedData.invoices || []));
   const [expenses, setExpenses] = useState(() => getInitialState("expenses", seedData.expenses || []));
   const [purchaseOrders, setPurchaseOrders] = useState(() => getInitialState("purchaseOrders", []));
-  const [releaseOrders, setReleaseOrders] = useState(() => getInitialState("releaseOrders", []));
+  const [releaseOrders, setReleaseOrders] = useState(() => {
+    const saved = getInitialState("releaseOrders", null);
+    if (saved && Array.isArray(saved) && saved.length > 0) return saved;
+    return seedReleaseOrders();
+  });
   const [showROForm, setShowROForm] = useState(false);
   const [editingRO, setEditingRO] = useState(null);
   const [projects, setProjects] = useState(() => getInitialState("projects", seedData.projects || []));
@@ -5316,6 +5474,13 @@ export default function App() {
                                 party: inv.client,
                                 description: inv.description,
                                 amount: inv.amount,
+                                grossAmount: inv.grossAmount || inv.amount,
+                                applyDiscount: inv.applyDiscount,
+                                discountPercent: inv.discountPercent,
+                                discountAmount: inv.discountAmount,
+                                applyAgencyCommission: inv.applyAgencyCommission || inv.applyCommission,
+                                agencyCommissionRate: inv.agencyCommissionRate,
+                                agencyCommissionAmount: inv.agencyCommissionAmount,
                                 applySst: inv.applySst,
                                 sstRate: inv.sstRate,
                                 sstAmount: inv.sstAmount,
@@ -5697,6 +5862,21 @@ export default function App() {
                                   party: ro.vendor,
                                   client: ro.client,
                                   serviceCategory: ro.category,
+                                  amount: ro.amount,
+                                  grossAmount: ro.grossAmount || ro.amount,
+                                  applyDiscount: ro.applyDiscount,
+                                  discountPercent: ro.discountPercent,
+                                  discountAmount: ro.discountAmount,
+                                  applyAgencyCommission: ro.applyAgencyCommission || ro.applyCommission,
+                                  agencyCommissionRate: ro.agencyCommissionRate,
+                                  agencyCommissionAmount: ro.agencyCommissionAmount,
+                                  applySst: ro.applySst,
+                                  sstRate: ro.sstRate,
+                                  sstAmount: ro.sstAmount,
+                                  applyWht: ro.applyWht,
+                                  whtRate: ro.whtRate,
+                                  whtAmount: ro.whtAmount,
+                                  totalAmount: ro.totalAmount || ro.amount,
                                   notes: ro.instructions,
                                   specialNote: ro.instructions
                                 })}
@@ -8326,11 +8506,27 @@ function InvoiceModal({ initialData, projects = [], clients = [], invoices = [],
   const [projectId, setProjectId] = useState(initialData?.projectId || "");
   const [client, setClient] = useState(initialData?.client || "");
   const [description, setDescription] = useState(initialData?.description || "");
-  const [amount, setAmount] = useState(initialData?.amount || "");
+  const [amount, setAmount] = useState(initialData?.amount || initialData?.grandTotal || "");
+  const [applyDiscount, setApplyDiscount] = useState(initialData?.applyDiscount || (Number(initialData?.discountAmount) > 0) || false);
+  const [discountPercent, setDiscountPercent] = useState(() => {
+    if (initialData?.discountPercent !== undefined && initialData?.discountPercent !== "") return initialData.discountPercent;
+    if (initialData?.discountAmount && (initialData?.amount || initialData?.grandTotal)) {
+      const g = Number(initialData.amount || initialData.grandTotal) || 0;
+      if (g > 0) return ((Number(initialData.discountAmount) / g) * 100).toFixed(1);
+    }
+    return "";
+  });
+  const [discountAmount, setDiscountAmount] = useState(initialData?.discountAmount !== undefined ? initialData.discountAmount : "");
+  const [applyAgencyCommission, setApplyAgencyCommission] = useState(
+    initialData?.applyAgencyCommission || initialData?.applyCommission || (Number(initialData?.agencyCommissionAmount) > 0) || false
+  );
+  const [agencyCommissionRate, setAgencyCommissionRate] = useState(
+    initialData?.agencyCommissionRate !== undefined ? initialData.agencyCommissionRate : "10"
+  );
   const [applySst, setApplySst] = useState(initialData?.applySst || (initialData?.docHeading ? initialData.docHeading.includes("TAX") : false));
-  const [sstRate, setSstRate] = useState(initialData?.sstRate || (initialData?.applySst ? "15" : ""));
+  const [sstRate, setSstRate] = useState(initialData?.sstRate !== undefined ? initialData.sstRate : "15");
   const [applyWht, setApplyWht] = useState(initialData?.applyWht || false);
-  const [whtRate, setWhtRate] = useState(initialData?.whtRate || "");
+  const [whtRate, setWhtRate] = useState(initialData?.whtRate !== undefined ? initialData.whtRate : "3");
   const [issueDate, setIssueDate] = useState(initialData?.issueDate || TODAY_STR);
   const [dueDate, setDueDate] = useState(initialData?.dueDate || TODAY_STR);
   const [notes, setNotes] = useState(
@@ -8338,6 +8534,28 @@ function InvoiceModal({ initialData, projects = [], clients = [], invoices = [],
     initialData?.specialNotes ||
     "• ABOVE MENTIONED AMOUNT IS BASED ON NET. ALL TAXES WOULD BE CHARGED OVER & ABOVE.\n• PAYMENT TO BE MADE IN THE FAVOR OF \"ADPULSE IMC (PRIVATE) LTD\"\n• NTN: A0654656-8 / STRN: SA054896-8"
   );
+
+  const handleDiscountPercentChange = (val) => {
+    setDiscountPercent(val);
+    const p = parseFloat(val);
+    const g = Number(amount) || 0;
+    if (!isNaN(p) && g > 0) {
+      setDiscountAmount(Math.round((g * p) / 100).toString());
+    } else if (!val) {
+      setDiscountAmount("");
+    }
+  };
+
+  const handleDiscountAmountChange = (val) => {
+    setDiscountAmount(val);
+    const a = parseFloat(val);
+    const g = Number(amount) || 0;
+    if (!isNaN(a) && g > 0) {
+      setDiscountPercent(((a / g) * 100).toFixed(1));
+    } else if (!val) {
+      setDiscountPercent("");
+    }
+  };
 
   const handleDocHeadingChange = (val) => {
     setDocHeading(val);
@@ -8618,11 +8836,18 @@ function InvoiceModal({ initialData, projects = [], clients = [], invoices = [],
 
   const totalPrintingAmount = printingItems.reduce((sum, x) => sum + (Number(x.amount) || 0), 0);
 
-  const amt = Number(amount) || 0;
-  const sstAmount = (applySst && Number(sstRate)) ? (amt * Number(sstRate) / 100) : 0;
-  const whtAmount = (applyWht && Number(whtRate)) ? (amt * Number(whtRate) / 100) : 0;
-  const totalAmount = amt + sstAmount - whtAmount;
-  const valid = client && description && amt > 0;
+  const grandTotal = Number(amount) || 0;
+  const discountVal = applyDiscount ? (Number(discountAmount) || 0) : 0;
+  const totalAmountAfterDiscount = Math.max(0, grandTotal - discountVal);
+  const commRateNum = applyAgencyCommission ? (Number(agencyCommissionRate) || 0) : 0;
+  const agencyCommissionVal = applyAgencyCommission ? (totalAmountAfterDiscount * commRateNum / 100) : 0;
+  const grossAmountWithComm = totalAmountAfterDiscount + agencyCommissionVal;
+  const sstRateNum = applySst ? (Number(sstRate) || 0) : 0;
+  const sstVal = applySst ? (grossAmountWithComm * sstRateNum / 100) : 0;
+  const whtRateNum = applyWht ? (Number(whtRate) || 0) : 0;
+  const whtVal = applyWht ? (grossAmountWithComm * whtRateNum / 100) : 0;
+  const netTotalPayable = grossAmountWithComm + sstVal - whtVal;
+  const valid = client && description && grandTotal > 0;
 
   const handleProjectSelect = (id) => {
     setProjectId(id);
@@ -8800,17 +9025,13 @@ function InvoiceModal({ initialData, projects = [], clients = [], invoices = [],
                       <td style={{ padding: "6px 8px" }}>
                         <input
                           type="number"
-                          min="0"
-                          step="0.01"
-                          style={{ width: "100%", padding: "10px 8px", fontSize: 13, borderRadius: 6, border: "1px solid #94A3B8" }}
+                          style={{ width: "100%", padding: "10px 8px", fontSize: 13, borderRadius: 6, border: "1px solid #94A3B8", textAlign: "right" }}
                           value={site.rate}
                           onChange={e => updateOohSite(idx, "rate", e.target.value)}
                           placeholder="Rate"
                         />
                       </td>
-                      <td style={{ padding: "6px 8px", textAlign: "right", fontWeight: 700, color: "#059669", verticalAlign: "middle" }}>
-                        {pkr(site.amount !== undefined ? site.amount : ((parseFloat(site.rate) || 0) / 30 * (parseFloat(site.days) || 30)))}
-                      </td>
+                      <td style={{ padding: "6px 8px", textAlign: "right", fontWeight: 700, color: "#059669" }}>{pkr(site.amount)}</td>
                       <td style={{ padding: "6px 4px", textAlign: "center" }}>
                         {oohSites.length > 1 && (
                           <button className="btn" type="button" style={{ padding: "6px 8px", color: "var(--rose)", borderColor: "#FCA5A5" }} onClick={() => removeOohSite(idx)}>
@@ -8823,63 +9044,48 @@ function InvoiceModal({ initialData, projects = [], clients = [], invoices = [],
                 </tbody>
               </table>
             </div>
-
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "#FFFFFF", padding: "10px 14px", borderRadius: 6, border: "1px solid #CBD5E1" }}>
-              <div>
-                <span style={{ fontSize: 12, color: "var(--ink-muted)" }}>Total OOH Sq. Ft.: </span>
-                <span className="mono" style={{ fontWeight: 800, fontSize: 13, color: "#0284C7" }}>
-                  {totalOohSqft.toFixed(2)} Sq. Ft.
-                </span>
-              </div>
-              <div>
-                <span style={{ fontSize: 12, color: "var(--ink-muted)" }}>Total OOH Campaign Rate: </span>
-                <span className="mono" style={{ fontWeight: 800, fontSize: 15, color: "#059669" }}>
-                  {pkr(totalOohAmount)}
-                </span>
-              </div>
+            <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", background: "#FFFFFF", padding: "10px 14px", borderRadius: 6, border: "1px solid #CBD5E1" }}>
+              <div style={{ fontSize: 12, color: "var(--ink-muted)", marginRight: 10 }}>Total OOH Amount: </div>
+              <div className="mono" style={{ fontWeight: 800, fontSize: 15, color: "#059669" }}>{pkr(totalOohAmount)}</div>
             </div>
         </div>
       )}
 
-      {/* NEWSPAPER SITES SECTION */}
+      {/* NEWSPAPER BREAKDOWN SECTION */}
       {enableNewspaperItems && (
         <div style={{ background: "var(--bg)", padding: 14, borderRadius: 8, marginBottom: 16, border: "1.5px solid var(--rule)" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: "var(--ink)" }}>Newspaper / Print Media &amp; Publication</div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: "var(--ink)" }}>Newspaper / Print Media Insertion Details</div>
             <button className="btn btn-primary" style={{ fontSize: 11.5, padding: "4px 10px" }} onClick={addNewspaperItem} type="button">
-              <Plus size={13} /> Add Item
+              <Plus size={13} /> Add Publication
             </button>
           </div>
           <div className="table-responsive" style={{ marginBottom: 10 }}>
             <table style={{ width: "100%", fontSize: 12, borderCollapse: "collapse", background: "#FFFFFF", borderRadius: 6, overflow: "hidden", border: "1px solid #CBD5E1" }}>
               <thead>
                 <tr style={{ background: "#F8FAFC", borderBottom: "1px solid #CBD5E1", color: "#334155" }}>
-                  <th style={{ padding: "7px 8px", textAlign: "left", width: "14%" }}>Newspaper</th>
+                  <th style={{ padding: "7px 8px", textAlign: "left", width: "18%" }}>Newspaper</th>
                   <th style={{ padding: "7px 8px", textAlign: "left", width: "12%" }}>Edition</th>
-                  <th style={{ padding: "7px 8px", textAlign: "center", width: "6%" }}>Cols</th>
-                  <th style={{ padding: "7px 8px", textAlign: "center", width: "8%" }}>Height (CM)</th>
-                  <th style={{ padding: "7px 8px", textAlign: "center", width: "8%", color: "#0284C7" }}>Total CCM</th>
-                  <th style={{ padding: "7px 8px", textAlign: "right", width: "12%" }}>Rate / CCM</th>
-                  <th style={{ padding: "7px 8px", textAlign: "right", width: "12%", color: "#EAB308" }}>Media Amt</th>
-                  <th style={{ padding: "7px 8px", textAlign: "center", width: "8%" }}>Ag. Fee %</th>
-                  <th style={{ padding: "7px 8px", textAlign: "right", width: "10%", color: "#EAB308" }}>Agency Fee</th>
-                  <th style={{ padding: "7px 8px", textAlign: "right", width: "14%", color: "#059669" }}>Total</th>
+                  <th style={{ padding: "7px 8px", textAlign: "center", width: "8%" }}>Cols</th>
+                  <th style={{ padding: "7px 8px", textAlign: "center", width: "8%" }}>Ht(cm)</th>
+                  <th style={{ padding: "7px 8px", textAlign: "right", width: "10%", color: "#0284C7" }}>Total CCM</th>
+                  <th style={{ padding: "7px 8px", textAlign: "right", width: "12%" }}>Rate/CCM</th>
+                  <th style={{ padding: "7px 8px", textAlign: "right", width: "12%" }}>Media Amt</th>
+                  <th style={{ padding: "7px 8px", textAlign: "right", width: "16%", color: "#059669" }}>Total</th>
                   <th style={{ padding: "7px 4px", textAlign: "center", width: "4%" }}></th>
                 </tr>
               </thead>
               <tbody>
                 {newspaperItems.map((item, idx) => (
                   <tr key={idx} style={{ borderBottom: "1px solid #F1F5F9" }}>
-                    <td style={{ padding: "6px 8px" }}><input style={{ width: "100%", padding: "10px 12px", fontSize: 13.5, borderRadius: 6, border: "1px solid #94A3B8" }} value={item.newspaper} onChange={e => updateNewspaperItem(idx, "newspaper", e.target.value)} placeholder="Daily Newspaper" /></td>
-                    <td style={{ padding: "6px 8px" }}><input style={{ width: "100%", padding: "10px 12px", fontSize: 13.5, borderRadius: 6, border: "1px solid #94A3B8" }} value={item.edition} onChange={e => updateNewspaperItem(idx, "edition", e.target.value)} placeholder="Karachi" /></td>
-                    <td style={{ padding: "6px 8px" }}><input type="number" min="1" style={{ width: "100%", padding: "10px 12px", fontSize: 13.5, textAlign: "center", borderRadius: 6, border: "1px solid #94A3B8" }} value={item.columns} onChange={e => updateNewspaperItem(idx, "columns", e.target.value)} /></td>
-                    <td style={{ padding: "6px 8px" }}><input type="number" min="1" style={{ width: "100%", padding: "10px 12px", fontSize: 13.5, textAlign: "center", borderRadius: 6, border: "1px solid #94A3B8" }} value={item.height} onChange={e => updateNewspaperItem(idx, "height", e.target.value)} /></td>
-                    <td style={{ padding: "6px 8px", textAlign: "center", fontWeight: 700, color: "#0284C7", verticalAlign: "middle" }}>{(Number(item.totalCcm) || 0).toFixed(0)}</td>
-                    <td style={{ padding: "6px 8px" }}><input type="number" step="0.01" style={{ width: "100%", padding: "10px 12px", fontSize: 13.5, textAlign: "right", borderRadius: 6, border: "1px solid #94A3B8" }} value={item.rateCcm} onChange={e => updateNewspaperItem(idx, "rateCcm", e.target.value)} /></td>
-                    <td style={{ padding: "6px 8px", textAlign: "right", fontWeight: 700, color: "#EAB308", verticalAlign: "middle" }}>{pkr(Number(item.mediaAmount) || 0)}</td>
-                    <td style={{ padding: "6px 8px" }}><input type="number" step="0.1" style={{ width: "100%", padding: "10px 12px", fontSize: 13.5, textAlign: "center", borderRadius: 6, border: "1px solid #94A3B8" }} value={item.agencyFeePct} onChange={e => updateNewspaperItem(idx, "agencyFeePct", e.target.value)} /></td>
-                    <td style={{ padding: "6px 8px", textAlign: "right", fontWeight: 700, color: "#EAB308", verticalAlign: "middle" }}>{pkr(Number(item.agencyFee) || 0)}</td>
-                    <td style={{ padding: "6px 8px", textAlign: "right", fontWeight: 700, color: "#059669", verticalAlign: "middle" }}>{pkr(Number(item.amount) || 0)}</td>
+                    <td style={{ padding: "6px 8px" }}><input style={{ width: "100%", padding: "10px 8px", fontSize: 13, borderRadius: 6, border: "1px solid #94A3B8" }} value={item.newspaper} onChange={e => updateNewspaperItem(idx, "newspaper", e.target.value)} placeholder="e.g. Daily Dawn" /></td>
+                    <td style={{ padding: "6px 8px" }}><input style={{ width: "100%", padding: "10px 8px", fontSize: 13, borderRadius: 6, border: "1px solid #94A3B8" }} value={item.edition} onChange={e => updateNewspaperItem(idx, "edition", e.target.value)} placeholder="Karachi" /></td>
+                    <td style={{ padding: "6px 8px" }}><input type="number" style={{ width: "100%", padding: "10px 8px", fontSize: 13, textAlign: "center", borderRadius: 6, border: "1px solid #94A3B8" }} value={item.columns} onChange={e => updateNewspaperItem(idx, "columns", e.target.value)} placeholder="Cols" /></td>
+                    <td style={{ padding: "6px 8px" }}><input type="number" style={{ width: "100%", padding: "10px 8px", fontSize: 13, textAlign: "center", borderRadius: 6, border: "1px solid #94A3B8" }} value={item.height} onChange={e => updateNewspaperItem(idx, "height", e.target.value)} placeholder="Ht" /></td>
+                    <td style={{ padding: "6px 8px", textAlign: "right" }}><input type="text" readOnly disabled style={{ width: "100%", padding: "10px 8px", fontSize: 13, borderRadius: 6, border: "1px solid #E2E8F0", background: "#F1F5F9", textAlign: "right", fontWeight: 700, color: "#0284C7" }} value={(Number(item.totalCcm) || 0).toFixed(0)} /></td>
+                    <td style={{ padding: "6px 8px" }}><input type="number" style={{ width: "100%", padding: "10px 8px", fontSize: 13, textAlign: "right", borderRadius: 6, border: "1px solid #94A3B8" }} value={item.rateCcm} onChange={e => updateNewspaperItem(idx, "rateCcm", e.target.value)} placeholder="Rate" /></td>
+                    <td style={{ padding: "6px 8px", textAlign: "right", fontWeight: 600 }}>{pkr(item.mediaAmount)}</td>
+                    <td style={{ padding: "6px 8px", textAlign: "right", fontWeight: 700, color: "#059669" }}>{pkr(item.amount)}</td>
                     <td style={{ padding: "6px 4px", textAlign: "center" }}>
                       {newspaperItems.length > 1 && (
                         <button className="btn" type="button" style={{ padding: "6px 8px", color: "var(--rose)", borderColor: "#FCA5A5" }} onClick={() => removeNewspaperItem(idx)}>
@@ -8893,44 +9099,42 @@ function InvoiceModal({ initialData, projects = [], clients = [], invoices = [],
             </table>
           </div>
           <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", background: "#FFFFFF", padding: "10px 14px", borderRadius: 6, border: "1px solid #CBD5E1" }}>
-            <div style={{ fontSize: 12, color: "var(--ink-muted)", marginRight: 10 }}>Total Final Amount: </div>
+            <div style={{ fontSize: 12, color: "var(--ink-muted)", marginRight: 10 }}>Total Newspaper Media Amount: </div>
             <div className="mono" style={{ fontWeight: 800, fontSize: 15, color: "#059669" }}>{pkr(totalNewspaperAmount)}</div>
           </div>
         </div>
       )}
 
-      {/* PRINT MEDIA SITES SECTION */}
+      {/* PRINT MEDIA (MAGAZINES/PERIODICALS) SECTION */}
       {enablePrintMedia && (
         <div style={{ background: "var(--bg)", padding: 14, borderRadius: 8, marginBottom: 16, border: "1.5px solid var(--rule)" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: "var(--ink)" }}>Print Media Publications</div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: "var(--ink)" }}>Print Media &amp; Publication Line Items</div>
             <button className="btn btn-primary" style={{ fontSize: 11.5, padding: "4px 10px" }} onClick={addPrintMediaItem} type="button">
-              <Plus size={13} /> Add Publication
+              <Plus size={13} /> Add Item
             </button>
           </div>
           <div className="table-responsive" style={{ marginBottom: 10 }}>
             <table style={{ width: "100%", fontSize: 12, borderCollapse: "collapse", background: "#FFFFFF", borderRadius: 6, overflow: "hidden", border: "1px solid #CBD5E1" }}>
               <thead>
                 <tr style={{ background: "#F8FAFC", borderBottom: "1px solid #CBD5E1", color: "#334155" }}>
-                  <th style={{ padding: "7px 8px", textAlign: "center", width: "4%" }}>Sr. No.</th>
-                  <th style={{ padding: "7px 8px", textAlign: "left", width: "24%" }}>Service / Description</th>
-                  <th style={{ padding: "7px 8px", textAlign: "left", width: "20%" }}>Publication / Media</th>
-                  <th style={{ padding: "7px 8px", textAlign: "left", width: "12%" }}>Size / Format</th>
-                  <th style={{ padding: "7px 8px", textAlign: "center", width: "10%" }}>Qty</th>
-                  <th style={{ padding: "7px 8px", textAlign: "right", width: "15%" }}>Rate (PKR)</th>
-                  <th style={{ padding: "7px 8px", textAlign: "right", width: "15%", color: "#059669" }}>Amount (PKR)</th>
+                  <th style={{ padding: "7px 8px", textAlign: "left", width: "28%" }}>Service / Description</th>
+                  <th style={{ padding: "7px 8px", textAlign: "left", width: "22%" }}>Publication / Media</th>
+                  <th style={{ padding: "7px 8px", textAlign: "left", width: "16%" }}>Size / Format</th>
+                  <th style={{ padding: "7px 8px", textAlign: "center", width: "8%" }}>Qty</th>
+                  <th style={{ padding: "7px 8px", textAlign: "right", width: "12%" }}>Rate (PKR)</th>
+                  <th style={{ padding: "7px 8px", textAlign: "right", width: "14%", color: "#059669" }}>Amount (PKR)</th>
                   <th style={{ padding: "7px 4px", textAlign: "center", width: "4%" }}></th>
                 </tr>
               </thead>
               <tbody>
                 {printMediaItems.map((item, idx) => (
                   <tr key={idx} style={{ borderBottom: "1px solid #F1F5F9" }}>
-                    <td style={{ padding: "6px 8px", textAlign: "center", fontWeight: 700 }}>{idx + 1}</td>
-                    <td style={{ padding: "6px 8px" }}><input style={{ width: "100%", padding: "10px 12px", fontSize: 13.5, borderRadius: 6, border: "1px solid #94A3B8" }} value={item.description} onChange={e => updatePrintMediaItem(idx, "description", e.target.value)} placeholder="Service / Description" /></td>
-                    <td style={{ padding: "6px 8px" }}><input style={{ width: "100%", padding: "10px 12px", fontSize: 13.5, borderRadius: 6, border: "1px solid #94A3B8" }} value={item.publication} onChange={e => updatePrintMediaItem(idx, "publication", e.target.value)} placeholder="Publication / Media" /></td>
-                    <td style={{ padding: "6px 8px" }}><input style={{ width: "100%", padding: "10px 12px", fontSize: 13.5, borderRadius: 6, border: "1px solid #94A3B8" }} value={item.size} onChange={e => updatePrintMediaItem(idx, "size", e.target.value)} placeholder="Size / Format" /></td>
+                    <td style={{ padding: "6px 8px" }}><input style={{ width: "100%", padding: "10px 12px", fontSize: 13.5, borderRadius: 6, border: "1px solid #94A3B8" }} value={item.description} onChange={e => updatePrintMediaItem(idx, "description", e.target.value)} placeholder="Description" /></td>
+                    <td style={{ padding: "6px 8px" }}><input style={{ width: "100%", padding: "10px 12px", fontSize: 13.5, borderRadius: 6, border: "1px solid #94A3B8" }} value={item.publication} onChange={e => updatePrintMediaItem(idx, "publication", e.target.value)} placeholder="Publication" /></td>
+                    <td style={{ padding: "6px 8px" }}><input style={{ width: "100%", padding: "10px 12px", fontSize: 13.5, borderRadius: 6, border: "1px solid #94A3B8" }} value={item.size} onChange={e => updatePrintMediaItem(idx, "size", e.target.value)} placeholder="e.g. Full Page" /></td>
                     <td style={{ padding: "6px 8px" }}><input type="number" min="1" style={{ width: "100%", padding: "10px 12px", fontSize: 13.5, textAlign: "center", borderRadius: 6, border: "1px solid #94A3B8" }} value={item.qty} onChange={e => updatePrintMediaItem(idx, "qty", e.target.value)} /></td>
-                    <td style={{ padding: "6px 8px" }}><input type="number" step="0.01" style={{ width: "100%", padding: "10px 12px", fontSize: 13.5, textAlign: "right", borderRadius: 6, border: "1px solid #94A3B8" }} value={item.rate} onChange={e => updatePrintMediaItem(idx, "rate", e.target.value)} /></td>
+                    <td style={{ padding: "6px 8px" }}><input type="number" style={{ width: "100%", padding: "10px 12px", fontSize: 13.5, textAlign: "right", borderRadius: 6, border: "1px solid #94A3B8" }} value={item.rate} onChange={e => updatePrintMediaItem(idx, "rate", e.target.value)} /></td>
                     <td style={{ padding: "6px 8px", textAlign: "right", fontWeight: 700, color: "#059669" }}>{pkr(Number(item.amount) || 0)}</td>
                     <td style={{ padding: "6px 4px", textAlign: "center" }}>
                       {printMediaItems.length > 1 && (
@@ -8955,7 +9159,7 @@ function InvoiceModal({ initialData, projects = [], clients = [], invoices = [],
       {enablePrintingItems && (
         <div style={{ background: "var(--bg)", padding: 14, borderRadius: 8, marginBottom: 16, border: "1.5px solid var(--rule)" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: "var(--ink)" }}>Printing &amp; Installations</div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: "var(--ink)" }}>Printing &amp; Installation Line Items</div>
             <button className="btn btn-primary" style={{ fontSize: 11.5, padding: "4px 10px" }} onClick={addPrintingItem} type="button">
               <Plus size={13} /> Add Item
             </button>
@@ -8964,28 +9168,26 @@ function InvoiceModal({ initialData, projects = [], clients = [], invoices = [],
             <table style={{ width: "100%", fontSize: 12, borderCollapse: "collapse", background: "#FFFFFF", borderRadius: 6, overflow: "hidden", border: "1px solid #CBD5E1" }}>
               <thead>
                 <tr style={{ background: "#F8FAFC", borderBottom: "1px solid #CBD5E1", color: "#334155" }}>
-                  <th style={{ padding: "7px 8px", textAlign: "center", width: "4%" }}>S.No</th>
-                  <th style={{ padding: "7px 8px", textAlign: "left", width: "30%" }}>Description</th>
-                  <th style={{ padding: "7px 8px", textAlign: "center", width: "10%" }}>Height</th>
-                  <th style={{ padding: "7px 8px", textAlign: "center", width: "10%" }}>Width</th>
-                  <th style={{ padding: "7px 8px", textAlign: "right", width: "12%", color: "#0284C7" }}>Total Sq Ft</th>
+                  <th style={{ padding: "7px 8px", textAlign: "left", width: "30%" }}>Description / Particulars</th>
+                  <th style={{ padding: "7px 8px", textAlign: "center", width: "8%" }}>Height</th>
+                  <th style={{ padding: "7px 8px", textAlign: "center", width: "8%" }}>Width</th>
+                  <th style={{ padding: "7px 8px", textAlign: "right", width: "10%", color: "#0284C7" }}>Total Sq.Ft</th>
                   <th style={{ padding: "7px 8px", textAlign: "center", width: "8%" }}>Qty</th>
-                  <th style={{ padding: "7px 8px", textAlign: "right", width: "12%" }}>Rate</th>
-                  <th style={{ padding: "7px 8px", textAlign: "right", width: "14%", color: "#059669" }}>Total</th>
+                  <th style={{ padding: "7px 8px", textAlign: "right", width: "14%" }}>Rate (PKR)</th>
+                  <th style={{ padding: "7px 8px", textAlign: "right", width: "15%", color: "#059669" }}>Amount (PKR)</th>
                   <th style={{ padding: "7px 4px", textAlign: "center", width: "3%" }}></th>
                 </tr>
               </thead>
               <tbody>
                 {printingItems.map((item, idx) => (
                   <tr key={idx} style={{ borderBottom: "1px solid #F1F5F9" }}>
-                    <td style={{ padding: "6px 8px", textAlign: "center", fontWeight: 700 }}>{idx + 1}</td>
                     <td style={{ padding: "6px 8px" }}><input style={{ width: "100%", padding: "10px 12px", fontSize: 13.5, borderRadius: 6, border: "1px solid #94A3B8" }} value={item.description} onChange={e => updatePrintingItem(idx, "description", e.target.value)} placeholder="Description" /></td>
-                    <td style={{ padding: "6px 8px" }}><input type="number" min="0" step="0.01" style={{ width: "100%", padding: "10px 12px", fontSize: 13.5, textAlign: "center", borderRadius: 6, border: "1px solid #94A3B8" }} value={item.height} onChange={e => updatePrintingItem(idx, "height", e.target.value)} placeholder="Height" /></td>
-                    <td style={{ padding: "6px 8px" }}><input type="number" min="0" step="0.01" style={{ width: "100%", padding: "10px 12px", fontSize: 13.5, textAlign: "center", borderRadius: 6, border: "1px solid #94A3B8" }} value={item.width} onChange={e => updatePrintingItem(idx, "width", e.target.value)} placeholder="Width" /></td>
-                    <td style={{ padding: "6px 8px", textAlign: "right", fontWeight: 700, color: "#0284C7", verticalAlign: "middle" }}>{(Number(item.totalSqFt) || 0).toFixed(2)}</td>
+                    <td style={{ padding: "6px 8px" }}><input type="number" style={{ width: "100%", padding: "10px 12px", fontSize: 13.5, textAlign: "center", borderRadius: 6, border: "1px solid #94A3B8" }} value={item.height} onChange={e => updatePrintingItem(idx, "height", e.target.value)} placeholder="H" /></td>
+                    <td style={{ padding: "6px 8px" }}><input type="number" style={{ width: "100%", padding: "10px 12px", fontSize: 13.5, textAlign: "center", borderRadius: 6, border: "1px solid #94A3B8" }} value={item.width} onChange={e => updatePrintingItem(idx, "width", e.target.value)} placeholder="W" /></td>
+                    <td style={{ padding: "6px 8px", textAlign: "right" }}><input type="text" readOnly disabled style={{ width: "100%", padding: "10px 12px", fontSize: 13.5, borderRadius: 6, border: "1px solid #E2E8F0", background: "#F1F5F9", textAlign: "right", fontWeight: 700, color: "#0284C7" }} value={(Number(item.totalSqFt) || 0).toFixed(2)} /></td>
                     <td style={{ padding: "6px 8px" }}><input type="number" min="1" style={{ width: "100%", padding: "10px 12px", fontSize: 13.5, textAlign: "center", borderRadius: 6, border: "1px solid #94A3B8" }} value={item.qty} onChange={e => updatePrintingItem(idx, "qty", e.target.value)} /></td>
-                    <td style={{ padding: "6px 8px" }}><input type="number" step="0.01" style={{ width: "100%", padding: "10px 12px", fontSize: 13.5, textAlign: "right", borderRadius: 6, border: "1px solid #94A3B8" }} value={item.rate} onChange={e => updatePrintingItem(idx, "rate", e.target.value)} placeholder="Rate" /></td>
-                    <td style={{ padding: "6px 8px", textAlign: "right", fontWeight: 700, color: "#059669", verticalAlign: "middle" }}>{pkr(Number(item.amount) || 0)}</td>
+                    <td style={{ padding: "6px 8px" }}><input type="number" style={{ width: "100%", padding: "10px 12px", fontSize: 13.5, textAlign: "right", borderRadius: 6, border: "1px solid #94A3B8" }} value={item.rate} onChange={e => updatePrintingItem(idx, "rate", e.target.value)} placeholder="Rate" /></td>
+                    <td style={{ padding: "6px 8px", textAlign: "right", fontWeight: 700, color: "#059669" }}>{pkr(Number(item.amount) || 0)}</td>
                     <td style={{ padding: "6px 4px", textAlign: "center" }}>
                       {printingItems.length > 1 && (
                         <button className="btn" type="button" style={{ padding: "6px 8px", color: "var(--rose)", borderColor: "#FCA5A5" }} onClick={() => removePrintingItem(idx)}>
@@ -9055,55 +9257,167 @@ function InvoiceModal({ initialData, projects = [], clients = [], invoices = [],
         </div>
       )}
 
-      <div className="field"><label>Gross Amount (PKR)</label><input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="0" /></div>
+      <div className="field">
+        <label>Gross / Base Amount (PKR) *</label>
+        <input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="0" />
+      </div>
       
-      <div style={{ marginBottom: 16, display: "flex", flexDirection: "column", gap: 10 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, cursor: "pointer", userSelect: "none", minWidth: 200 }}>
-            <input type="checkbox" checked={applySst} onChange={e => setApplySst(e.target.checked)} />
-            Apply Sindh Sales Tax (SRB)
+      {/* 3 CHECKBOXES: DISCOUNT, AGENCY COMMISSION, SST (AND OPTIONAL WHT) */}
+      <div style={{ marginBottom: 16, background: "var(--bg-card)", padding: "14px 16px", borderRadius: 8, border: "1.5px solid var(--rule)", display: "flex", flexDirection: "column", gap: 10 }}>
+        <div style={{ fontSize: 12, fontWeight: 800, color: "var(--ink)", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 2 }}>
+          Invoice Calculation &amp; Deductions / Taxes (Manual Controls)
+        </div>
+
+        {/* 1. APPLY DISCOUNT */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10, padding: "8px 12px", background: applyDiscount ? "#FFF1F2" : "#F8FAFC", borderRadius: 6, border: applyDiscount ? "1px solid #FECDD3" : "1px solid #E2E8F0" }}>
+          <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 700, cursor: "pointer", userSelect: "none", color: applyDiscount ? "#BE123C" : "var(--ink)" }}>
+            <input type="checkbox" checked={applyDiscount} onChange={e => setApplyDiscount(e.target.checked)} />
+            Apply Discount
           </label>
-          {applySst && (
-            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-              <input type="number" value={sstRate} onChange={e => setSstRate(e.target.value)} placeholder="%" style={{ width: 60, padding: "4px 8px", fontSize: 13 }} />
-              <span style={{ fontSize: 13, color: "var(--ink-muted)" }}>%</span>
+          {applyDiscount && (
+            <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                <span style={{ fontSize: 12, color: "#64748B", fontWeight: 600 }}>Discount %:</span>
+                <input
+                  type="number"
+                  step="0.1"
+                  value={discountPercent}
+                  onChange={e => handleDiscountPercentChange(e.target.value)}
+                  placeholder="%"
+                  style={{ width: 75, padding: "5px 8px", fontSize: 13, fontWeight: 700, textAlign: "center", borderRadius: 6, border: "1px solid #CBD5E1" }}
+                />
+                <span style={{ fontSize: 12, fontWeight: 700, color: "var(--rose)" }}>%</span>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                <span style={{ fontSize: 12, color: "#64748B", fontWeight: 600 }}>Amount (PKR):</span>
+                <input
+                  type="number"
+                  value={discountAmount}
+                  onChange={e => handleDiscountAmountChange(e.target.value)}
+                  placeholder="Manual PKR"
+                  style={{ width: 130, padding: "5px 8px", fontSize: 13, fontWeight: 700, textAlign: "right", borderRadius: 6, border: "1px solid #CBD5E1" }}
+                />
+                <span style={{ fontSize: 12, fontWeight: 700, color: "var(--rose)" }}>PKR</span>
+              </div>
             </div>
           )}
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, cursor: "pointer", userSelect: "none", minWidth: 200 }}>
+
+        {/* 2. APPLY AGENCY COMMISSION */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10, padding: "8px 12px", background: applyAgencyCommission ? "#F0F9FF" : "#F8FAFC", borderRadius: 6, border: applyAgencyCommission ? "1px solid #BAE6FD" : "1px solid #E2E8F0" }}>
+          <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 700, cursor: "pointer", userSelect: "none", color: applyAgencyCommission ? "#0369A1" : "var(--ink)" }}>
+            <input type="checkbox" checked={applyAgencyCommission} onChange={e => setApplyAgencyCommission(e.target.checked)} />
+            Apply Agency Commission
+          </label>
+          {applyAgencyCommission && (
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ fontSize: 12, color: "#64748B", fontWeight: 600 }}>Manual Commission %:</span>
+              <input
+                type="number"
+                step="0.1"
+                value={agencyCommissionRate}
+                onChange={e => setAgencyCommissionRate(e.target.value)}
+                placeholder="10"
+                style={{ width: 80, padding: "5px 8px", fontSize: 13, fontWeight: 700, textAlign: "center", borderRadius: 6, border: "1px solid #CBD5E1" }}
+              />
+              <span style={{ fontSize: 13, fontWeight: 800, color: "#0284C7" }}>%</span>
+              <span style={{ fontSize: 12.5, fontWeight: 700, color: "#0284C7", marginLeft: 4 }}>= + {pkr(agencyCommissionVal)}</span>
+            </div>
+          )}
+        </div>
+
+        {/* 3. APPLY TAX / SST */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10, padding: "8px 12px", background: applySst ? "#F0FDF4" : "#F8FAFC", borderRadius: 6, border: applySst ? "1px solid #BBF7D0" : "1px solid #E2E8F0" }}>
+          <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 700, cursor: "pointer", userSelect: "none", color: applySst ? "#15803D" : "var(--ink)" }}>
+            <input type="checkbox" checked={applySst} onChange={e => setApplySst(e.target.checked)} />
+            Apply Sales Tax (SST / Tax)
+          </label>
+          {applySst && (
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ fontSize: 12, color: "#64748B", fontWeight: 600 }}>Manual Tax / SST %:</span>
+              <input
+                type="number"
+                step="0.1"
+                value={sstRate}
+                onChange={e => setSstRate(e.target.value)}
+                placeholder="15"
+                style={{ width: 80, padding: "5px 8px", fontSize: 13, fontWeight: 700, textAlign: "center", borderRadius: 6, border: "1px solid #CBD5E1" }}
+              />
+              <span style={{ fontSize: 13, fontWeight: 800, color: "#059669" }}>%</span>
+              <span style={{ fontSize: 12.5, fontWeight: 700, color: "#059669", marginLeft: 4 }}>= + {pkr(sstVal)}</span>
+            </div>
+          )}
+        </div>
+
+        {/* 4. APPLY WITHHOLDING TAX (WHT) */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10, padding: "8px 12px", background: applyWht ? "#FFFBEB" : "#F8FAFC", borderRadius: 6, border: applyWht ? "1px solid #FDE68A" : "1px solid #E2E8F0" }}>
+          <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 700, cursor: "pointer", userSelect: "none", color: applyWht ? "#B45309" : "var(--ink)" }}>
             <input type="checkbox" checked={applyWht} onChange={e => setApplyWht(e.target.checked)} />
-            Apply Withholding Tax (WHT)
+            Apply Withholding Tax (WHT Deduction)
           </label>
           {applyWht && (
-            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-              <input type="number" value={whtRate} onChange={e => setWhtRate(e.target.value)} placeholder="%" style={{ width: 60, padding: "4px 8px", fontSize: 13 }} />
-              <span style={{ fontSize: 13, color: "var(--ink-muted)" }}>%</span>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ fontSize: 12, color: "#64748B", fontWeight: 600 }}>Manual WHT %:</span>
+              <input
+                type="number"
+                step="0.1"
+                value={whtRate}
+                onChange={e => setWhtRate(e.target.value)}
+                placeholder="3"
+                style={{ width: 80, padding: "5px 8px", fontSize: 13, fontWeight: 700, textAlign: "center", borderRadius: 6, border: "1px solid #CBD5E1" }}
+              />
+              <span style={{ fontSize: 13, fontWeight: 800, color: "var(--rose)" }}>%</span>
+              <span style={{ fontSize: 12.5, fontWeight: 700, color: "var(--rose)", marginLeft: 4 }}>= - {pkr(whtVal)}</span>
             </div>
           )}
         </div>
       </div>
 
-      <div style={{ background: "var(--bg)", padding: "10px 14px", borderRadius: 8, marginBottom: 16, fontSize: 13 }}>
-        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-          <span style={{ color: "var(--ink-muted)" }}>Subtotal (Gross)</span>
-          <span>{pkr(amt)}</span>
+      {/* DYNAMIC CALCULATION BREAKDOWN PREVIEW MATCHING SCREENSHOT */}
+      <div style={{ background: "var(--bg)", padding: "12px 16px", borderRadius: 8, marginBottom: 16, fontSize: 13, border: "1.5px solid var(--rule)" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5, fontWeight: 700 }}>
+          <span style={{ color: "var(--ink)" }}>GRAND TOTAL</span>
+          <span className="mono" style={{ fontWeight: 700 }}>{pkr(grandTotal)}</span>
         </div>
+        {applyDiscount && (
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5, color: "var(--rose)", fontWeight: 600 }}>
+            <span>DISCOUNT {discountPercent ? `(${discountPercent}%)` : ""}</span>
+            <span className="mono">- {pkr(discountVal)}</span>
+          </div>
+        )}
+        {(applyDiscount || applyAgencyCommission) && (
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5, fontWeight: 600, color: "var(--ink-muted)" }}>
+            <span>TOTAL AMOUNT</span>
+            <span className="mono" style={{ fontWeight: 700, color: "var(--ink)" }}>{pkr(totalAmountAfterDiscount)}</span>
+          </div>
+        )}
+        {applyAgencyCommission && (
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5, color: "#0284C7", fontWeight: 600 }}>
+            <span>AGENCY COMMISSION ({agencyCommissionRate || 10}%)</span>
+            <span className="mono">+ {pkr(agencyCommissionVal)}</span>
+          </div>
+        )}
+        {(applyAgencyCommission || applySst) && (
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5, fontWeight: 600, color: "var(--ink-muted)" }}>
+            <span>GROSS AMOUNT</span>
+            <span className="mono" style={{ fontWeight: 700, color: "var(--ink)" }}>{pkr(grossAmountWithComm)}</span>
+          </div>
+        )}
         {applySst && (
-          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4, color: "var(--rose)" }}>
-            <span>SRB Tax ({sstRate || 0}%)</span>
-            <span>+ {pkr(sstAmount)}</span>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5, color: "#059669", fontWeight: 600 }}>
+            <span>SST / TAX ({sstRate || 15}%)</span>
+            <span className="mono">+ {pkr(sstVal)}</span>
           </div>
         )}
         {applyWht && (
-          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4, color: "var(--green)" }}>
-            <span>WHT Deduction ({whtRate || 0}%)</span>
-            <span>- {pkr(whtAmount)}</span>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5, color: "var(--rose)", fontWeight: 600 }}>
+            <span>WHT DEDUCTION ({whtRate || 0}%)</span>
+            <span className="mono">- {pkr(whtVal)}</span>
           </div>
         )}
-        <div style={{ display: "flex", justifyContent: "space-between", fontWeight: 600, marginTop: 8, paddingTop: 8, borderTop: "1px solid var(--rule)", fontSize: 14 }}>
-          <span>Net Total Payable</span>
-          <span>{pkr(totalAmount)}</span>
+        <div style={{ display: "flex", justifyContent: "space-between", fontWeight: 800, marginTop: 8, paddingTop: 8, borderTop: "1.5px solid var(--rule)", fontSize: 15 }}>
+          <span style={{ color: "var(--ink)" }}>NET AMOUNT</span>
+          <span className="mono" style={{ color: "#059669", fontSize: 16 }}>{pkr(netTotalPayable)}</span>
         </div>
       </div>
 
@@ -9132,7 +9446,40 @@ function InvoiceModal({ initialData, projects = [], clients = [], invoices = [],
           const eventData = (enableEventItems || (eventItems && eventItems.length > 0 && eventItems.some(s => s.description || s.rate))) ? eventItems : [];
           const printingData = (enablePrintingItems || (printingItems && printingItems.length > 0 && printingItems.some(s => s.description || s.rate))) ? printingItems : [];
           const newspaperData = (enableNewspaperItems || (newspaperItems && newspaperItems.length > 0 && newspaperItems.some(s => s.newspaper || s.rateCcm))) ? newspaperItems : [];
-          const payload = { invoiceNo: invoiceNo || getNextInvoiceNo(invoices), docHeading, projectId, client, description, amount: amt, applySst, sstRate: Number(sstRate) || 0, sstAmount, applyWht, whtRate: Number(whtRate) || 0, whtAmount, totalAmount, issueDate, dueDate, notes, oohSites: oohData, printMediaItems: printData, eventItems: eventData, printingItems: printingData, newspaperItems: newspaperData };
+          const payload = {
+            invoiceNo: invoiceNo || getNextInvoiceNo(invoices),
+            docHeading,
+            projectId,
+            client,
+            description,
+            amount: grandTotal,
+            grandTotal: grandTotal,
+            applyDiscount,
+            discountPercent: applyDiscount ? (Number(discountPercent) || 0) : 0,
+            discountAmount: discountVal,
+            totalAmountAfterDiscount,
+            applyCommission: applyAgencyCommission,
+            applyAgencyCommission,
+            agencyCommissionRate: Number(agencyCommissionRate) || 0,
+            agencyCommissionAmount: agencyCommissionVal,
+            grossAmountWithComm,
+            applySst,
+            sstRate: Number(sstRate) || 0,
+            sstAmount: sstVal,
+            applyWht,
+            whtRate: Number(whtRate) || 0,
+            whtAmount: whtVal,
+            totalAmount: netTotalPayable,
+            netAmount: netTotalPayable,
+            issueDate,
+            dueDate,
+            notes,
+            oohSites: oohData,
+            printMediaItems: printData,
+            eventItems: eventData,
+            printingItems: printingData,
+            newspaperItems: newspaperData
+          };
           if (valid) onSubmit(initialData ? { ...initialData, ...payload } : payload);
         }}>
         {initialData ? "Save Invoice Changes" : "Generate & Post Invoice"}
@@ -10247,7 +10594,16 @@ function ROModal({ initialData, projects = [], vendors = [], clients = [], relea
   const [customVendorName, setCustomVendorName] = useState(initialData?.vendor || "");
   const [client, setClient] = useState(initialData?.client || "");
   const [projectId, setProjectId] = useState(initialData?.projectId || "");
-  const [category, setCategory] = useState(initialData?.category || "Newspaper / Print Media");
+  
+  const normalizeCategory = (cat) => {
+    if (!cat) return "Print Media";
+    if (cat.includes("Print") || cat.includes("Newspaper")) return "Print Media";
+    if (cat.includes("Electronic") || cat.includes("TV") || cat.includes("Broadcast")) return "Electronic";
+    if (cat.includes("Digital") || cat.includes("Social")) return "Digital";
+    if (cat.includes("Radio") || cat.includes("Audio")) return "Radio";
+    return "Print Media";
+  };
+  const [category, setCategory] = useState(normalizeCategory(initialData?.category));
   const [campaignTitle, setCampaignTitle] = useState(initialData?.campaignTitle || "");
   const [issueDate, setIssueDate] = useState(initialData?.issueDate || TODAY_STR);
   const [releaseDate, setReleaseDate] = useState(initialData?.releaseDate || TODAY_STR);
@@ -10255,7 +10611,22 @@ function ROModal({ initialData, projects = [], vendors = [], clients = [], relea
   const [instructions, setInstructions] = useState(initialData?.instructions || "Please ensure strict adherence to specified positioning & dates. Send published voucher copies / telecast certificates immediately with the invoice.");
   const [manualAmount, setManualAmount] = useState(initialData?.amount !== undefined ? initialData.amount : "");
 
-  // 1. Newspaper Items State
+  // Manual Checkbox & Percentage States for RO
+  const [applyDiscount, setApplyDiscount] = useState(initialData?.applyDiscount || false);
+  const [discountPercent, setDiscountPercent] = useState(initialData?.discountPercent || "");
+  const [discountAmount, setDiscountAmount] = useState(initialData?.discountAmount !== undefined ? initialData.discountAmount : "");
+  const [applyAgencyCommission, setApplyAgencyCommission] = useState(
+    initialData?.applyAgencyCommission !== undefined ? initialData.applyAgencyCommission : (initialData?.applyCommission !== undefined ? initialData.applyCommission : true)
+  );
+  const [agencyCommissionRate, setAgencyCommissionRate] = useState(
+    initialData?.agencyCommissionRate !== undefined ? initialData.agencyCommissionRate : (initialData?.commissionPct !== undefined ? initialData.commissionPct : "15")
+  );
+  const [applySst, setApplySst] = useState(initialData?.applySst || false);
+  const [sstRate, setSstRate] = useState(initialData?.sstRate !== undefined ? initialData.sstRate : "15");
+  const [applyWht, setApplyWht] = useState(initialData?.applyWht || false);
+  const [whtRate, setWhtRate] = useState(initialData?.whtRate !== undefined ? initialData.whtRate : "3");
+
+  // 1. Newspaper / Print Media Items State
   const [newspaperItems, setNewspaperItems] = useState(() => {
     if (initialData?.newspaperItems && Array.isArray(initialData.newspaperItems) && initialData.newspaperItems.length > 0) {
       return initialData.newspaperItems;
@@ -10314,7 +10685,7 @@ function ROModal({ initialData, projects = [], vendors = [], clients = [], relea
     setNewspaperItems(updated.length > 0 ? updated : [{ publicationDate: TODAY_STR, newspaper: "", edition: "", position: "", columns: 1, height: 1, totalCcm: 1, rateCcm: 0, grossAmount: 0, commissionPct: 15, commissionAmt: 0, netAmount: 0 }]);
   };
 
-  // 2. Broadcast / TV Items State
+  // 2. Broadcast / TV (Electronic) Items State
   const [broadcastItems, setBroadcastItems] = useState(() => {
     if (initialData?.broadcastItems && Array.isArray(initialData.broadcastItems) && initialData.broadcastItems.length > 0) {
       return initialData.broadcastItems;
@@ -10411,7 +10782,59 @@ function ROModal({ initialData, projects = [], vendors = [], clients = [], relea
     setDigitalItems(updated.length > 0 ? updated : [{ platform: "", format: "", campaignDates: "", impressions: "", grossBudget: 0, commissionPct: 15, commissionAmt: 0, netAmount: 0 }]);
   };
 
-  // 4. OOH Billboard Sites State
+  // 4. Radio / Audio Broadcast Items State
+  const [radioItems, setRadioItems] = useState(() => {
+    if (initialData?.radioItems && Array.isArray(initialData.radioItems) && initialData.radioItems.length > 0) {
+      return initialData.radioItems;
+    }
+    return [{
+      broadcastDate: releaseDate || TODAY_STR,
+      station: vendor || "",
+      programSlot: "Morning Drive Time (8:00 AM - 10:00 AM)",
+      durationSec: 30,
+      totalSpots: 10,
+      ratePerSpot: 8500,
+      grossAmount: 85000,
+      commissionPct: 15,
+      commissionAmt: 12750,
+      netAmount: 72250
+    }];
+  });
+
+  const addRadioItem = () => setRadioItems([...radioItems, {
+    broadcastDate: releaseDate || TODAY_STR,
+    station: vendor || "",
+    programSlot: "Evening Drive Time (5:00 PM - 8:00 PM)",
+    durationSec: 30,
+    totalSpots: 5,
+    ratePerSpot: 7500,
+    grossAmount: 37500,
+    commissionPct: 15,
+    commissionAmt: 5625,
+    netAmount: 31875
+  }]);
+
+  const updateRadioItem = (index, field, value) => {
+    const updated = [...radioItems];
+    const item = { ...updated[index], [field]: value };
+    const spots = parseFloat(item.totalSpots) || 1;
+    const rate = parseFloat(item.ratePerSpot) || 0;
+    const gross = spots * rate;
+    item.grossAmount = gross;
+    const commPct = parseFloat(item.commissionPct) || 0;
+    const commAmt = (gross * commPct) / 100;
+    item.commissionAmt = commAmt;
+    item.netAmount = gross - commAmt;
+    updated[index] = item;
+    setRadioItems(updated);
+  };
+
+  const removeRadioItem = (index) => {
+    const updated = radioItems.filter((_, i) => i !== index);
+    setRadioItems(updated.length > 0 ? updated : [{ broadcastDate: TODAY_STR, station: "", programSlot: "", durationSec: 30, totalSpots: 1, ratePerSpot: 0, grossAmount: 0, commissionPct: 15, commissionAmt: 0, netAmount: 0 }]);
+  };
+
+  // 5. OOH Billboard Sites State
   const [oohSites, setOohSites] = useState(() => {
     if (initialData?.oohSites && Array.isArray(initialData.oohSites) && initialData.oohSites.length > 0) {
       return initialData.oohSites;
@@ -10439,41 +10862,80 @@ function ROModal({ initialData, projects = [], vendors = [], clients = [], relea
     setOohSites(updated.length > 0 ? updated : [{ location: "", width: "", height: "", sqft: 0, fromDate: "", toDate: "", days: 30, rate: "", amount: 0 }]);
   };
 
-  const isNewspaper = category.includes("Newspaper") || category.includes("Print Media");
-  const isBroadcast = category.includes("TV") || category.includes("Broadcast") || category.includes("Radio");
-  const isDigital = category.includes("Digital") || category.includes("Social Media");
+  const isPrintMedia = category === "Print Media" || category.includes("Print") || category.includes("Newspaper");
+  const isElectronic = category === "Electronic" || category.includes("Electronic") || category.includes("TV");
+  const isDigital = category === "Digital" || category.includes("Digital");
+  const isRadio = category === "Radio" || category.includes("Radio");
   const isOoh = category.includes("OOH") || category.includes("Billboard");
 
-  const totalGross = isNewspaper
+  const totalGross = isPrintMedia
     ? newspaperItems.reduce((s, x) => s + (Number(x.grossAmount) || 0), 0)
-    : isBroadcast
+    : isElectronic
     ? broadcastItems.reduce((s, x) => s + (Number(x.grossAmount) || 0), 0)
     : isDigital
     ? digitalItems.reduce((s, x) => s + (Number(x.grossBudget) || 0), 0)
+    : isRadio
+    ? radioItems.reduce((s, x) => s + (Number(x.grossAmount) || 0), 0)
     : isOoh
     ? oohSites.reduce((s, x) => s + (Number(x.amount) || 0), 0)
     : Number(manualAmount) || 0;
 
-  const totalCommission = isNewspaper
+  const totalCommission = isPrintMedia
     ? newspaperItems.reduce((s, x) => s + (Number(x.commissionAmt) || 0), 0)
-    : isBroadcast
+    : isElectronic
     ? broadcastItems.reduce((s, x) => s + (Number(x.commissionAmt) || 0), 0)
     : isDigital
     ? digitalItems.reduce((s, x) => s + (Number(x.commissionAmt) || 0), 0)
+    : isRadio
+    ? radioItems.reduce((s, x) => s + (Number(x.commissionAmt) || 0), 0)
     : 0;
 
-  const totalNet = isNewspaper
+  const totalNet = isPrintMedia
     ? newspaperItems.reduce((s, x) => s + (Number(x.netAmount) || 0), 0)
-    : isBroadcast
+    : isElectronic
     ? broadcastItems.reduce((s, x) => s + (Number(x.netAmount) || 0), 0)
     : isDigital
     ? digitalItems.reduce((s, x) => s + (Number(x.netAmount) || 0), 0)
+    : isRadio
+    ? radioItems.reduce((s, x) => s + (Number(x.netAmount) || 0), 0)
     : isOoh
     ? oohSites.reduce((s, x) => s + (Number(x.amount) || 0), 0)
     : Number(manualAmount) || 0;
 
+  const handleDiscountPercentChange = (val) => {
+    setDiscountPercent(val);
+    const p = parseFloat(val);
+    if (!isNaN(p) && totalGross > 0) {
+      setDiscountAmount(Math.round((totalGross * p) / 100).toString());
+    } else if (!val) {
+      setDiscountAmount("");
+    }
+  };
+
+  const handleDiscountAmountChange = (val) => {
+    setDiscountAmount(val);
+    const a = parseFloat(val);
+    if (!isNaN(a) && totalGross > 0) {
+      setDiscountPercent(((a / totalGross) * 100).toFixed(1));
+    } else if (!val) {
+      setDiscountPercent("");
+    }
+  };
+
+  const grandTotal = totalGross;
+  const discountVal = applyDiscount ? (Number(discountAmount) || 0) : 0;
+  const totalAmountAfterDiscount = Math.max(0, grandTotal - discountVal);
+  const commRateNum = applyAgencyCommission ? (Number(agencyCommissionRate) || 0) : 0;
+  const agencyCommissionVal = applyAgencyCommission ? (totalAmountAfterDiscount * (commRateNum / 100)) : 0;
+  const grossAmountWithComm = totalAmountAfterDiscount + agencyCommissionVal;
+  const sstRateNum = applySst ? (Number(sstRate) || 0) : 0;
+  const sstVal = applySst ? (grossAmountWithComm * (sstRateNum / 100)) : 0;
+  const whtRateNum = applyWht ? (Number(whtRate) || 0) : 0;
+  const whtVal = applyWht ? (grossAmountWithComm * (whtRateNum / 100)) : 0;
+  const netTotalPayable = grossAmountWithComm + sstVal - whtVal;
+
   const effectiveVendor = isCustomVendor ? customVendorName : vendor;
-  const valid = roNumber && effectiveVendor && client && campaignTitle && totalNet > 0;
+  const valid = roNumber && effectiveVendor && client && campaignTitle && grandTotal > 0;
 
   const handleVendorSelect = (val) => {
     if (val === "__custom__") {
@@ -10569,12 +11031,10 @@ function ROModal({ initialData, projects = [], vendors = [], clients = [], relea
         <div className="field" style={{ margin: 0 }}>
           <label>Media Category *</label>
           <select value={category} onChange={e => setCategory(e.target.value)}>
-            <option value="Newspaper / Print Media">Newspaper / Print Media & Publications</option>
-            <option value="TV / Electronic Broadcast">TV / Electronic Broadcaster</option>
-            <option value="Digital Marketing & Social Media">Digital Marketing & Social Media</option>
-            <option value="OOH / Billboard Advertising">OOH / Billboard Advertising</option>
-            <option value="Radio / Audio Broadcast">Radio / Audio Broadcast</option>
-            <option value="General Media Booking">General Media Booking</option>
+            <option value="Print Media">Print Media</option>
+            <option value="Electronic">Electronic</option>
+            <option value="Digital">Digital</option>
+            <option value="Radio">Radio</option>
           </select>
         </div>
 
@@ -10600,12 +11060,12 @@ function ROModal({ initialData, projects = [], vendors = [], clients = [], relea
 
       {/* DYNAMIC BREAKDOWN ACCORDING TO MEDIA CATEGORY */}
 
-      {/* 1. NEWSPAPER / PRINT MEDIA SCHEDULE */}
-      {isNewspaper && (
+      {/* 1. PRINT MEDIA (NEWSPAPER) SCHEDULE */}
+      {isPrintMedia && (
         <div style={{ background: "var(--bg)", padding: 14, borderRadius: 8, marginBottom: 16, border: "1.5px solid var(--rule)" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
             <div style={{ fontSize: 13, fontWeight: 700, color: "var(--ink)", display: "flex", alignItems: "center", gap: 6 }}>
-              <Newspaper size={16} color="var(--primary)" /> Newspaper Insertion Schedule &amp; Rate Details
+              <Newspaper size={16} color="var(--primary)" /> Print Media Insertion Schedule &amp; Rate Details
             </div>
             <button className="btn btn-primary" style={{ fontSize: 11.5, padding: "4px 10px" }} onClick={addNewspaperItem} type="button">
               <Plus size={13} /> Add Insertion Date / Edition
@@ -10635,7 +11095,7 @@ function ROModal({ initialData, projects = [], vendors = [], clients = [], relea
                     <td style={{ padding: "6px 8px" }}><input type="date" style={{ width: "100%", padding: "7px 6px", fontSize: 12, borderRadius: 6, border: "1px solid #94A3B8" }} value={item.publicationDate} onChange={e => updateNewspaperItem(idx, "publicationDate", e.target.value)} /></td>
                     <td style={{ padding: "6px 8px" }}><input style={{ width: "100%", padding: "7px 8px", fontSize: 12.5, borderRadius: 6, border: "1px solid #94A3B8" }} value={item.newspaper} onChange={e => updateNewspaperItem(idx, "newspaper", e.target.value)} placeholder="Daily Dawn / Jang" /></td>
                     <td style={{ padding: "6px 8px" }}><input style={{ width: "100%", padding: "7px 8px", fontSize: 12.5, borderRadius: 6, border: "1px solid #94A3B8" }} value={item.edition} onChange={e => updateNewspaperItem(idx, "edition", e.target.value)} placeholder="Karachi / All Pak" /></td>
-                    <td style={{ padding: "6px 8px" }}><input style={{ width: "100%", padding: "7px 8px", fontSize: 12.5, borderRadius: 6, border: "1px solid #94A3B8" }} value={item.position} onChange={e => updateNewspaperItem(idx, "position", e.target.value)} placeholder="Back Page Solus" /></td>
+                    <td style={{ padding: "6px 8px" }}><input style={{ width: "100%", padding: "7px 8px", fontSize: 12.5, borderRadius: 6, border: "1px solid #94A3B8" }} value={item.position} onChange={e => updateNewspaperItem(idx, "position", e.target.value)} placeholder="Front Page / Solus" /></td>
                     <td style={{ padding: "6px 4px" }}><input type="number" min="1" style={{ width: "100%", padding: "7px 4px", fontSize: 12.5, textAlign: "center", borderRadius: 6, border: "1px solid #94A3B8" }} value={item.columns} onChange={e => updateNewspaperItem(idx, "columns", e.target.value)} /></td>
                     <td style={{ padding: "6px 4px" }}><input type="number" min="1" style={{ width: "100%", padding: "7px 4px", fontSize: 12.5, textAlign: "center", borderRadius: 6, border: "1px solid #94A3B8" }} value={item.height} onChange={e => updateNewspaperItem(idx, "height", e.target.value)} /></td>
                     <td style={{ padding: "6px 4px", textAlign: "center", fontWeight: 700, color: "#0284C7", verticalAlign: "middle" }}>{(Number(item.totalCcm) || 0).toFixed(0)}</td>
@@ -10657,12 +11117,12 @@ function ROModal({ initialData, projects = [], vendors = [], clients = [], relea
         </div>
       )}
 
-      {/* 2. BROADCAST / TV SCHEDULE */}
-      {isBroadcast && (
+      {/* 2. ELECTRONIC (TV) SCHEDULE */}
+      {isElectronic && (
         <div style={{ background: "var(--bg)", padding: 14, borderRadius: 8, marginBottom: 16, border: "1.5px solid var(--rule)" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
             <div style={{ fontSize: 13, fontWeight: 700, color: "var(--ink)", display: "flex", alignItems: "center", gap: 6 }}>
-              <Video size={16} color="var(--primary)" /> TV / Broadcaster Spot Telecast Schedule
+              <Video size={16} color="var(--primary)" /> Electronic Media / TV Spot Telecast Schedule
             </div>
             <button className="btn btn-primary" style={{ fontSize: 11.5, padding: "4px 10px" }} onClick={addBroadcastItem} type="button">
               <Plus size={13} /> Add Spot Slot
@@ -10755,15 +11215,15 @@ function ROModal({ initialData, projects = [], vendors = [], clients = [], relea
         </div>
       )}
 
-      {/* 4. OOH BILLBOARD SITES */}
-      {isOoh && (
+      {/* 4. RADIO / AUDIO BROADCAST SCHEDULE */}
+      {isRadio && (
         <div style={{ background: "var(--bg)", padding: 14, borderRadius: 8, marginBottom: 16, border: "1.5px solid var(--rule)" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
             <div style={{ fontSize: 13, fontWeight: 700, color: "var(--ink)", display: "flex", alignItems: "center", gap: 6 }}>
-              <Building2 size={16} color="var(--primary)" /> OOH Sites Release Schedule
+              <Radio size={16} color="var(--primary)" /> Radio / FM Audio Broadcast Schedule
             </div>
-            <button className="btn btn-primary" style={{ fontSize: 11.5, padding: "4px 10px" }} onClick={addOohSite} type="button">
-              <Plus size={13} /> Add Site
+            <button className="btn btn-primary" style={{ fontSize: 11.5, padding: "4px 10px" }} onClick={addRadioItem} type="button">
+              <Plus size={13} /> Add Radio Spot
             </button>
           </div>
 
@@ -10771,29 +11231,29 @@ function ROModal({ initialData, projects = [], vendors = [], clients = [], relea
             <table style={{ width: "100%", fontSize: 12, borderCollapse: "collapse", background: "#FFFFFF", borderRadius: 6, overflow: "hidden", border: "1px solid #CBD5E1" }}>
               <thead>
                 <tr style={{ background: "#F8FAFC", borderBottom: "1px solid #CBD5E1", color: "#334155" }}>
-                  <th style={{ padding: "7px 8px", textAlign: "left", width: "24%" }}>Location</th>
-                  <th style={{ padding: "7px 6px", textAlign: "center", width: "8%" }}>Width</th>
-                  <th style={{ padding: "7px 6px", textAlign: "center", width: "8%" }}>Height</th>
-                  <th style={{ padding: "7px 8px", textAlign: "center", width: "14%" }}>From</th>
-                  <th style={{ padding: "7px 8px", textAlign: "center", width: "14%" }}>To</th>
-                  <th style={{ padding: "7px 8px", textAlign: "right", width: "14%" }}>Monthly Rate</th>
-                  <th style={{ padding: "7px 8px", textAlign: "right", width: "14%", color: "#059669" }}>Payable</th>
+                  <th style={{ padding: "7px 8px", textAlign: "left", width: "14%" }}>Broadcast Date</th>
+                  <th style={{ padding: "7px 8px", textAlign: "left", width: "18%" }}>Station / FM</th>
+                  <th style={{ padding: "7px 8px", textAlign: "left", width: "22%" }}>Program / Time Slot</th>
+                  <th style={{ padding: "7px 6px", textAlign: "center", width: "8%" }}>Sec</th>
+                  <th style={{ padding: "7px 6px", textAlign: "center", width: "8%" }}>Spots</th>
+                  <th style={{ padding: "7px 8px", textAlign: "right", width: "12%" }}>Rate/Spot</th>
+                  <th style={{ padding: "7px 8px", textAlign: "right", width: "14%", color: "#059669" }}>Net (PKR)</th>
                   <th style={{ padding: "7px 4px", textAlign: "center", width: "4%" }}></th>
                 </tr>
               </thead>
               <tbody>
-                {oohSites.map((site, idx) => (
+                {radioItems.map((item, idx) => (
                   <tr key={idx} style={{ borderBottom: "1px solid #F1F5F9" }}>
-                    <td style={{ padding: "6px 8px" }}><input style={{ width: "100%", padding: "7px 8px", fontSize: 12.5, borderRadius: 6, border: "1px solid #94A3B8" }} value={site.location} onChange={e => updateOohSite(idx, "location", e.target.value)} placeholder="Location..." /></td>
-                    <td style={{ padding: "6px 4px" }}><input type="number" style={{ width: "100%", padding: "7px 4px", fontSize: 12.5, textAlign: "center", borderRadius: 6, border: "1px solid #94A3B8" }} value={site.width} onChange={e => updateOohSite(idx, "width", e.target.value)} placeholder="W" /></td>
-                    <td style={{ padding: "6px 4px" }}><input type="number" style={{ width: "100%", padding: "7px 4px", fontSize: 12.5, textAlign: "center", borderRadius: 6, border: "1px solid #94A3B8" }} value={site.height} onChange={e => updateOohSite(idx, "height", e.target.value)} placeholder="H" /></td>
-                    <td style={{ padding: "6px 8px" }}><input type="date" style={{ width: "100%", padding: "7px 6px", fontSize: 12, borderRadius: 6, border: "1px solid #94A3B8" }} value={site.fromDate} onChange={e => updateOohSite(idx, "fromDate", e.target.value)} /></td>
-                    <td style={{ padding: "6px 8px" }}><input type="date" style={{ width: "100%", padding: "7px 6px", fontSize: 12, borderRadius: 6, border: "1px solid #94A3B8" }} value={site.toDate} onChange={e => updateOohSite(idx, "toDate", e.target.value)} /></td>
-                    <td style={{ padding: "6px 8px" }}><input type="number" style={{ width: "100%", padding: "7px 6px", fontSize: 12.5, textAlign: "right", borderRadius: 6, border: "1px solid #94A3B8" }} value={site.rate} onChange={e => updateOohSite(idx, "rate", e.target.value)} placeholder="Rate" /></td>
-                    <td style={{ padding: "6px 8px", textAlign: "right", fontWeight: 700, color: "#059669", verticalAlign: "middle" }}>{pkr(site.amount)}</td>
+                    <td style={{ padding: "6px 8px" }}><input type="date" style={{ width: "100%", padding: "7px 6px", fontSize: 12, borderRadius: 6, border: "1px solid #94A3B8" }} value={item.broadcastDate} onChange={e => updateRadioItem(idx, "broadcastDate", e.target.value)} /></td>
+                    <td style={{ padding: "6px 8px" }}><input style={{ width: "100%", padding: "7px 8px", fontSize: 12.5, borderRadius: 6, border: "1px solid #94A3B8" }} value={item.station} onChange={e => updateRadioItem(idx, "station", e.target.value)} placeholder="FM 106.2 / FM 89" /></td>
+                    <td style={{ padding: "6px 8px" }}><input style={{ width: "100%", padding: "7px 8px", fontSize: 12.5, borderRadius: 6, border: "1px solid #94A3B8" }} value={item.programSlot} onChange={e => updateRadioItem(idx, "programSlot", e.target.value)} placeholder="Morning Drive Time" /></td>
+                    <td style={{ padding: "6px 4px" }}><input type="number" min="5" style={{ width: "100%", padding: "7px 4px", fontSize: 12.5, textAlign: "center", borderRadius: 6, border: "1px solid #94A3B8" }} value={item.durationSec} onChange={e => updateRadioItem(idx, "durationSec", e.target.value)} /></td>
+                    <td style={{ padding: "6px 4px" }}><input type="number" min="1" style={{ width: "100%", padding: "7px 4px", fontSize: 12.5, textAlign: "center", borderRadius: 6, border: "1px solid #94A3B8" }} value={item.totalSpots} onChange={e => updateRadioItem(idx, "totalSpots", e.target.value)} /></td>
+                    <td style={{ padding: "6px 8px" }}><input type="number" style={{ width: "100%", padding: "7px 6px", fontSize: 12.5, textAlign: "right", borderRadius: 6, border: "1px solid #94A3B8" }} value={item.ratePerSpot} onChange={e => updateRadioItem(idx, "ratePerSpot", e.target.value)} /></td>
+                    <td style={{ padding: "6px 8px", textAlign: "right", fontWeight: 700, color: "#059669", verticalAlign: "middle" }}>{pkr(item.netAmount)}</td>
                     <td style={{ padding: "6px 4px", textAlign: "center" }}>
-                      {oohSites.length > 1 && (
-                        <button className="btn" type="button" style={{ padding: "6px 8px", color: "var(--rose)", borderColor: "#FCA5A5" }} onClick={() => removeOohSite(idx)}>
+                      {radioItems.length > 1 && (
+                        <button className="btn" type="button" style={{ padding: "6px 8px", color: "var(--rose)", borderColor: "#FCA5A5" }} onClick={() => removeRadioItem(idx)}>
                           <Trash2 size={14} />
                         </button>
                       )}
@@ -10806,19 +11266,162 @@ function ROModal({ initialData, projects = [], vendors = [], clients = [], relea
         </div>
       )}
 
-      {/* SUMMARY FINANCIAL TOTALS */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1.2fr", gap: 12, background: "#FFFFFF", padding: "12px 16px", borderRadius: 8, border: "1.5px solid #CBD5E1", marginBottom: 14 }}>
-        <div>
-          <div style={{ fontSize: 11.5, color: "var(--ink-muted)" }}>Gross Media Amount</div>
-          <div className="mono" style={{ fontSize: 15, fontWeight: 700 }}>{pkr(totalGross)}</div>
+      {/* MANUAL CALCULATION & DEDUCTIONS / TAXES SECTION */}
+      <div style={{ marginBottom: 16, background: "var(--bg-card)", padding: "14px 16px", borderRadius: 8, border: "1.5px solid var(--rule)", display: "flex", flexDirection: "column", gap: 10 }}>
+        <div style={{ fontSize: 12, fontWeight: 800, color: "var(--ink)", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 2 }}>
+          RO Calculation &amp; Commission / Deductions / Taxes (Manual Controls)
         </div>
-        <div>
-          <div style={{ fontSize: 11.5, color: "var(--ink-muted)" }}>Agency Commission (15%)</div>
-          <div className="mono" style={{ fontSize: 15, fontWeight: 700, color: "#0284C7" }}>{pkr(totalCommission)}</div>
+
+        {/* 1. APPLY DISCOUNT */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10, padding: "8px 12px", background: applyDiscount ? "#FFF1F2" : "#F8FAFC", borderRadius: 6, border: applyDiscount ? "1px solid #FECDD3" : "1px solid #E2E8F0" }}>
+          <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 700, cursor: "pointer", userSelect: "none", color: applyDiscount ? "#BE123C" : "var(--ink)" }}>
+            <input type="checkbox" checked={applyDiscount} onChange={e => setApplyDiscount(e.target.checked)} />
+            Apply Discount
+          </label>
+          {applyDiscount && (
+            <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                <span style={{ fontSize: 12, color: "#64748B", fontWeight: 600 }}>Discount %:</span>
+                <input
+                  type="number"
+                  step="0.1"
+                  value={discountPercent}
+                  onChange={e => handleDiscountPercentChange(e.target.value)}
+                  placeholder="%"
+                  style={{ width: 75, padding: "5px 8px", fontSize: 13, fontWeight: 700, textAlign: "center", borderRadius: 6, border: "1px solid #CBD5E1" }}
+                />
+                <span style={{ fontSize: 12, fontWeight: 700, color: "var(--rose)" }}>%</span>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                <span style={{ fontSize: 12, color: "#64748B", fontWeight: 600 }}>Amount (PKR):</span>
+                <input
+                  type="number"
+                  value={discountAmount}
+                  onChange={e => handleDiscountAmountChange(e.target.value)}
+                  placeholder="Manual PKR"
+                  style={{ width: 130, padding: "5px 8px", fontSize: 13, fontWeight: 700, textAlign: "right", borderRadius: 6, border: "1px solid #CBD5E1" }}
+                />
+                <span style={{ fontSize: 12, fontWeight: 700, color: "var(--rose)" }}>PKR</span>
+              </div>
+            </div>
+          )}
         </div>
-        <div style={{ textAlign: "right" }}>
-          <div style={{ fontSize: 11.5, color: "var(--ink-muted)" }}>Net Media Payable (RO Value)</div>
-          <div className="mono" style={{ fontSize: 18, fontWeight: 800, color: "#059669" }}>{pkr(totalNet)}</div>
+
+        {/* 2. APPLY AGENCY COMMISSION */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10, padding: "8px 12px", background: applyAgencyCommission ? "#F0F9FF" : "#F8FAFC", borderRadius: 6, border: applyAgencyCommission ? "1px solid #BAE6FD" : "1px solid #E2E8F0" }}>
+          <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 700, cursor: "pointer", userSelect: "none", color: applyAgencyCommission ? "#0369A1" : "var(--ink)" }}>
+            <input type="checkbox" checked={applyAgencyCommission} onChange={e => setApplyAgencyCommission(e.target.checked)} />
+            Apply Agency Commission
+          </label>
+          {applyAgencyCommission && (
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ fontSize: 12, color: "#64748B", fontWeight: 600 }}>Manual Commission %:</span>
+              <input
+                type="number"
+                step="0.1"
+                value={agencyCommissionRate}
+                onChange={e => setAgencyCommissionRate(e.target.value)}
+                placeholder="15"
+                style={{ width: 80, padding: "5px 8px", fontSize: 13, fontWeight: 700, textAlign: "center", borderRadius: 6, border: "1px solid #CBD5E1" }}
+              />
+              <span style={{ fontSize: 13, fontWeight: 800, color: "#0284C7" }}>%</span>
+              <span style={{ fontSize: 12.5, fontWeight: 700, color: "#0284C7", marginLeft: 4 }}>= + {pkr(agencyCommissionVal)}</span>
+            </div>
+          )}
+        </div>
+
+        {/* 3. APPLY TAX / SST */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10, padding: "8px 12px", background: applySst ? "#F0FDF4" : "#F8FAFC", borderRadius: 6, border: applySst ? "1px solid #BBF7D0" : "1px solid #E2E8F0" }}>
+          <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 700, cursor: "pointer", userSelect: "none", color: applySst ? "#15803D" : "var(--ink)" }}>
+            <input type="checkbox" checked={applySst} onChange={e => setApplySst(e.target.checked)} />
+            Apply Sales Tax (SST / Tax)
+          </label>
+          {applySst && (
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ fontSize: 12, color: "#64748B", fontWeight: 600 }}>Manual Tax / SST %:</span>
+              <input
+                type="number"
+                step="0.1"
+                value={sstRate}
+                onChange={e => setSstRate(e.target.value)}
+                placeholder="15"
+                style={{ width: 80, padding: "5px 8px", fontSize: 13, fontWeight: 700, textAlign: "center", borderRadius: 6, border: "1px solid #CBD5E1" }}
+              />
+              <span style={{ fontSize: 13, fontWeight: 800, color: "#059669" }}>%</span>
+              <span style={{ fontSize: 12.5, fontWeight: 700, color: "#059669", marginLeft: 4 }}>= + {pkr(sstVal)}</span>
+            </div>
+          )}
+        </div>
+
+        {/* 4. APPLY WITHHOLDING TAX (WHT) */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10, padding: "8px 12px", background: applyWht ? "#FFFBEB" : "#F8FAFC", borderRadius: 6, border: applyWht ? "1px solid #FDE68A" : "1px solid #E2E8F0" }}>
+          <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 700, cursor: "pointer", userSelect: "none", color: applyWht ? "#B45309" : "var(--ink)" }}>
+            <input type="checkbox" checked={applyWht} onChange={e => setApplyWht(e.target.checked)} />
+            Apply Withholding Tax (WHT Deduction)
+          </label>
+          {applyWht && (
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ fontSize: 12, color: "#64748B", fontWeight: 600 }}>Manual WHT %:</span>
+              <input
+                type="number"
+                step="0.1"
+                value={whtRate}
+                onChange={e => setWhtRate(e.target.value)}
+                placeholder="3"
+                style={{ width: 80, padding: "5px 8px", fontSize: 13, fontWeight: 700, textAlign: "center", borderRadius: 6, border: "1px solid #CBD5E1" }}
+              />
+              <span style={{ fontSize: 13, fontWeight: 800, color: "var(--rose)" }}>%</span>
+              <span style={{ fontSize: 12.5, fontWeight: 700, color: "var(--rose)", marginLeft: 4 }}>= - {pkr(whtVal)}</span>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* DYNAMIC CALCULATION BREAKDOWN PREVIEW */}
+      <div style={{ background: "var(--bg)", padding: "12px 16px", borderRadius: 8, marginBottom: 16, fontSize: 13, border: "1.5px solid var(--rule)" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5, fontWeight: 700 }}>
+          <span style={{ color: "var(--ink)" }}>GRAND TOTAL (GROSS MEDIA)</span>
+          <span className="mono" style={{ fontWeight: 700 }}>{pkr(grandTotal)}</span>
+        </div>
+        {applyDiscount && (
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5, color: "var(--rose)", fontWeight: 600 }}>
+            <span>DISCOUNT {discountPercent ? `(${discountPercent}%)` : ""}</span>
+            <span className="mono">- {pkr(discountVal)}</span>
+          </div>
+        )}
+        {(applyDiscount || applyAgencyCommission) && (
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5, fontWeight: 600, color: "var(--ink-muted)" }}>
+            <span>TOTAL AMOUNT</span>
+            <span className="mono" style={{ fontWeight: 700, color: "var(--ink)" }}>{pkr(totalAmountAfterDiscount)}</span>
+          </div>
+        )}
+        {applyAgencyCommission && (
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5, color: "#0284C7", fontWeight: 600 }}>
+            <span>AGENCY COMMISSION ({agencyCommissionRate || 15}%)</span>
+            <span className="mono">+ {pkr(agencyCommissionVal)}</span>
+          </div>
+        )}
+        {(applyAgencyCommission || applySst) && (
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5, fontWeight: 600, color: "var(--ink-muted)" }}>
+            <span>GROSS AMOUNT</span>
+            <span className="mono" style={{ fontWeight: 700, color: "var(--ink)" }}>{pkr(grossAmountWithComm)}</span>
+          </div>
+        )}
+        {applySst && (
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5, color: "#059669", fontWeight: 600 }}>
+            <span>SST / TAX ({sstRate || 15}%)</span>
+            <span className="mono">+ {pkr(sstVal)}</span>
+          </div>
+        )}
+        {applyWht && (
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5, color: "var(--rose)", fontWeight: 600 }}>
+            <span>WHT DEDUCTION ({whtRate || 0}%)</span>
+            <span className="mono">- {pkr(whtVal)}</span>
+          </div>
+        )}
+        <div style={{ display: "flex", justifyContent: "space-between", fontWeight: 800, marginTop: 8, paddingTop: 8, borderTop: "1.5px solid var(--rule)", fontSize: 15 }}>
+          <span style={{ color: "var(--ink)" }}>NET PAYABLE (RO TOTAL)</span>
+          <span className="mono" style={{ color: "#059669", fontSize: 16 }}>{pkr(netTotalPayable)}</span>
         </div>
       </div>
 
@@ -10861,12 +11464,29 @@ function ROModal({ initialData, projects = [], vendors = [], clients = [], relea
               releaseDate,
               instructions,
               materialStatus,
-              amount: totalNet,
-              grossAmount: totalGross,
-              commissionAmount: totalCommission,
-              newspaperItems: isNewspaper ? newspaperItems : [],
-              broadcastItems: isBroadcast ? broadcastItems : [],
+              amount: grandTotal,
+              grossAmount: grandTotal,
+              applyDiscount,
+              discountPercent: applyDiscount ? (Number(discountPercent) || 0) : 0,
+              discountAmount: discountVal,
+              totalAmountAfterDiscount,
+              applyAgencyCommission,
+              applyCommission: applyAgencyCommission,
+              agencyCommissionRate: Number(agencyCommissionRate) || 0,
+              agencyCommissionAmount: agencyCommissionVal,
+              grossAmountWithComm,
+              applySst,
+              sstRate: Number(sstRate) || 0,
+              sstAmount: sstVal,
+              applyWht,
+              whtRate: Number(whtRate) || 0,
+              whtAmount: whtVal,
+              totalAmount: netTotalPayable,
+              netAmount: netTotalPayable,
+              newspaperItems: isPrintMedia ? newspaperItems : [],
+              broadcastItems: isElectronic ? broadcastItems : [],
               digitalItems: isDigital ? digitalItems : [],
+              radioItems: isRadio ? radioItems : [],
               oohSites: isOoh ? oohSites : [],
               status: initialData?.status || "Issued"
             };
@@ -12548,10 +13168,18 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
     if (doc.oohSites && doc.oohSites.length > 0) return "OOH";
     if (doc.printingItems && doc.printingItems.length > 0) return "PRINTING";
     const desc = (doc.description || "").toLowerCase();
-    const typeStr = (doc.type || doc.serviceCategory || "").toLowerCase();
+    const typeStr = (doc.type || doc.serviceCategory || doc.category || "").toLowerCase();
     if (doc.newspaperItems && doc.newspaperItems.length > 0) return "NEWSPAPER";
+    if (doc.broadcastItems && doc.broadcastItems.length > 0) return "ELECTRONIC";
+    if (doc.digitalItems && doc.digitalItems.length > 0) return "DIGITAL";
+    if (doc.radioItems && doc.radioItems.length > 0) return "RADIO";
     if (doc.printMediaItems && doc.printMediaItems.length > 0) return "PRINT_MEDIA";
+    if (doc.printingItems && doc.printingItems.length > 0) return "PRINTING";
     if (doc.eventItems && doc.eventItems.length > 0) return "EVENT";
+    if (doc.oohSites && doc.oohSites.length > 0) return "OOH";
+    if (typeStr.includes("electronic") || typeStr.includes("tv")) return "ELECTRONIC";
+    if (typeStr.includes("digital")) return "DIGITAL";
+    if (typeStr.includes("radio")) return "RADIO";
     if (desc.includes("print media") || typeStr.includes("print media") || desc.includes("publication")) return "PRINT_MEDIA";
     if (desc.includes("event") || typeStr.includes("event") || desc.includes("production") || desc.includes("tvc") || desc.includes("btl")) return "EVENT";
     if (desc.includes("ooh") || typeStr.includes("ooh") || desc.includes("billboard") || desc.includes("outdoor") || desc.includes("sites")) return "OOH";
@@ -12584,15 +13212,48 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
     return sum + (s.amount !== undefined && s.amount !== "" ? Number(s.amount) : ((rate / 30) * days));
   }, 0);
 
-  const netAmt = (template === "OOH" || oohSites.length > 0) && oohCalculatedNet > 0
+  const rawBaseAmt = (template === "OOH" || oohSites.length > 0) && oohCalculatedNet > 0
     ? oohCalculatedNet
-    : (Number(doc.amount) || 0);
+    : (Number(doc.grossAmount) || Number(doc.amount) || 0);
 
-  const sstRate = doc.sstRate ? Number(doc.sstRate) / 100 : 0.15;
-  const sstAmt = doc.applySst ? (doc.sstAmount !== undefined ? Number(doc.sstAmount) : (netAmt * sstRate)) : 0;
-  const whtRate = doc.whtRate ? Number(doc.whtRate) / 100 : 0.03;
-  const whtAmt = doc.applyWht ? (doc.whtAmount !== undefined ? Number(doc.whtAmount) : (netAmt * whtRate)) : 0;
-  const totalAmt = netAmt + sstAmt - whtAmt;
+  // Checkbox Flags & Breakdown Hierarchy (Matching Invoice Configuration)
+  const hasDiscount = Boolean(doc.applyDiscount && Number(doc.discountAmount) > 0);
+  const discountVal = hasDiscount ? Number(doc.discountAmount) : 0;
+
+  const grandTotal = doc.grossAmount !== undefined && Number(doc.grossAmount) > 0
+    ? Number(doc.grossAmount)
+    : (hasDiscount ? (Number(doc.amount) || rawBaseAmt) + discountVal : rawBaseAmt);
+
+  const totalAmountAfterDiscount = grandTotal - discountVal;
+
+  const hasCommission = Boolean(doc.applyAgencyCommission || doc.applyCommission);
+  const commRate = Number(doc.agencyCommissionRate !== undefined ? doc.agencyCommissionRate : (doc.commissionPct || 10));
+  const agencyCommissionVal = hasCommission
+    ? (doc.agencyCommissionAmount !== undefined ? Number(doc.agencyCommissionAmount) : (totalAmountAfterDiscount * (commRate / 100)))
+    : 0;
+
+  const grossAmountWithComm = totalAmountAfterDiscount + agencyCommissionVal;
+
+  const hasSst = Boolean(doc.applySst);
+  const sstRatePct = doc.sstRate !== undefined ? Number(doc.sstRate) : 15;
+  const sstAmt = hasSst
+    ? (doc.sstAmount !== undefined ? Number(doc.sstAmount) : (grossAmountWithComm * (sstRatePct / 100)))
+    : 0;
+
+  const netTotalBeforeWht = grossAmountWithComm + sstAmt;
+
+  const hasWht = Boolean(doc.applyWht);
+  const whtRatePct = doc.whtRate !== undefined ? Number(doc.whtRate) : 3;
+  const whtAmt = hasWht
+    ? (doc.whtAmount !== undefined ? Number(doc.whtAmount) : (netTotalBeforeWht * (whtRatePct / 100)))
+    : 0;
+
+  const finalPayable = doc.totalAmount !== undefined && Number(doc.totalAmount) > 0
+    ? Number(doc.totalAmount)
+    : (netTotalBeforeWht - whtAmt);
+
+  const netAmt = rawBaseAmt;
+  const totalAmt = finalPayable;
 
   const fmtDocDate = (val) => {
     if (!val) return "—";
@@ -12621,42 +13282,88 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
   };
 
   const renderTotals = (colSpanAmount) => {
-    const labelStyle = { border: "1px solid #000000", padding: "7px 10px", fontWeight: 700, textAlign: "right", boxSizing: "border-box", fontSize: 9.5 };
-    const valStyle = { border: "1px solid #000000", padding: "7px 6px", textAlign: "center", fontWeight: 700, boxSizing: "border-box", fontSize: 10, whiteSpace: "nowrap" };
+    const labelStyle = { border: "1px solid #000000", padding: "6px 10px", fontWeight: 700, textAlign: "right", boxSizing: "border-box", fontSize: 9.5 };
+    const valStyle = { border: "1px solid #000000", padding: "6px 8px", textAlign: "right", fontWeight: 700, boxSizing: "border-box", fontSize: 10, whiteSpace: "nowrap" };
+
+    const showHierarchy = hasDiscount || hasCommission || hasSst;
+
     return (
       <React.Fragment>
-        {doc.applySst ? (
+        {showHierarchy ? (
           <React.Fragment>
+            {/* 1. GRAND TOTAL (Before Discount) */}
             <tr>
-              <td colSpan={colSpanAmount} style={labelStyle}>Total Net Amount</td>
-              <td style={valStyle}>{pkr(netAmt)}</td>
+              <td colSpan={colSpanAmount} style={labelStyle}>GRAND TOTAL</td>
+              <td style={valStyle}>{pkr(grandTotal)}</td>
             </tr>
-            <tr>
-              <td colSpan={colSpanAmount} style={{ ...labelStyle, fontWeight: 600 }}>15% Sindh Sales Tax (SRB)</td>
-              <td style={{ ...valStyle, fontWeight: 600 }}>{pkr(sstAmt)}</td>
-            </tr>
-            {doc.applyWht && (
+
+            {/* 2. DISCOUNT (if checked) */}
+            {hasDiscount && (
               <tr>
-                <td colSpan={colSpanAmount} style={{ ...labelStyle, color: "#059669" }}>Less: WHT Deduction ({doc.whtRate || 0}%)</td>
+                <td colSpan={colSpanAmount} style={{ ...labelStyle, color: "#DC2626" }}>DISCOUNT {doc.discountPercent ? `(${doc.discountPercent}%)` : ""}</td>
+                <td style={{ ...valStyle, color: "#DC2626" }}>({pkr(discountVal)})</td>
+              </tr>
+            )}
+
+            {/* 3. TOTAL AMOUNT (After Discount) - show if discount was applied or if commission follows */}
+            {(hasDiscount || hasCommission) && (
+              <tr>
+                <td colSpan={colSpanAmount} style={{ ...labelStyle, background: "#F8FAFC" }}>TOTAL AMOUNT</td>
+                <td style={{ ...valStyle, background: "#F8FAFC" }}>{pkr(totalAmountAfterDiscount)}</td>
+              </tr>
+            )}
+
+            {/* 4. AGENCY COMMISSION (if checked) */}
+            {hasCommission && (
+              <React.Fragment>
+                <tr>
+                  <td colSpan={colSpanAmount} style={{ ...labelStyle, color: "#0284C7" }}>AGENCY COMMISSION {commRate}%</td>
+                  <td style={{ ...valStyle, color: "#0284C7" }}>{pkr(agencyCommissionVal)}</td>
+                </tr>
+                <tr>
+                  <td colSpan={colSpanAmount} style={{ ...labelStyle, background: "#F8FAFC" }}>GROSS AMOUNT</td>
+                  <td style={{ ...valStyle, background: "#F8FAFC" }}>{pkr(grossAmountWithComm)}</td>
+                </tr>
+              </React.Fragment>
+            )}
+
+            {/* 5. SST (if checked) */}
+            {hasSst && (
+              <tr>
+                <td colSpan={colSpanAmount} style={{ ...labelStyle, color: "#A81C1C" }}>SST {sstRatePct}%</td>
+                <td style={{ ...valStyle, color: "#A81C1C" }}>{pkr(sstAmt)}</td>
+              </tr>
+            )}
+
+            {/* 6. WHT (if checked) */}
+            {hasWht && (
+              <tr>
+                <td colSpan={colSpanAmount} style={{ ...labelStyle, color: "#059669" }}>LESS: WHT DEDUCTION ({whtRatePct}%)</td>
                 <td style={{ ...valStyle, color: "#059669" }}>- {pkr(whtAmt)}</td>
               </tr>
             )}
+
+            {/* 7. NET AMOUNT */}
             <tr style={{ background: "#F1F5F9", fontWeight: 800 }}>
-              <td colSpan={colSpanAmount} style={{ border: "1px solid #000000", padding: "8px 10px", fontSize: 10.5, textAlign: "right", boxSizing: "border-box", fontWeight: 800 }}>Grand Total Payable</td>
-              <td style={{ border: "1px solid #000000", padding: "8px 6px", textAlign: "center", fontSize: 11.5, color: "#A81C1C", boxSizing: "border-box", fontWeight: 800, whiteSpace: "nowrap" }}>{pkr(totalAmt)}</td>
+              <td colSpan={colSpanAmount} style={{ border: "1px solid #000000", padding: "7px 10px", fontSize: 10.5, textAlign: "right", boxSizing: "border-box", fontWeight: 800 }}>NET AMOUNT</td>
+              <td style={{ border: "1px solid #000000", padding: "7px 8px", textAlign: "right", fontSize: 11.5, color: "#0F172A", boxSizing: "border-box", fontWeight: 800, whiteSpace: "nowrap" }}>{pkr(finalPayable)}</td>
             </tr>
           </React.Fragment>
         ) : (
           <React.Fragment>
-            {doc.applyWht && (
+            <tr>
+              <td colSpan={colSpanAmount} style={labelStyle}>TOTAL AMOUNT</td>
+              <td style={valStyle}>{pkr(grandTotal)}</td>
+            </tr>
+            {hasWht && (
               <tr>
-                <td colSpan={colSpanAmount} style={{ ...labelStyle, color: "#059669" }}>Less: WHT Deduction ({doc.whtRate || 0}%)</td>
+                <td colSpan={colSpanAmount} style={{ ...labelStyle, color: "#059669" }}>LESS: WHT DEDUCTION ({whtRatePct}%)</td>
                 <td style={{ ...valStyle, color: "#059669" }}>- {pkr(whtAmt)}</td>
               </tr>
             )}
             <tr style={{ background: "#F1F5F9", fontWeight: 800 }}>
-              <td colSpan={colSpanAmount} style={{ border: "1px solid #000000", padding: "8px 10px", fontSize: 10.5, textAlign: "right", boxSizing: "border-box", fontWeight: 800 }}>Grand Total Payable</td>
-              <td style={{ border: "1px solid #000000", padding: "8px 6px", textAlign: "center", fontSize: 11.5, color: "#0F172A", boxSizing: "border-box", fontWeight: 800, whiteSpace: "nowrap" }}>{pkr(totalAmt)}</td>
+              <td colSpan={colSpanAmount} style={{ border: "1px solid #000000", padding: "7px 10px", fontSize: 10.5, textAlign: "right", boxSizing: "border-box", fontWeight: 800 }}>GRAND TOTAL PAYABLE</td>
+              <td style={{ border: "1px solid #000000", padding: "7px 8px", textAlign: "right", fontSize: 11.5, color: "#0F172A", boxSizing: "border-box", fontWeight: 800, whiteSpace: "nowrap" }}>{pkr(finalPayable)}</td>
             </tr>
           </React.Fragment>
         )}
@@ -12899,6 +13606,9 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
                 <option value="PRINTING" style={{ background: "#1E293B", color: "#FFFFFF" }}>OOH Printing &amp; Installation Invoice</option>
                 <option value="NEWSPAPER" style={{ background: "#1E293B", color: "#FFFFFF" }}>Newspaper / Print Media Publication</option>
                 <option value="PRINT_MEDIA" style={{ background: "#1E293B", color: "#FFFFFF" }}>Print Media Sales Tax Invoice</option>
+                <option value="ELECTRONIC" style={{ background: "#1E293B", color: "#FFFFFF" }}>Electronic Media / TV Spot Schedule (RO)</option>
+                <option value="DIGITAL" style={{ background: "#1E293B", color: "#FFFFFF" }}>Digital Media Campaign Schedule (RO)</option>
+                <option value="RADIO" style={{ background: "#1E293B", color: "#FFFFFF" }}>Radio / FM Broadcast Schedule (RO)</option>
                 <option value="EVENT" style={{ background: "#1E293B", color: "#FFFFFF" }}>Sales Tax Event Invoice</option>
               </select>
 
@@ -12995,7 +13705,7 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
             <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", marginBottom: 16 }}>
               {/* Left Logo */}
               <div style={{ display: "flex", justifyContent: "flex-start" }}>
-                <img src="./logo.png" alt="AdPulse Logo" style={{ height: 55, width: "auto", objectFit: "contain" }} onError={(e) => { e.target.style.display = 'none'; }} />
+                <img src="./logo.png" alt="AdPulse Logo" style={{ height: 76, maxHeight: 80, width: "auto", objectFit: "contain" }} onError={(e) => { e.target.style.display = 'none'; }} />
               </div>
 
               {/* Center Heading (Mathematically Centered) */}
@@ -13325,6 +14035,129 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
                   {renderTotals(6)}
                 </tbody>
               </table>
+            ) : template === "ELECTRONIC" ? (
+              <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", fontSize: 9, boxSizing: "border-box", tableLayout: "fixed" }}>
+                <colgroup>
+                  <col style={{ width: "14%" }} />
+                  <col style={{ width: "16%" }} />
+                  <col style={{ width: "24%" }} />
+                  <col style={{ width: "7%" }} />
+                  <col style={{ width: "7%" }} />
+                  <col style={{ width: "16%" }} />
+                  <col style={{ width: "16%" }} />
+                </colgroup>
+                <thead>
+                  <tr style={{ background: "#F1F5F9", color: "#0F172A" }}>
+                    <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box" }}>DATE</th>
+                    <th style={{ border: "1px solid #000000", padding: "5px 3px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box" }}>CHANNEL</th>
+                    <th style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box" }}>PROGRAM / SLOT</th>
+                    <th style={{ border: "1px solid #000000", padding: "4px 1px", textAlign: "center", fontSize: 8.2, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box" }}>SEC</th>
+                    <th style={{ border: "1px solid #000000", padding: "4px 1px", textAlign: "center", fontSize: 8.2, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box" }}>SPOTS</th>
+                    <th style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", fontSize: 8.2, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box" }}>RATE / SPOT</th>
+                    <th style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", fontSize: 8.2, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box" }}>TOTAL (PKR)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {doc.broadcastItems && doc.broadcastItems.length > 0 ? (
+                    doc.broadcastItems.map((item, idx) => (
+                      <tr key={idx} style={{ minHeight: 28 }}>
+                        <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{fmtDate(item.telecastDate)}</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 3px", textAlign: "center", fontWeight: 700, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{item.channel}</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "center", fontWeight: 600, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{item.programSlot}</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{item.durationSec}s</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", fontWeight: 700, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{item.totalSpots}</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{pkr(item.ratePerSpot)}</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 700, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{pkr(item.grossAmount || (item.ratePerSpot * item.totalSpots))}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={7} style={{ border: "1px solid #000000", padding: "6px 4px", textAlign: "center", color: "#64748B", boxSizing: "border-box", fontSize: 9 }}>No electronic broadcast items found.</td>
+                    </tr>
+                  )}
+                  {renderTotals(6)}
+                </tbody>
+              </table>
+            ) : template === "DIGITAL" ? (
+              <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", fontSize: 9, boxSizing: "border-box", tableLayout: "fixed" }}>
+                <colgroup>
+                  <col style={{ width: "22%" }} />
+                  <col style={{ width: "28%" }} />
+                  <col style={{ width: "20%" }} />
+                  <col style={{ width: "15%" }} />
+                  <col style={{ width: "15%" }} />
+                </colgroup>
+                <thead>
+                  <tr style={{ background: "#F1F5F9", color: "#0F172A" }}>
+                    <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box" }}>PLATFORM</th>
+                    <th style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box" }}>AD FORMAT / TARGETING</th>
+                    <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box" }}>CAMPAIGN DATES</th>
+                    <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box" }}>EST. REACH</th>
+                    <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box" }}>BUDGET (PKR)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {doc.digitalItems && doc.digitalItems.length > 0 ? (
+                    doc.digitalItems.map((item, idx) => (
+                      <tr key={idx} style={{ minHeight: 28 }}>
+                        <td style={{ border: "1px solid #000000", padding: "5px 3px", textAlign: "center", fontWeight: 700, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{item.platform}</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "center", fontWeight: 600, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{item.format}</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{item.campaignDates || "Active Flight"}</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 700, color: "#0284C7", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{item.impressions}</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 700, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{pkr(item.grossBudget)}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={5} style={{ border: "1px solid #000000", padding: "6px 4px", textAlign: "center", color: "#64748B", boxSizing: "border-box", fontSize: 9 }}>No digital campaign items found.</td>
+                    </tr>
+                  )}
+                  {renderTotals(4)}
+                </tbody>
+              </table>
+            ) : template === "RADIO" ? (
+              <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", fontSize: 9, boxSizing: "border-box", tableLayout: "fixed" }}>
+                <colgroup>
+                  <col style={{ width: "14%" }} />
+                  <col style={{ width: "16%" }} />
+                  <col style={{ width: "24%" }} />
+                  <col style={{ width: "7%" }} />
+                  <col style={{ width: "7%" }} />
+                  <col style={{ width: "16%" }} />
+                  <col style={{ width: "16%" }} />
+                </colgroup>
+                <thead>
+                  <tr style={{ background: "#F1F5F9", color: "#0F172A" }}>
+                    <th style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box" }}>DATE</th>
+                    <th style={{ border: "1px solid #000000", padding: "5px 3px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box" }}>STATION / FM</th>
+                    <th style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "center", fontSize: 8.5, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box" }}>TIME SLOT</th>
+                    <th style={{ border: "1px solid #000000", padding: "4px 1px", textAlign: "center", fontSize: 8.2, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box" }}>SEC</th>
+                    <th style={{ border: "1px solid #000000", padding: "4px 1px", textAlign: "center", fontSize: 8.2, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box" }}>SPOTS</th>
+                    <th style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", fontSize: 8.2, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box" }}>RATE / SPOT</th>
+                    <th style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", fontSize: 8.2, fontWeight: 800, verticalAlign: "middle", boxSizing: "border-box" }}>TOTAL (PKR)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {doc.radioItems && doc.radioItems.length > 0 ? (
+                    doc.radioItems.map((item, idx) => (
+                      <tr key={idx} style={{ minHeight: 28 }}>
+                        <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{fmtDate(item.broadcastDate)}</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 3px", textAlign: "center", fontWeight: 700, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{item.station}</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "center", fontWeight: 600, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{item.programSlot}</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{item.durationSec}s</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 1px", textAlign: "center", fontWeight: 700, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{item.totalSpots}</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{pkr(item.ratePerSpot)}</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 2px", textAlign: "center", fontWeight: 700, verticalAlign: "middle", boxSizing: "border-box", fontSize: 9 }}>{pkr(item.grossAmount || (item.ratePerSpot * item.totalSpots))}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={7} style={{ border: "1px solid #000000", padding: "6px 4px", textAlign: "center", color: "#64748B", boxSizing: "border-box", fontSize: 9 }}>No radio broadcast items found.</td>
+                    </tr>
+                  )}
+                  {renderTotals(6)}
+                </tbody>
+              </table>
             ) : (
               <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", fontSize: 9.5, boxSizing: "border-box", tableLayout: "fixed" }}>
                 <colgroup>
@@ -13577,7 +14410,7 @@ function ClientStatementPrintModal({ clientName, invoices, projects, onClose }) 
             {/* TOP HEADER */}
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "2px solid #0F172A", paddingBottom: 10, marginBottom: 12 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                <img src="./logo.png" alt="AdPulse Logo" style={{ maxHeight: 46, width: "auto" }} onError={(e) => { e.target.style.display = 'none'; }} />
+                <img src="./logo.png" alt="AdPulse Logo" style={{ height: 70, maxHeight: 75, width: "auto", objectFit: "contain" }} onError={(e) => { e.target.style.display = 'none'; }} />
                 <div>
                   <div style={{ fontSize: 18, fontWeight: 800, color: "#0F172A", letterSpacing: "-0.3px" }}>AdPulse IMC (Private) Ltd</div>
                   <div style={{ fontSize: 10.5, color: "#475569" }}>Financial Management &amp; Client Ledger Activity</div>
@@ -13797,7 +14630,7 @@ function ProjectStatementPrintModal({ project, invoices, expenses, onClose }) {
             {/* TOP HEADER */}
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "2px solid #0F172A", paddingBottom: 10, marginBottom: 12 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                <img src="./logo.png" alt="AdPulse Logo" style={{ maxHeight: 46, width: "auto" }} onError={(e) => { e.target.style.display = 'none'; }} />
+                <img src="./logo.png" alt="AdPulse Logo" style={{ height: 70, maxHeight: 75, width: "auto", objectFit: "contain" }} onError={(e) => { e.target.style.display = 'none'; }} />
                 <div>
                   <div style={{ fontSize: 18, fontWeight: 800, color: "#0F172A", letterSpacing: "-0.3px" }}>AdPulse IMC (Private) Ltd</div>
                   <div style={{ fontSize: 10.5, color: "#475569" }}>Creative Strategy, Media Planning &amp; Execution Agency</div>

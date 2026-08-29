@@ -225,7 +225,7 @@ export function VendorStatementPrintModal({ vendor, dateFrom, dateTo, statementD
             {/* TOP HEADER */}
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "2px solid #0F172A", paddingBottom: 10, marginBottom: 12 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                <img src="./logo.png" alt="AdPulse Logo" style={{ maxHeight: 46, width: "auto" }} onError={(e) => { e.target.style.display = 'none'; }} />
+                <img src="./logo.png" alt="AdPulse Logo" style={{ height: 70, maxHeight: 75, width: "auto", objectFit: "contain" }} onError={(e) => { e.target.style.display = 'none'; }} />
                 <div>
                   <div style={{ fontSize: 18, fontWeight: 800, color: "#0F172A", letterSpacing: "-0.3px" }}>AdPulse IMC (Private) Ltd</div>
                   <div style={{ fontSize: 10.5, color: "#475569" }}>Financial Management &amp; Accounts Payable Sub-Ledger</div>
