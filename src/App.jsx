@@ -5482,6 +5482,8 @@ export default function App() {
                                 agencyCommissionRate: inv.agencyCommissionRate,
                                 agencyCommissionAmount: inv.agencyCommissionAmount,
                                 applySst: inv.applySst,
+                                sstBasis: inv.sstBasis,
+                                sstOnCommission: inv.sstBasis === "commission" || inv.sstOnCommission,
                                 sstRate: inv.sstRate,
                                 sstAmount: inv.sstAmount,
                                 applyWht: inv.applyWht,
@@ -5871,6 +5873,8 @@ export default function App() {
                                   agencyCommissionRate: ro.agencyCommissionRate,
                                   agencyCommissionAmount: ro.agencyCommissionAmount,
                                   applySst: ro.applySst,
+                                  sstBasis: ro.sstBasis,
+                                  sstOnCommission: ro.sstBasis === "commission" || ro.sstOnCommission,
                                   sstRate: ro.sstRate,
                                   sstAmount: ro.sstAmount,
                                   applyWht: ro.applyWht,
@@ -8525,6 +8529,8 @@ function InvoiceModal({ initialData, projects = [], clients = [], invoices = [],
   );
   const [applySst, setApplySst] = useState(initialData?.applySst || (initialData?.docHeading ? initialData.docHeading.includes("TAX") : false));
   const [sstRate, setSstRate] = useState(initialData?.sstRate !== undefined ? initialData.sstRate : "15");
+  const [sstBasis, setSstBasis] = useState(initialData?.sstBasis || (initialData?.sstOnCommission ? "commission" : "gross"));
+  const [sstAmount, setSstAmount] = useState(initialData?.sstAmount !== undefined ? initialData.sstAmount : "");
   const [applyWht, setApplyWht] = useState(initialData?.applyWht || false);
   const [whtRate, setWhtRate] = useState(initialData?.whtRate !== undefined ? initialData.whtRate : "3");
   const [issueDate, setIssueDate] = useState(initialData?.issueDate || TODAY_STR);
@@ -8650,84 +8656,102 @@ function InvoiceModal({ initialData, projects = [], clients = [], invoices = [],
     const finalSites = updated.length > 0 ? updated : [{ location: "", width: "", height: "", sqft: 0, fromDate: "", toDate: "", days: 30, rate: "", amount: 0 }];
     setOohSites(finalSites);
     if (enableOohSites) {
-      const calcTotal = finalSites.reduce((sum, site) => sum + (site.amount !== undefined ? site.amount : ((parseFloat(site.rate) || 0) / 30 * (parseFloat(site.days) || 30))), 0);
-      if (calcTotal > 0) setAmount(calcTotal.toFixed(2));
+      const calcTotal = finalSites.reduce((sum, site) => {
+        const amt = site.amount !== undefined ? site.amount : ((parseFloat(site.rate) || 0) / 30 * (parseFloat(site.days) || 30));
+        return sum + amt;
+      }, 0);
+      setAmount(calcTotal > 0 ? calcTotal.toFixed(2) : "");
     }
   };
 
   const totalOohSqft = oohSites.reduce((sum, item) => sum + (Number(item.sqft) || 0), 0);
   const totalOohAmount = oohSites.reduce((sum, item) => sum + (item.amount !== undefined ? Number(item.amount) : ((parseFloat(item.rate) || 0) / 30 * (parseFloat(item.days) || 30))), 0);
 
-  // Newspaper State
+  // Newspaper Line Items State inside InvoiceModal
   const enableNewspaperItems = (description || "").toUpperCase().includes("NEWSPAPER") || 
-    (selectedProj?.type || "").toUpperCase().includes("PRINT MEDIA") || 
+    (description || "").toUpperCase().includes("DAWN") || 
+    (description || "").toUpperCase().includes("JANG") || 
+    (selectedProj?.type || "").toUpperCase().includes("NEWSPAPER") || 
     (initialData?.newspaperItems && initialData.newspaperItems.length > 0);
   const [newspaperItems, setNewspaperItems] = useState(() => {
-    if (initialData?.newspaperItems?.length > 0) return initialData.newspaperItems;
-    return [{ newspaper: "", edition: "", columns: "", height: "", totalCcm: "", rateCcm: "", mediaAmount: "", agencyFeePct: 15, agencyFee: "", amount: "" }];
+    if (initialData?.newspaperItems && Array.isArray(initialData.newspaperItems) && initialData.newspaperItems.length > 0) {
+      return initialData.newspaperItems;
+    }
+    return [{
+      newspaper: "",
+      edition: "Karachi",
+      position: "Front Page",
+      columns: 4,
+      height: 25,
+      totalCcm: 100,
+      rateCcm: "",
+      grossAmount: 0,
+      netAmount: 0
+    }];
   });
 
-  const addNewspaperItem = () => setNewspaperItems([...newspaperItems, { newspaper: "", edition: "", columns: "", height: "", totalCcm: "", rateCcm: "", mediaAmount: "", agencyFeePct: 15, agencyFee: "", amount: "" }]);
+  const addNewspaperItem = () => setNewspaperItems([...newspaperItems, {
+    newspaper: "",
+    edition: "Karachi",
+    position: "Front Page",
+    columns: 4,
+    height: 25,
+    totalCcm: 100,
+    rateCcm: "",
+    grossAmount: 0,
+    netAmount: 0
+  }]);
 
   const updateNewspaperItem = (index, field, value) => {
     const updated = [...newspaperItems];
     const item = { ...updated[index], [field]: value };
-
-    const c = parseFloat(item.columns) || 0;
-    const h = parseFloat(item.height) || 0;
-    const totalCcm = c * h;
-    item.totalCcm = totalCcm;
-
-    const rate = parseFloat(item.rateCcm) || 0;
-    const mediaAmount = totalCcm * rate;
-    item.mediaAmount = mediaAmount;
-
-    const feePct = parseFloat(item.agencyFeePct) || 0;
-    const feeAmt = (mediaAmount * feePct) / 100;
-    item.agencyFee = feeAmt;
-
-    const total = mediaAmount + feeAmt;
-    item.amount = total;
-
+    if (["columns", "height", "rateCcm"].includes(field)) {
+      const col = parseFloat(item.columns) || 0;
+      const h = parseFloat(item.height) || 0;
+      const ccm = Math.round(col * h * 100) / 100;
+      item.totalCcm = ccm;
+      const r = parseFloat(item.rateCcm) || 0;
+      const gross = Math.round(ccm * r);
+      item.grossAmount = gross;
+      item.netAmount = gross;
+    }
     updated[index] = item;
     setNewspaperItems(updated);
-
     if (enableNewspaperItems) {
-      const calcTotal = updated.reduce((sum, x) => sum + (parseFloat(x.amount) || 0), 0);
-      if (calcTotal > 0) setAmount(calcTotal.toFixed(2));
+      const calcTotal = updated.reduce((sum, x) => sum + (parseFloat(x.grossAmount) || 0), 0);
+      if (calcTotal > 0) setAmount(calcTotal.toString());
     }
   };
 
   const removeNewspaperItem = (index) => {
     const updated = newspaperItems.filter((_, i) => i !== index);
-    const finalItems = updated.length > 0 ? updated : [{ newspaper: "", edition: "", columns: "", height: "", totalCcm: "", rateCcm: "", mediaAmount: "", agencyFeePct: 15, agencyFee: "", amount: "" }];
+    const finalItems = updated.length > 0 ? updated : [{ newspaper: "", edition: "Karachi", position: "Front Page", columns: 4, height: 25, totalCcm: 100, rateCcm: "", grossAmount: 0, netAmount: 0 }];
     setNewspaperItems(finalItems);
     if (enableNewspaperItems) {
-      const calcTotal = finalItems.reduce((sum, x) => sum + (parseFloat(x.amount) || 0), 0);
-      if (calcTotal > 0) setAmount(calcTotal.toFixed(2));
+      const calcTotal = finalItems.reduce((sum, x) => sum + (parseFloat(x.grossAmount) || 0), 0);
+      if (calcTotal > 0) setAmount(calcTotal.toString());
     }
   };
 
-  const totalNewspaperAmount = newspaperItems.reduce((sum, x) => sum + (Number(x.amount) || 0), 0);
+  const totalNewspaperAmount = newspaperItems.reduce((sum, x) => sum + (Number(x.grossAmount) || 0), 0);
 
-  // Print Media State
+  // Print Media (Magazine / Periodical / Newspaper Standard) State
   const enablePrintMedia = (description || "").toUpperCase().includes("PRINT MEDIA") || 
-    (description || "").toUpperCase().includes("PUBLICATION") || 
+    (description || "").toUpperCase().includes("MAGAZINE") || 
+    (selectedProj?.type || "").toUpperCase().includes("PRINT MEDIA") || 
     (initialData?.printMediaItems && initialData.printMediaItems.length > 0);
   const [printMediaItems, setPrintMediaItems] = useState(() => {
     if (initialData?.printMediaItems?.length > 0) return initialData.printMediaItems;
-    return [{ description: "", publication: "", size: "", qty: 1, rate: "", amount: "" }];
+    return [{ publication: "", edition: "National", insertionDate: issueDate || "", adSize: "Full Page Color", position: "Back Cover", rate: "", amount: "" }];
   });
 
-  const addPrintMediaItem = () => setPrintMediaItems([...printMediaItems, { description: "", publication: "", size: "", qty: 1, rate: "", amount: "" }]);
-  
+  const addPrintMediaItem = () => setPrintMediaItems([...printMediaItems, { publication: "", edition: "National", insertionDate: issueDate || "", adSize: "Full Page Color", position: "Back Cover", rate: "", amount: "" }]);
+
   const updatePrintMediaItem = (index, field, value) => {
     const updated = [...printMediaItems];
     const item = { ...updated[index], [field]: value };
-    if (field === "rate" || field === "qty") {
-      const r = parseFloat(item.rate) || 0;
-      const q = parseFloat(item.qty) || 1;
-      item.amount = r * q;
+    if (field === "rate") {
+      item.amount = value;
     }
     updated[index] = item;
     setPrintMediaItems(updated);
@@ -8739,7 +8763,7 @@ function InvoiceModal({ initialData, projects = [], clients = [], invoices = [],
 
   const removePrintMediaItem = (index) => {
     const updated = printMediaItems.filter((_, i) => i !== index);
-    const finalItems = updated.length > 0 ? updated : [{ description: "", publication: "", size: "", qty: 1, rate: "", amount: "" }];
+    const finalItems = updated.length > 0 ? updated : [{ publication: "", edition: "National", insertionDate: "", adSize: "Full Page Color", position: "Back Cover", rate: "", amount: "" }];
     setPrintMediaItems(finalItems);
     if (enablePrintMedia) {
       const calcTotal = finalItems.reduce((sum, x) => sum + (parseFloat(x.amount) || 0), 0);
@@ -8749,11 +8773,11 @@ function InvoiceModal({ initialData, projects = [], clients = [], invoices = [],
 
   const totalPrintMediaAmount = printMediaItems.reduce((sum, x) => sum + (Number(x.amount) || 0), 0);
 
-  // Event & Digital State
+  // Event & Production Line Items State
   const enableEventItems = (description || "").toUpperCase().includes("EVENT") || 
-    (description || "").toUpperCase().includes("TVC") || 
-    (description || "").toUpperCase().includes("BTL") || 
-    (description || "").toUpperCase().includes("DIGITAL") || 
+    (description || "").toUpperCase().includes("PRODUCTION") || 
+    (description || "").toUpperCase().includes("STALL") || 
+    (description || "").toUpperCase().includes("FABRICATION") || 
     (selectedProj?.type || "").toUpperCase().includes("EVENT") || 
     (initialData?.eventItems && initialData.eventItems.length > 0);
   const [eventItems, setEventItems] = useState(() => {
@@ -8842,10 +8866,16 @@ function InvoiceModal({ initialData, projects = [], clients = [], invoices = [],
   const commRateNum = applyAgencyCommission ? (Number(agencyCommissionRate) || 0) : 0;
   const agencyCommissionVal = applyAgencyCommission ? (totalAmountAfterDiscount * commRateNum / 100) : 0;
   const grossAmountWithComm = totalAmountAfterDiscount + agencyCommissionVal;
+  
   const sstRateNum = applySst ? (Number(sstRate) || 0) : 0;
-  const sstVal = applySst ? (grossAmountWithComm * sstRateNum / 100) : 0;
+  const isSstOnComm = sstBasis === "commission";
+  const sstCalculatedBase = isSstOnComm ? agencyCommissionVal : grossAmountWithComm;
+  const sstVal = applySst
+    ? (sstAmount !== "" && sstAmount !== undefined && !isNaN(Number(sstAmount)) ? Number(sstAmount) : (sstCalculatedBase * sstRateNum / 100))
+    : 0;
+
   const whtRateNum = applyWht ? (Number(whtRate) || 0) : 0;
-  const whtVal = applyWht ? (grossAmountWithComm * whtRateNum / 100) : 0;
+  const whtVal = applyWht ? ((grossAmountWithComm + sstVal) * whtRateNum / 100) : 0;
   const netTotalPayable = grossAmountWithComm + sstVal - whtVal;
   const valid = client && description && grandTotal > 0;
 
@@ -9327,24 +9357,59 @@ function InvoiceModal({ initialData, projects = [], clients = [], invoices = [],
         </div>
 
         {/* 3. APPLY TAX / SST */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10, padding: "8px 12px", background: applySst ? "#F0FDF4" : "#F8FAFC", borderRadius: 6, border: applySst ? "1px solid #BBF7D0" : "1px solid #E2E8F0" }}>
-          <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 700, cursor: "pointer", userSelect: "none", color: applySst ? "#15803D" : "var(--ink)" }}>
-            <input type="checkbox" checked={applySst} onChange={e => setApplySst(e.target.checked)} />
-            Apply Sales Tax (SST / Tax)
-          </label>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8, padding: "10px 12px", background: applySst ? "#F0FDF4" : "#F8FAFC", borderRadius: 6, border: applySst ? "1px solid #BBF7D0" : "1px solid #E2E8F0" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
+            <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 700, cursor: "pointer", userSelect: "none", color: applySst ? "#15803D" : "var(--ink)" }}>
+              <input type="checkbox" checked={applySst} onChange={e => setApplySst(e.target.checked)} />
+              Apply Sales Tax (SST / Tax)
+            </label>
+            {applySst && (
+              <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                <span style={{ fontSize: 12, color: "#64748B", fontWeight: 600 }}>Manual Tax / SST %:</span>
+                <input
+                  type="number"
+                  step="0.1"
+                  value={sstRate}
+                  onChange={e => {
+                    setSstRate(e.target.value);
+                    setSstAmount("");
+                  }}
+                  placeholder="15"
+                  style={{ width: 75, padding: "5px 8px", fontSize: 13, fontWeight: 700, textAlign: "center", borderRadius: 6, border: "1px solid #CBD5E1" }}
+                />
+                <span style={{ fontSize: 13, fontWeight: 800, color: "#059669" }}>%</span>
+                <span style={{ fontSize: 12.5, fontWeight: 700, color: "#059669", marginLeft: 4 }}>= + {pkr(sstVal)}</span>
+              </div>
+            )}
+          </div>
+
           {applySst && (
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <span style={{ fontSize: 12, color: "#64748B", fontWeight: 600 }}>Manual Tax / SST %:</span>
-              <input
-                type="number"
-                step="0.1"
-                value={sstRate}
-                onChange={e => setSstRate(e.target.value)}
-                placeholder="15"
-                style={{ width: 80, padding: "5px 8px", fontSize: 13, fontWeight: 700, textAlign: "center", borderRadius: 6, border: "1px solid #CBD5E1" }}
-              />
-              <span style={{ fontSize: 13, fontWeight: 800, color: "#059669" }}>%</span>
-              <span style={{ fontSize: 12.5, fontWeight: 700, color: "#059669", marginLeft: 4 }}>= + {pkr(sstVal)}</span>
+            <div style={{ display: "flex", alignItems: "center", gap: 14, paddingTop: 6, borderTop: "1px dashed #BBF7D0", flexWrap: "wrap", fontSize: 12 }}>
+              <span style={{ fontWeight: 700, color: "#166534" }}>Calculate Sales Tax On:</span>
+              <label style={{ display: "flex", alignItems: "center", gap: 5, cursor: "pointer", fontWeight: 600, color: sstBasis === "gross" ? "#166534" : "#475569" }}>
+                <input
+                  type="radio"
+                  name="invSstBasisOption"
+                  checked={sstBasis === "gross"}
+                  onChange={() => {
+                    setSstBasis("gross");
+                    setSstAmount("");
+                  }}
+                />
+                Total / Gross Amount ({pkr(grossAmountWithComm)})
+              </label>
+              <label style={{ display: "flex", alignItems: "center", gap: 5, cursor: "pointer", fontWeight: 600, color: sstBasis === "commission" ? "#166534" : "#475569" }}>
+                <input
+                  type="radio"
+                  name="invSstBasisOption"
+                  checked={sstBasis === "commission"}
+                  onChange={() => {
+                    setSstBasis("commission");
+                    setSstAmount("");
+                  }}
+                />
+                Agency Commission Only ({pkr(agencyCommissionVal)})
+              </label>
             </div>
           )}
         </div>
@@ -9397,7 +9462,7 @@ function InvoiceModal({ initialData, projects = [], clients = [], invoices = [],
             <span className="mono">+ {pkr(agencyCommissionVal)}</span>
           </div>
         )}
-        {(applyAgencyCommission || applySst) && (
+        {(applyAgencyCommission || (applySst && !isSstOnComm)) && (
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5, fontWeight: 600, color: "var(--ink-muted)" }}>
             <span>GROSS AMOUNT</span>
             <span className="mono" style={{ fontWeight: 700, color: "var(--ink)" }}>{pkr(grossAmountWithComm)}</span>
@@ -9405,7 +9470,7 @@ function InvoiceModal({ initialData, projects = [], clients = [], invoices = [],
         )}
         {applySst && (
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5, color: "#059669", fontWeight: 600 }}>
-            <span>SST / TAX ({sstRate || 15}%)</span>
+            <span>SST / TAX ({sstRate || 15}%{isSstOnComm ? " ON COMMISSION" : ""})</span>
             <span className="mono">+ {pkr(sstVal)}</span>
           </div>
         )}
@@ -9464,6 +9529,8 @@ function InvoiceModal({ initialData, projects = [], clients = [], invoices = [],
             agencyCommissionAmount: agencyCommissionVal,
             grossAmountWithComm,
             applySst,
+            sstBasis,
+            sstOnCommission: isSstOnComm,
             sstRate: Number(sstRate) || 0,
             sstAmount: sstVal,
             applyWht,
@@ -10623,6 +10690,8 @@ function ROModal({ initialData, projects = [], vendors = [], clients = [], relea
   );
   const [applySst, setApplySst] = useState(initialData?.applySst || false);
   const [sstRate, setSstRate] = useState(initialData?.sstRate !== undefined ? initialData.sstRate : "15");
+  const [sstBasis, setSstBasis] = useState(initialData?.sstBasis || (initialData?.sstOnCommission ? "commission" : "gross"));
+  const [sstAmount, setSstAmount] = useState(initialData?.sstAmount !== undefined ? initialData.sstAmount : "");
   const [applyWht, setApplyWht] = useState(initialData?.applyWht || false);
   const [whtRate, setWhtRate] = useState(initialData?.whtRate !== undefined ? initialData.whtRate : "3");
 
@@ -10928,10 +10997,16 @@ function ROModal({ initialData, projects = [], vendors = [], clients = [], relea
   const commRateNum = applyAgencyCommission ? (Number(agencyCommissionRate) || 0) : 0;
   const agencyCommissionVal = applyAgencyCommission ? (totalAmountAfterDiscount * (commRateNum / 100)) : 0;
   const grossAmountWithComm = totalAmountAfterDiscount + agencyCommissionVal;
+  
   const sstRateNum = applySst ? (Number(sstRate) || 0) : 0;
-  const sstVal = applySst ? (grossAmountWithComm * (sstRateNum / 100)) : 0;
+  const isSstOnComm = sstBasis === "commission";
+  const sstCalculatedBase = isSstOnComm ? agencyCommissionVal : grossAmountWithComm;
+  const sstVal = applySst
+    ? (sstAmount !== "" && sstAmount !== undefined && !isNaN(Number(sstAmount)) ? Number(sstAmount) : (sstCalculatedBase * (sstRateNum / 100)))
+    : 0;
+
   const whtRateNum = applyWht ? (Number(whtRate) || 0) : 0;
-  const whtVal = applyWht ? (grossAmountWithComm * (whtRateNum / 100)) : 0;
+  const whtVal = applyWht ? ((grossAmountWithComm + sstVal) * (whtRateNum / 100)) : 0;
   const netTotalPayable = grossAmountWithComm + sstVal - whtVal;
 
   const effectiveVendor = isCustomVendor ? customVendorName : vendor;
@@ -11331,24 +11406,59 @@ function ROModal({ initialData, projects = [], vendors = [], clients = [], relea
         </div>
 
         {/* 3. APPLY TAX / SST */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10, padding: "8px 12px", background: applySst ? "#F0FDF4" : "#F8FAFC", borderRadius: 6, border: applySst ? "1px solid #BBF7D0" : "1px solid #E2E8F0" }}>
-          <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 700, cursor: "pointer", userSelect: "none", color: applySst ? "#15803D" : "var(--ink)" }}>
-            <input type="checkbox" checked={applySst} onChange={e => setApplySst(e.target.checked)} />
-            Apply Sales Tax (SST / Tax)
-          </label>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8, padding: "10px 12px", background: applySst ? "#F0FDF4" : "#F8FAFC", borderRadius: 6, border: applySst ? "1px solid #BBF7D0" : "1px solid #E2E8F0" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
+            <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 700, cursor: "pointer", userSelect: "none", color: applySst ? "#15803D" : "var(--ink)" }}>
+              <input type="checkbox" checked={applySst} onChange={e => setApplySst(e.target.checked)} />
+              Apply Sales Tax (SST / Tax)
+            </label>
+            {applySst && (
+              <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                <span style={{ fontSize: 12, color: "#64748B", fontWeight: 600 }}>Manual Tax / SST %:</span>
+                <input
+                  type="number"
+                  step="0.1"
+                  value={sstRate}
+                  onChange={e => {
+                    setSstRate(e.target.value);
+                    setSstAmount("");
+                  }}
+                  placeholder="15"
+                  style={{ width: 75, padding: "5px 8px", fontSize: 13, fontWeight: 700, textAlign: "center", borderRadius: 6, border: "1px solid #CBD5E1" }}
+                />
+                <span style={{ fontSize: 13, fontWeight: 800, color: "#059669" }}>%</span>
+                <span style={{ fontSize: 12.5, fontWeight: 700, color: "#059669", marginLeft: 4 }}>= + {pkr(sstVal)}</span>
+              </div>
+            )}
+          </div>
+
           {applySst && (
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <span style={{ fontSize: 12, color: "#64748B", fontWeight: 600 }}>Manual Tax / SST %:</span>
-              <input
-                type="number"
-                step="0.1"
-                value={sstRate}
-                onChange={e => setSstRate(e.target.value)}
-                placeholder="15"
-                style={{ width: 80, padding: "5px 8px", fontSize: 13, fontWeight: 700, textAlign: "center", borderRadius: 6, border: "1px solid #CBD5E1" }}
-              />
-              <span style={{ fontSize: 13, fontWeight: 800, color: "#059669" }}>%</span>
-              <span style={{ fontSize: 12.5, fontWeight: 700, color: "#059669", marginLeft: 4 }}>= + {pkr(sstVal)}</span>
+            <div style={{ display: "flex", alignItems: "center", gap: 14, paddingTop: 6, borderTop: "1px dashed #BBF7D0", flexWrap: "wrap", fontSize: 12 }}>
+              <span style={{ fontWeight: 700, color: "#166534" }}>Calculate Sales Tax On:</span>
+              <label style={{ display: "flex", alignItems: "center", gap: 5, cursor: "pointer", fontWeight: 600, color: sstBasis === "gross" ? "#166534" : "#475569" }}>
+                <input
+                  type="radio"
+                  name="roSstBasisOption"
+                  checked={sstBasis === "gross"}
+                  onChange={() => {
+                    setSstBasis("gross");
+                    setSstAmount("");
+                  }}
+                />
+                Total / Gross Amount ({pkr(grossAmountWithComm)})
+              </label>
+              <label style={{ display: "flex", alignItems: "center", gap: 5, cursor: "pointer", fontWeight: 600, color: sstBasis === "commission" ? "#166534" : "#475569" }}>
+                <input
+                  type="radio"
+                  name="roSstBasisOption"
+                  checked={sstBasis === "commission"}
+                  onChange={() => {
+                    setSstBasis("commission");
+                    setSstAmount("");
+                  }}
+                />
+                Agency Commission Only ({pkr(agencyCommissionVal)})
+              </label>
             </div>
           )}
         </div>
@@ -11401,7 +11511,7 @@ function ROModal({ initialData, projects = [], vendors = [], clients = [], relea
             <span className="mono">+ {pkr(agencyCommissionVal)}</span>
           </div>
         )}
-        {(applyAgencyCommission || applySst) && (
+        {(applyAgencyCommission || (applySst && !isSstOnComm)) && (
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5, fontWeight: 600, color: "var(--ink-muted)" }}>
             <span>GROSS AMOUNT</span>
             <span className="mono" style={{ fontWeight: 700, color: "var(--ink)" }}>{pkr(grossAmountWithComm)}</span>
@@ -11409,7 +11519,7 @@ function ROModal({ initialData, projects = [], vendors = [], clients = [], relea
         )}
         {applySst && (
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5, color: "#059669", fontWeight: 600 }}>
-            <span>SST / TAX ({sstRate || 15}%)</span>
+            <span>SST / TAX ({sstRate || 15}%{isSstOnComm ? " ON COMMISSION" : ""})</span>
             <span className="mono">+ {pkr(sstVal)}</span>
           </div>
         )}
@@ -11476,6 +11586,8 @@ function ROModal({ initialData, projects = [], vendors = [], clients = [], relea
               agencyCommissionAmount: agencyCommissionVal,
               grossAmountWithComm,
               applySst,
+              sstBasis,
+              sstOnCommission: isSstOnComm,
               sstRate: Number(sstRate) || 0,
               sstAmount: sstVal,
               applyWht,
@@ -13236,8 +13348,10 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
 
   const hasSst = Boolean(doc.applySst);
   const sstRatePct = doc.sstRate !== undefined ? Number(doc.sstRate) : 15;
+  const isSstOnComm = doc.sstBasis === "commission" || doc.sstOnCommission;
+  const sstBaseAmt = isSstOnComm ? agencyCommissionVal : grossAmountWithComm;
   const sstAmt = hasSst
-    ? (doc.sstAmount !== undefined ? Number(doc.sstAmount) : (grossAmountWithComm * (sstRatePct / 100)))
+    ? (doc.sstAmount !== undefined ? Number(doc.sstAmount) : (sstBaseAmt * (sstRatePct / 100)))
     : 0;
 
   const netTotalBeforeWht = grossAmountWithComm + sstAmt;
@@ -13330,7 +13444,7 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
             {/* 5. SST (if checked) */}
             {hasSst && (
               <tr>
-                <td colSpan={colSpanAmount} style={{ ...labelStyle, color: "#A81C1C" }}>SST {sstRatePct}%</td>
+                <td colSpan={colSpanAmount} style={{ ...labelStyle, color: "#A81C1C" }}>{isSstOnComm ? `SST ${sstRatePct}% (ON COMMISSION)` : `SST ${sstRatePct}%`}</td>
                 <td style={{ ...valStyle, color: "#A81C1C" }}>{pkr(sstAmt)}</td>
               </tr>
             )}
