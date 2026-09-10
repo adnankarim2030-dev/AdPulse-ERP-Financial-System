@@ -610,6 +610,15 @@ const SEED_USERS = [
     allowedTabs: ALL_MODULE_TABS.map(t => t.key),
   },
   {
+    id: "u-shoaib",
+    name: "Shoaib Jaffrani",
+    email: "shoaib@adpulse.pk",
+    password: "shoaib123",
+    role: "Staff",
+    department: "Management & Operations",
+    allowedTabs: ALL_STAFF_TABS,
+  },
+  {
     id: "u-shawal",
     name: "Adpulseshawal",
     email: "shawal@adpulse.pk",
@@ -8158,9 +8167,11 @@ function WelcomeGateway({ usersList, onLogin, onOpenForgot, children }) {
     let found = SEED_USERS.find(u =>
       u.name.toLowerCase() === inputClean ||
       u.email.toLowerCase() === inputClean ||
+      u.name.toLowerCase().replace(/\s+/g, "") === inputClean.replace(/\s+/g, "") ||
       (inputClean === "adpulseceo" && (u.role === "CEO" || u.name === "AdPulseCEO")) ||
       (inputClean === "adpulseshawal" && u.name.toLowerCase() === "adpulseshawal") ||
       (inputClean === "adpulsewahab" && u.name.toLowerCase() === "adpulsewahab") ||
+      ((inputClean === "shoaib" || inputClean === "shoaibjaffrani" || inputClean === "adpulseshoaib") && u.id === "u-shoaib") ||
       (inputClean === "admin" && (u.role === "Admin" || u.role === "CEO")) ||
       (inputClean === "ceo" && (u.role === "CEO" || u.role === "Admin")) ||
       (inputClean === "staff" && u.role === "Staff")
