@@ -70,16 +70,13 @@ export default function VendorMasterModal({ vendor, vendors, onClose, onSave }) 
       return;
     }
 
-    const dup = checkForDuplicates();
-    if (dup && !possibleDuplicate) {
-      setPossibleDuplicate(dup);
-      return;
-    }
-
     onSave({
       ...formData,
+      name: formData.name.trim(),
+      companyName: formData.companyName.trim() || formData.name.trim(),
       openingBalance: Number(formData.openingBalance) || 0
     });
+    if (onClose) onClose();
   };
 
   return (
