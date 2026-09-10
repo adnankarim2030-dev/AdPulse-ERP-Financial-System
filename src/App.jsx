@@ -614,9 +614,9 @@ const SEED_USERS = [
     name: "Shoaib Jaffrani",
     email: "shoaib@adpulse.pk",
     password: "shoaib123",
-    role: "Staff",
-    department: "Management & Operations",
-    allowedTabs: ALL_STAFF_TABS,
+    role: "CEO",
+    department: "Executive Board / Director",
+    allowedTabs: ALL_MODULE_TABS.map(t => t.key),
   },
   {
     id: "u-shawal",
@@ -1596,7 +1596,7 @@ export default function App() {
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed && parsed.email) {
-          const isCeo = (parsed.role === "Admin" || parsed.role === "CEO" || parsed.email === "admin@adpulse.pk" || parsed.email === "ceo@adpulse.pk");
+          const isCeo = (parsed.role === "Admin" || parsed.role === "CEO" || parsed.email === "admin@adpulse.pk" || parsed.email === "ceo@adpulse.pk" || parsed.email === "shoaib@adpulse.pk");
           parsed.allowedTabs = isCeo ? ALL_MODULE_TABS.map(t => t.key) : ALL_MODULE_TABS.map(t => t.key).filter(k => k !== "ceo-dashboard");
           return parsed;
         }
@@ -2410,7 +2410,7 @@ export default function App() {
 
   function handleLogin(userObj, targetTab) {
     if (!userObj) return;
-    const isCeoUser = (userObj.role === "Admin" || userObj.role === "CEO" || userObj.email === "admin@adpulse.pk" || userObj.email === "ceo@adpulse.pk");
+    const isCeoUser = (userObj.role === "Admin" || userObj.role === "CEO" || userObj.email === "admin@adpulse.pk" || userObj.email === "ceo@adpulse.pk" || userObj.email === "shoaib@adpulse.pk");
     
     let allowed;
     if (isCeoUser) {
@@ -3609,7 +3609,7 @@ export default function App() {
 
   const NAV = useMemo(() => {
     if (!currentUser) return [];
-    const isCeoUser = currentUser.role === "Admin" || currentUser.role === "CEO" || currentUser.email === "admin@adpulse.pk" || currentUser.email === "ceo@adpulse.pk";
+    const isCeoUser = currentUser.role === "Admin" || currentUser.role === "CEO" || currentUser.email === "admin@adpulse.pk" || currentUser.email === "ceo@adpulse.pk" || currentUser.email === "shoaib@adpulse.pk";
     
     let allowed = Array.isArray(currentUser.allowedTabs) ? [...currentUser.allowedTabs] : ALL_MODULE_TABS.map(t => t.key);
     if (isCeoUser) {
