@@ -207,7 +207,7 @@ export function ClientStatementPrintModal({ client, dateFrom, dateTo, statementD
               <option value="Letter" style={{ background: "#1E293B", color: "#FFFFFF" }}>Letter (8.5 x 11 in)</option>
               <option value="Legal" style={{ background: "#1E293B", color: "#FFFFFF" }}>Legal (8.5 x 14 in)</option>
             </select>
-            <button className="btn btn-primary" style={{ padding: "6px 12px", fontSize: 12.5, fontWeight: 700, background: "#0284C7", borderColor: "#0284C7" }} onClick={handleExportPDF}>
+            <button className="btn btn-primary" style={{ padding: "6px 12px", fontSize: 12.5, fontWeight: 700, background: "#0284C7", borderColor: "#0284C7", color: "#FFFFFF" }} onClick={handleExportPDF}>
               <Download size={14} /> Download PDF
             </button>
             <button className="btn" style={{ background: "#059669", color: "#FFFFFF", border: "none", padding: "6px 12px", fontSize: 12.5, fontWeight: 700 }} onClick={handleExportExcel}>
@@ -626,7 +626,7 @@ export default function ClientStatementView({
           <button className="btn" onClick={handleExportExcel} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, background: "#059669", borderColor: "#059669", color: "#FFFFFF" }}>
             <Download size={15} /> Export Excel
           </button>
-          <button className="btn btn-primary" onClick={() => setShowPrintModal(true)} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, background: "#0284C7", borderColor: "#0284C7" }}>
+          <button className="btn btn-primary" onClick={() => setShowPrintModal(true)} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, background: "#0284C7", borderColor: "#0284C7", color: "#FFFFFF" }}>
             <Printer size={15} /> Print / Save PDF Statement
           </button>
         </div>

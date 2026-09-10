@@ -544,7 +544,7 @@ export default function VendorStatementView({
           <button className="btn" onClick={handleExportExcel} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, background: "#059669", borderColor: "#059669", color: "#FFFFFF" }}>
             <Download size={15} /> Export Excel
           </button>
-          <button className="btn btn-primary" onClick={() => setShowPrintModal(true)} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, background: "#D97706", borderColor: "#D97706" }}>
+          <button className="btn btn-primary" onClick={() => setShowPrintModal(true)} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, background: "#D97706", borderColor: "#D97706", color: "#FFFFFF" }}>
             <Printer size={15} /> Print / Save PDF Statement
           </button>
         </div>

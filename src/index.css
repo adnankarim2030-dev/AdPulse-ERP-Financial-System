@@ -335,19 +335,20 @@ html, body, #root {
 }
 
 /* Buttons */
+/* Buttons */
 button.btn,
 .btn {
   display: inline-flex;
   align-items: center;
   gap: 7px;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   padding: 9px 15px;
   border-radius: 9px;
   border: 1.5px solid #059669;
   cursor: pointer;
   background: #059669;
-  color: #FFFFFF;
+  color: #FFFFFF !important;
   transition: all 0.2s ease;
   white-space: nowrap;
   box-shadow: 0 2px 6px rgba(5, 150, 105, 0.2);
@@ -355,7 +356,8 @@ button.btn,
 
 button.btn svg,
 .btn svg {
-  color: inherit;
+  color: #FFFFFF !important;
+  stroke: #FFFFFF !important;
 }
 
 button.btn:hover,
@@ -365,18 +367,34 @@ button.btn:focus,
 .btn:active,
 .btn:focus {
   background: #FFFFFF !important;
-  color: #0F172A !important;
-  border-color: #059669 !important;
+  color: #047857 !important;
+  border-color: #047857 !important;
   box-shadow: 0 4px 14px rgba(5, 150, 105, 0.3) !important;
+}
+
+button.btn:hover svg,
+button.btn:active svg,
+button.btn:focus svg,
+.btn:hover svg,
+.btn:active svg,
+.btn:focus svg {
+  color: #047857 !important;
+  stroke: #047857 !important;
 }
 
 button.btn-primary,
 .btn-primary {
-  background: #047857;
-  color: #FFFFFF;
-  border: 1.5px solid #047857;
+  background: #047857 !important;
+  color: #FFFFFF !important;
+  border: 1.5px solid #047857 !important;
   box-shadow: 0 2px 10px rgba(4, 120, 87, 0.3);
   font-weight: 700;
+}
+
+button.btn-primary svg,
+.btn-primary svg {
+  color: #FFFFFF !important;
+  stroke: #FFFFFF !important;
 }
 
 button.btn-primary:hover,
@@ -386,9 +404,19 @@ button.btn-primary:focus,
 .btn-primary:active,
 .btn-primary:focus {
   background: #FFFFFF !important;
-  color: #0F172A !important;
+  color: #047857 !important;
   border-color: #047857 !important;
   box-shadow: 0 4px 16px rgba(4, 120, 87, 0.4) !important;
+}
+
+button.btn-primary:hover svg,
+button.btn-primary:active svg,
+button.btn-primary:focus svg,
+.btn-primary:hover svg,
+.btn-primary:active svg,
+.btn-primary:focus svg {
+  color: #047857 !important;
+  stroke: #047857 !important;
 }
 
 .btn:disabled,
@@ -953,21 +981,33 @@ button.btn,
   border-radius: 11px;
   border: 1.5px solid #059669;
   cursor: pointer;
-  background: linear-gradient(180deg, #10B981 0%, #059669 100%);
-  color: #FFFFFF;
+  background: linear-gradient(180deg, #10B981 0%, #059669 100%) !important;
+  color: #FFFFFF !important;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
   white-space: nowrap;
   box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.35), inset 0 -2px 0 rgba(0, 0, 0, 0.15);
   letter-spacing: 0.1px;
 }
 
+button.btn svg,
+.btn svg {
+  color: #FFFFFF !important;
+  stroke: #FFFFFF !important;
+}
+
 button.btn:hover,
 .btn:hover {
   background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%) !important;
-  color: #0F172A !important;
-  border-color: #059669 !important;
+  color: #047857 !important;
+  border-color: #047857 !important;
   box-shadow: 0 6px 18px rgba(5, 150, 105, 0.35), inset 0 1px 0 rgba(255, 255, 255, 1) !important;
   transform: translateY(-2px) !important;
+}
+
+button.btn:hover svg,
+.btn:hover svg {
+  color: #047857 !important;
+  stroke: #047857 !important;
 }
 
 button.btn:active,
@@ -985,13 +1025,25 @@ button.btn-primary,
   font-weight: 800 !important;
 }
 
+button.btn-primary svg,
+.btn-primary svg {
+  color: #FFFFFF !important;
+  stroke: #FFFFFF !important;
+}
+
 button.btn-primary:hover,
 .btn-primary:hover {
   background: linear-gradient(180deg, #FFFFFF 0%, #F1F5F9 100%) !important;
-  color: #0F172A !important;
+  color: #047857 !important;
   border-color: #047857 !important;
   box-shadow: 0 8px 22px rgba(4, 120, 87, 0.45), inset 0 1px 0 rgba(255, 255, 255, 1) !important;
   transform: translateY(-2px) !important;
+}
+
+button.btn-primary:hover svg,
+.btn-primary:hover svg {
+  color: #047857 !important;
+  stroke: #047857 !important;
 }
 
 /* 4. 3D Tab Switchers & Segment Control Pills */

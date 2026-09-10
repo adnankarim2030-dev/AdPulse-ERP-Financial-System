@@ -5016,7 +5016,7 @@ export default function App() {
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
                 <div className="section-title" style={{ margin: 0 }}>Agency Quick Actions</div>
                 <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                  <button className="btn" onClick={() => setShowROForm(true)} style={{ color: "#0284C7", borderColor: "#BAE6FD", fontWeight: 700 }}><ScrollText size={14} /> + Release Order (RO)</button>
+                  <button className="btn" onClick={() => setShowROForm(true)}><ScrollText size={14} /> + Release Order (RO)</button>
                   <button className="btn" onClick={() => setShowPOForm(true)}><ShoppingCart size={14} /> + PO</button>
                   <button className="btn" onClick={() => setShowExpenseForm(true)}><Plus size={14} /> Expense</button>
                   <button className="btn" onClick={() => setShowInvoiceForm(true)}><Plus size={14} /> Invoice</button>
@@ -5852,12 +5852,12 @@ export default function App() {
                           <td>
                             <div style={{ display: "flex", gap: 6, alignItems: "center", justifyContent: "center" }}>
                               {ro.status === "Issued" && (
-                                <button className="btn" style={{ padding: "4px 8px", fontSize: 12, color: "#059669" }} onClick={() => setROStatus(ro.id, "Billed")}>
+                                <button className="btn" style={{ padding: "4px 8px", fontSize: 12, color: "#FFFFFF" }} onClick={() => setROStatus(ro.id, "Billed")}>
                                   Mark Billed
                                 </button>
                               )}
                               {ro.status === "Billed" && (
-                                <button className="btn" style={{ padding: "4px 8px", fontSize: 12, color: "#0284C7" }} onClick={() => setROStatus(ro.id, "Completed")}>
+                                <button className="btn" style={{ padding: "4px 8px", fontSize: 12, color: "#FFFFFF" }} onClick={() => setROStatus(ro.id, "Completed")}>
                                   Complete
                                 </button>
                               )}
@@ -6805,7 +6805,7 @@ export default function App() {
           <>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
               <div style={{ display: "flex", gap: 8 }}>
-                <button className="btn" style={{ background: "rgba(14, 165, 233, 0.12)", color: "#0284C7", borderColor: "#38BDF8", fontWeight: 600 }} onClick={() => { setVoucherDefaultType("CV"); setShowVoucherForm(true); }}>⚡ Direct Client ➔ Vendor Settlement</button>
+                <button className="btn" style={{ background: "#0284C7", color: "#FFFFFF", borderColor: "#0284C7", fontWeight: 700 }} onClick={() => { setVoucherDefaultType("CV"); setShowVoucherForm(true); }}>⚡ Direct Client ➔ Vendor Settlement</button>
                 <button className="btn btn-primary" onClick={() => { setVoucherDefaultType("JV"); setShowVoucherForm(true); }}><Plus size={14} /> New Voucher</button>
               </div>
 
@@ -9179,7 +9179,7 @@ function InvoiceModal({ initialData, projects = [], clients = [], invoices = [],
                     <td style={{ padding: "6px 8px", textAlign: "right", fontWeight: 700, color: "#059669" }}>{pkr(Number(item.amount) || 0)}</td>
                     <td style={{ padding: "6px 4px", textAlign: "center" }}>
                       {printMediaItems.length > 1 && (
-                        <button className="btn" type="button" style={{ padding: "6px 8px", color: "var(--rose)", borderColor: "#FCA5A5" }} onClick={() => removePrintMediaItem(idx)}>
+                        <button className="btn" type="button" style={{ padding: "6px 8px", background: "#FEF2F2", color: "#DC2626", borderColor: "#FCA5A5" }} onClick={() => removePrintMediaItem(idx)}>
                           <Trash2 size={15} />
                         </button>
                       )}
@@ -9231,7 +9231,7 @@ function InvoiceModal({ initialData, projects = [], clients = [], invoices = [],
                     <td style={{ padding: "6px 8px", textAlign: "right", fontWeight: 700, color: "#059669" }}>{pkr(Number(item.amount) || 0)}</td>
                     <td style={{ padding: "6px 4px", textAlign: "center" }}>
                       {printingItems.length > 1 && (
-                        <button className="btn" type="button" style={{ padding: "6px 8px", color: "var(--rose)", borderColor: "#FCA5A5" }} onClick={() => removePrintingItem(idx)}>
+                        <button className="btn" type="button" style={{ padding: "6px 8px", background: "#FEF2F2", color: "#DC2626", borderColor: "#FCA5A5" }} onClick={() => removePrintingItem(idx)}>
                           <Trash2 size={15} />
                         </button>
                       )}
@@ -9281,7 +9281,7 @@ function InvoiceModal({ initialData, projects = [], clients = [], invoices = [],
                     <td style={{ padding: "6px 8px", textAlign: "right", fontWeight: 700, color: "#059669" }}>{pkr(Number(item.amount) || 0)}</td>
                     <td style={{ padding: "6px 4px", textAlign: "center" }}>
                       {eventItems.length > 1 && (
-                        <button className="btn" type="button" style={{ padding: "6px 8px", color: "var(--rose)", borderColor: "#FCA5A5" }} onClick={() => removeEventItem(idx)}>
+                        <button className="btn" type="button" style={{ padding: "6px 8px", background: "#FEF2F2", color: "#DC2626", borderColor: "#FCA5A5" }} onClick={() => removeEventItem(idx)}>
                           <Trash2 size={15} />
                         </button>
                       )}
@@ -10365,7 +10365,7 @@ function POModal({ initialData, projects = [], vendors = [], purchaseOrders = []
                     </td>
                     <td style={{ padding: "6px 4px", textAlign: "center" }}>
                       {oohSites.length > 1 && (
-                        <button className="btn" type="button" style={{ padding: "6px 8px", color: "var(--rose)", borderColor: "#FCA5A5" }} onClick={() => removeOohSite(idx)}>
+                        <button className="btn" type="button" style={{ padding: "6px 8px", background: "#FEF2F2", color: "#DC2626", borderColor: "#FCA5A5" }} onClick={() => removeOohSite(idx)}>
                           <Trash2 size={14} />
                         </button>
                       )}
@@ -10444,7 +10444,7 @@ function POModal({ initialData, projects = [], vendors = [], purchaseOrders = []
                     </td>
                     <td style={{ padding: "6px 4px", textAlign: "center" }}>
                       {printingItems.length > 1 && (
-                        <button className="btn" type="button" style={{ padding: "6px 8px", color: "var(--rose)", borderColor: "#FCA5A5" }} onClick={() => removePrintingItem(idx)}>
+                        <button className="btn" type="button" style={{ padding: "6px 8px", background: "#FEF2F2", color: "#DC2626", borderColor: "#FCA5A5" }} onClick={() => removePrintingItem(idx)}>
                           <Trash2 size={14} />
                         </button>
                       )}
@@ -10500,7 +10500,7 @@ function POModal({ initialData, projects = [], vendors = [], purchaseOrders = []
                     <td style={{ padding: "6px 8px", textAlign: "right", fontWeight: 700, color: "#059669", verticalAlign: "middle" }}>{pkr(Number(item.amount) || 0)}</td>
                     <td style={{ padding: "6px 4px", textAlign: "center" }}>
                       {newspaperItems.length > 1 && (
-                        <button className="btn" type="button" style={{ padding: "6px 8px", color: "var(--rose)", borderColor: "#FCA5A5" }} onClick={() => removeNewspaperItem(idx)}>
+                        <button className="btn" type="button" style={{ padding: "6px 8px", background: "#FEF2F2", color: "#DC2626", borderColor: "#FCA5A5" }} onClick={() => removeNewspaperItem(idx)}>
                           <Trash2 size={14} />
                         </button>
                       )}
@@ -10550,7 +10550,7 @@ function POModal({ initialData, projects = [], vendors = [], purchaseOrders = []
                     <td style={{ padding: "6px 8px", textAlign: "right", fontWeight: 700, color: "#059669", verticalAlign: "middle" }}>{pkr(item.amount)}</td>
                     <td style={{ padding: "6px 4px", textAlign: "center" }}>
                       {eventItems.length > 1 && (
-                        <button className="btn" type="button" style={{ padding: "6px 8px", color: "var(--rose)", borderColor: "#FCA5A5" }} onClick={() => removeEventItem(idx)}>
+                        <button className="btn" type="button" style={{ padding: "6px 8px", background: "#FEF2F2", color: "#DC2626", borderColor: "#FCA5A5" }} onClick={() => removeEventItem(idx)}>
                           <Trash2 size={14} />
                         </button>
                       )}
@@ -11190,7 +11190,7 @@ function ROModal({ initialData, projects = [], vendors = [], clients = [], relea
                     <td style={{ padding: "6px 8px", textAlign: "right", fontWeight: 700, color: "#059669", verticalAlign: "middle" }}>{pkr(item.netAmount)}</td>
                     <td style={{ padding: "6px 4px", textAlign: "center" }}>
                       {newspaperItems.length > 1 && (
-                        <button className="btn" type="button" style={{ padding: "6px 8px", color: "var(--rose)", borderColor: "#FCA5A5" }} onClick={() => removeNewspaperItem(idx)}>
+                        <button className="btn" type="button" style={{ padding: "6px 8px", background: "#FEF2F2", color: "#DC2626", borderColor: "#FCA5A5" }} onClick={() => removeNewspaperItem(idx)}>
                           <Trash2 size={14} />
                         </button>
                       )}
@@ -11241,7 +11241,7 @@ function ROModal({ initialData, projects = [], vendors = [], clients = [], relea
                     <td style={{ padding: "6px 8px", textAlign: "right", fontWeight: 700, color: "#059669", verticalAlign: "middle" }}>{pkr(item.netAmount)}</td>
                     <td style={{ padding: "6px 4px", textAlign: "center" }}>
                       {broadcastItems.length > 1 && (
-                        <button className="btn" type="button" style={{ padding: "6px 8px", color: "var(--rose)", borderColor: "#FCA5A5" }} onClick={() => removeBroadcastItem(idx)}>
+                        <button className="btn" type="button" style={{ padding: "6px 8px", background: "#FEF2F2", color: "#DC2626", borderColor: "#FCA5A5" }} onClick={() => removeBroadcastItem(idx)}>
                           <Trash2 size={14} />
                         </button>
                       )}
@@ -11288,7 +11288,7 @@ function ROModal({ initialData, projects = [], vendors = [], clients = [], relea
                     <td style={{ padding: "6px 8px", textAlign: "right", fontWeight: 700, color: "#059669", verticalAlign: "middle" }}>{pkr(item.netAmount)}</td>
                     <td style={{ padding: "6px 4px", textAlign: "center" }}>
                       {digitalItems.length > 1 && (
-                        <button className="btn" type="button" style={{ padding: "6px 8px", color: "var(--rose)", borderColor: "#FCA5A5" }} onClick={() => removeDigitalItem(idx)}>
+                        <button className="btn" type="button" style={{ padding: "6px 8px", background: "#FEF2F2", color: "#DC2626", borderColor: "#FCA5A5" }} onClick={() => removeDigitalItem(idx)}>
                           <Trash2 size={14} />
                         </button>
                       )}
@@ -11339,7 +11339,7 @@ function ROModal({ initialData, projects = [], vendors = [], clients = [], relea
                     <td style={{ padding: "6px 8px", textAlign: "right", fontWeight: 700, color: "#059669", verticalAlign: "middle" }}>{pkr(item.netAmount)}</td>
                     <td style={{ padding: "6px 4px", textAlign: "center" }}>
                       {radioItems.length > 1 && (
-                        <button className="btn" type="button" style={{ padding: "6px 8px", color: "var(--rose)", borderColor: "#FCA5A5" }} onClick={() => removeRadioItem(idx)}>
+                        <button className="btn" type="button" style={{ padding: "6px 8px", background: "#FEF2F2", color: "#DC2626", borderColor: "#FCA5A5" }} onClick={() => removeRadioItem(idx)}>
                           <Trash2 size={14} />
                         </button>
                       )}
@@ -12306,7 +12306,7 @@ function DocumentReviewModal({ doc, projects = [], bankAccounts = [], onClose, o
             ⚠️ <b>{doc.duplicateRisk.level}: {doc.duplicateRisk.statusText}</b>
             <div style={{ marginTop: 2, fontSize: 12, color: "var(--ink)" }}>{doc.duplicateRisk.reason}</div>
           </div>
-          <button className="btn" style={{ fontSize: 12, padding: "4px 10px", borderColor: "currentColor", color: "inherit", fontWeight: 700 }} onClick={() => setCompareDocData({ doc, duplicateMatch: doc.duplicateRisk })}>
+          <button className="btn" style={{ fontSize: 12, padding: "4px 10px", background: doc.duplicateRisk.level === "MEDIUM RISK" ? "#D97706" : "#DC2626", color: "#FFFFFF", borderColor: doc.duplicateRisk.level === "MEDIUM RISK" ? "#D97706" : "#DC2626", fontWeight: 700 }} onClick={() => setCompareDocData({ doc, duplicateMatch: doc.duplicateRisk })}>
             Compare Documents
           </button>
         </div>
@@ -12587,13 +12587,13 @@ function CompareDocumentsModal({ doc, duplicateMatch, onClose, onCancelUpload, o
       )}
 
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <button className="btn" style={{ color: "#DC2626", borderColor: "#FCA5A5" }} onClick={onCancelUpload}>
+        <button className="btn" style={{ background: "#DC2626", color: "#FFFFFF", borderColor: "#DC2626", fontWeight: 700 }} onClick={onCancelUpload}>
           Cancel Upload &amp; Remove Document
         </button>
 
         <div style={{ display: "flex", gap: 10 }}>
           {!showOverrideInput ? (
-            <button className="btn" style={{ color: "#D97706", borderColor: "#FCD34D" }} onClick={() => setShowOverrideInput(true)}>
+            <button className="btn" style={{ background: "#D97706", color: "#FFFFFF", borderColor: "#D97706", fontWeight: 700 }} onClick={() => setShowOverrideInput(true)}>
               Authorized Override (Admin)
             </button>
           ) : (
@@ -14529,7 +14529,7 @@ function ClientStatementPrintModal({ clientName, invoices, projects, onClose }) 
               <option value="Letter" style={{ background: "#1E293B", color: "#FFFFFF" }}>Letter (8.5 x 11 in)</option>
               <option value="Legal" style={{ background: "#1E293B", color: "#FFFFFF" }}>Legal (8.5 x 14 in)</option>
             </select>
-            <button className="btn btn-primary" style={{ padding: "6px 12px", fontSize: 12.5, fontWeight: 700, background: "#0284C7", borderColor: "#0284C7" }} onClick={handleExportPDF}>
+            <button className="btn btn-primary" style={{ padding: "6px 12px", fontSize: 12.5, fontWeight: 700, background: "#0284C7", borderColor: "#0284C7", color: "#FFFFFF" }} onClick={handleExportPDF}>
               <Download size={14} /> Download PDF
             </button>
             <button className="btn" style={{ background: "#475569", color: "#FFFFFF", border: "none", padding: "6px 12px", fontSize: 12.5, fontWeight: 700 }} onClick={() => window.print()}>
@@ -14746,7 +14746,7 @@ function ProjectStatementPrintModal({ project, invoices, expenses, onClose }) {
               <option value="Letter" style={{ background: "#1E293B", color: "#FFFFFF" }}>Letter (8.5 x 11 in)</option>
               <option value="Legal" style={{ background: "#1E293B", color: "#FFFFFF" }}>Legal (8.5 x 14 in)</option>
             </select>
-            <button className="btn btn-primary" style={{ padding: "6px 12px", fontSize: 12.5, fontWeight: 700, background: "#0284C7", borderColor: "#0284C7" }} onClick={handleExportPDF}>
+            <button className="btn btn-primary" style={{ padding: "6px 12px", fontSize: 12.5, fontWeight: 700, background: "#0284C7", borderColor: "#0284C7", color: "#FFFFFF" }} onClick={handleExportPDF}>
               <Download size={14} /> Download PDF
             </button>
             <button className="btn" style={{ background: "#059669", color: "#FFFFFF", border: "none", padding: "6px 12px", fontSize: 12.5, fontWeight: 700 }} onClick={handleExportExcel}>
