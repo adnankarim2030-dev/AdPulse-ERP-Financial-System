@@ -614,8 +614,8 @@ const SEED_USERS = [
     name: "Shoaib Jaffrani",
     email: "shoaib@adpulse.pk",
     password: "shoaib123",
-    role: "CEO",
-    department: "Executive Board / Director",
+    role: "Accounts Head",
+    department: "Finance & Accounts",
     allowedTabs: ALL_MODULE_TABS.map(t => t.key),
   },
   {
@@ -1596,7 +1596,7 @@ export default function App() {
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed && parsed.email) {
-          const isCeo = (parsed.role === "Admin" || parsed.role === "CEO" || parsed.email === "admin@adpulse.pk" || parsed.email === "ceo@adpulse.pk" || parsed.email === "shoaib@adpulse.pk");
+          const isCeo = (parsed.role === "Admin" || parsed.role === "CEO" || parsed.role === "Accounts Head" || parsed.email === "admin@adpulse.pk" || parsed.email === "ceo@adpulse.pk" || parsed.email === "shoaib@adpulse.pk");
           parsed.allowedTabs = isCeo ? ALL_MODULE_TABS.map(t => t.key) : ALL_MODULE_TABS.map(t => t.key).filter(k => k !== "ceo-dashboard");
           return parsed;
         }
@@ -2410,7 +2410,7 @@ export default function App() {
 
   function handleLogin(userObj, targetTab) {
     if (!userObj) return;
-    const isCeoUser = (userObj.role === "Admin" || userObj.role === "CEO" || userObj.email === "admin@adpulse.pk" || userObj.email === "ceo@adpulse.pk" || userObj.email === "shoaib@adpulse.pk");
+    const isCeoUser = (userObj.role === "Admin" || userObj.role === "CEO" || userObj.role === "Accounts Head" || userObj.email === "admin@adpulse.pk" || userObj.email === "ceo@adpulse.pk" || userObj.email === "shoaib@adpulse.pk");
     
     let allowed;
     if (isCeoUser) {
@@ -3609,7 +3609,7 @@ export default function App() {
 
   const NAV = useMemo(() => {
     if (!currentUser) return [];
-    const isCeoUser = currentUser.role === "Admin" || currentUser.role === "CEO" || currentUser.email === "admin@adpulse.pk" || currentUser.email === "ceo@adpulse.pk" || currentUser.email === "shoaib@adpulse.pk";
+    const isCeoUser = currentUser.role === "Admin" || currentUser.role === "CEO" || currentUser.role === "Accounts Head" || currentUser.email === "admin@adpulse.pk" || currentUser.email === "ceo@adpulse.pk" || currentUser.email === "shoaib@adpulse.pk";
     
     let allowed = Array.isArray(currentUser.allowedTabs) ? [...currentUser.allowedTabs] : ALL_MODULE_TABS.map(t => t.key);
     if (isCeoUser) {
@@ -3621,7 +3621,7 @@ export default function App() {
     }
     let items = ALL_NAV_ITEMS.filter(n => allowed.includes(n.key) || (isCeoUser && n.key === "ceo-dashboard"));
     
-    // Privacy Guard: Only Admin or CEO role can view CEO Executive Suite!
+    // Privacy Guard: Only Admin, CEO, or Accounts Head role can view CEO Executive Suite!
     if (!isCeoUser) {
       items = items.filter(n => n.key !== "ceo-dashboard");
     }
@@ -3632,7 +3632,7 @@ export default function App() {
       if (ceoItem) items.unshift(ceoItem);
     }
 
-    if (currentUser.role === "Admin" && !items.some(i => i.key === "settings")) {
+    if ((currentUser.role === "Admin" || currentUser.role === "CEO" || currentUser.role === "Accounts Head" || currentUser.email === "shoaib@adpulse.pk") && !items.some(i => i.key === "settings")) {
       items.push({ key: "settings", label: "Admin Settings", icon: Settings });
     }
     return items;
@@ -3847,7 +3847,7 @@ export default function App() {
           {tab === "ceo-dashboard" && (
             <>
               {/* PRIVACY GUARD FOR CEO DASHBOARD */}
-              {currentUser.role !== "Admin" && currentUser.role !== "CEO" && currentUser.email !== "admin@adpulse.pk" ? (
+              {currentUser.role !== "Admin" && currentUser.role !== "CEO" && currentUser.role !== "Accounts Head" && currentUser.email !== "admin@adpulse.pk" && currentUser.email !== "shoaib@adpulse.pk" ? (
                 <div className="card" style={{ padding: 40, textAlign: "center", background: "#FEF2F2", border: "1px solid #FCA5A5" }}>
                   <ShieldAlert size={48} color="#DC2626" style={{ margin: "0 auto 16px" }} />
                   <h2 style={{ color: "#991B1B", margin: "0 0 8px" }}>Executive Access Restricted</h2>
@@ -7433,7 +7433,7 @@ export default function App() {
         )}
 
         {/* SETTINGS & ADMIN DASHBOARD MODULE */}
-        {tab === "settings" && currentUser.role === "Admin" && (
+        {tab === "settings" && (currentUser.role === "Admin" || currentUser.role === "CEO" || currentUser.role === "Accounts Head" || currentUser.email === "shoaib@adpulse.pk") && (
           <>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }}>
               <div>
@@ -8190,7 +8190,7 @@ function WelcomeGateway({ usersList, onLogin, onOpenForgot, children }) {
     }
 
     setErrorMsg("");
-    const isExecutive = found.role === "CEO" || found.role === "Admin";
+    const isExecutive = found.role === "CEO" || found.role === "Admin" || found.role === "Accounts Head" || found.email === "shoaib@adpulse.pk";
     onLogin(found, isExecutive ? "ceo-dashboard" : "dashboard");
   }
 
