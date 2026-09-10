@@ -7992,8 +7992,8 @@ export default function App() {
           onClose={() => setProjectStatementId(null)}
         />
       )}
-      {showProjectForm && <ProjectModal projects={projects} onClose={() => setShowProjectForm(false)} onSubmit={createProject} />}
-      {editingProject && <ProjectModal initialData={editingProject} projects={projects} onClose={() => setEditingProject(null)} onSubmit={updateProject} />}
+      {showProjectForm && <ProjectModal projects={projects} clients={clients} onClose={() => setShowProjectForm(false)} onSubmit={createProject} />}
+      {editingProject && <ProjectModal initialData={editingProject} projects={projects} clients={clients} onClose={() => setEditingProject(null)} onSubmit={updateProject} />}
 
       {billingModalProject && <ProjectBillingModal project={billingModalProject} onClose={() => setBillingModalProject(null)} onSubmit={addProjectBilling} />}
       {costModalProject && <ProjectCostModal project={costModalProject} onClose={() => setCostModalProject(null)} onSubmit={addProjectCost} />}
@@ -12716,7 +12716,7 @@ function AddSiteModal({ project, hoardings, onClose, onSubmit }) {
   );
 }
 
-function ProjectModal({ initialData, projects = [], onClose, onSubmit }) {
+function ProjectModal({ initialData, projects = [], clients = [], onClose, onSubmit }) {
   const [projectCode, setProjectCode] = useState(initialData?.projectCode || initialData?.code || getNextProjectCode(projects));
   const [client, setClient] = useState(initialData?.client || "");
   const [type, setType] = useState(initialData?.type || PROJECT_TYPES[0].key);
@@ -12744,7 +12744,17 @@ function ProjectModal({ initialData, projects = [], onClose, onSubmit }) {
         </div>
         <div className="field" style={{ margin: 0 }}>
           <label>Client Name *</label>
-          <input value={client} onChange={e => setClient(e.target.value)} placeholder="e.g. Imtiaz Retail" />
+          <select value={client} onChange={e => setClient(e.target.value)}>
+            <option value="">— Select a Client —</option>
+            {clients.map(c => (
+              <option key={c.id || c.name} value={c.name}>
+                {c.name}{c.companyName && c.companyName !== c.name ? ` (${c.companyName})` : ""}
+              </option>
+            ))}
+            {initialData?.client && !clients.some(c => c.name === initialData.client) && (
+              <option value={initialData.client}>{initialData.client} (Existing)</option>
+            )}
+          </select>
         </div>
       </div>
       <div className="field"><label>Service Line Category</label>
