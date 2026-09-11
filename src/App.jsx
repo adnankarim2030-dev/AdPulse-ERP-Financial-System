@@ -172,6 +172,7 @@ const ACCOUNTS = {
   ooh_sites: { code: "1220", name: "OOH Billboard Structures", type: "asset", category: "Fixed Assets" },
   ap: { code: "2110", name: "Accounts Payable (Vendors)", type: "liability", category: "Current Liabilities" },
   srb_payable: { code: "2120", name: "SRB Sales Tax Payable", type: "liability", category: "Current Liabilities" },
+  wht_payable: { code: "2130", name: "WHT Payable (Withheld from Vendors)", type: "liability", category: "Current Liabilities" },
   equity: { code: "3110", name: "Owner's Equity / Capital", type: "equity", category: "Capital & Retained Earnings" },
   revenue: { code: "4110", name: "Service & Media Revenue", type: "revenue", category: "Operating Revenue" },
   direct_vendor: { code: "5110", name: "Production & Vendor Cost", type: "expense", category: "Direct Costs (COGS)", isDirect: true },
@@ -209,7 +210,7 @@ const COA_STRUCTURE = [
     name: "2000 — Liabilities",
     type: "liability",
     subcategories: [
-      { code: "2100", name: "2100 — Current Liabilities", accounts: ["ap", "srb_payable"] },
+      { code: "2100", name: "2100 — Current Liabilities", accounts: ["ap", "srb_payable", "wht_payable"] },
     ]
   },
   {
@@ -2751,7 +2752,17 @@ export default function App() {
     return getNextVoucherNo(type, vouchers, via);
   }
 
-  function createVoucher(type, { voucherNo: customVoucherNo, projectId, date, party, description, amount, category, subcategory, accountKey, via, bankAccountId, sourceBankId, targetBankId, settleAR, lines }) {
+  function createVoucher(type, payload = {}) {
+    const {
+      voucherNo: customVoucherNo, projectId, date, party, description, amount, netAmount,
+      clientId, vendorId,
+      category, subcategory, accountKey, via, bankAccountId, sourceBankId, targetBankId,
+      settleAR, lines,
+      applyCommission, agencyCommissionRate, agencyCommissionAmount,
+      applySst, sstRate, sstAmount,
+      applyWht, whtRate, whtAmount
+    } = payload;
+
     const voucherNo = customVoucherNo || getNextVoucherNo(type, vouchers, via);
     let journalLines = lines;
 
@@ -2760,22 +2771,44 @@ export default function App() {
       const paymentAccount = via === "Cash" ? "cash" : "bank";
       const bAccountId = via === "Cash" ? "bank-cash" : (bankAccountId || bankAccounts.find(b => b.accountType !== "Petty Cash")?.id || "bank-hbl");
       const memoText = subcategory ? `${category} → ${subcategory}` : (category || "Payment");
+      
+      const billAmt = Number(amount) || 0;
+      const commAmt = applyCommission ? (Number(agencyCommissionAmount) || 0) : 0;
+      const sstAmt = applySst ? (Number(sstAmount) || 0) : 0;
+      const whtAmt = applyWht ? (Number(whtAmount) || 0) : 0;
+      const paidAmt = netAmount !== undefined ? Number(netAmount) : Math.max(0, billAmt - commAmt + sstAmt - whtAmt);
+
       journalLines = [
-        { account: glKey, debit: amount, credit: 0, memo: memoText },
-        { account: paymentAccount, bankAccountId: bAccountId, debit: 0, credit: amount },
+        { account: glKey, debit: billAmt, credit: 0, memo: memoText },
       ];
+      if (sstAmt > 0) {
+        journalLines.push({ account: "srb_payable", debit: sstAmt, credit: 0, memo: `Input Sales Tax / SST (${sstRate || 15}%)` });
+      }
+      if (commAmt > 0) {
+        journalLines.push({ account: "revenue", debit: 0, credit: commAmt, memo: `Agency Commission Income (${agencyCommissionRate || 10}%)` });
+      }
+      if (whtAmt > 0) {
+        journalLines.push({ account: "wht_payable", debit: 0, credit: whtAmt, memo: `WHT Withheld from Vendor (${whtRate || 1}%)` });
+      }
+      journalLines.push({ account: paymentAccount, bankAccountId: bAccountId, debit: 0, credit: paidAmt, memo: `Paid via ${via === "Cash" ? "Cash" : "Bank"}` });
+
     } else if (type === "RV") {
       const depositAccount = via === "Cash" ? "cash" : "bank";
       const bAccountId = via === "Cash" ? "bank-cash" : (bankAccountId || bankAccounts.find(b => b.accountType !== "Petty Cash")?.id || "bank-hbl");
-      journalLines = settleAR
-        ? [
-            { account: depositAccount, bankAccountId: bAccountId, debit: amount, credit: 0 },
-            { account: "ar", debit: 0, credit: amount },
-          ]
-        : [
-            { account: depositAccount, bankAccountId: bAccountId, debit: amount, credit: 0 },
-            { account: "revenue", debit: 0, credit: amount },
-          ];
+      
+      const grossAmt = Number(amount) || 0;
+      const whtAmt = applyWht ? (Number(whtAmount) || 0) : 0;
+      const receivedDeposit = netAmount !== undefined ? Number(netAmount) : Math.max(0, grossAmt - whtAmt);
+      const creditAcc = settleAR ? "ar" : "revenue";
+
+      journalLines = [
+        { account: depositAccount, bankAccountId: bAccountId, debit: receivedDeposit, credit: 0, memo: `Received via ${via === "Cash" ? "Cash" : "Bank"}` }
+      ];
+      if (whtAmt > 0) {
+        journalLines.push({ account: "wht_receivable", debit: whtAmt, credit: 0, memo: `WHT Withheld by Client (${whtRate || 3}%)` });
+      }
+      journalLines.push({ account: creditAcc, debit: 0, credit: grossAmt, memo: settleAR ? "Client Invoice Settlement" : "Direct Service Revenue" });
+
     } else if (type === "CTV") {
       // Contra Transfer Voucher (Transfer between Cash ↔ Bank, Bank ↔ Bank)
       const srcBank = bankAccounts.find(b => b.id === sourceBankId) || bankAccounts.find(b => b.id === "bank-cash") || bankAccounts[0];
@@ -2785,26 +2818,33 @@ export default function App() {
       const tgtAccType = (tgtBank?.id === "bank-cash" || tgtBank?.accountType === "Petty Cash") ? "cash" : "bank";
 
       journalLines = [
-        { account: tgtAccType, bankAccountId: tgtBank?.id, debit: amount, credit: 0, memo: `Contra Transfer into ${tgtBank?.bankName || 'Target'}` },
-        { account: srcAccType, bankAccountId: srcBank?.id, debit: 0, credit: amount, memo: `Contra Transfer from ${srcBank?.bankName || 'Source'}` },
+        { account: tgtAccType, bankAccountId: tgtBank?.id, debit: Number(amount), credit: 0, memo: `Contra Transfer into ${tgtBank?.bankName || 'Target'}` },
+        { account: srcAccType, bankAccountId: srcBank?.id, debit: 0, credit: Number(amount), memo: `Contra Transfer from ${srcBank?.bankName || 'Source'}` },
       ];
     } else if (type === "SV") {
       journalLines = [
-        { account: "ar", debit: amount, credit: 0 },
-        { account: "revenue", debit: 0, credit: amount },
+        { account: "ar", debit: Number(amount), credit: 0 },
+        { account: "revenue", debit: 0, credit: Number(amount) },
       ];
     } else if (type === "CV") {
       // Direct Client to Vendor Settlement: Debit Accounts Payable (Vendor), Credit Accounts Receivable (Client)
       journalLines = [
-        { account: "ap", debit: amount, credit: 0 },
-        { account: "ar", debit: 0, credit: amount },
+        { account: "ap", debit: Number(amount), credit: 0 },
+        { account: "ar", debit: 0, credit: Number(amount) },
       ];
     }
 
     postEntry(date, projectId ? `[Project] ${description}` : description, journalLines, voucherNo);
     const vRecord = {
-      id: uid(), voucherNo, type, projectId: projectId || null, date, party, description, amount,
-      category, subcategory, via, bankAccountId, sourceBankId, targetBankId
+      id: uid(), voucherNo, type, projectId: projectId || null, date, party, description,
+      amount: Number(amount),
+      netAmount: netAmount !== undefined ? Number(netAmount) : Number(amount),
+      clientId: clientId || null,
+      vendorId: vendorId || null,
+      category, subcategory, via, bankAccountId, sourceBankId, targetBankId,
+      applyCommission, agencyCommissionRate, agencyCommissionAmount,
+      applySst, sstRate, sstAmount,
+      applyWht, whtRate, whtAmount
     };
     setVouchers(v => [vRecord, ...v]);
     setShowVoucherForm(false);
@@ -7966,7 +8006,7 @@ export default function App() {
       {editingPO && <POModal initialData={editingPO} projects={projects} vendors={vendors} purchaseOrders={purchaseOrders} onClose={() => setEditingPO(null)} onSubmit={updatePO} />}
       {payingPOId && <PayPOModal po={purchaseOrders.find(p => p.id === payingPOId)} bankAccounts={bankAccounts} onClose={() => setPayingPOId(null)} onSubmit={(id, via, date, bankId) => { payPO(id, via, date, bankId); setPayingPOId(null); }} />}
 
-      {showVoucherForm && <VoucherModal projects={projects} bankAccounts={bankAccounts} vouchers={vouchers} defaultType={voucherDefaultType} onClose={() => setShowVoucherForm(false)} onSubmit={createVoucher} />}
+      {showVoucherForm && <VoucherModal projects={projects} clients={clients} vendors={vendors} bankAccounts={bankAccounts} vouchers={vouchers} defaultType={voucherDefaultType} onClose={() => setShowVoucherForm(false)} onSubmit={createVoucher} />}
       {showClientModal && <ClientMasterModal clients={clients} client={editingClient} onClose={() => { setShowClientModal(false); setEditingClient(null); }} onSave={handleSaveClient} />}
       {showVendorModal && <VendorMasterModal vendors={vendors} vendor={editingVendor} onClose={() => { setShowVendorModal(false); setEditingVendor(null); }} onSave={handleSaveVendor} />}
       {duplicateDocWarning && <AiDocumentDuplicateModal duplicateMatch={duplicateDocWarning.duplicateMatch} incomingDoc={duplicateDocWarning.incomingDoc} existingDoc={duplicateDocWarning.existingDoc} onClose={() => setDuplicateDocWarning(null)} onOverridePosting={duplicateDocWarning.onOverridePosting} />}
@@ -11967,21 +12007,49 @@ function BankAccountModal({ initialData, onClose, onSubmit }) {
   );
 }
 
-function VoucherModal({ defaultType, projects = [], bankAccounts = [], vouchers = [], onClose, onSubmit }) {
+function VoucherModal({ defaultType, projects = [], clients = [], vendors = [], bankAccounts = [], vouchers = [], onClose, onSubmit }) {
   const [type, setType] = useState(defaultType || "PV");
   const [via, setVia] = useState("Cash"); // "Cash" or "Bank"
   const [voucherNo, setVoucherNo] = useState(() => getNextVoucherNo(defaultType || "PV", vouchers, "Cash"));
   const [projectId, setProjectId] = useState("");
   const [description, setDescription] = useState("");
   const [date, setDate] = useState(TODAY_STR);
+  
+  // Party selection state
+  const [partyMode, setPartyMode] = useState("master"); // "master" or "custom"
+  const [selectedClientId, setSelectedClientId] = useState("");
+  const [selectedVendorId, setSelectedVendorId] = useState("");
+  const [customPartyName, setCustomPartyName] = useState("");
   const [party, setParty] = useState("");
+
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState("Office & Administration");
   const [subcategory, setSubcategory] = useState("Office Rent");
 
+  // PV (Vendor Payment) Breakdown Options
+  const [applyCommission, setApplyCommission] = useState(false);
+  const [agencyCommissionRate, setAgencyCommissionRate] = useState(10);
+  const [agencyCommissionAmount, setAgencyCommissionAmount] = useState("");
+
+  const [applySst, setApplySst] = useState(false);
+  const [sstRate, setSstRate] = useState(15);
+  const [sstAmount, setSstAmount] = useState("");
+
+  const [applyWht, setApplyWht] = useState(false);
+  const [whtRate, setWhtRate] = useState(type === "PV" ? 1 : 3);
+  const [whtAmount, setWhtAmount] = useState("");
+
+  const [settleAR, setSettleAR] = useState(true);
+  const [lines, setLines] = useState([
+    { account: "cash", debit: "", credit: "" },
+    { account: "revenue", debit: "", credit: "" },
+  ]);
+
   const handleTypeChange = (newType) => {
     setType(newType);
     setVoucherNo(getNextVoucherNo(newType, vouchers, via));
+    if (newType === "PV" && whtRate === 3) setWhtRate(1);
+    if (newType === "RV" && whtRate === 1) setWhtRate(3);
   };
 
   const handleViaChange = (newVia) => {
@@ -12008,23 +12076,56 @@ function VoucherModal({ defaultType, projects = [], bankAccounts = [], vouchers 
   const [sourceBankId, setSourceBankId] = useState(allAccountsForContra[0]?.id || "bank-cash");
   const [targetBankId, setTargetBankId] = useState(allAccountsForContra[1]?.id || realBankAccounts[0]?.id || "bank-hbl");
 
-  const [settleAR, setSettleAR] = useState(true);
-  const [lines, setLines] = useState([
-    { account: "cash", debit: "", credit: "" },
-    { account: "revenue", debit: "", credit: "" },
-  ]);
-
   const handleCategoryChange = (newCat) => {
     setCategory(newCat);
     const subList = EXPENSE_CLASSIFICATION[newCat]?.subcategories || [];
     if (subList.length > 0) setSubcategory(subList[0].name);
   };
 
+  // Client Selection in RV
+  const handleClientSelect = (cName) => {
+    if (cName === "__custom__") {
+      setPartyMode("custom");
+      setSelectedClientId("");
+      setParty("");
+    } else {
+      setPartyMode("master");
+      const clientObj = clients.find(c => c.name === cName);
+      setSelectedClientId(clientObj?.id || "");
+      setParty(cName);
+    }
+  };
+
+  // Vendor Selection in PV
+  const handleVendorSelect = (vName) => {
+    if (vName === "__custom__") {
+      setPartyMode("custom");
+      setSelectedVendorId("");
+      setParty("");
+    } else {
+      setPartyMode("master");
+      const vendorObj = vendors.find(v => v.name === vName);
+      setSelectedVendorId(vendorObj?.id || "");
+      setParty(vName);
+    }
+  };
+
+  // Project filtering for RV based on selected client
+  const availableProjects = useMemo(() => {
+    if (type === "RV" && party && partyMode === "master") {
+      const matched = projects.filter(p => p.client && p.client.toLowerCase() === party.toLowerCase());
+      if (matched.length > 0) return matched;
+    }
+    return projects;
+  }, [projects, type, party, partyMode]);
+
   const handleProjectSelect = (id) => {
     setProjectId(id);
     const prj = projects.find(p => p.id === id);
     if (prj && !party) {
       setParty(prj.client);
+      const cObj = clients.find(c => c.name.toLowerCase() === prj.client.toLowerCase());
+      if (cObj) setSelectedClientId(cObj.id);
     }
   };
 
@@ -12037,6 +12138,43 @@ function VoucherModal({ defaultType, projects = [], bankAccounts = [], vouchers 
   const sourceBankObj = allAccountsForContra.find(b => b.id === sourceBankId);
   const targetBankObj = allAccountsForContra.find(b => b.id === targetBankId);
 
+  // PV Calculations (Exact matching user's note)
+  const billAmount = Number(amount) || 0;
+  const commVal = applyCommission
+    ? (agencyCommissionAmount !== "" && agencyCommissionAmount !== undefined
+        ? Number(agencyCommissionAmount)
+        : Math.round(billAmount * ((Number(agencyCommissionRate) || 0) / 100)))
+    : 0;
+  const grossAfterComm = billAmount - commVal;
+  const sstVal = applySst
+    ? (sstAmount !== "" && sstAmount !== undefined
+        ? Number(sstAmount)
+        : Math.round(grossAfterComm * ((Number(sstRate) || 0) / 100)))
+    : 0;
+  const totalWithSst = grossAfterComm + sstVal;
+  const whtVal = applyWht
+    ? (whtAmount !== "" && whtAmount !== undefined
+        ? Number(whtAmount)
+        : Math.round(billAmount * ((Number(whtRate) || 0) / 100)))
+    : 0;
+  const netPayable = Math.max(0, totalWithSst - whtVal);
+
+  // RV Calculations
+  const receiptGross = Number(amount) || 0;
+  const rvWhtVal = applyWht
+    ? (whtAmount !== "" && whtAmount !== undefined
+        ? Number(whtAmount)
+        : Math.round(receiptGross * ((Number(whtRate) || 0) / 100)))
+    : 0;
+  const rvSstVal = applySst
+    ? (sstAmount !== "" && sstAmount !== undefined
+        ? Number(sstAmount)
+        : Math.round(receiptGross * ((Number(sstRate) || 0) / 100)))
+    : 0;
+  const netDeposit = Math.max(0, receiptGross - rvWhtVal);
+
+  const effectiveParty = partyMode === "custom" ? customPartyName : party;
+
   const updateLine = (i, key, val) => setLines(ls => ls.map((l, idx) => idx === i ? { ...l, [key]: val } : l));
   const totalD = lines.reduce((s, l) => s + (Number(l.debit) || 0), 0);
   const totalC = lines.reduce((s, l) => s + (Number(l.credit) || 0), 0);
@@ -12046,7 +12184,7 @@ function VoucherModal({ defaultType, projects = [], bankAccounts = [], vouchers 
     ? (jvBalanced && description)
     : type === "CTV"
     ? (Number(amount) > 0 && sourceBankId !== targetBankId && description)
-    : (party && Number(amount) > 0 && description);
+    : (effectiveParty && Number(amount) > 0 && description);
 
   function submit() {
     if (!valid) return;
@@ -12063,10 +12201,50 @@ function VoucherModal({ defaultType, projects = [], bankAccounts = [], vouchers 
         description: description || `Internal Contra Transfer from ${sourceBankObj?.bankName} to ${targetBankObj?.bankName}`,
         amount: Number(amount), sourceBankId, targetBankId
       });
+    } else if (type === "PV") {
+      onSubmit("PV", {
+        voucherNo,
+        projectId, date,
+        party: effectiveParty,
+        vendorId: partyMode === "master" ? selectedVendorId : null,
+        description,
+        amount: billAmount,
+        netAmount: netPayable,
+        applyCommission,
+        agencyCommissionRate: Number(agencyCommissionRate) || 0,
+        agencyCommissionAmount: commVal,
+        applySst,
+        sstRate: Number(sstRate) || 0,
+        sstAmount: sstVal,
+        applyWht,
+        whtRate: Number(whtRate) || 0,
+        whtAmount: whtVal,
+        category, subcategory, accountKey: glKey, via,
+        bankAccountId: via === "Cash" ? "bank-cash" : selectedBankId,
+      });
+    } else if (type === "RV") {
+      onSubmit("RV", {
+        voucherNo,
+        projectId, date,
+        party: effectiveParty,
+        clientId: partyMode === "master" ? selectedClientId : null,
+        description,
+        amount: receiptGross,
+        netAmount: netDeposit,
+        applySst,
+        sstRate: Number(sstRate) || 0,
+        sstAmount: rvSstVal,
+        applyWht,
+        whtRate: Number(whtRate) || 0,
+        whtAmount: rvWhtVal,
+        via,
+        bankAccountId: via === "Cash" ? "bank-cash" : selectedBankId,
+        settleAR
+      });
     } else {
       onSubmit(type, {
         voucherNo,
-        projectId, date, party, description, amount: Number(amount),
+        projectId, date, party: effectiveParty, description, amount: Number(amount),
         category, subcategory, accountKey: glKey, via,
         bankAccountId: via === "Cash" ? "bank-cash" : selectedBankId,
         settleAR
@@ -12097,12 +12275,83 @@ function VoucherModal({ defaultType, projects = [], bankAccounts = [], vouchers 
         </div>
       </div>
 
+      {/* PARTY SELECTION (CLIENT / VENDOR MASTER OR CUSTOM) */}
+      {type === "RV" && (
+        <div className="field">
+          <label style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <span>Received From (Client Master) *</span>
+            {clients.length > 0 && (
+              <span style={{ fontSize: 11, color: "#0284C7", cursor: "pointer", fontWeight: 600 }} onClick={() => { setPartyMode(partyMode === "master" ? "custom" : "master"); }}>
+                {partyMode === "master" ? "✏️ Type Custom Name" : "📋 Choose from Master"}
+              </span>
+            )}
+          </label>
+          {partyMode === "master" ? (
+            <select value={party} onChange={e => handleClientSelect(e.target.value)}>
+              <option value="">— Select Client from Client Master ({clients.length} Registered) —</option>
+              {clients.map(c => (
+                <option key={c.id} value={c.name}>
+                  {c.name} {c.companyName ? `(${c.companyName})` : ""}
+                </option>
+              ))}
+              <option value="__custom__">➕ Type Custom Payer / Walk-in Client...</option>
+            </select>
+          ) : (
+            <input
+              value={customPartyName}
+              onChange={e => { setCustomPartyName(e.target.value); setParty(e.target.value); }}
+              placeholder="Enter Custom Client / Payer Name"
+              autoFocus
+            />
+          )}
+        </div>
+      )}
+
+      {type === "PV" && (
+        <div className="field">
+          <label style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <span>Paid To (Vendor Master / Payee) *</span>
+            {vendors.length > 0 && (
+              <span style={{ fontSize: 11, color: "#D97706", cursor: "pointer", fontWeight: 600 }} onClick={() => { setPartyMode(partyMode === "master" ? "custom" : "master"); }}>
+                {partyMode === "master" ? "✏️ Type Custom Payee" : "📋 Choose from Master"}
+              </span>
+            )}
+          </label>
+          {partyMode === "master" ? (
+            <select value={party} onChange={e => handleVendorSelect(e.target.value)}>
+              <option value="">— Select Vendor from Vendor Master ({vendors.length} Registered) —</option>
+              {vendors.map(v => (
+                <option key={v.id} value={v.name}>
+                  {v.name} {v.companyName ? `(${v.companyName})` : ""}
+                </option>
+              ))}
+              <option value="__custom__">➕ Type Custom Payee / Staff / Other...</option>
+            </select>
+          ) : (
+            <input
+              value={customPartyName}
+              onChange={e => { setCustomPartyName(e.target.value); setParty(e.target.value); }}
+              placeholder="Enter Custom Payee / Staff / Vendor Name"
+              autoFocus
+            />
+          )}
+        </div>
+      )}
+
+      {type !== "RV" && type !== "PV" && type !== "JV" && type !== "CTV" && (
+        <div className="field">
+          <label>{type === "CV" ? "Client Name" : "Party Name"}</label>
+          <input value={party} onChange={e => setParty(e.target.value)} placeholder="Party Name" />
+        </div>
+      )}
+
+      {/* LINK TO PROJECT */}
       {projects.length > 0 && type !== "CTV" && (
         <div className="field">
           <label>Link to Project / Cost Center (Optional)</label>
           <select value={projectId} onChange={e => handleProjectSelect(e.target.value)}>
             <option value="">— General Office / Overhead (No Specific Project) —</option>
-            {projects.map(p => (
+            {availableProjects.map(p => (
               <option key={p.id} value={p.id}>{p.name} ({p.client})</option>
             ))}
           </select>
@@ -12111,18 +12360,12 @@ function VoucherModal({ defaultType, projects = [], bankAccounts = [], vouchers 
 
       <div className="field"><label>Posting Date</label><input type="date" value={date} onChange={e => setDate(e.target.value)} /></div>
 
-      {type !== "JV" && type !== "CTV" && (
-        <div className="field">
-          <label>{type === "PV" ? "Paid To (Payee Name)" : type === "RV" ? "Received From (Payer Name)" : "Client Name"}</label>
-          <input value={party} onChange={e => setParty(e.target.value)} placeholder="Party Name" />
-        </div>
-      )}
-
       <div className="field">
         <label>Description / Particulars</label>
-        <input value={description} onChange={e => setDescription(e.target.value)} placeholder="e.g. Media booking retainer / Utility payment" />
+        <input value={description} onChange={e => setDescription(e.target.value)} placeholder="e.g. Media booking retainer / Utility payment / Vendor Settlement" />
       </div>
 
+      {/* PV SPECIFIC CONTROLS (VENDOR PAYMENT WITH COMMISSION, SST, WHT) */}
       {type === "PV" && (
         <>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
@@ -12145,10 +12388,13 @@ function VoucherModal({ defaultType, projects = [], bankAccounts = [], vouchers 
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: 10 }}>
-            <div className="field"><label>Voucher Amount (PKR)</label><input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="0" /></div>
+            <div className="field">
+              <label>Vendor Bill Amount (PKR) *</label>
+              <input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="e.g. 20000" style={{ fontWeight: 700, fontSize: 14 }} />
+            </div>
             <div className="field">
               <label>Payment Through</label>
-              <select value={via} onChange={e => setVia(e.target.value)}>
+              <select value={via} onChange={e => handleViaChange(e.target.value)}>
                 <option value="Cash">Cash (Petty Cash Vault)</option>
                 <option value="Bank">Bank Account</option>
               </select>
@@ -12156,7 +12402,7 @@ function VoucherModal({ defaultType, projects = [], bankAccounts = [], vouchers 
           </div>
 
           {via === "Bank" && (
-            <div className="field" style={{ marginTop: 4 }}>
+            <div className="field" style={{ marginTop: 2 }}>
               <label>Select Bank Account</label>
               <select value={selectedBankId} onChange={e => setSelectedBankId(e.target.value)}>
                 {realBankAccounts.map(b => (
@@ -12168,23 +12414,137 @@ function VoucherModal({ defaultType, projects = [], bankAccounts = [], vouchers 
             </div>
           )}
 
+          {/* COMMISSION, SST, WHT CONFIGURATION SECTION */}
+          <div className="card" style={{ padding: "12px 14px", marginBottom: 14, background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: 8 }}>
+            <div style={{ fontWeight: 700, fontSize: 13, color: "#1E293B", marginBottom: 10, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <span>Tax &amp; Agency Commission Adjustments</span>
+              <span style={{ fontSize: 11, color: "#64748B" }}>Optional Deduction / Addition</span>
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
+              {/* 1. LESS AGENCY COMMISSION */}
+              <div style={{ background: applyCommission ? "rgba(2, 132, 199, 0.08)" : "#FFFFFF", border: `1px solid ${applyCommission ? "#0284C7" : "#CBD5E1"}`, padding: "8px 10px", borderRadius: 6 }}>
+                <label style={{ display: "flex", alignItems: "center", gap: 6, fontWeight: 700, fontSize: 12, cursor: "pointer", marginBottom: 6 }}>
+                  <input type="checkbox" checked={applyCommission} onChange={e => setApplyCommission(e.target.checked)} />
+                  <span>Less: Commission</span>
+                </label>
+                {applyCommission && (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                    <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
+                      <input type="number" value={agencyCommissionRate} onChange={e => { setAgencyCommissionRate(e.target.value); setAgencyCommissionAmount(""); }} style={{ width: 45, padding: "3px 4px", fontSize: 11.5 }} placeholder="%" />
+                      <span style={{ fontSize: 11 }}>%</span>
+                    </div>
+                    <input type="number" value={agencyCommissionAmount} onChange={e => setAgencyCommissionAmount(e.target.value)} placeholder={`Amount (${pkr(Math.round(billAmount * (agencyCommissionRate/100)))})`} style={{ padding: "3px 4px", fontSize: 11 }} />
+                  </div>
+                )}
+              </div>
+
+              {/* 2. ADD SST / GST */}
+              <div style={{ background: applySst ? "rgba(168, 28, 28, 0.08)" : "#FFFFFF", border: `1px solid ${applySst ? "#A81C1C" : "#CBD5E1"}`, padding: "8px 10px", borderRadius: 6 }}>
+                <label style={{ display: "flex", alignItems: "center", gap: 6, fontWeight: 700, fontSize: 12, cursor: "pointer", marginBottom: 6 }}>
+                  <input type="checkbox" checked={applySst} onChange={e => setApplySst(e.target.checked)} />
+                  <span>Add: SST (Sales Tax)</span>
+                </label>
+                {applySst && (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                    <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
+                      <input type="number" value={sstRate} onChange={e => { setSstRate(e.target.value); setSstAmount(""); }} style={{ width: 45, padding: "3px 4px", fontSize: 11.5 }} placeholder="%" />
+                      <span style={{ fontSize: 11 }}>%</span>
+                    </div>
+                    <input type="number" value={sstAmount} onChange={e => setSstAmount(e.target.value)} placeholder={`Amount (${pkr(Math.round(grossAfterComm * (sstRate/100)))})`} style={{ padding: "3px 4px", fontSize: 11 }} />
+                  </div>
+                )}
+              </div>
+
+              {/* 3. LESS WHT */}
+              <div style={{ background: applyWht ? "rgba(5, 150, 105, 0.08)" : "#FFFFFF", border: `1px solid ${applyWht ? "#059669" : "#CBD5E1"}`, padding: "8px 10px", borderRadius: 6 }}>
+                <label style={{ display: "flex", alignItems: "center", gap: 6, fontWeight: 700, fontSize: 12, cursor: "pointer", marginBottom: 6 }}>
+                  <input type="checkbox" checked={applyWht} onChange={e => setApplyWht(e.target.checked)} />
+                  <span>Less: WHT (Tax)</span>
+                </label>
+                {applyWht && (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                    <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
+                      <input type="number" value={whtRate} onChange={e => { setWhtRate(e.target.value); setWhtAmount(""); }} style={{ width: 45, padding: "3px 4px", fontSize: 11.5 }} placeholder="%" />
+                      <span style={{ fontSize: 11 }}>%</span>
+                    </div>
+                    <input type="number" value={whtAmount} onChange={e => setWhtAmount(e.target.value)} placeholder={`Amount (${pkr(Math.round(billAmount * (whtRate/100)))})`} style={{ padding: "3px 4px", fontSize: 11 }} />
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* LIVE CALCULATION BREAKDOWN CARD */}
+            {billAmount > 0 && (
+              <div style={{ marginTop: 12, background: "#FFFFFF", border: "1px solid #CBD5E1", borderRadius: 6, padding: "10px 14px" }}>
+                <div style={{ fontSize: 11.5, fontWeight: 700, color: "#475569", marginBottom: 6, textTransform: "uppercase" }}>
+                  Payment Calculation Breakdown:
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 12.5 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between" }}>
+                    <span>Vendor Bill Amount:</span>
+                    <strong className="mono">{pkr(billAmount)}</strong>
+                  </div>
+                  {applyCommission && (
+                    <div style={{ display: "flex", justifyContent: "space-between", color: "#0284C7" }}>
+                      <span>Less: Agency Commission ({agencyCommissionRate}%):</span>
+                      <span className="mono">- {pkr(commVal)}</span>
+                    </div>
+                  )}
+                  {applyCommission && (
+                    <div style={{ display: "flex", justifyContent: "space-between", fontWeight: 600, borderTop: "1px dashed #E2E8F0", paddingTop: 2 }}>
+                      <span>Gross Amount:</span>
+                      <span className="mono">{pkr(grossAfterComm)}</span>
+                    </div>
+                  )}
+                  {applySst && (
+                    <div style={{ display: "flex", justifyContent: "space-between", color: "#A81C1C" }}>
+                      <span>Add: SST / GST ({sstRate}%):</span>
+                      <span className="mono">+ {pkr(sstVal)}</span>
+                    </div>
+                  )}
+                  {(applyCommission || applySst) && (
+                    <div style={{ display: "flex", justifyContent: "space-between", fontWeight: 600, borderTop: "1px dashed #E2E8F0", paddingTop: 2 }}>
+                      <span>Total Amount:</span>
+                      <span className="mono">{pkr(totalWithSst)}</span>
+                    </div>
+                  )}
+                  {applyWht && (
+                    <div style={{ display: "flex", justifyContent: "space-between", color: "#059669" }}>
+                      <span>Less: WHT ({whtRate}%):</span>
+                      <span className="mono">- {pkr(whtVal)}</span>
+                    </div>
+                  )}
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14, fontWeight: 800, borderTop: "1.5px solid #0F172A", paddingTop: 6, marginTop: 4, color: "#0F172A" }}>
+                    <span>Net Payable (Paid via {via}):</span>
+                    <span className="mono" style={{ color: "#059669" }}>{pkr(netPayable)}</span>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
           <div style={{ background: via === "Cash" ? "rgba(217, 119, 6, 0.08)" : "rgba(5, 150, 105, 0.08)", border: `1px solid ${via === "Cash" ? "rgba(217, 119, 6, 0.2)" : "rgba(5, 150, 105, 0.2)"}`, padding: "10px 14px", borderRadius: 8, fontSize: 12.5, color: via === "Cash" ? "#D97706" : "#059669", marginBottom: 14 }}>
             {via === "Cash" ? (
-              <>💡 <b>Cash Payment Rule:</b> Debits <b>{glAccountObj.name}</b> &amp; Credits <b>Petty Cash Vault (Cash in Hand)</b>. Petty cash balance decreases automatically.</>
+              <>💡 <b>Cash Payment Rule:</b> Debits <b>{glAccountObj.name}</b> ({pkr(billAmount)}) &amp; Credits <b>Petty Cash Vault</b> ({pkr(netPayable)}). Petty cash balance decreases automatically.</>
             ) : (
-              <>💡 <b>Bank Payment Rule:</b> Debits <b>{glAccountObj.name}</b> &amp; Credits <b>{selectedBankObj?.bankName || "Selected Bank"}</b>. Bank balance decreases automatically.</>
+              <>💡 <b>Bank Payment Rule:</b> Debits <b>{glAccountObj.name}</b> ({pkr(billAmount)}) &amp; Credits <b>{selectedBankObj?.bankName || "Selected Bank"}</b> ({pkr(netPayable)}). Bank balance decreases automatically.</>
             )}
           </div>
         </>
       )}
 
+      {/* RV SPECIFIC CONTROLS (CLIENT RECEIPT WITH SST, WHT) */}
       {type === "RV" && (
         <>
           <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: 10 }}>
-            <div className="field"><label>Receipt Amount (PKR)</label><input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="0" /></div>
+            <div className="field">
+              <label>Receipt Gross Amount (PKR) *</label>
+              <input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="e.g. 500000" style={{ fontWeight: 700, fontSize: 14 }} />
+            </div>
             <div className="field">
               <label>Receive Through</label>
-              <select value={via} onChange={e => setVia(e.target.value)}>
+              <select value={via} onChange={e => handleViaChange(e.target.value)}>
                 <option value="Cash">Cash (Petty Cash Vault)</option>
                 <option value="Bank">Bank Account</option>
               </select>
@@ -12207,16 +12567,88 @@ function VoucherModal({ defaultType, projects = [], bankAccounts = [], vouchers 
           <div className="field">
             <label>Receipt Credit Account</label>
             <select value={settleAR ? "ar" : "revenue"} onChange={e => setSettleAR(e.target.value === "ar")}>
-              <option value="ar">Settle Accounts Receivable (Client Bill)</option>
+              <option value="ar">Settle Accounts Receivable (Client Invoices / Bill)</option>
               <option value="revenue">Direct Service Revenue (No Invoice)</option>
             </select>
           </div>
 
+          {/* SST & WHT ADJUSTMENTS FOR RECEIPT */}
+          <div className="card" style={{ padding: "12px 14px", marginBottom: 14, background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: 8 }}>
+            <div style={{ fontWeight: 700, fontSize: 13, color: "#1E293B", marginBottom: 10, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <span>Tax Deductions on Receipt</span>
+              <span style={{ fontSize: 11, color: "#64748B" }}>WHT Withheld by Client / SST</span>
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+              {/* 1. LESS WHT WITHHELD BY CLIENT */}
+              <div style={{ background: applyWht ? "rgba(5, 150, 105, 0.08)" : "#FFFFFF", border: `1px solid ${applyWht ? "#059669" : "#CBD5E1"}`, padding: "8px 10px", borderRadius: 6 }}>
+                <label style={{ display: "flex", alignItems: "center", gap: 6, fontWeight: 700, fontSize: 12, cursor: "pointer", marginBottom: 6 }}>
+                  <input type="checkbox" checked={applyWht} onChange={e => setApplyWht(e.target.checked)} />
+                  <span>Deduct: WHT (Advance Tax)</span>
+                </label>
+                {applyWht && (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                    <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
+                      <input type="number" value={whtRate} onChange={e => { setWhtRate(e.target.value); setWhtAmount(""); }} style={{ width: 45, padding: "3px 4px", fontSize: 11.5 }} placeholder="%" />
+                      <span style={{ fontSize: 11 }}>%</span>
+                    </div>
+                    <input type="number" value={whtAmount} onChange={e => setWhtAmount(e.target.value)} placeholder={`Amount (${pkr(Math.round(receiptGross * (whtRate/100)))})`} style={{ padding: "3px 4px", fontSize: 11 }} />
+                  </div>
+                )}
+              </div>
+
+              {/* 2. SST RECORD */}
+              <div style={{ background: applySst ? "rgba(168, 28, 28, 0.08)" : "#FFFFFF", border: `1px solid ${applySst ? "#A81C1C" : "#CBD5E1"}`, padding: "8px 10px", borderRadius: 6 }}>
+                <label style={{ display: "flex", alignItems: "center", gap: 6, fontWeight: 700, fontSize: 12, cursor: "pointer", marginBottom: 6 }}>
+                  <input type="checkbox" checked={applySst} onChange={e => setApplySst(e.target.checked)} />
+                  <span>Include: SST (Sales Tax)</span>
+                </label>
+                {applySst && (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                    <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
+                      <input type="number" value={sstRate} onChange={e => { setSstRate(e.target.value); setSstAmount(""); }} style={{ width: 45, padding: "3px 4px", fontSize: 11.5 }} placeholder="%" />
+                      <span style={{ fontSize: 11 }}>%</span>
+                    </div>
+                    <input type="number" value={sstAmount} onChange={e => setSstAmount(e.target.value)} placeholder={`Amount (${pkr(Math.round(receiptGross * (sstRate/100)))})`} style={{ padding: "3px 4px", fontSize: 11 }} />
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* LIVE RECEIPT BREAKDOWN */}
+            {receiptGross > 0 && (
+              <div style={{ marginTop: 12, background: "#FFFFFF", border: "1px solid #CBD5E1", borderRadius: 6, padding: "10px 14px" }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 12.5 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between" }}>
+                    <span>Receipt Gross Amount:</span>
+                    <strong className="mono">{pkr(receiptGross)}</strong>
+                  </div>
+                  {applyWht && (
+                    <div style={{ display: "flex", justifyContent: "space-between", color: "#059669" }}>
+                      <span>Less: WHT Withheld by Client ({whtRate}%):</span>
+                      <span className="mono">- {pkr(rvWhtVal)}</span>
+                    </div>
+                  )}
+                  {applySst && (
+                    <div style={{ display: "flex", justifyContent: "space-between", color: "#A81C1C" }}>
+                      <span>SST Portion ({sstRate}%):</span>
+                      <span className="mono">{pkr(rvSstVal)}</span>
+                    </div>
+                  )}
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14, fontWeight: 800, borderTop: "1.5px solid #0F172A", paddingTop: 6, marginTop: 4, color: "#0F172A" }}>
+                    <span>Net Deposited via {via}:</span>
+                    <span className="mono" style={{ color: "#0284C7" }}>{pkr(netDeposit)}</span>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
           <div style={{ background: "rgba(5, 150, 105, 0.08)", border: "1px solid rgba(5, 150, 105, 0.2)", padding: "10px 14px", borderRadius: 8, fontSize: 12.5, color: "#059669", marginBottom: 14 }}>
             {via === "Cash" ? (
-              <>💡 <b>Cash Receipt Rule:</b> Debits <b>Petty Cash Vault</b> &amp; Credits <b>{settleAR ? "Accounts Receivable" : "Direct Revenue"}</b>. Petty cash balance increases automatically.</>
+              <>💡 <b>Cash Receipt Rule:</b> Debits <b>Petty Cash Vault</b> ({pkr(netDeposit)}){applyWht ? ` & WHT Receivable (${pkr(rvWhtVal)})` : ""} &amp; Credits <b>{settleAR ? "Accounts Receivable" : "Direct Revenue"}</b> ({pkr(receiptGross)}). Petty cash balance increases automatically.</>
             ) : (
-              <>💡 <b>Bank Receipt Rule:</b> Debits <b>{selectedBankObj?.bankName || "Selected Bank"}</b> &amp; Credits <b>{settleAR ? "Accounts Receivable" : "Direct Revenue"}</b>. Bank balance increases automatically.</>
+              <>💡 <b>Bank Receipt Rule:</b> Debits <b>{selectedBankObj?.bankName || "Selected Bank"}</b> ({pkr(netDeposit)}){applyWht ? ` & WHT Receivable (${pkr(rvWhtVal)})` : ""} &amp; Credits <b>{settleAR ? "Accounts Receivable" : "Direct Revenue"}</b> ({pkr(receiptGross)}). Bank balance increases automatically.</>
             )}
           </div>
         </>
@@ -13413,6 +13845,11 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
   const [docTitle, setDocTitle] = useState(() => {
     if (doc.type === "RELEASE ORDER") return "MEDIA RELEASE ORDER (RO)";
     if (doc.type === "PURCHASE ORDER") return "PURCHASE ORDER (PO)";
+    if (doc.type === "PV") return "PAYMENT VOUCHER (PV)";
+    if (doc.type === "RV") return "RECEIPT VOUCHER (RV)";
+    if (doc.type === "JV") return "JOURNAL VOUCHER (JV)";
+    if (doc.type === "CTV") return "CONTRA TRANSFER VOUCHER (CTV)";
+    if (doc.type === "CV") return "CLIENT VENDOR SETTLEMENT (CV)";
     if (doc.docHeading) return doc.docHeading;
     if (doc.applySst) return doc.taxIncluded ? "SALES TAX INVOICE (15% SST INCLUDED)" : "SALES TAX INVOICE (15% SST)";
     return "SALES INVOICE";
