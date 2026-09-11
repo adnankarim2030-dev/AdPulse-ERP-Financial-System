@@ -1647,9 +1647,9 @@ export default function App() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   /* Financial & Operations state */
-  const [seedData] = useState(buildSeedDemoData);
+  const [seedData] = useState(buildInitialData);
 
-  const STORAGE_KEY = "adpulse_erp_financial_backup_v6";
+  const STORAGE_KEY = "adpulse_erp_financial_clean_v7";
 
   // Helper to load state from localStorage or fallback to default
   const getInitialState = (key, fallback) => {
@@ -1672,11 +1672,7 @@ export default function App() {
   const [invoices, setInvoices] = useState(() => getInitialState("invoices", seedData.invoices || []));
   const [expenses, setExpenses] = useState(() => getInitialState("expenses", seedData.expenses || []));
   const [purchaseOrders, setPurchaseOrders] = useState(() => getInitialState("purchaseOrders", []));
-  const [releaseOrders, setReleaseOrders] = useState(() => {
-    const saved = getInitialState("releaseOrders", null);
-    if (saved && Array.isArray(saved) && saved.length > 0) return saved;
-    return seedReleaseOrders();
-  });
+  const [releaseOrders, setReleaseOrders] = useState(() => getInitialState("releaseOrders", []));
   const [showROForm, setShowROForm] = useState(false);
   const [editingRO, setEditingRO] = useState(null);
   const [projects, setProjects] = useState(() => getInitialState("projects", seedData.projects || []));
@@ -2113,6 +2109,7 @@ export default function App() {
         setInvoices([]);
         setExpenses([]);
         setPurchaseOrders([]);
+        setReleaseOrders([]);
         setProjects([]);
         setClients([]);
         setVendors([]);
@@ -2132,7 +2129,11 @@ export default function App() {
         ]);
         setUsersList(SEED_USERS);
         localStorage.removeItem(STORAGE_KEY);
-        try { localStorage.removeItem("adpulse_system_state_v1"); } catch(e) {}
+        try {
+          localStorage.removeItem("adpulse_erp_financial_backup_v6");
+          localStorage.removeItem("adpulse_erp_financial_backup_v5");
+          localStorage.removeItem("adpulse_system_state_v1");
+        } catch(e) {}
         setLastBackupTime(null);
         setBackupNotification({
           type: "success",
