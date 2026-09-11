@@ -1277,12 +1277,14 @@ function buildInitialJournal(invoices, expenses, vouchers) {
 
   invoices.forEach(inv => {
     const totalAmount = inv.totalAmount || inv.amount;
+    const sst = (inv.applySst && inv.sstAmount) ? Number(inv.sstAmount) : 0;
+    const netRev = totalAmount - sst;
     const lines = [
       { account: "ar", debit: totalAmount, credit: 0 },
-      { account: "revenue", debit: 0, credit: inv.amount },
+      { account: "revenue", debit: 0, credit: netRev },
     ];
-    if (inv.applySst && inv.sstAmount) {
-      lines.push({ account: "srb_payable", debit: 0, credit: inv.sstAmount });
+    if (sst > 0) {
+      lines.push({ account: "srb_payable", debit: 0, credit: sst });
     }
     entries.push({
       id: uid(), date: inv.issueDate, reference: "INV-" + (inv.invoiceNo || inv.id.toUpperCase()),
@@ -2565,12 +2567,15 @@ export default function App() {
     const inv = { ...data, id: uid(), invoiceNo: finalInvoiceNo, paid: false, paidVia: null };
     setInvoices(list => [inv, ...list]);
     
+    const totalAmount = inv.totalAmount || inv.amount;
+    const sst = (inv.applySst && inv.sstAmount) ? Number(inv.sstAmount) : 0;
+    const netRev = totalAmount - sst;
     const lines = [
-      { account: "ar", debit: inv.totalAmount || inv.amount, credit: 0 },
-      { account: "revenue", debit: 0, credit: inv.amount },
+      { account: "ar", debit: totalAmount, credit: 0 },
+      { account: "revenue", debit: 0, credit: netRev },
     ];
-    if (inv.applySst && inv.sstAmount) {
-      lines.push({ account: "srb_payable", debit: 0, credit: inv.sstAmount });
+    if (sst > 0) {
+      lines.push({ account: "srb_payable", debit: 0, credit: sst });
     }
     
     postEntry(inv.issueDate || TODAY_STR, `Invoice ${finalInvoiceNo} - ${inv.client} (${inv.description})`, lines, finalInvoiceNo);
