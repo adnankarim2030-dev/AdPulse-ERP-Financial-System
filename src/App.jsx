@@ -844,11 +844,25 @@ function seedJournal() {
     entries.push({ id: uid(), date, description, reference: ref, lines });
   };
 
-  add("2026-07-01", "Opening Balances Capital Contribution", [
-    { account: "cash", debit: 500000, credit: 0 },
-    { account: "bank", debit: 2500000, credit: 0 },
-    { account: "equity", debit: 0, credit: 3000000 },
-  ], "OB-001");
+  add("2026-07-01", "Opening Balance — Habib Bank Limited (HBL)", [
+    { account: "bank", bankAccountId: "bank-hbl", debit: 1250000, credit: 0 },
+    { account: "equity", debit: 0, credit: 1250000 },
+  ], "OB-HBL");
+
+  add("2026-07-01", "Opening Balance — MCB Bank Ltd", [
+    { account: "bank", bankAccountId: "bank-mcb", debit: 850000, credit: 0 },
+    { account: "equity", debit: 0, credit: 850000 },
+  ], "OB-MCB");
+
+  add("2026-07-01", "Opening Balance — Meezan Bank Ltd", [
+    { account: "bank", bankAccountId: "bank-meezan", debit: 400000, credit: 0 },
+    { account: "equity", debit: 0, credit: 400000 },
+  ], "OB-MEEZAN");
+
+  add("2026-07-01", "Opening Balance — Petty Cash Vault", [
+    { account: "cash", bankAccountId: "bank-cash", debit: 75000, credit: 0 },
+    { account: "equity", debit: 0, credit: 75000 },
+  ], "OB-CASH");
 
   return entries;
 }
@@ -1276,11 +1290,12 @@ function buildInitialJournal(invoices, expenses, vouchers) {
       lines,
     });
     if (inv.paid) {
+      const bId = inv.bankAccountId || (inv.paidVia === "Cash" ? "bank-cash" : "bank-hbl");
       entries.push({
         id: uid(), date: inv.dueDate, reference: "PMT-" + (inv.invoiceNo || inv.id.toUpperCase()),
         description: `Payment received - ${inv.client}`,
         lines: [
-          { account: inv.paidVia === "Cash" ? "cash" : "bank", debit: totalAmount, credit: 0 },
+          { account: inv.paidVia === "Cash" ? "cash" : "bank", bankAccountId: bId, debit: totalAmount, credit: 0 },
           { account: "ar", debit: 0, credit: totalAmount },
         ],
       });
@@ -1289,23 +1304,25 @@ function buildInitialJournal(invoices, expenses, vouchers) {
 
   expenses.forEach(exp => {
     const glAccKey = exp.accountKey || getGLAccountKeyForSubcategory(exp.category, exp.subcategory) || "expense";
+    const bId = exp.status === "paid" ? (exp.bankAccountId || (exp.paidVia === "Cash" ? "bank-cash" : "bank-hbl")) : undefined;
     entries.push({
       id: uid(), date: exp.date, reference: exp.expenseNo || ("EXP-" + exp.id.toUpperCase()),
       description: `${exp.vendor} (${exp.category}${exp.subcategory ? ' → ' + exp.subcategory : ''})`,
       lines: [
         { account: glAccKey, debit: exp.amount, credit: 0, memo: exp.category },
-        { account: exp.status === "unpaid" ? "ap" : (exp.paidVia === "Cash" ? "cash" : "bank"), debit: 0, credit: exp.amount },
+        { account: exp.status === "unpaid" ? "ap" : (exp.paidVia === "Cash" ? "cash" : "bank"), bankAccountId: bId, debit: 0, credit: exp.amount },
       ],
     });
   });
 
   (vouchers || []).forEach(v => {
+    const vBankId = v.bankAccountId || (v.via === "Cash" ? "bank-cash" : "bank-hbl");
     if (v.type === "RV") {
       entries.push({
         id: uid(), date: v.date, reference: v.voucherNo || ("RV-" + v.id.toUpperCase()),
         description: `Receipt - ${v.party} (${v.description})`,
         lines: [
-          { account: v.via === "Cash" ? "cash" : "bank", debit: Number(v.amount) || 0, credit: 0 },
+          { account: v.via === "Cash" ? "cash" : "bank", bankAccountId: vBankId, debit: Number(v.amount) || 0, credit: 0 },
           { account: "ar", debit: 0, credit: Number(v.amount) || 0 }
         ]
       });
@@ -1315,7 +1332,20 @@ function buildInitialJournal(invoices, expenses, vouchers) {
         description: `Payment - ${v.party} (${v.description})`,
         lines: [
           { account: "ap", debit: Number(v.amount) || 0, credit: 0 },
-          { account: v.via === "Cash" ? "cash" : "bank", debit: 0, credit: Number(v.amount) || 0 }
+          { account: v.via === "Cash" ? "cash" : "bank", bankAccountId: vBankId, debit: 0, credit: Number(v.amount) || 0 }
+        ]
+      });
+    } else if (v.type === "CTV") {
+      const srcBankId = v.sourceBankId || "bank-cash";
+      const tgtBankId = v.targetBankId || "bank-hbl";
+      const srcAcc = (srcBankId === "bank-cash") ? "cash" : "bank";
+      const tgtAcc = (tgtBankId === "bank-cash") ? "cash" : "bank";
+      entries.push({
+        id: uid(), date: v.date, reference: v.voucherNo || ("CTV-" + v.id.toUpperCase()),
+        description: `Contra Transfer - ${v.description || (srcBankId + ' to ' + tgtBankId)}`,
+        lines: [
+          { account: tgtAcc, bankAccountId: tgtBankId, debit: Number(v.amount) || 0, credit: 0, memo: `Contra Transfer into ${tgtBankId}` },
+          { account: srcAcc, bankAccountId: srcBankId, debit: 0, credit: Number(v.amount) || 0, memo: `Contra Transfer from ${srcBankId}` }
         ]
       });
     }
@@ -2552,14 +2582,15 @@ export default function App() {
     setEditingInvoice(null);
   }
 
-  function markPaid(inv, via) {
-    setInvoices(list => list.map(i => i.id === inv.id ? { ...i, paid: true, paidVia: via } : i));
+  function markPaid(inv, via, bankAccountId) {
+    const selectedBank = via === "Cash" ? "bank-cash" : (bankAccountId || "bank-hbl");
+    setInvoices(list => list.map(i => i.id === inv.id ? { ...i, paid: true, paidVia: via, bankAccountId: selectedBank } : i));
     const totalBilled = inv.totalAmount || inv.amount;
     const wht = inv.applyWht ? (inv.whtAmount || 0) : 0;
     const netDeposit = totalBilled - wht;
 
     const lines = [
-      { account: via === "Cash" ? "cash" : "bank", debit: netDeposit, credit: 0 },
+      { account: via === "Cash" ? "cash" : "bank", bankAccountId: selectedBank, debit: netDeposit, credit: 0 },
       { account: "ar", debit: 0, credit: totalBilled },
     ];
     if (wht > 0) {
@@ -2581,15 +2612,16 @@ export default function App() {
     const today = TODAY.toISOString().slice(0, 10);
     postEntry(today, `Sindh Sales Tax (SRB) Remittance`, [
       { account: "srb_payable", debit: srbPayableBalance, credit: 0 },
-      { account: "bank", debit: 0, credit: srbPayableBalance },
+      { account: "bank", bankAccountId: "bank-hbl", debit: 0, credit: srbPayableBalance },
     ], "SRB-REMIT");
     alert(`Successfully posted remittance of ${pkr(srbPayableBalance)} to SRB.`);
   }
 
   function addExpense(data) {
-    const { projectId, vendor, category, subcategory, accountKey, description, refNo, amount, date, status, paidVia } = data;
+    const { projectId, vendor, category, subcategory, accountKey, description, refNo, amount, date, status, paidVia, bankAccountId } = data;
     const glAccKey = accountKey || getGLAccountKeyForSubcategory(category, subcategory) || "expense";
     const finalExpNo = data.expenseNo || data.refNo || getNextExpenseNo(expenses);
+    const selectedBank = status === "paid" ? (paidVia === "Cash" ? "bank-cash" : (bankAccountId || "bank-hbl")) : null;
     const exp = {
       id: uid(),
       expenseNo: finalExpNo,
@@ -2603,24 +2635,26 @@ export default function App() {
       amount: Number(amount) || 0,
       date: date || TODAY.toISOString().slice(0, 10),
       status: status || "paid",
-      paidVia: status === "paid" ? (paidVia || "Bank") : null
+      paidVia: status === "paid" ? (paidVia || "Bank") : null,
+      bankAccountId: selectedBank
     };
     setExpenses(list => [exp, ...list]);
     const memoText = subcategory ? `${category} → ${subcategory}` : category;
     postEntry(date, `${vendor} (${memoText}${description ? " - " + description : ""})`, [
       { account: glAccKey, debit: Number(amount), credit: 0, memo: memoText },
-      { account: status === "paid" ? (paidVia === "Cash" ? "cash" : "bank") : "ap", debit: 0, credit: Number(amount) },
+      { account: status === "paid" ? (paidVia === "Cash" ? "cash" : "bank") : "ap", bankAccountId: selectedBank, debit: 0, credit: Number(amount) },
     ], finalExpNo);
     setShowExpenseForm(false);
   }
 
-  function payExpense(expenseId, paymentVia, paymentDate) {
+  function payExpense(expenseId, paymentVia, paymentDate, bankAccountId) {
     const exp = expenses.find(e => e.id === expenseId);
     if (!exp || exp.status === "paid") return;
-    setExpenses(list => list.map(e => e.id === expenseId ? { ...e, status: "paid", paidVia: paymentVia } : e));
+    const selectedBank = paymentVia === "Cash" ? "bank-cash" : (bankAccountId || "bank-hbl");
+    setExpenses(list => list.map(e => e.id === expenseId ? { ...e, status: "paid", paidVia: paymentVia, bankAccountId: selectedBank } : e));
     postEntry(paymentDate, `Payment to ${exp.vendor} (${exp.category})`, [
       { account: "ap", debit: exp.amount, credit: 0 },
-      { account: paymentVia === "Cash" ? "cash" : "bank", debit: 0, credit: exp.amount },
+      { account: paymentVia === "Cash" ? "cash" : "bank", bankAccountId: selectedBank, debit: 0, credit: exp.amount },
     ], "PMT-" + (exp.expenseNo || exp.id.toUpperCase()));
   }
 
@@ -2684,14 +2718,15 @@ export default function App() {
     // Link somehow? We can just add it.
   }
 
-  function payPO(id, paymentVia, paymentDate) {
+  function payPO(id, paymentVia, paymentDate, bankAccountId) {
     const po = purchaseOrders.find(p => p.id === id);
     if (!po) return;
     setPOStatus(id, "Paid");
+    const selectedBank = paymentVia === "Cash" ? "bank-cash" : (bankAccountId || "bank-hbl");
     const poRef = po.poNumber || `PO-${po.id.slice(0, 4).toUpperCase()}`;
     postEntry(paymentDate, `Payment for ${poRef} to ${po.vendor}`, [
       { account: "ap", debit: po.amount, credit: 0 },
-      { account: paymentVia === "Cash" ? "cash" : "bank", debit: 0, credit: po.amount },
+      { account: paymentVia === "Cash" ? "cash" : "bank", bankAccountId: selectedBank, debit: 0, credit: po.amount },
     ], "PMT-" + poRef);
     
     // Attempt to also mark the related expense as paid if we can find it by amount and vendor
@@ -2700,7 +2735,7 @@ export default function App() {
       return list.map(e => {
         if (!found && e.vendor === po.vendor && e.amount === po.amount && e.status === "unpaid") {
           found = true;
-          return { ...e, status: "paid", paidVia: paymentVia };
+          return { ...e, status: "paid", paidVia: paymentVia, bankAccountId: selectedBank };
         }
         return e;
       });
@@ -3108,14 +3143,15 @@ export default function App() {
   }
 
 
-  function addProjectCost(project, { vendor, description, amount, date, paidVia }) {
+  function addProjectCost(project, { vendor, description, amount, date, paidVia, bankAccountId }) {
+    const selectedBank = paidVia === "Cash" ? "bank-cash" : (bankAccountId || "bank-hbl");
     const exp = {
-      id: uid(), vendor, description, category: project.type, amount, date, paidVia, projectId: project.id,
+      id: uid(), vendor, description, category: project.type, amount, date, paidVia, bankAccountId: selectedBank, projectId: project.id,
     };
     setExpenses(list => [exp, ...list]);
     postEntry(date, `${vendor} (${project.type} — ${project.name})`, [
       { account: "expense", debit: amount, credit: 0, memo: project.type },
-      { account: paidVia === "Cash" ? "cash" : "bank", debit: 0, credit: amount },
+      { account: paidVia === "Cash" ? "cash" : "bank", bankAccountId: selectedBank, debit: 0, credit: amount },
     ], "EXP-" + exp.id.toUpperCase());
     setCostModalProject(null);
   }
@@ -3193,11 +3229,11 @@ export default function App() {
     const run = { id: uid(), month, runDate, employeeCount: entries.length, totalGross, totalDeductions, totalNet, entries };
     setPayrollRuns(list => [run, ...list]);
 
-    const exp = { id: uid(), vendor: `Payroll — ${month}`, category: "Payroll", description: `Salaries for ${entries.length} employees`, amount: totalNet, date: runDate, paidVia: "Bank" };
+    const exp = { id: uid(), vendor: `Payroll — ${month}`, category: "Payroll", description: `Salaries for ${entries.length} employees`, amount: totalNet, date: runDate, paidVia: "Bank", bankAccountId: "bank-hbl" };
     setExpenses(list => [exp, ...list]);
     postEntry(runDate, `Payroll — ${month} (${entries.length} employees)`, [
       { account: "expense", debit: totalNet, credit: 0, memo: "Payroll" },
-      { account: "bank", debit: 0, credit: totalNet },
+      { account: "bank", bankAccountId: "bank-hbl", debit: 0, credit: totalNet },
     ], "PR-" + exp.id.toUpperCase());
     setPayrollConfirm(false);
   }
@@ -6008,44 +6044,84 @@ export default function App() {
           {tab === "cash-bank" && (
             <>
               {(() => {
+                // 1. Calculate Live Balances for each bank account & petty cash
                 const accountBalances = bankAccounts.map(b => {
                   let netMovement = 0;
-                  if (b.id === "bank-cash" || b.accountType === "Petty Cash") {
-                    netMovement = journal.reduce((sum, entry) => {
-                      let eSum = 0;
-                      entry.lines.forEach(l => {
+                  journal.forEach(entry => {
+                    entry.lines?.forEach(l => {
+                      if (b.id === "bank-cash" || b.accountType === "Petty Cash") {
                         if (l.account === "cash" && (l.bankAccountId === b.id || (!l.bankAccountId && b.id === "bank-cash"))) {
-                          eSum += (l.debit - l.credit);
+                          netMovement += (Number(l.debit) || 0) - (Number(l.credit) || 0);
                         }
-                      });
-                      return sum + eSum;
-                    }, 0);
-                  } else {
-                    netMovement = journal.reduce((sum, entry) => {
-                      let eSum = 0;
-                      entry.lines.forEach(l => {
+                      } else {
                         if (l.account === "bank" && (l.bankAccountId === b.id || (!l.bankAccountId && b.id === "bank-hbl"))) {
-                          eSum += (l.debit - l.credit);
+                          netMovement += (Number(l.debit) || 0) - (Number(l.credit) || 0);
                         }
-                      });
-                      return sum + eSum;
-                    }, 0);
-                  }
-                  return { ...b, liveBalance: (b.openingBalance || 0) + netMovement };
-                });
+                      }
+                    });
+                  });
 
+                  // Check if journal has an opening balance entry for this account
+                  const hasOpeningInJournal = journal.some(entry =>
+                    entry.lines?.some(l => {
+                      const matchesAcc = (b.id === "bank-cash" || b.accountType === "Petty Cash")
+                        ? (l.account === "cash" && (l.bankAccountId === b.id || (!l.bankAccountId && b.id === "bank-cash")))
+                        : (l.account === "bank" && (l.bankAccountId === b.id || (!l.bankAccountId && b.id === "bank-hbl")));
+                      return matchesAcc && (entry.reference?.startsWith("OB-") || entry.description?.toLowerCase().includes("opening balance"));
+                    })
+                  );
+                  const baseOpening = hasOpeningInJournal ? 0 : (Number(b.openingBalance) || 0);
+                  return { ...b, liveBalance: baseOpening + netMovement };
+                });
 
                 const totalLiquidity = accountBalances.reduce((s, b) => s + b.liveBalance, 0);
 
-                const filteredEntries = Object.values(journal)
-                  .filter(j => {
-                    if (cashBankFilter === "all") return j.account === "cash" || j.account === "bank";
-                    if (cashBankFilter === "cash") return j.account === "cash";
-                    if (cashBankFilter === "bank") return j.account === "bank";
-                    const matchedLine = j.lines?.find(l => l.bankAccountId === cashBankFilter || (!l.bankAccountId && cashBankFilter === "bank-hbl" && l.account === "bank"));
-                    return !!matchedLine;
-                  })
-                  .sort((a, b) => new Date(a.date) - new Date(b.date));
+                // 2. Build sorted transactions list for the ledger table
+                const sortedJournal = [...journal].sort((a, b) => new Date(a.date) - new Date(b.date));
+                const ledgerRows = [];
+                let runningBalance = 0;
+
+                sortedJournal.forEach(entry => {
+                  entry.lines?.forEach((line, lineIdx) => {
+                    let lineBankId = line.bankAccountId;
+                    if (!lineBankId) {
+                      lineBankId = line.account === "cash" ? "bank-cash" : (line.account === "bank" ? "bank-hbl" : null);
+                    }
+
+                    if (!lineBankId && line.account !== "cash" && line.account !== "bank") return;
+
+                    let isMatch = false;
+                    if (cashBankFilter === "all") {
+                      isMatch = (line.account === "cash" || line.account === "bank");
+                    } else if (cashBankFilter === "cash" || cashBankFilter === "bank-cash") {
+                      isMatch = (line.account === "cash" || lineBankId === "bank-cash");
+                    } else {
+                      if (line.account === "bank") {
+                        isMatch = (lineBankId === cashBankFilter);
+                      }
+                    }
+
+                    const debit = Number(line.debit) || 0;
+                    const credit = Number(line.credit) || 0;
+
+                    if (isMatch && (debit > 0 || credit > 0)) {
+                      runningBalance += (debit - credit);
+                      const bankInfo = bankAccounts.find(b => b.id === lineBankId);
+                      ledgerRows.push({
+                        key: `${entry.id}-${lineIdx}`,
+                        date: entry.date,
+                        reference: entry.reference || "—",
+                        bankName: bankInfo?.bankName || (line.account === "cash" ? "Petty Cash Vault" : "Bank Account"),
+                        bankColor: bankInfo?.color || "var(--gold)",
+                        description: entry.description || line.memo || "Transaction",
+                        memo: line.memo,
+                        debit,
+                        credit,
+                        runningBalance
+                      });
+                    }
+                  });
+                });
 
                 return (
                   <>
@@ -6062,6 +6138,9 @@ export default function App() {
                         </button>
                         <button className="btn" onClick={() => { setVoucherDefaultType("RV"); setShowVoucherForm(true); }}>
                           Receipt Voucher
+                        </button>
+                        <button className="btn" onClick={() => { setVoucherDefaultType("CTV"); setShowVoucherForm(true); }}>
+                          Contra Transfer
                         </button>
                       </div>
                     </div>
@@ -6105,8 +6184,8 @@ export default function App() {
                         <label>Filter Ledger by Bank Account</label>
                         <select value={cashBankFilter} onChange={e => setCashBankFilter(e.target.value)}>
                           <option value="all">All Cash & Bank Accounts ({pkr(totalLiquidity)})</option>
-                          <option value="cash">Petty Cash Vault Only</option>
-                          {bankAccounts.filter(b => b.id !== "bank-cash").map(b => (
+                          <option value="cash">Petty Cash Vault Only ({pkr(accountBalances.find(x => x.id === "bank-cash" || x.accountType === "Petty Cash")?.liveBalance || 0)})</option>
+                          {bankAccounts.filter(b => b.id !== "bank-cash" && b.accountType !== "Petty Cash").map(b => (
                             <option key={b.id} value={b.id}>
                               {b.bankName} — {b.accountNumber} ({pkr(accountBalances.find(x => x.id === b.id)?.liveBalance || 0)})
                             </option>
@@ -6120,76 +6199,46 @@ export default function App() {
                         <table>
                           <thead>
                             <tr>
-                              <th>Date</th><th>Ref No</th><th>Account / Bank</th><th>Particulars / Description</th>
+                              <th>Date</th>
+                              <th>Voucher / Ref #</th>
+                              <th>Account / Vault</th>
+                              <th>Particulars / Description</th>
                               <th style={{ textAlign: "right", color: "var(--emerald)" }}>Deposit (In)</th>
                               <th style={{ textAlign: "right", color: "var(--rose)" }}>Payment (Out)</th>
                               <th style={{ textAlign: "right" }}>Running Balance</th>
                             </tr>
                           </thead>
                           <tbody>
-                            {(() => {
-                              const selectedBank = bankAccounts.find(b => b.id === cashBankFilter);
-                              const startOpeningBalance = selectedBank ? (selectedBank.openingBalance || 0) : (cashBankFilter === "all" ? bankAccounts.reduce((s, b) => s + (b.openingBalance || 0), 0) : 0);
-                              
-                              let balance = startOpeningBalance;
-                              const rows = [];
+                            {ledgerRows.map((row) => (
+                              <tr key={row.key}>
+                                <td className="mono" style={{ fontSize: 12.5 }}>{fmtDate(row.date)}</td>
+                                <td className="mono" style={{ fontWeight: 600, color: "var(--gold)", fontSize: 12 }}>{row.reference}</td>
+                                <td>
+                                  <span className="badge-mini" style={{ borderLeft: `3px solid ${row.bankColor}` }}>
+                                    {row.bankName}
+                                  </span>
+                                </td>
+                                <td>
+                                  <div style={{ fontWeight: 500 }}>{row.description}</div>
+                                  {row.memo && row.memo !== row.description && (
+                                    <div style={{ fontSize: 11, color: "var(--ink-muted)" }}>{row.memo}</div>
+                                  )}
+                                </td>
+                                <td className="mono" style={{ textAlign: "right", color: "var(--emerald)", fontWeight: 600 }}>
+                                  {row.debit > 0 ? pkr(row.debit) : "—"}
+                                </td>
+                                <td className="mono" style={{ textAlign: "right", color: "var(--rose)", fontWeight: 600 }}>
+                                  {row.credit > 0 ? pkr(row.credit) : "—"}
+                                </td>
+                                <td className="mono" style={{ textAlign: "right", fontWeight: 700, color: row.runningBalance >= 0 ? "var(--jade)" : "var(--rose)" }}>
+                                  {pkr(row.runningBalance)}
+                                </td>
+                              </tr>
+                            ))}
 
-                              if (startOpeningBalance > 0) {
-                                rows.push(
-                                  <tr key="opening" style={{ background: "rgba(14, 165, 233, 0.04)" }}>
-                                    <td className="mono" style={{ fontSize: 12.5 }}>21 Jul 2026</td>
-                                    <td className="mono" style={{ fontWeight: 600, color: "var(--gold)", fontSize: 12 }}>OP-BAL</td>
-                                    <td>
-                                      <span className="badge-mini">
-                                        {selectedBank ? selectedBank.bankName : "Opening Balance"}
-                                      </span>
-                                    </td>
-                                    <td style={{ fontWeight: 600 }}>Opening Balance — {selectedBank ? selectedBank.bankName : "Combined Liquidity"}</td>
-                                    <td className="mono" style={{ textAlign: "right", color: "var(--emerald)", fontWeight: 600 }}>
-                                      {pkr(startOpeningBalance)}
-                                    </td>
-                                    <td className="mono" style={{ textAlign: "right", color: "var(--rose)", fontWeight: 600 }}>—</td>
-                                    <td className="mono" style={{ textAlign: "right", fontWeight: 700, color: "var(--emerald)" }}>
-                                      {pkr(startOpeningBalance)}
-                                    </td>
-                                  </tr>
-                                );
-                              }
-
-                              filteredEntries.forEach((entry, i) => {
-                                if (entry.description?.toLowerCase().includes("opening balance")) return;
-                                balance += (entry.debit - entry.credit);
-                                const bankLine = entry.lines?.find(l => l.bankAccountId);
-                                const bankInfo = bankAccounts.find(b => b.id === bankLine?.bankAccountId);
-                                rows.push(
-                                  <tr key={i}>
-                                    <td className="mono" style={{ fontSize: 12.5 }}>{fmtDate(entry.date)}</td>
-                                    <td className="mono" style={{ fontWeight: 600, color: "var(--gold)", fontSize: 12 }}>{entry.ref}</td>
-                                    <td>
-                                      <span className="badge-mini">
-                                        {bankInfo ? bankInfo.bankName : entry.account === "cash" ? "Petty Cash" : "Bank Account"}
-                                      </span>
-                                    </td>
-                                    <td>{entry.memo || entry.description}</td>
-                                    <td className="mono" style={{ textAlign: "right", color: "var(--emerald)", fontWeight: 600 }}>
-                                      {entry.debit > 0 ? pkr(entry.debit) : ""}
-                                    </td>
-                                    <td className="mono" style={{ textAlign: "right", color: "var(--rose)", fontWeight: 600 }}>
-                                      {entry.credit > 0 ? pkr(entry.credit) : ""}
-                                    </td>
-                                    <td className="mono" style={{ textAlign: "right", fontWeight: 700 }}>
-                                      {pkr(balance)}
-                                    </td>
-                                  </tr>
-                                );
-                              });
-
-                              return rows;
-                            })()}
-
-                            {filteredEntries.length === 0 && (
+                            {ledgerRows.length === 0 && (
                               <tr>
-                                <td colSpan={7} style={{ textAlign: "center", padding: 20, color: "var(--ink-muted)" }}>
+                                <td colSpan={7} style={{ textAlign: "center", padding: 25, color: "var(--ink-muted)" }}>
                                   No transactions found for the selected bank account filter.
                                 </td>
                               </tr>
@@ -7898,19 +7947,19 @@ export default function App() {
       {showInvoiceForm && <InvoiceModal projects={projects} clients={clients} invoices={invoices} onClose={() => setShowInvoiceForm(false)} onSubmit={addInvoice} />}
       {editingInvoice && <InvoiceModal initialData={editingInvoice} projects={projects} clients={clients} invoices={invoices} onClose={() => setEditingInvoice(null)} onSubmit={updateInvoice} />}
 
-      {showExpenseForm && <ExpenseModal projects={projects} vendors={vendors} expenses={expenses} onClose={() => setShowExpenseForm(false)} onSubmit={addExpense} />}
-      {editingExpense && <ExpenseModal initialData={editingExpense} projects={projects} vendors={vendors} expenses={expenses} onClose={() => setEditingExpense(null)} onSubmit={updateExpense} />}
+      {showExpenseForm && <ExpenseModal projects={projects} vendors={vendors} expenses={expenses} bankAccounts={bankAccounts} onClose={() => setShowExpenseForm(false)} onSubmit={addExpense} />}
+      {editingExpense && <ExpenseModal initialData={editingExpense} projects={projects} vendors={vendors} expenses={expenses} bankAccounts={bankAccounts} onClose={() => setEditingExpense(null)} onSubmit={updateExpense} />}
       {showCategoryManager && <ExpenseCategoryManagerModal onClose={() => setShowCategoryManager(false)} />}
 
 
-      {payingExpenseId && <PayExpenseModal expense={expenses.find(e => e.id === payingExpenseId)} onClose={() => setPayingExpenseId(null)} onSubmit={(id, via, date) => { payExpense(id, via, date); setPayingExpenseId(null); }} />}
+      {payingExpenseId && <PayExpenseModal expense={expenses.find(e => e.id === payingExpenseId)} bankAccounts={bankAccounts} onClose={() => setPayingExpenseId(null)} onSubmit={(id, via, date, bankId) => { payExpense(id, via, date, bankId); setPayingExpenseId(null); }} />}
 
       {showROForm && <ROModal projects={projects} vendors={vendors} clients={clients} releaseOrders={releaseOrders} onClose={() => setShowROForm(false)} onSubmit={addRO} />}
       {editingRO && <ROModal initialData={editingRO} projects={projects} vendors={vendors} clients={clients} releaseOrders={releaseOrders} onClose={() => setEditingRO(null)} onSubmit={updateRO} />}
 
       {showPOForm && <POModal projects={projects} vendors={vendors} purchaseOrders={purchaseOrders} onClose={() => setShowPOForm(false)} onSubmit={addPO} />}
       {editingPO && <POModal initialData={editingPO} projects={projects} vendors={vendors} purchaseOrders={purchaseOrders} onClose={() => setEditingPO(null)} onSubmit={updatePO} />}
-      {payingPOId && <PayPOModal po={purchaseOrders.find(p => p.id === payingPOId)} onClose={() => setPayingPOId(null)} onSubmit={(id, via, date) => { payPO(id, via, date); setPayingPOId(null); }} />}
+      {payingPOId && <PayPOModal po={purchaseOrders.find(p => p.id === payingPOId)} bankAccounts={bankAccounts} onClose={() => setPayingPOId(null)} onSubmit={(id, via, date, bankId) => { payPO(id, via, date, bankId); setPayingPOId(null); }} />}
 
       {showVoucherForm && <VoucherModal projects={projects} bankAccounts={bankAccounts} vouchers={vouchers} defaultType={voucherDefaultType} onClose={() => setShowVoucherForm(false)} onSubmit={createVoucher} />}
       {showClientModal && <ClientMasterModal clients={clients} client={editingClient} onClose={() => { setShowClientModal(false); setEditingClient(null); }} onSave={handleSaveClient} />}
@@ -9566,7 +9615,7 @@ function InvoiceModal({ initialData, projects = [], clients = [], invoices = [],
   );
 }
 
-function ExpenseModal({ initialData, projects = [], vendors = [], expenses = [], onClose, onSubmit }) {
+function ExpenseModal({ initialData, projects = [], vendors = [], expenses = [], bankAccounts = [], onClose, onSubmit }) {
   const [projectId, setProjectId] = useState(initialData?.projectId || "");
   const [vendor, setVendor] = useState(initialData?.vendor || "");
   const [isCustomVendor, setIsCustomVendor] = useState(() => {
@@ -9585,6 +9634,8 @@ function ExpenseModal({ initialData, projects = [], vendors = [], expenses = [],
   const [date, setDate] = useState(initialData?.date || TODAY_STR);
   const [status, setStatus] = useState(initialData?.status || "paid");
   const [paidVia, setPaidVia] = useState(initialData?.paidVia || "Cash");
+  const realBanks = useMemo(() => bankAccounts.filter(b => b.id !== "bank-cash" && b.accountType !== "Petty Cash"), [bankAccounts]);
+  const [selectedBankId, setSelectedBankId] = useState(initialData?.bankAccountId || realBanks[0]?.id || "bank-hbl");
 
   // Filtered subcategories based on category
   const currentCategoryObj = EXPENSE_CLASSIFICATION[category] || EXPENSE_CLASSIFICATION["Office & Administration"];
@@ -9778,24 +9829,35 @@ function ExpenseModal({ initialData, projects = [], vendors = [], expenses = [],
         <input value={description} onChange={e => setDescription(e.target.value)} placeholder="Additional notes or payment reason" />
       </div>
 
-      <div style={{ display: "flex", gap: 10 }}>
-        <div className="field" style={{ flex: 1 }}><label>Expense Date</label><input type="date" value={date} onChange={e => setDate(e.target.value)} /></div>
-        <div className="field" style={{ flex: 1 }}><label>Payment Status</label>
+      <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+        <div className="field" style={{ flex: 1, minWidth: 140 }}><label>Expense Date</label><input type="date" value={date} onChange={e => setDate(e.target.value)} /></div>
+        <div className="field" style={{ flex: 1, minWidth: 140 }}><label>Payment Status</label>
           <select value={status} onChange={e => {
             setStatus(e.target.value);
             if (e.target.value === "unpaid") setPaidVia(null);
-            else if (!paidVia) setPaidVia("Bank");
+            else if (!paidVia) setPaidVia("Cash");
           }}>
             <option value="paid">Paid</option>
             <option value="unpaid">Unpaid (Accounts Payable)</option>
           </select>
         </div>
         {status === "paid" && (
-          <div className="field" style={{ flex: 1 }}><label>Paid Via</label>
-            <select value={paidVia} onChange={e => setPaidVia(e.target.value)}>
-              <option>Bank</option><option>Cash</option>
-            </select>
-          </div>
+          <>
+            <div className="field" style={{ flex: 1, minWidth: 110 }}><label>Paid Via</label>
+              <select value={paidVia} onChange={e => setPaidVia(e.target.value)}>
+                <option>Cash</option><option>Bank</option>
+              </select>
+            </div>
+            {paidVia === "Bank" && realBanks.length > 0 && (
+              <div className="field" style={{ flex: 1.2, minWidth: 160 }}><label>Bank Account</label>
+                <select value={selectedBankId} onChange={e => setSelectedBankId(e.target.value)}>
+                  {realBanks.map(b => (
+                    <option key={b.id} value={b.id}>{b.bankName} ({b.accountNumber})</option>
+                  ))}
+                </select>
+              </div>
+            )}
+          </>
         )}
       </div>
 
@@ -9804,7 +9866,9 @@ function ExpenseModal({ initialData, projects = [], vendors = [], expenses = [],
           if (!valid) return;
           const expData = {
             projectId, vendor: effectiveVendor, category, subcategory, accountKey: glKey,
-            description, refNo, amount: Number(amount), date, status, paidVia: status === "paid" ? paidVia : null
+            description, refNo, amount: Number(amount), date, status,
+            paidVia: status === "paid" ? paidVia : null,
+            bankAccountId: status === "paid" ? (paidVia === "Cash" ? "bank-cash" : selectedBankId) : null
           };
           onSubmit(initialData ? { ...initialData, ...expData } : expData);
         }}>
@@ -9877,24 +9941,35 @@ function ExpenseCategoryManagerModal({ onClose }) {
 
 
 
-function PayExpenseModal({ expense, onClose, onSubmit }) {
+function PayExpenseModal({ expense, bankAccounts = [], onClose, onSubmit }) {
   const [date, setDate] = useState(TODAY_STR);
   const [paidVia, setPaidVia] = useState("Bank");
+  const realBanks = useMemo(() => bankAccounts.filter(b => b.id !== "bank-cash" && b.accountType !== "Petty Cash"), [bankAccounts]);
+  const [selectedBankId, setSelectedBankId] = useState(realBanks[0]?.id || "bank-hbl");
   return (
     <ModalShell title="Pay Accounts Payable" onClose={onClose}>
       <div style={{ marginBottom: 16, fontSize: 14, color: "var(--ink-muted)" }}>
         Paying vendor <strong>{expense.vendor}</strong> for amount <strong>{pkr(expense.amount)}</strong>.
       </div>
-      <div style={{ display: "flex", gap: 10 }}>
-        <div className="field" style={{ flex: 1 }}><label>Payment Date</label><input type="date" value={date} onChange={e => setDate(e.target.value)} /></div>
-        <div className="field" style={{ flex: 1 }}><label>Pay Via</label>
+      <div style={{ display: "grid", gridTemplateColumns: paidVia === "Bank" && realBanks.length > 0 ? "1fr 1fr 1.2fr" : "1fr 1fr", gap: 10, marginBottom: 14 }}>
+        <div className="field" style={{ margin: 0 }}><label>Payment Date</label><input type="date" value={date} onChange={e => setDate(e.target.value)} /></div>
+        <div className="field" style={{ margin: 0 }}><label>Pay Via</label>
           <select value={paidVia} onChange={e => setPaidVia(e.target.value)}>
             <option>Bank</option><option>Cash</option>
           </select>
         </div>
+        {paidVia === "Bank" && realBanks.length > 0 && (
+          <div className="field" style={{ margin: 0 }}><label>Bank Account</label>
+            <select value={selectedBankId} onChange={e => setSelectedBankId(e.target.value)}>
+              {realBanks.map(b => (
+                <option key={b.id} value={b.id}>{b.bankName} ({b.accountNumber})</option>
+              ))}
+            </select>
+          </div>
+        )}
       </div>
       <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 6 }}
-        onClick={() => onSubmit(expense.id, paidVia, date)}>
+        onClick={() => onSubmit(expense.id, paidVia, date, paidVia === "Cash" ? "bank-cash" : selectedBankId)}>
         Post Payment & Clear AP
       </button>
     </ModalShell>
@@ -10638,24 +10713,35 @@ function POModal({ initialData, projects = [], vendors = [], purchaseOrders = []
   );
 }
 
-function PayPOModal({ po, onClose, onSubmit }) {
+function PayPOModal({ po, bankAccounts = [], onClose, onSubmit }) {
   const [date, setDate] = useState(TODAY_STR);
   const [paidVia, setPaidVia] = useState("Bank");
+  const realBanks = useMemo(() => bankAccounts.filter(b => b.id !== "bank-cash" && b.accountType !== "Petty Cash"), [bankAccounts]);
+  const [selectedBankId, setSelectedBankId] = useState(realBanks[0]?.id || "bank-hbl");
   return (
     <ModalShell title="Pay Purchase Order" onClose={onClose}>
       <div style={{ marginBottom: 16, fontSize: 14, color: "var(--ink-muted)" }}>
         Paying vendor <strong>{po.vendor}</strong> for amount <strong>{pkr(po.amount)}</strong>.
       </div>
-      <div style={{ display: "flex", gap: 10 }}>
-        <div className="field" style={{ flex: 1 }}><label>Payment Date</label><input type="date" value={date} onChange={e => setDate(e.target.value)} /></div>
-        <div className="field" style={{ flex: 1 }}><label>Pay Via</label>
+      <div style={{ display: "grid", gridTemplateColumns: paidVia === "Bank" && realBanks.length > 0 ? "1fr 1fr 1.2fr" : "1fr 1fr", gap: 10, marginBottom: 14 }}>
+        <div className="field" style={{ margin: 0 }}><label>Payment Date</label><input type="date" value={date} onChange={e => setDate(e.target.value)} /></div>
+        <div className="field" style={{ margin: 0 }}><label>Pay Via</label>
           <select value={paidVia} onChange={e => setPaidVia(e.target.value)}>
             <option>Bank</option><option>Cash</option>
           </select>
         </div>
+        {paidVia === "Bank" && realBanks.length > 0 && (
+          <div className="field" style={{ margin: 0 }}><label>Bank Account</label>
+            <select value={selectedBankId} onChange={e => setSelectedBankId(e.target.value)}>
+              {realBanks.map(b => (
+                <option key={b.id} value={b.id}>{b.bankName} ({b.accountNumber})</option>
+              ))}
+            </select>
+          </div>
+        )}
       </div>
       <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 6 }}
-        onClick={() => onSubmit(po.id, paidVia, date)}>
+        onClick={() => onSubmit(po.id, paidVia, date, paidVia === "Cash" ? "bank-cash" : selectedBankId)}>
         Post Payment & Clear AP
       </button>
     </ModalShell>
