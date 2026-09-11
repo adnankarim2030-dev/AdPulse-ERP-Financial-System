@@ -8006,7 +8006,21 @@ export default function App() {
       {editingPO && <POModal initialData={editingPO} projects={projects} vendors={vendors} purchaseOrders={purchaseOrders} onClose={() => setEditingPO(null)} onSubmit={updatePO} />}
       {payingPOId && <PayPOModal po={purchaseOrders.find(p => p.id === payingPOId)} bankAccounts={bankAccounts} onClose={() => setPayingPOId(null)} onSubmit={(id, via, date, bankId) => { payPO(id, via, date, bankId); setPayingPOId(null); }} />}
 
-      {showVoucherForm && <VoucherModal projects={projects} clients={clients} vendors={vendors} bankAccounts={bankAccounts} vouchers={vouchers} defaultType={voucherDefaultType} onClose={() => setShowVoucherForm(false)} onSubmit={createVoucher} />}
+      {showVoucherForm && (
+        <VoucherModal
+          projects={projects}
+          clients={clients}
+          vendors={vendors}
+          expenses={expenses}
+          purchaseOrders={purchaseOrders}
+          releaseOrders={releaseOrders}
+          bankAccounts={bankAccounts}
+          vouchers={vouchers}
+          defaultType={voucherDefaultType}
+          onClose={() => setShowVoucherForm(false)}
+          onSubmit={createVoucher}
+        />
+      )}
       {showClientModal && <ClientMasterModal clients={clients} client={editingClient} onClose={() => { setShowClientModal(false); setEditingClient(null); }} onSave={handleSaveClient} />}
       {showVendorModal && <VendorMasterModal vendors={vendors} vendor={editingVendor} onClose={() => { setShowVendorModal(false); setEditingVendor(null); }} onSave={handleSaveVendor} />}
       {duplicateDocWarning && <AiDocumentDuplicateModal duplicateMatch={duplicateDocWarning.duplicateMatch} incomingDoc={duplicateDocWarning.incomingDoc} existingDoc={duplicateDocWarning.existingDoc} onClose={() => setDuplicateDocWarning(null)} onOverridePosting={duplicateDocWarning.onOverridePosting} />}
@@ -8629,6 +8643,7 @@ function InvoiceModal({ initialData, projects = [], clients = [], invoices = [],
   const [applyAgencyCommission, setApplyAgencyCommission] = useState(
     initialData?.applyAgencyCommission || initialData?.applyCommission || (Number(initialData?.agencyCommissionAmount) > 0) || false
   );
+  const [commissionType, setCommissionType] = useState(initialData?.commissionType || "less");
   const [agencyCommissionRate, setAgencyCommissionRate] = useState(
     initialData?.agencyCommissionRate !== undefined ? initialData.agencyCommissionRate : "10"
   );
@@ -8970,7 +8985,10 @@ function InvoiceModal({ initialData, projects = [], clients = [], invoices = [],
   const totalAmountAfterDiscount = Math.max(0, grandTotal - discountVal);
   const commRateNum = applyAgencyCommission ? (Number(agencyCommissionRate) || 0) : 0;
   const agencyCommissionVal = applyAgencyCommission ? (totalAmountAfterDiscount * commRateNum / 100) : 0;
-  const grossAmountWithComm = totalAmountAfterDiscount + agencyCommissionVal;
+  const isLessComm = commissionType === "less";
+  const grossAmountWithComm = isLessComm
+    ? Math.max(0, totalAmountAfterDiscount - agencyCommissionVal)
+    : (totalAmountAfterDiscount + agencyCommissionVal);
   
   const sstRateNum = applySst ? (Number(sstRate) || 0) : 0;
   const isSstOnComm = sstBasis === "commission";
@@ -9440,13 +9458,33 @@ function InvoiceModal({ initialData, projects = [], clients = [], invoices = [],
 
         {/* 2. APPLY AGENCY COMMISSION */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10, padding: "8px 12px", background: applyAgencyCommission ? "#F0F9FF" : "#F8FAFC", borderRadius: 6, border: applyAgencyCommission ? "1px solid #BAE6FD" : "1px solid #E2E8F0" }}>
-          <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 700, cursor: "pointer", userSelect: "none", color: applyAgencyCommission ? "#0369A1" : "var(--ink)" }}>
-            <input type="checkbox" checked={applyAgencyCommission} onChange={e => setApplyAgencyCommission(e.target.checked)} />
-            Apply Agency Commission
-          </label>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 700, cursor: "pointer", userSelect: "none", color: applyAgencyCommission ? "#0369A1" : "var(--ink)" }}>
+              <input type="checkbox" checked={applyAgencyCommission} onChange={e => setApplyAgencyCommission(e.target.checked)} />
+              <span>{isLessComm ? "Less: Agency Commission" : "Add: Agency Commission"}</span>
+            </label>
+            {applyAgencyCommission && (
+              <div style={{ display: "flex", gap: 4, background: "#E2E8F0", padding: "2px", borderRadius: 6 }}>
+                <button
+                  type="button"
+                  onClick={() => setCommissionType("less")}
+                  style={{ border: "none", background: isLessComm ? "#DC2626" : "transparent", color: isLessComm ? "#FFFFFF" : "#475569", fontWeight: 700, fontSize: 11, padding: "2px 8px", borderRadius: 4, cursor: "pointer" }}
+                >
+                  Less (-)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCommissionType("add")}
+                  style={{ border: "none", background: !isLessComm ? "#0284C7" : "transparent", color: !isLessComm ? "#FFFFFF" : "#475569", fontWeight: 700, fontSize: 11, padding: "2px 8px", borderRadius: 4, cursor: "pointer" }}
+                >
+                  Add (+)
+                </button>
+              </div>
+            )}
+          </div>
           {applyAgencyCommission && (
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <span style={{ fontSize: 12, color: "#64748B", fontWeight: 600 }}>Manual Commission %:</span>
+              <span style={{ fontSize: 12, color: "#64748B", fontWeight: 600 }}>Commission %:</span>
               <input
                 type="number"
                 step="0.1"
@@ -9455,8 +9493,10 @@ function InvoiceModal({ initialData, projects = [], clients = [], invoices = [],
                 placeholder="10"
                 style={{ width: 80, padding: "5px 8px", fontSize: 13, fontWeight: 700, textAlign: "center", borderRadius: 6, border: "1px solid #CBD5E1" }}
               />
-              <span style={{ fontSize: 13, fontWeight: 800, color: "#0284C7" }}>%</span>
-              <span style={{ fontSize: 12.5, fontWeight: 700, color: "#0284C7", marginLeft: 4 }}>= + {pkr(agencyCommissionVal)}</span>
+              <span style={{ fontSize: 13, fontWeight: 800, color: isLessComm ? "#DC2626" : "#0284C7" }}>%</span>
+              <span style={{ fontSize: 12.5, fontWeight: 700, color: isLessComm ? "#DC2626" : "#0284C7", marginLeft: 4 }}>
+                = {isLessComm ? "- " : "+ "}{pkr(agencyCommissionVal)}
+              </span>
             </div>
           )}
         </div>
@@ -9562,9 +9602,9 @@ function InvoiceModal({ initialData, projects = [], clients = [], invoices = [],
           </div>
         )}
         {applyAgencyCommission && (
-          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5, color: "#0284C7", fontWeight: 600 }}>
-            <span>AGENCY COMMISSION ({agencyCommissionRate || 10}%)</span>
-            <span className="mono">+ {pkr(agencyCommissionVal)}</span>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5, color: isLessComm ? "#DC2626" : "#0284C7", fontWeight: 600 }}>
+            <span>{isLessComm ? "LESS: AGENCY COMMISSION" : "AGENCY COMMISSION"} ({agencyCommissionRate || 10}%)</span>
+            <span className="mono">{isLessComm ? "- " : "+ "}{pkr(agencyCommissionVal)}</span>
           </div>
         )}
         {(applyAgencyCommission || (applySst && !isSstOnComm)) && (
@@ -9630,6 +9670,8 @@ function InvoiceModal({ initialData, projects = [], clients = [], invoices = [],
             totalAmountAfterDiscount,
             applyCommission: applyAgencyCommission,
             applyAgencyCommission,
+            commissionType,
+            isLessCommission: isLessComm,
             agencyCommissionRate: Number(agencyCommissionRate) || 0,
             agencyCommissionAmount: agencyCommissionVal,
             grossAmountWithComm,
@@ -12007,7 +12049,19 @@ function BankAccountModal({ initialData, onClose, onSubmit }) {
   );
 }
 
-function VoucherModal({ defaultType, projects = [], clients = [], vendors = [], bankAccounts = [], vouchers = [], onClose, onSubmit }) {
+function VoucherModal({
+  defaultType,
+  projects = [],
+  clients = [],
+  vendors = [],
+  expenses = [],
+  purchaseOrders = [],
+  releaseOrders = [],
+  bankAccounts = [],
+  vouchers = [],
+  onClose,
+  onSubmit
+}) {
   const [type, setType] = useState(defaultType || "PV");
   const [via, setVia] = useState("Cash"); // "Cash" or "Bank"
   const [voucherNo, setVoucherNo] = useState(() => getNextVoucherNo(defaultType || "PV", vouchers, "Cash"));
@@ -12015,12 +12069,23 @@ function VoucherModal({ defaultType, projects = [], clients = [], vendors = [], 
   const [description, setDescription] = useState("");
   const [date, setDate] = useState(TODAY_STR);
   
-  // Party selection state
+  // Party selection state (RV & PV)
   const [partyMode, setPartyMode] = useState("master"); // "master" or "custom"
   const [selectedClientId, setSelectedClientId] = useState("");
   const [selectedVendorId, setSelectedVendorId] = useState("");
   const [customPartyName, setCustomPartyName] = useState("");
   const [party, setParty] = useState("");
+
+  // Party selection state (CV: Direct Client -> Vendor Settlement)
+  const [clientPartyMode, setClientPartyMode] = useState("master");
+  const [cvClientId, setCvClientId] = useState("");
+  const [cvClientName, setCvClientName] = useState("");
+  const [customCvClientName, setCustomCvClientName] = useState("");
+
+  const [vendorPartyMode, setVendorPartyMode] = useState("master");
+  const [cvVendorId, setCvVendorId] = useState("");
+  const [cvVendorName, setCvVendorName] = useState("");
+  const [customCvVendorName, setCustomCvVendorName] = useState("");
 
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState("Office & Administration");
@@ -12110,22 +12175,83 @@ function VoucherModal({ defaultType, projects = [], clients = [], vendors = [], 
     }
   };
 
-  // Project filtering for RV based on selected client
+  // CV Client Select
+  const handleCvClientSelect = (cName) => {
+    if (cName === "__custom__") {
+      setClientPartyMode("custom");
+      setCvClientId("");
+      setCvClientName("");
+    } else {
+      setClientPartyMode("master");
+      const clientObj = clients.find(c => c.name === cName);
+      setCvClientId(clientObj?.id || "");
+      setCvClientName(cName);
+    }
+  };
+
+  // CV Vendor Select
+  const handleCvVendorSelect = (vName) => {
+    if (vName === "__custom__") {
+      setVendorPartyMode("custom");
+      setCvVendorId("");
+      setCvVendorName("");
+    } else {
+      setVendorPartyMode("master");
+      const vendorObj = vendors.find(v => v.name === vName);
+      setCvVendorId(vendorObj?.id || "");
+      setCvVendorName(vName);
+    }
+  };
+
+  const effectiveCvClient = clientPartyMode === "custom" ? customCvClientName : cvClientName;
+  const effectiveCvVendor = vendorPartyMode === "custom" ? customCvVendorName : cvVendorName;
+
+  // Project filtering for RV, CV and PV based on selected client or vendor
   const availableProjects = useMemo(() => {
     if (type === "RV" && party && partyMode === "master") {
       const matched = projects.filter(p => p.client && p.client.toLowerCase() === party.toLowerCase());
       if (matched.length > 0) return matched;
     }
+    if (type === "CV" && effectiveCvClient) {
+      const matched = projects.filter(p => p.client && p.client.toLowerCase() === effectiveCvClient.toLowerCase());
+      if (matched.length > 0) return matched;
+    }
+    if (type === "PV" && (party || selectedVendorId) && partyMode === "master") {
+      const vendorPrjIds = new Set();
+      const vName = (party || "").toLowerCase();
+      (expenses || []).forEach(e => {
+        if ((e.vendorId && e.vendorId === selectedVendorId) || (e.vendor && e.vendor.toLowerCase() === vName)) {
+          if (e.projectId) vendorPrjIds.add(e.projectId);
+        }
+      });
+      (purchaseOrders || []).forEach(po => {
+        if ((po.vendorId && po.vendorId === selectedVendorId) || (po.vendor && po.vendor.toLowerCase() === vName)) {
+          if (po.projectId) vendorPrjIds.add(po.projectId);
+        }
+      });
+      (releaseOrders || []).forEach(ro => {
+        if ((ro.vendorId && ro.vendorId === selectedVendorId) || (ro.vendor && ro.vendor.toLowerCase() === vName)) {
+          if (ro.projectId) vendorPrjIds.add(ro.projectId);
+        }
+      });
+      const matched = projects.filter(p => vendorPrjIds.has(p.id));
+      if (matched.length > 0) return matched;
+    }
     return projects;
-  }, [projects, type, party, partyMode]);
+  }, [projects, type, party, partyMode, effectiveCvClient, selectedVendorId, expenses, purchaseOrders, releaseOrders]);
 
   const handleProjectSelect = (id) => {
     setProjectId(id);
     const prj = projects.find(p => p.id === id);
-    if (prj && !party) {
+    if (prj && !party && type === "RV") {
       setParty(prj.client);
       const cObj = clients.find(c => c.name.toLowerCase() === prj.client.toLowerCase());
       if (cObj) setSelectedClientId(cObj.id);
+    }
+    if (prj && !cvClientName && type === "CV") {
+      setCvClientName(prj.client);
+      const cObj = clients.find(c => c.name.toLowerCase() === prj.client.toLowerCase());
+      if (cObj) setCvClientId(cObj.id);
     }
   };
 
@@ -12184,6 +12310,8 @@ function VoucherModal({ defaultType, projects = [], clients = [], vendors = [], 
     ? (jvBalanced && description)
     : type === "CTV"
     ? (Number(amount) > 0 && sourceBankId !== targetBankId && description)
+    : type === "CV"
+    ? (effectiveCvClient && effectiveCvVendor && Number(amount) > 0 && description)
     : (effectiveParty && Number(amount) > 0 && description);
 
   function submit() {
@@ -12240,6 +12368,17 @@ function VoucherModal({ defaultType, projects = [], clients = [], vendors = [], 
         via,
         bankAccountId: via === "Cash" ? "bank-cash" : selectedBankId,
         settleAR
+      });
+    } else if (type === "CV") {
+      onSubmit("CV", {
+        voucherNo,
+        projectId, date,
+        party: effectiveCvClient,
+        category: effectiveCvVendor,
+        clientId: clientPartyMode === "master" ? cvClientId : null,
+        vendorId: vendorPartyMode === "master" ? cvVendorId : null,
+        description: description || `Direct settlement: Client ${effectiveCvClient} ➔ Vendor ${effectiveCvVendor}`,
+        amount: Number(amount),
       });
     } else {
       onSubmit(type, {
@@ -12338,9 +12477,74 @@ function VoucherModal({ defaultType, projects = [], clients = [], vendors = [], 
         </div>
       )}
 
-      {type !== "RV" && type !== "PV" && type !== "JV" && type !== "CTV" && (
+      {/* CV: CLIENT AND VENDOR MASTER SELECTION */}
+      {type === "CV" && (
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 10 }}>
+          {/* CLIENT SELECT */}
+          <div className="field" style={{ margin: 0 }}>
+            <label style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <span>Client Name (AR Settle) *</span>
+              {clients.length > 0 && (
+                <span style={{ fontSize: 11, color: "#0284C7", cursor: "pointer", fontWeight: 600 }} onClick={() => setClientPartyMode(clientPartyMode === "master" ? "custom" : "master")}>
+                  {clientPartyMode === "master" ? "✏️ Custom Client" : "📋 From Master"}
+                </span>
+              )}
+            </label>
+            {clientPartyMode === "master" ? (
+              <select value={cvClientName} onChange={e => handleCvClientSelect(e.target.value)}>
+                <option value="">— Select Client ({clients.length} Registered) —</option>
+                {clients.map(c => (
+                  <option key={c.id} value={c.name}>
+                    {c.name} {c.companyName ? `(${c.companyName})` : ""}
+                  </option>
+                ))}
+                <option value="__custom__">➕ Type Custom Client...</option>
+              </select>
+            ) : (
+              <input
+                value={customCvClientName}
+                onChange={e => { setCustomCvClientName(e.target.value); setCvClientName(e.target.value); }}
+                placeholder="Enter Client Name"
+                autoFocus
+              />
+            )}
+          </div>
+
+          {/* VENDOR SELECT */}
+          <div className="field" style={{ margin: 0 }}>
+            <label style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <span>Vendor Name (AP Settle) *</span>
+              {vendors.length > 0 && (
+                <span style={{ fontSize: 11, color: "#D97706", cursor: "pointer", fontWeight: 600 }} onClick={() => setVendorPartyMode(vendorPartyMode === "master" ? "custom" : "master")}>
+                  {vendorPartyMode === "master" ? "✏️ Custom Vendor" : "📋 From Master"}
+                </span>
+              )}
+            </label>
+            {vendorPartyMode === "master" ? (
+              <select value={cvVendorName} onChange={e => handleCvVendorSelect(e.target.value)}>
+                <option value="">— Select Vendor ({vendors.length} Registered) —</option>
+                {vendors.map(v => (
+                  <option key={v.id} value={v.name}>
+                    {v.name} {v.companyName ? `(${v.companyName})` : ""}
+                  </option>
+                ))}
+                <option value="__custom__">➕ Type Custom Vendor...</option>
+              </select>
+            ) : (
+              <input
+                value={customCvVendorName}
+                onChange={e => { setCustomCvVendorName(e.target.value); setCvVendorName(e.target.value); }}
+                placeholder="Enter Vendor / Payee Name"
+                autoFocus
+              />
+            )}
+          </div>
+        </div>
+      )}
+
+      {type !== "RV" && type !== "PV" && type !== "JV" && type !== "CTV" && type !== "CV" && (
         <div className="field">
-          <label>{type === "CV" ? "Client Name" : "Party Name"}</label>
+          <label>Party Name</label>
           <input value={party} onChange={e => setParty(e.target.value)} placeholder="Party Name" />
         </div>
       )}
@@ -12699,12 +12903,11 @@ function VoucherModal({ defaultType, projects = [], clients = [], vendors = [], 
 
       {type === "CV" && (
         <>
-          <div className="field"><label>Vendor Name (Payee / Accounts Payable Settle)</label>
-            <input value={category} onChange={e => setCategory(e.target.value)} placeholder="e.g. Meta Ads / Outdoor Printing Vendor" /></div>
-          <div className="field"><label>Amount (PKR)</label>
-            <input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="0" /></div>
-          <div style={{ background: "rgba(14, 165, 233, 0.08)", padding: "10px 14px", borderRadius: 8, fontSize: 13, color: "#0284C7", marginBottom: 14 }}>
-            💡 <b>Direct Settlement Rule:</b> Debits Accounts Payable (Vendor: <b>{category || "Vendor"}</b>) &amp; Credits Accounts Receivable (Client: <b>{party || "Client"}</b>). Neither Bank nor Cash balance is touched!
+          <div className="field"><label>Settlement Amount (PKR) *</label>
+            <input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="e.g. 150000" style={{ fontWeight: 700, fontSize: 14 }} />
+          </div>
+          <div style={{ background: "rgba(14, 165, 233, 0.08)", border: "1px solid rgba(14, 165, 233, 0.2)", padding: "10px 14px", borderRadius: 8, fontSize: 12.5, color: "#0284C7", marginBottom: 14 }}>
+            💡 <b>Direct Settlement Rule:</b> Debits Accounts Payable (Vendor: <b>{effectiveCvVendor || "Vendor"}</b>) &amp; Credits Accounts Receivable (Client: <b>{effectiveCvClient || "Client"}</b>). Neither Bank nor Cash balance is touched!
           </div>
         </>
       )}
@@ -13892,8 +14095,10 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
   const agencyCommissionVal = hasCommission
     ? (doc.agencyCommissionAmount !== undefined ? Number(doc.agencyCommissionAmount) : (totalAmountAfterDiscount * (commRate / 100)))
     : 0;
-
-  const grossAmountWithComm = totalAmountAfterDiscount + agencyCommissionVal;
+  const isLessCommission = doc.commissionType === "less" || doc.isLessCommission;
+  const grossAmountWithComm = isLessCommission
+    ? (totalAmountAfterDiscount - agencyCommissionVal)
+    : (totalAmountAfterDiscount + agencyCommissionVal);
 
   const hasSst = Boolean(doc.applySst);
   const sstRatePct = doc.sstRate !== undefined ? Number(doc.sstRate) : 15;
@@ -13980,8 +14185,12 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
             {hasCommission && (
               <React.Fragment>
                 <tr>
-                  <td colSpan={colSpanAmount} style={{ ...labelStyle, color: "#0284C7" }}>AGENCY COMMISSION {commRate}%</td>
-                  <td style={{ ...valStyle, color: "#0284C7" }}>{pkr(agencyCommissionVal)}</td>
+                  <td colSpan={colSpanAmount} style={{ ...labelStyle, color: isLessCommission ? "#DC2626" : "#0284C7" }}>
+                    {isLessCommission ? `LESS: AGENCY COMMISSION ${commRate}%` : `AGENCY COMMISSION ${commRate}%`}
+                  </td>
+                  <td style={{ ...valStyle, color: isLessCommission ? "#DC2626" : "#0284C7" }}>
+                    {isLessCommission ? `(${pkr(agencyCommissionVal)})` : pkr(agencyCommissionVal)}
+                  </td>
                 </tr>
                 <tr>
                   <td colSpan={colSpanAmount} style={{ ...labelStyle, background: "#F8FAFC" }}>GROSS AMOUNT</td>
