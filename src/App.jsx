@@ -1846,6 +1846,47 @@ export default function App() {
   const [backupNotification, setBackupNotification] = useState(null);
   const [supabaseConfig, setSupabaseConfigState] = useState(() => getSupabaseConfig());
   const [isSyncingCloud, setIsSyncingCloud] = useState(false);
+  const [cloudSyncStatus, setCloudSyncStatus] = useState("synced"); // "synced" | "syncing" | "pulling" | "error"
+  const [lastCloudSyncTime, setLastCloudSyncTime] = useState(null);
+  const isInitialMount = React.useRef(true);
+  const isApplyingRemote = React.useRef(false);
+  const lastRemoteUpdatedAt = React.useRef(null);
+
+  const applyCloudPayload = React.useCallback((bData, remoteUpdatedAt, remoteUpdatedBy) => {
+    if (!bData) return;
+    isApplyingRemote.current = true;
+
+    if (Array.isArray(bData.journal)) setJournal(bData.journal);
+    if (Array.isArray(bData.invoices)) setInvoices(bData.invoices);
+    if (Array.isArray(bData.expenses)) setExpenses(bData.expenses);
+    if (Array.isArray(bData.purchaseOrders)) setPurchaseOrders(bData.purchaseOrders);
+    if (Array.isArray(bData.releaseOrders)) setReleaseOrders(bData.releaseOrders);
+    if (Array.isArray(bData.projects)) setProjects(bData.projects);
+    if (Array.isArray(bData.bankAccounts)) setBankAccounts(bData.bankAccounts);
+    if (Array.isArray(bData.hoardings)) setHoardings(bData.hoardings);
+    if (Array.isArray(bData.inventoryItems)) setInventoryItems(bData.inventoryItems);
+    if (Array.isArray(bData.inventoryLogs)) setInventoryLogs(bData.inventoryLogs);
+    if (Array.isArray(bData.vouchers)) setVouchers(bData.vouchers);
+    if (Array.isArray(bData.documents)) setDocuments(bData.documents);
+    if (Array.isArray(bData.employees)) setEmployees(bData.employees);
+    if (Array.isArray(bData.leaveRequests)) setLeaveRequests(bData.leaveRequests);
+    if (Array.isArray(bData.payrollRuns)) setPayrollRuns(bData.payrollRuns);
+    if (Array.isArray(bData.usersList)) setUsersList(bData.usersList);
+    if (Array.isArray(bData.clients)) setClients(bData.clients);
+    if (Array.isArray(bData.vendors)) setVendors(bData.vendors);
+    if (Array.isArray(bData.auditLogs)) setAuditLogs(bData.auditLogs);
+    if (bData.monthlyAttendance) setMonthlyAttendance(bData.monthlyAttendance);
+
+    lastRemoteUpdatedAt.current = remoteUpdatedAt || new Date().toISOString();
+    const syncTime = new Date(remoteUpdatedAt || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    setLastCloudSyncTime(syncTime);
+    setLastBackupTime(syncTime + " (Cloud Live)");
+    setCloudSyncStatus("synced");
+
+    setTimeout(() => {
+      isApplyingRemote.current = false;
+    }, 1000);
+  }, []);
 
   const handleSaveSupabaseConfig = (url, key) => {
     saveSupabaseConfig(url, key);
@@ -1865,8 +1906,9 @@ export default function App() {
     setTimeout(() => setBackupNotification(null), 5000);
   };
 
-  const handlePushToCloud = async () => {
-    setIsSyncingCloud(true);
+  const handlePushToCloud = async (isSilent = false) => {
+    if (!isSilent) setIsSyncingCloud(true);
+    setCloudSyncStatus("syncing");
     try {
       const payload = {
         system: "AdPulse ERP Financial System",
@@ -1876,70 +1918,128 @@ export default function App() {
         data: {
           journal, invoices, expenses, purchaseOrders, releaseOrders, projects,
           bankAccounts, hoardings, inventoryItems, inventoryLogs,
-          vouchers, documents, employees, leaveRequests, payrollRuns, usersList
+          vouchers, documents, employees, leaveRequests, payrollRuns, usersList,
+          clients, vendors, auditLogs, monthlyAttendance
         }
       };
       await pushStateToSupabase(payload);
-      const timeNow = new Date().toLocaleString();
+      const timeNow = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      lastRemoteUpdatedAt.current = payload.timestamp;
       setLastBackupTime(timeNow + " (Cloud Sync)");
-      setBackupNotification({
-        type: "success",
-        text: "Local data successfully pushed & synced to Supabase Cloud database!"
-      });
-      setTimeout(() => setBackupNotification(null), 6000);
+      setLastCloudSyncTime(timeNow);
+      setCloudSyncStatus("synced");
+      if (!isSilent) {
+        setBackupNotification({
+          type: "success",
+          text: "Local data successfully pushed & synced to Supabase Cloud database!"
+        });
+        setTimeout(() => setBackupNotification(null), 5000);
+      }
     } catch (err) {
       console.error("Cloud push failed:", err);
-      setBackupNotification({
-        type: "error",
-        text: `Cloud Sync Failed: ${err.message || "Please check Supabase URL & API key."}`
-      });
+      setCloudSyncStatus("error");
+      if (!isSilent) {
+        setBackupNotification({
+          type: "error",
+          text: `Cloud Sync Failed: ${err.message || "Please check Supabase URL & API key."}`
+        });
+      }
     } finally {
-      setIsSyncingCloud(false);
+      if (!isSilent) setIsSyncingCloud(false);
     }
   };
 
-  const handlePullFromCloud = async () => {
-    setIsSyncingCloud(true);
+  const handlePullFromCloud = async (isSilent = false) => {
+    if (!isSilent) setIsSyncingCloud(true);
+    setCloudSyncStatus("pulling");
     try {
       const cloudData = await pullStateFromSupabase();
       if (!cloudData || !cloudData.data) {
         throw new Error("No snapshot payload found in Supabase database.");
       }
-      const bData = cloudData.data;
-      if (Array.isArray(bData.journal)) setJournal(bData.journal);
-      if (Array.isArray(bData.invoices)) setInvoices(bData.invoices);
-      if (Array.isArray(bData.expenses)) setExpenses(bData.expenses);
-      if (Array.isArray(bData.purchaseOrders)) setPurchaseOrders(bData.purchaseOrders);
-      if (Array.isArray(bData.releaseOrders)) setReleaseOrders(bData.releaseOrders);
-      if (Array.isArray(bData.projects)) setProjects(bData.projects);
-      if (Array.isArray(bData.bankAccounts)) setBankAccounts(bData.bankAccounts);
-      if (Array.isArray(bData.hoardings)) setHoardings(bData.hoardings);
-      if (Array.isArray(bData.inventoryItems)) setInventoryItems(bData.inventoryItems);
-      if (Array.isArray(bData.inventoryLogs)) setInventoryLogs(bData.inventoryLogs);
-      if (Array.isArray(bData.vouchers)) setVouchers(bData.vouchers);
-      if (Array.isArray(bData.documents)) setDocuments(bData.documents);
-      if (Array.isArray(bData.employees)) setEmployees(bData.employees);
-      if (Array.isArray(bData.leaveRequests)) setLeaveRequests(bData.leaveRequests);
-      if (Array.isArray(bData.payrollRuns)) setPayrollRuns(bData.payrollRuns);
-      if (Array.isArray(bData.usersList)) setUsersList(bData.usersList);
-
-      const syncTime = new Date(cloudData.updatedAt || Date.now()).toLocaleString();
-      setLastBackupTime(syncTime + " (From Cloud)");
-      setBackupNotification({
-        type: "success",
-        text: `Successfully pulled & restored latest data snapshot from Supabase! (Updated by ${cloudData.updatedBy || 'Admin'})`
-      });
-      setTimeout(() => setBackupNotification(null), 6000);
+      applyCloudPayload(cloudData.data, cloudData.updatedAt, cloudData.updatedBy);
+      if (!isSilent) {
+        setBackupNotification({
+          type: "success",
+          text: `Successfully pulled & restored latest data snapshot from Supabase! (Updated by ${cloudData.updatedBy || 'Admin'})`
+        });
+        setTimeout(() => setBackupNotification(null), 5000);
+      }
     } catch (err) {
       console.error("Cloud pull failed:", err);
-      setBackupNotification({
-        type: "error",
-        text: `Failed to pull from cloud: ${err.message || "Please verify Supabase tables exist."}`
-      });
+      setCloudSyncStatus("error");
+      if (!isSilent) {
+        setBackupNotification({
+          type: "error",
+          text: `Failed to pull from cloud: ${err.message || "Please verify Supabase tables exist."}`
+        });
+      }
     } finally {
-      setIsSyncingCloud(false);
+      if (!isSilent) setIsSyncingCloud(false);
     }
   };
+
+  // INITIAL MOUNT: Auto-fetch latest live state from Supabase Cloud
+  React.useEffect(() => {
+    let isMounted = true;
+    const fetchInitialCloudData = async () => {
+      setCloudSyncStatus("pulling");
+      try {
+        const cloudData = await pullStateFromSupabase();
+        if (isMounted && cloudData && cloudData.data) {
+          applyCloudPayload(cloudData.data, cloudData.updatedAt, cloudData.updatedBy);
+          console.log("AdPulse ERP: Live cloud snapshot loaded from Supabase successfully!");
+        } else if (isMounted) {
+          setCloudSyncStatus("synced");
+        }
+      } catch (err) {
+        console.warn("AdPulse ERP: Initial cloud sync warning:", err);
+        if (isMounted) setCloudSyncStatus("synced");
+      }
+    };
+    fetchInitialCloudData();
+    return () => { isMounted = false; };
+  }, [applyCloudPayload]);
+
+  // AUTO-SYNC ON LOCAL CHANGES: Debounced push to Supabase Cloud
+  React.useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+    if (isApplyingRemote.current) {
+      return;
+    }
+
+    setCloudSyncStatus("syncing");
+    const timer = setTimeout(() => {
+      handlePushToCloud(true);
+    }, 1800);
+
+    return () => clearTimeout(timer);
+  }, [
+    journal, invoices, expenses, purchaseOrders, releaseOrders, projects, bankAccounts,
+    hoardings, inventoryItems, inventoryLogs, vouchers, documents,
+    employees, leaveRequests, payrollRuns, usersList, clients, vendors, auditLogs, monthlyAttendance
+  ]);
+
+  // REAL-TIME BACKGROUND POLLING: Poll Supabase every 8 seconds for live staff updates
+  React.useEffect(() => {
+    const poller = setInterval(async () => {
+      if (isSyncingCloud || isApplyingRemote.current) return;
+      try {
+        const cloudData = await pullStateFromSupabase();
+        if (cloudData && cloudData.updatedAt && cloudData.updatedAt !== lastRemoteUpdatedAt.current) {
+          console.log("AdPulse ERP: Detected live updates from staff on Supabase! Auto-updating UI...");
+          applyCloudPayload(cloudData.data, cloudData.updatedAt, cloudData.updatedBy);
+        }
+      } catch (err) {
+        // Silent poll fail
+      }
+    }, 8000);
+
+    return () => clearInterval(poller);
+  }, [isSyncingCloud, applyCloudPayload]);
 
   // Auto-save system state to localStorage
   React.useEffect(() => {
@@ -3835,6 +3935,46 @@ export default function App() {
                 if (targetTab === "projects" && item?.id) setSelectedProjectId(item.id);
               }}
             />
+            {/* Live Cloud Sync Badge & Manual Trigger */}
+            <div
+              onClick={() => handlePullFromCloud(false)}
+              title="Real-time Cloud Sync with Supabase (Click to Refresh Live Data)"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 7,
+                background: cloudSyncStatus === "error" ? "rgba(239, 68, 68, 0.08)" : "rgba(5, 150, 105, 0.08)",
+                border: `1px solid ${cloudSyncStatus === "error" ? "rgba(239, 68, 68, 0.25)" : "rgba(5, 150, 105, 0.25)"}`,
+                padding: "6px 12px",
+                borderRadius: 9,
+                cursor: "pointer",
+                fontSize: 12,
+                fontWeight: 600,
+                color: cloudSyncStatus === "error" ? "#DC2626" : "#059669",
+                transition: "all 0.2s ease"
+              }}
+            >
+              <span
+                style={{
+                  width: 8,
+                  height: 8,
+                  borderRadius: "50%",
+                  background: (cloudSyncStatus === "syncing" || cloudSyncStatus === "pulling") ? "#F59E0B" : (cloudSyncStatus === "error" ? "#EF4444" : "#10B981"),
+                  boxShadow: `0 0 6px ${(cloudSyncStatus === "syncing" || cloudSyncStatus === "pulling") ? "#F59E0B" : (cloudSyncStatus === "error" ? "#EF4444" : "#10B981")}`
+                }}
+              />
+              <span>
+                {cloudSyncStatus === "syncing"
+                  ? "Syncing..."
+                  : cloudSyncStatus === "pulling"
+                  ? "Pulling Live..."
+                  : cloudSyncStatus === "error"
+                  ? "Cloud Reconnecting"
+                  : `Live: ${lastCloudSyncTime || "Connected"}`}
+              </span>
+              <RefreshCw size={12} className={(cloudSyncStatus === "syncing" || cloudSyncStatus === "pulling") ? "spin" : ""} />
+            </div>
+
             {/* User Profile Badge */}
             <div style={{ display: "flex", alignItems: "center", gap: 10, background: "#FFFFFF", padding: "6px 14px", borderRadius: 10, border: "1px solid #CBD5E1", boxShadow: "0 2px 6px rgba(0,0,0,0.04)" }}>
               <img
