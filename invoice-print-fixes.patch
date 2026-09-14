@@ -1,0 +1,126 @@
+diff --git a/src/App.jsx b/src/App.jsx
+index cd6c52e..5f7b0f4 100644
+--- a/src/App.jsx
++++ b/src/App.jsx
+@@ -158,8 +158,22 @@ const PAGE_SIZES = {
+   A5: "148mm 210mm",
+   Letter: "8.5in 11in",
+   Legal: "8.5in 14in",
++  A3: "297mm 420mm",
++  Executive: "184mm 267mm",
+ };
+ 
++// Computes the printable content height (in mm) for a given paper size,
++// orientation and margin, instead of assuming fixed A4-portrait dimensions.
++function pageContentHeightMm(pageSize, orientation, marginStr) {
++  const raw = PAGE_SIZES[pageSize] || PAGE_SIZES.A4;
++  const [wRaw, hRaw] = raw.split(" ");
++  const toMm = v => (v.endsWith("in") ? parseFloat(v) * 25.4 : parseFloat(v));
++  let w = toMm(wRaw), h = toMm(hRaw);
++  if (orientation === "landscape") { const t = w; w = h; h = t; }
++  const margin = parseFloat(marginStr) || 0;
++  return Math.max(h - margin * 2, 40);
++}
++
+ const ONES = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten",
+   "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
+ const TENS = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
+@@ -8064,10 +8078,10 @@ function InvoiceModal({ initialData, projects = [], clients = [], onClose, onSub
+         };
+       });
+     }
+-    return [{ location: "", width: "", height: "", sqft: 0, fromDate: "", toDate: "", days: 30, rate: "", amount: 0 }];
++    return [{ location: "", width: "", height: "", sqft: 0, fromDate: issueDate || "", toDate: dueDate || "", days: 30, rate: "", amount: 0 }];
+   });
+ 
+-  const addOohSite = () => setOohSites([...oohSites, { location: "", width: "", height: "", sqft: 0, fromDate: "", toDate: "", days: 30, rate: "", amount: 0 }]);
++  const addOohSite = () => setOohSites([...oohSites, { location: "", width: "", height: "", sqft: 0, fromDate: issueDate || "", toDate: dueDate || "", days: 30, rate: "", amount: 0 }]);
+ 
+   const updateOohSite = (index, field, value) => {
+     const updated = [...oohSites];
+@@ -8427,7 +8441,8 @@ function InvoiceModal({ initialData, projects = [], clients = [], onClose, onSub
+                       <td style={{ padding: "6px 8px" }}>
+                         <input
+                           type="date"
+-                          style={{ width: "100%", padding: "10px 8px", fontSize: 12.5, borderRadius: 6, border: "1px solid #94A3B8" }}
++                          required
++                          style={{ width: "100%", padding: "10px 8px", fontSize: 12.5, borderRadius: 6, border: site.fromDate ? "1px solid #94A3B8" : "1.5px solid #DC2626", background: site.fromDate ? "transparent" : "#FEF2F2" }}
+                           value={site.fromDate}
+                           onChange={e => updateOohSite(idx, "fromDate", e.target.value)}
+                         />
+@@ -8435,7 +8450,8 @@ function InvoiceModal({ initialData, projects = [], clients = [], onClose, onSub
+                       <td style={{ padding: "6px 8px" }}>
+                         <input
+                           type="date"
+-                          style={{ width: "100%", padding: "10px 8px", fontSize: 12.5, borderRadius: 6, border: "1px solid #94A3B8" }}
++                          required
++                          style={{ width: "100%", padding: "10px 8px", fontSize: 12.5, borderRadius: 6, border: site.toDate ? "1px solid #94A3B8" : "1.5px solid #DC2626", background: site.toDate ? "transparent" : "#FEF2F2" }}
+                           value={site.toDate}
+                           onChange={e => updateOohSite(idx, "toDate", e.target.value)}
+                         />
+@@ -10997,6 +11013,13 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
+     }
+   };
+ 
++  const printAreaHeightMm = pageContentHeightMm(pageSize, pageOrientation, pageMargin);
++  const printScaleFactor = parseInt(printScale) / 100;
++  // When scaling below 100%, shrink the reserved page box by the same factor
++  // so blank space isn't left at the edge of the sheet (transform: scale()
++  // alone does not affect the layout box used for print pagination).
++  const printAreaScaledHeightMm = printAreaHeightMm / printScaleFactor;
++
+   return (
+     <div className="modal-backdrop" onClick={onClose}>
+       <style>{`
+@@ -11022,12 +11045,12 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
+             border: none !important;
+             box-shadow: none !important;
+             border-radius: 0 !important;
+-            transform: scale(${parseInt(printScale) / 100});
++            transform: scale(${printScaleFactor});
+             transform-origin: top left;
+-            width: 100% !important;
+-            min-height: 252mm !important;
+-            max-height: 260mm !important;
+-            height: 255mm !important;
++            width: ${100 / printScaleFactor}% !important;
++            min-height: ${printAreaScaledHeightMm - 3}mm !important;
++            max-height: ${printAreaScaledHeightMm + 5}mm !important;
++            height: ${printAreaScaledHeightMm}mm !important;
+             display: flex !important;
+             flex-direction: column !important;
+             justify-content: space-between !important;
+@@ -11562,6 +11585,7 @@ function ClientStatementPrintModal({ clientName, invoices, projects, onClose })
+   const totalBilled = clientInvoices.reduce((s, i) => s + (i.totalAmount || i.amount), 0);
+   const totalPaid = clientInvoices.filter(i => i.paid).reduce((s, i) => s + (i.totalAmount || i.amount), 0);
+   const totalOutstanding = totalBilled - totalPaid;
++  const statementPrintHeightMm = pageContentHeightMm(pageSize, "portrait", "8mm");
+ 
+   return (
+     <div className="modal-backdrop" onClick={onClose}>
+@@ -11571,7 +11595,7 @@ function ClientStatementPrintModal({ clientName, invoices, projects, onClose })
+           .no-print-header { display: none !important; }
+           .modal-backdrop { background: none !important; padding: 0 !important; }
+           .modal { box-shadow: none !important; border: none !important; width: 100% !important; max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
+-          .print-area { padding: 0 !important; border: none !important; min-height: 255mm !important; display: flex !important; flex-direction: column !important; justify-content: space-between !important; }
++          .print-area { padding: 0 !important; border: none !important; min-height: ${statementPrintHeightMm}mm !important; display: flex !important; flex-direction: column !important; justify-content: space-between !important; }
+           .invoice-footer-banner { background: #A81C1C !important; background-image: linear-gradient(90deg, #A81C1C 0%, #1D3B4E 100%) !important; color: #ffffff !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; display: flex !important; margin-top: auto !important; }
+         }
+       `}</style>
+@@ -11693,6 +11717,7 @@ function ProjectStatementPrintModal({ project, invoices, expenses, onClose }) {
+   const totalBilled = projInvoices.reduce((s, i) => s + (i.totalAmount || i.amount), 0);
+   const totalCost = projExpenses.reduce((s, e) => s + e.amount, 0);
+   const netMargin = totalBilled - totalCost;
++  const statementPrintHeightMm = pageContentHeightMm(pageSize, "portrait", "8mm");
+ 
+   return (
+     <div className="modal-backdrop" onClick={onClose}>
+@@ -11702,7 +11727,7 @@ function ProjectStatementPrintModal({ project, invoices, expenses, onClose }) {
+           .no-print-header { display: none !important; }
+           .modal-backdrop { background: none !important; padding: 0 !important; }
+           .modal { box-shadow: none !important; border: none !important; width: 100% !important; max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
+-          .print-area { padding: 0 !important; border: none !important; min-height: 255mm !important; display: flex !important; flex-direction: column !important; justify-content: space-between !important; }
++          .print-area { padding: 0 !important; border: none !important; min-height: ${statementPrintHeightMm}mm !important; display: flex !important; flex-direction: column !important; justify-content: space-between !important; }
+           .invoice-footer-banner { background: #A81C1C !important; background-image: linear-gradient(90deg, #A81C1C 0%, #1D3B4E 100%) !important; color: #ffffff !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; display: flex !important; margin-top: auto !important; }
+         }
+       `}</style>

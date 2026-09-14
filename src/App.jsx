@@ -2899,7 +2899,8 @@ export default function App() {
       
       const grossAmt = Number(amount) || 0;
       const whtAmt = applyWht ? (Number(whtAmount) || 0) : 0;
-      const receivedDeposit = netAmount !== undefined ? Number(netAmount) : Math.max(0, grossAmt - whtAmt);
+      const sstAmt = applySst ? (Number(sstAmount) || 0) : 0;
+      const receivedDeposit = netAmount !== undefined ? Number(netAmount) : Math.max(0, grossAmt - whtAmt - sstAmt);
       const creditAcc = settleAR ? "ar" : "revenue";
 
       journalLines = [
@@ -2907,6 +2908,9 @@ export default function App() {
       ];
       if (whtAmt > 0) {
         journalLines.push({ account: "wht_receivable", debit: whtAmt, credit: 0, memo: `WHT Withheld by Client (${whtRate || 3}%)` });
+      }
+      if (sstAmt > 0) {
+        journalLines.push({ account: "srb_payable", debit: sstAmt, credit: 0, memo: `SST Withheld by Client (${sstRate || 13}%)` });
       }
       journalLines.push({ account: creditAcc, debit: 0, credit: grossAmt, memo: settleAR ? "Client Invoice Settlement" : "Direct Service Revenue" });
 
@@ -12438,7 +12442,7 @@ function VoucherModal({
         ? Number(sstAmount)
         : Math.round(receiptGross * ((Number(sstRate) || 0) / 100)))
     : 0;
-  const netDeposit = Math.max(0, receiptGross - rvWhtVal);
+  const netDeposit = Math.max(0, receiptGross - rvWhtVal - rvSstVal);
 
   const effectiveParty = partyMode === "custom" ? customPartyName : party;
 
@@ -12943,10 +12947,10 @@ function VoucherModal({
               </div>
 
               {/* 2. SST RECORD */}
-              <div style={{ background: applySst ? "rgba(168, 28, 28, 0.08)" : "#FFFFFF", border: `1px solid ${applySst ? "#A81C1C" : "#CBD5E1"}`, padding: "8px 10px", borderRadius: 6 }}>
+              <div style={{ background: applySst ? "rgba(220, 38, 38, 0.08)" : "#FFFFFF", border: `1px solid ${applySst ? "#DC2626" : "#CBD5E1"}`, padding: "8px 10px", borderRadius: 6 }}>
                 <label style={{ display: "flex", alignItems: "center", gap: 6, fontWeight: 700, fontSize: 12, cursor: "pointer", marginBottom: 6 }}>
                   <input type="checkbox" checked={applySst} onChange={e => setApplySst(e.target.checked)} />
-                  <span>Include: SST (Sales Tax)</span>
+                  <span>Deduct: SST (Sales Tax Withheld)</span>
                 </label>
                 {applySst && (
                   <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
@@ -12975,9 +12979,9 @@ function VoucherModal({
                     </div>
                   )}
                   {applySst && (
-                    <div style={{ display: "flex", justifyContent: "space-between", color: "#A81C1C" }}>
-                      <span>SST Portion ({sstRate}%):</span>
-                      <span className="mono">{pkr(rvSstVal)}</span>
+                    <div style={{ display: "flex", justifyContent: "space-between", color: "#DC2626" }}>
+                      <span>Less: SST Withheld by Client ({sstRate}%):</span>
+                      <span className="mono">- {pkr(rvSstVal)}</span>
                     </div>
                   )}
                   <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14, fontWeight: 800, borderTop: "1.5px solid #0F172A", paddingTop: 6, marginTop: 4, color: "#0F172A" }}>
@@ -12991,9 +12995,9 @@ function VoucherModal({
 
           <div style={{ background: "rgba(5, 150, 105, 0.08)", border: "1px solid rgba(5, 150, 105, 0.2)", padding: "10px 14px", borderRadius: 8, fontSize: 12.5, color: "#059669", marginBottom: 14 }}>
             {via === "Cash" ? (
-              <>💡 <b>Cash Receipt Rule:</b> Debits <b>Petty Cash Vault</b> ({pkr(netDeposit)}){applyWht ? ` & WHT Receivable (${pkr(rvWhtVal)})` : ""} &amp; Credits <b>{settleAR ? "Accounts Receivable" : "Direct Revenue"}</b> ({pkr(receiptGross)}). Petty cash balance increases automatically.</>
+              <>💡 <b>Cash Receipt Rule:</b> Debits <b>Petty Cash Vault</b> ({pkr(netDeposit)}){applyWht ? ` & WHT Receivable (${pkr(rvWhtVal)})` : ""}{applySst ? ` & SRB Tax Payable (${pkr(rvSstVal)})` : ""} &amp; Credits <b>{settleAR ? "Accounts Receivable" : "Direct Revenue"}</b> ({pkr(receiptGross)}). Petty cash balance increases automatically.</>
             ) : (
-              <>💡 <b>Bank Receipt Rule:</b> Debits <b>{selectedBankObj?.bankName || "Selected Bank"}</b> ({pkr(netDeposit)}){applyWht ? ` & WHT Receivable (${pkr(rvWhtVal)})` : ""} &amp; Credits <b>{settleAR ? "Accounts Receivable" : "Direct Revenue"}</b> ({pkr(receiptGross)}). Bank balance increases automatically.</>
+              <>💡 <b>Bank Receipt Rule:</b> Debits <b>{selectedBankObj?.bankName || "Selected Bank"}</b> ({pkr(netDeposit)}){applyWht ? ` & WHT Receivable (${pkr(rvWhtVal)})` : ""}{applySst ? ` & SRB Tax Payable (${pkr(rvSstVal)})` : ""} &amp; Credits <b>{settleAR ? "Accounts Receivable" : "Direct Revenue"}</b> ({pkr(receiptGross)}). Bank balance increases automatically.</>
             )}
           </div>
         </>
