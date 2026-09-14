@@ -472,11 +472,23 @@ export default function ClientStatementView({
     // Add Receipts / Vouchers / Direct Settlements
     vouchers.filter(v => isClientMatch(v) && isProjectMatch(v) && v.date >= dateFrom && v.date <= dateTo && (v.type === "RV" || v.type === "PV" || v.type === "CV")).forEach(v => {
       const proj = projects.find(p => p.id === v.projectId);
-      const isCredit = (v.type === "RV" || v.type === "CV");
-      const typeLabel = v.type === "CV" ? "Direct Settlement" : (v.type === "RV" ? "Receipt" : "Payment");
-      const defaultDesc = v.type === "CV"
-        ? `Direct Settlement to Vendor (${v.category || v.vendor || "Vendor"})${v.instrumentNo ? ` [${v.paymentMode || 'Inst'} #${v.instrumentNo}]` : ""}`
-        : (v.description || "Client Transaction");
+      const isPdcBounced = v.isPdc && v.pdcStatus === "Bounced";
+      const isCredit = (v.type === "RV" || v.type === "CV") && !isPdcBounced;
+      
+      let typeLabel = "Receipt";
+      if (v.type === "CV") typeLabel = "Direct Settlement";
+      else if (v.isPdc) typeLabel = isPdcBounced ? "Cheque Bounced" : "PDC Cheque";
+      else if (v.type === "PV") typeLabel = "Payment";
+
+      let defaultDesc = v.description || "Client Transaction";
+      if (v.type === "CV") {
+        defaultDesc = `Direct Settlement to Vendor (${v.category || v.vendor || "Vendor"})${v.instrumentNo ? ` [${v.paymentMode || 'Inst'} #${v.instrumentNo}]` : ""}`;
+      } else if (v.isPdc) {
+        defaultDesc = isPdcBounced 
+          ? `PDC Dishonored/Bounced [Chq #${v.chequeNo || 'PDC'}] (${v.bounceReason || 'Return'})`
+          : `Post-Dated Cheque In-Hand [Chq #${v.chequeNo || 'PDC'}] (Due: ${v.chequeDate || v.date})`;
+      }
+
       rawRows.push({
         id: v.id,
         date: v.date,
@@ -485,7 +497,7 @@ export default function ClientStatementView({
         project: proj ? proj.name : defaultDesc,
         debit: isCredit ? 0 : Number(v.amount) || 0,
         credit: isCredit ? Number(v.amount) || 0 : 0,
-        status: v.status || "Posted",
+        status: v.isPdc ? (v.pdcStatus || "In-Hand") : (v.status || "Posted"),
         raw: v
       });
     });

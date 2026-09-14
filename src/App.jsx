@@ -168,6 +168,7 @@ const ACCOUNTS = {
   bank: { code: "1120", name: "Bank Account (HBL/MCB)", type: "asset", category: "Current Assets" },
   ar: { code: "1130", name: "Accounts Receivable (Clients)", type: "asset", category: "Current Assets" },
   wht_receivable: { code: "1140", name: "WHT Receivable (Advance Tax)", type: "asset", category: "Current Assets" },
+  cheques_in_hand: { code: "1150", name: "Cheques in Hand / PDC Receivable", type: "asset", category: "Current Assets" },
   equipment: { code: "1210", name: "Office & Production Equipment", type: "asset", category: "Fixed Assets" },
   ooh_sites: { code: "1220", name: "OOH Billboard Structures", type: "asset", category: "Fixed Assets" },
   ap: { code: "2110", name: "Accounts Payable (Vendors)", type: "liability", category: "Current Liabilities" },
@@ -201,7 +202,7 @@ const COA_STRUCTURE = [
     name: "1000 — Assets",
     type: "asset",
     subcategories: [
-      { code: "1100", name: "1100 — Current Assets", accounts: ["cash", "bank", "ar", "wht_receivable"] },
+      { code: "1100", name: "1100 — Current Assets", accounts: ["cash", "bank", "ar", "wht_receivable", "cheques_in_hand"] },
       { code: "1200", name: "1200 — Non-Current & Fixed Assets", accounts: ["equipment", "ooh_sites"] },
     ]
   },
@@ -1749,6 +1750,8 @@ export default function App() {
 
   const [showVoucherForm, setShowVoucherForm] = useState(false);
   const [voucherDefaultType, setVoucherDefaultType] = useState("JV");
+  const [clearingPdcVoucher, setClearingPdcVoucher] = useState(null);
+  const [bouncingPdcVoucher, setBouncingPdcVoucher] = useState(null);
 
   /* AI Document Review UI States */
   const [docStatusFilter, setDocStatusFilter] = useState("all");
@@ -2857,6 +2860,7 @@ export default function App() {
     const {
       voucherNo: customVoucherNo, projectId, date, party, description, amount, netAmount,
       clientId, vendorId, vendor, paymentMode, instrumentNo, instrumentDate, drawnBank,
+      receiveMode, isPdc, chequeNo, chequeDate,
       category, subcategory, accountKey, via, bankAccountId, sourceBankId, targetBankId,
       settleAR, lines,
       applyCommission, agencyCommissionRate, agencyCommissionAmount,
@@ -2894,8 +2898,9 @@ export default function App() {
       journalLines.push({ account: paymentAccount, bankAccountId: bAccountId, debit: 0, credit: paidAmt, memo: `Paid via ${via === "Cash" ? "Cash" : "Bank"}` });
 
     } else if (type === "RV") {
-      const depositAccount = via === "Cash" ? "cash" : "bank";
-      const bAccountId = via === "Cash" ? "bank-cash" : (bankAccountId || bankAccounts.find(b => b.accountType !== "Petty Cash")?.id || "bank-hbl");
+      const isChequeInHand = isPdc || receiveMode === "pdc" || receiveMode === "PDC";
+      const depositAccount = isChequeInHand ? "cheques_in_hand" : (via === "Cash" ? "cash" : "bank");
+      const bAccountId = isChequeInHand ? null : (via === "Cash" ? "bank-cash" : (bankAccountId || bankAccounts.find(b => b.accountType !== "Petty Cash")?.id || "bank-hbl"));
       
       const grossAmt = Number(amount) || 0;
       const whtAmt = applyWht ? (Number(whtAmount) || 0) : 0;
@@ -2904,7 +2909,15 @@ export default function App() {
       const creditAcc = settleAR ? "ar" : "revenue";
 
       journalLines = [
-        { account: depositAccount, bankAccountId: bAccountId, debit: receivedDeposit, credit: 0, memo: `Received via ${via === "Cash" ? "Cash" : "Bank"}` }
+        { 
+          account: depositAccount, 
+          bankAccountId: bAccountId, 
+          debit: receivedDeposit, 
+          credit: 0, 
+          memo: isChequeInHand 
+            ? `PDC Cheque In-Hand (Chq #${chequeNo || 'PDC'}, Maturity: ${chequeDate || date}, Drawn: ${drawnBank || 'Client Bank'})`
+            : `Received via ${via === "Cash" ? "Cash" : "Bank"}` 
+        }
       ];
       if (whtAmt > 0) {
         journalLines.push({ account: "wht_receivable", debit: whtAmt, credit: 0, memo: `WHT Withheld by Client (${whtRate || 3}%)` });
@@ -2940,6 +2953,7 @@ export default function App() {
     }
 
     postEntry(date, projectId ? `[Project] ${description}` : description, journalLines, voucherNo);
+    const isChequeInHand = isPdc || receiveMode === "pdc" || receiveMode === "PDC";
     const vRecord = {
       id: uid(), voucherNo, type, projectId: projectId || null, date, party, description,
       amount: Number(amount),
@@ -2948,7 +2962,13 @@ export default function App() {
       vendorId: vendorId || null,
       vendor: vendor || (type === "CV" ? category : null),
       paymentMode, instrumentNo, instrumentDate, drawnBank,
-      category, subcategory, via, bankAccountId, sourceBankId, targetBankId,
+      receiveMode: isChequeInHand ? "pdc" : (via === "Cash" ? "cash" : "bank"),
+      isPdc: Boolean(isChequeInHand),
+      pdcStatus: isChequeInHand ? "In-Hand" : null,
+      chequeNo: chequeNo || null,
+      chequeDate: chequeDate || null,
+      targetBankId: targetBankId || bankAccountId || null,
+      category, subcategory, via, bankAccountId, sourceBankId,
       applyCommission, agencyCommissionRate, agencyCommissionAmount,
       applySst, sstRate, sstAmount,
       applyWht, whtRate, whtAmount
@@ -2956,6 +2976,71 @@ export default function App() {
     setVouchers(v => [vRecord, ...v]);
     setShowVoucherForm(false);
     return voucherNo;
+  }
+
+  function clearPdcCheque(voucherId, clearanceDate = TODAY_STR, targetBankId = "bank-hbl") {
+    const vch = vouchers.find(v => v.id === voucherId);
+    if (!vch) return;
+    const tgtBank = bankAccounts.find(b => b.id === targetBankId) || bankAccounts.find(b => b.accountType !== "Petty Cash") || bankAccounts[0];
+    const netAmt = Number(vch.netAmount !== undefined ? vch.netAmount : vch.amount) || 0;
+    const clrDate = clearanceDate || TODAY_STR;
+    const memo = `PDC Cleared in ${tgtBank?.bankName || 'Bank'}: ${vch.party} (Chq #${vch.chequeNo || vch.voucherNo})`;
+
+    // Post Double Entry: Debit Target Bank, Credit Cheques in Hand
+    postEntry(clrDate, memo, [
+      { account: "bank", bankAccountId: tgtBank?.id, debit: netAmt, credit: 0, memo },
+      { account: "cheques_in_hand", debit: 0, credit: netAmt, memo }
+    ], `CLR-${vch.voucherNo || vch.id.slice(0, 6)}`);
+
+    setVouchers(list => list.map(v => v.id === voucherId ? {
+      ...v,
+      pdcStatus: "Cleared",
+      clearedDate: clrDate,
+      clearedBankId: tgtBank?.id
+    } : v));
+
+    logAudit({
+      userId: currentUser?.id || "u-staff",
+      userName: currentUser?.name || "Staff",
+      role: currentUser?.role || "Staff",
+      action: `Cleared PDC Cheque #${vch.chequeNo || vch.voucherNo} (${pkr(netAmt)}) into ${tgtBank?.bankName}`,
+      module: "Vouchers",
+      recordType: "Voucher",
+      recordId: vch.id,
+      timestamp: new Date().toISOString()
+    });
+  }
+
+  function bouncePdcCheque(voucherId, bounceDate = TODAY_STR, reason = "Payment Stopped / Insufficient Funds") {
+    const vch = vouchers.find(v => v.id === voucherId);
+    if (!vch) return;
+    const netAmt = Number(vch.netAmount !== undefined ? vch.netAmount : vch.amount) || 0;
+    const bncDate = bounceDate || TODAY_STR;
+    const memo = `PDC Dishonored / Bounced: ${vch.party} (Chq #${vch.chequeNo || vch.voucherNo}) - Reason: ${reason}`;
+
+    // Post Double Entry: Debit Accounts Receivable (Client), Credit Cheques in Hand
+    postEntry(bncDate, memo, [
+      { account: "ar", debit: netAmt, credit: 0, memo },
+      { account: "cheques_in_hand", debit: 0, credit: netAmt, memo }
+    ], `BNC-${vch.voucherNo || vch.id.slice(0, 6)}`);
+
+    setVouchers(list => list.map(v => v.id === voucherId ? {
+      ...v,
+      pdcStatus: "Bounced",
+      bouncedDate: bncDate,
+      bounceReason: reason
+    } : v));
+
+    logAudit({
+      userId: currentUser?.id || "u-staff",
+      userName: currentUser?.name || "Staff",
+      role: currentUser?.role || "Staff",
+      action: `PDC Cheque #${vch.chequeNo || vch.voucherNo} Marked as BOUNCED (${pkr(netAmt)}) for ${vch.party}`,
+      module: "Vouchers",
+      recordType: "Voucher",
+      recordId: vch.id,
+      timestamp: new Date().toISOString()
+    });
   }
 
 
@@ -6362,6 +6447,34 @@ export default function App() {
                         </div>
                       ))}
 
+                      {(() => {
+                        const pdcVchs = vouchers.filter(v => v.type === "RV" && v.isPdc);
+                        const pendingPdcVchs = pdcVchs.filter(v => v.pdcStatus === "In-Hand");
+                        const totalPdc = pendingPdcVchs.reduce((s, v) => s + (Number(v.netAmount !== undefined ? v.netAmount : v.amount) || 0), 0);
+                        return (
+                          <div className="card" style={{ padding: 16, borderLeft: `4px solid #F59E0B`, background: pendingPdcVchs.length > 0 ? "rgba(245, 158, 11, 0.04)" : "var(--bg)" }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
+                              <div>
+                                <div style={{ fontWeight: 700, fontSize: 14, color: "#B45309" }}>📜 Cheques in Hand (PDC)</div>
+                                <div style={{ fontSize: 11.5, color: "var(--ink-muted)" }}>Uncleared Client Post-Dated Cheques</div>
+                              </div>
+                              <span className="badge-mini" style={{ background: "#FEF3C7", color: "#92400E", border: "1px solid #F59E0B" }}>
+                                {pendingPdcVchs.length} In-Hand
+                              </span>
+                            </div>
+                            <div className="mono" style={{ fontSize: 11, color: "var(--ink-muted)", marginBottom: 8 }}>
+                              Status: In-Hand / Pending Maturity
+                            </div>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", borderTop: "1px solid var(--rule)", paddingTop: 10 }}>
+                              <span style={{ fontSize: 11.5, color: "var(--ink-muted)" }}>Total PDC In-Hand:</span>
+                              <span className="mono" style={{ fontSize: 15, fontWeight: 700, color: "#D97706" }}>
+                                {pkr(totalPdc)}
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      })()}
+
                       <div className="card" style={{ padding: 16, background: "var(--gold-glow)", border: "1px solid var(--gold)" }}>
                         <div style={{ fontWeight: 700, fontSize: 14, color: "var(--gold)", marginBottom: 4 }}>Total Liquidity Position</div>
                         <div style={{ fontSize: 11.5, color: "var(--ink-muted)", marginBottom: 12 }}>Combined Total Cash + Bank Balances</div>
@@ -6370,6 +6483,120 @@ export default function App() {
                         </div>
                       </div>
                     </div>
+
+                    {/* PDC CHEQUES IN HAND REGISTER */}
+                    {(() => {
+                      const pdcList = vouchers.filter(v => v.type === "RV" && v.isPdc);
+                      if (pdcList.length === 0) return null;
+                      const pendingCount = pdcList.filter(v => v.pdcStatus === "In-Hand").length;
+                      const pendingTotal = pdcList.filter(v => v.pdcStatus === "In-Hand").reduce((s, v) => s + (Number(v.netAmount !== undefined ? v.netAmount : v.amount) || 0), 0);
+                      
+                      return (
+                        <div className="card" style={{ marginBottom: 20 }}>
+                          <div style={{ padding: "14px 16px", borderBottom: "1px solid var(--rule)", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 10 }}>
+                            <div>
+                              <div style={{ fontWeight: 700, fontSize: 14.5, color: "var(--ink)", display: "flex", alignItems: "center", gap: 6 }}>
+                                <span>📜 Post-Dated Cheques (PDC) In-Hand Register</span>
+                                <span className="badge-mini" style={{ background: "#FEF3C7", color: "#92400E", fontWeight: 700 }}>
+                                  {pendingCount} Pending Clearance ({pkr(pendingTotal)})
+                                </span>
+                              </div>
+                              <div style={{ fontSize: 12, color: "var(--ink-muted)", marginTop: 2 }}>
+                                Track client cheques in-hand, maturity dates, and click to deposit &amp; clear in bank or record dishonor/bounce.
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="table-responsive">
+                            <table>
+                              <thead>
+                                <tr>
+                                  <th>Cheque #</th>
+                                  <th>Received Date</th>
+                                  <th>Client Name</th>
+                                  <th>Maturity Date</th>
+                                  <th>Drawn Bank</th>
+                                  <th style={{ textAlign: "right" }}>Cheque Amount</th>
+                                  <th>Target Bank</th>
+                                  <th>Status</th>
+                                  <th style={{ textAlign: "center" }}>Actions</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {pdcList.map(v => {
+                                  const isPending = v.pdcStatus === "In-Hand";
+                                  const isCleared = v.pdcStatus === "Cleared";
+                                  const isBounced = v.pdcStatus === "Bounced";
+                                  const targetBankObj = bankAccounts.find(b => b.id === (v.clearedBankId || v.targetBankId || v.bankAccountId));
+                                  const netAmt = Number(v.netAmount !== undefined ? v.netAmount : v.amount) || 0;
+                                  
+                                  return (
+                                    <tr key={v.id}>
+                                      <td className="mono" style={{ fontWeight: 700, color: "var(--gold)" }}>
+                                        {v.chequeNo || v.voucherNo}
+                                      </td>
+                                      <td className="mono" style={{ fontSize: 12 }}>{fmtDate(v.date)}</td>
+                                      <td style={{ fontWeight: 600 }}>{v.party}</td>
+                                      <td className="mono" style={{ fontWeight: 700, color: isPending ? "#D97706" : "inherit" }}>
+                                        {fmtDate(v.chequeDate || v.date)}
+                                      </td>
+                                      <td style={{ color: "var(--ink-muted)" }}>{v.drawnBank || "Client Bank"}</td>
+                                      <td className="mono" style={{ textAlign: "right", fontWeight: 700, color: "#059669" }}>
+                                        {pkr(netAmt)}
+                                      </td>
+                                      <td>
+                                        <span className="badge-mini">
+                                          {targetBankObj?.bankName || "HBL"}
+                                        </span>
+                                      </td>
+                                      <td>
+                                        {isPending && (
+                                          <span className="badge-mini" style={{ background: "#FEF3C7", color: "#92400E", border: "1px solid #F59E0B" }}>
+                                            ⏳ In-Hand (Pending)
+                                          </span>
+                                        )}
+                                        {isCleared && (
+                                          <span className="badge-mini" style={{ background: "#DCFCE7", color: "#166534", border: "1px solid #16A34A" }}>
+                                            ✅ Cleared ({fmtDate(v.clearedDate || v.date)})
+                                          </span>
+                                        )}
+                                        {isBounced && (
+                                          <span className="badge-mini" style={{ background: "#FEE2E2", color: "#991B1B", border: "1px solid #DC2626" }}>
+                                            ⚠️ Bounced
+                                          </span>
+                                        )}
+                                      </td>
+                                      <td style={{ textAlign: "center" }}>
+                                        {isPending ? (
+                                          <div style={{ display: "inline-flex", gap: 6 }}>
+                                            <button
+                                              className="btn btn-primary"
+                                              style={{ padding: "3px 8px", fontSize: 11.5, background: "#059669", borderColor: "#059669" }}
+                                              onClick={() => setClearingPdcVoucher(v)}
+                                            >
+                                              ✅ Deposit &amp; Clear
+                                            </button>
+                                            <button
+                                              className="btn"
+                                              style={{ padding: "3px 8px", fontSize: 11.5, background: "#DC2626", color: "#FFFFFF", borderColor: "#DC2626" }}
+                                              onClick={() => setBouncingPdcVoucher(v)}
+                                            >
+                                              ⚠️ Bounce
+                                            </button>
+                                          </div>
+                                        ) : (
+                                          <span style={{ fontSize: 11.5, color: "var(--ink-muted)" }}>—</span>
+                                        )}
+                                      </td>
+                                    </tr>
+                                  );
+                                })}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      );
+                    })()}
 
                     <div className="card" style={{ padding: "12px 16px", marginBottom: 16, display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
                       <div className="field" style={{ margin: 0, flex: 1, minWidth: 220 }}>
@@ -7058,7 +7285,7 @@ export default function App() {
                   <thead>
                     <tr>
                       <th>Voucher #</th><th>Voucher Type</th><th>Date</th><th>Party / Payee</th><th>Description</th>
-                      <th style={{ textAlign: "right" }}>Amount</th><th>Print</th>
+                      <th style={{ textAlign: "right" }}>Amount</th><th>Status / Settlement</th><th>Print</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -7070,6 +7297,37 @@ export default function App() {
                         <td>{v.party || "—"}</td>
                         <td style={{ color: "var(--ink-muted)" }}>{v.description}</td>
                         <td className="mono" style={{ textAlign: "right", fontWeight: 600 }}>{pkr(v.amount)}</td>
+                        <td>
+                          {v.isPdc ? (
+                            v.pdcStatus === "In-Hand" ? (
+                              <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+                                <span className="badge-mini" style={{ background: "#FEF3C7", color: "#92400E", border: "1px solid #F59E0B", whiteSpace: "nowrap" }}>
+                                  ⏳ PDC In-Hand (Due: {fmtDate(v.chequeDate || v.date)})
+                                </span>
+                                <div style={{ display: "flex", gap: 4 }}>
+                                  <button className="btn btn-primary" style={{ padding: "2px 6px", fontSize: 10.5, background: "#059669", borderColor: "#059669" }} onClick={() => setClearingPdcVoucher(v)}>
+                                    ✅ Clear
+                                  </button>
+                                  <button className="btn" style={{ padding: "2px 6px", fontSize: 10.5, background: "#DC2626", color: "#FFF", borderColor: "#DC2626" }} onClick={() => setBouncingPdcVoucher(v)}>
+                                    ⚠️ Bounce
+                                  </button>
+                                </div>
+                              </div>
+                            ) : v.pdcStatus === "Cleared" ? (
+                              <span className="badge-mini" style={{ background: "#DCFCE7", color: "#166534", border: "1px solid #16A34A" }}>
+                                ✅ Cleared ({fmtDate(v.clearedDate || v.date)})
+                              </span>
+                            ) : (
+                              <span className="badge-mini" style={{ background: "#FEE2E2", color: "#991B1B", border: "1px solid #DC2626" }}>
+                                ⚠️ Bounced ({fmtDate(v.bouncedDate || v.date)})
+                              </span>
+                            )
+                          ) : (
+                            <span className="badge-mini" style={{ background: "var(--bg)", border: "1px solid var(--rule)" }}>
+                              Posted
+                            </span>
+                          )}
+                        </td>
                         <td>
                           <button className="btn" style={{ padding: "4px 7px", fontSize: 12 }} onClick={() => setPrintDoc(v)}>
                             <Printer size={13} />
@@ -8166,6 +8424,21 @@ export default function App() {
           defaultType={voucherDefaultType}
           onClose={() => setShowVoucherForm(false)}
           onSubmit={createVoucher}
+        />
+      )}
+      {clearingPdcVoucher && (
+        <ClearPdcModal
+          voucher={clearingPdcVoucher}
+          bankAccounts={bankAccounts}
+          onClose={() => setClearingPdcVoucher(null)}
+          onClear={clearPdcCheque}
+        />
+      )}
+      {bouncingPdcVoucher && (
+        <BouncePdcModal
+          voucher={bouncingPdcVoucher}
+          onClose={() => setBouncingPdcVoucher(null)}
+          onBounce={bouncePdcCheque}
         />
       )}
       {showClientModal && <ClientMasterModal clients={clients} client={editingClient} onClose={() => { setShowClientModal(false); setEditingClient(null); }} onSave={handleSaveClient} />}
@@ -12196,6 +12469,103 @@ function BankAccountModal({ initialData, onClose, onSubmit }) {
   );
 }
 
+function ClearPdcModal({ voucher, bankAccounts = [], onClose, onClear }) {
+  const realBanks = bankAccounts.filter(b => b.id !== "bank-cash" && b.accountType !== "Petty Cash");
+  const [bankId, setBankId] = useState(voucher.targetBankId || realBanks[0]?.id || "bank-hbl");
+  const [clearDate, setClearDate] = useState(TODAY_STR);
+  const netAmt = Number(voucher.netAmount !== undefined ? voucher.netAmount : voucher.amount) || 0;
+
+  return (
+    <ModalShell title={`Deposit & Clear PDC Cheque #${voucher.chequeNo || voucher.voucherNo}`} onClose={onClose}>
+      <div style={{ padding: "8px 0" }}>
+        <div style={{ background: "#F8FAFC", padding: 12, borderRadius: 8, border: "1px solid #E2E8F0", marginBottom: 14 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, fontSize: 13 }}>
+            <div><b>Client / Party:</b> {voucher.party}</div>
+            <div><b>Cheque Amount:</b> <span className="mono" style={{ fontWeight: 700, color: "#059669" }}>{pkr(netAmt)}</span></div>
+            <div><b>Cheque Maturity Date:</b> {voucher.chequeDate || voucher.date}</div>
+            <div><b>Drawn Bank:</b> {voucher.drawnBank || "Client's Bank"}</div>
+          </div>
+        </div>
+
+        <div className="field">
+          <label>Select Deposit Bank Account (Where Cheque Cleared) *</label>
+          <select value={bankId} onChange={e => setBankId(e.target.value)}>
+            {realBanks.map(b => (
+              <option key={b.id} value={b.id}>
+                {b.bankName} — {b.accountTitle} ({b.accountNumber})
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="field">
+          <label>Cheque Clearance Date *</label>
+          <input type="date" value={clearDate} onChange={e => setClearDate(e.target.value)} />
+        </div>
+
+        <div style={{ background: "rgba(5, 150, 105, 0.08)", border: "1px solid rgba(5, 150, 105, 0.2)", padding: "10px 14px", borderRadius: 8, fontSize: 12.5, color: "#059669", marginBottom: 16 }}>
+          💡 <b>Accounting Effect:</b> Debits <b>{realBanks.find(b => b.id === bankId)?.bankName || "Selected Bank"}</b> ({pkr(netAmt)}) &amp; Credits <b>Cheques in Hand / PDC Receivable</b> ({pkr(netAmt)}). Live bank balance increases immediately!
+        </div>
+
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
+          <button className="btn" onClick={onClose}>Cancel</button>
+          <button className="btn btn-primary" onClick={() => { onClear(voucher.id, clearDate, bankId); onClose(); }}>
+            ✅ Confirm Deposit &amp; Clear in Bank
+          </button>
+        </div>
+      </div>
+    </ModalShell>
+  );
+}
+
+function BouncePdcModal({ voucher, onClose, onBounce }) {
+  const [bounceDate, setBounceDate] = useState(TODAY_STR);
+  const [reason, setReason] = useState("Insufficient Funds / Refer to Drawer");
+  const netAmt = Number(voucher.netAmount !== undefined ? voucher.netAmount : voucher.amount) || 0;
+
+  return (
+    <ModalShell title={`Record Cheque Dishonor / Bounce #${voucher.chequeNo || voucher.voucherNo}`} onClose={onClose}>
+      <div style={{ padding: "8px 0" }}>
+        <div style={{ background: "#FEF2F2", padding: 12, borderRadius: 8, border: "1px solid #FECACA", marginBottom: 14 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, fontSize: 13, color: "#991B1B" }}>
+            <div><b>Client / Party:</b> {voucher.party}</div>
+            <div><b>Cheque Amount:</b> <span className="mono" style={{ fontWeight: 700 }}>{pkr(netAmt)}</span></div>
+            <div><b>Cheque Maturity Date:</b> {voucher.chequeDate || voucher.date}</div>
+            <div><b>Drawn Bank:</b> {voucher.drawnBank || "Client's Bank"}</div>
+          </div>
+        </div>
+
+        <div className="field">
+          <label>Bounce / Return Date *</label>
+          <input type="date" value={bounceDate} onChange={e => setBounceDate(e.target.value)} />
+        </div>
+
+        <div className="field">
+          <label>Bounce Reason / Bank Return Memo *</label>
+          <select value={reason} onChange={e => setReason(e.target.value)}>
+            <option value="Insufficient Funds / Refer to Drawer">Insufficient Funds / Refer to Drawer</option>
+            <option value="Payment Stopped by Client">Payment Stopped by Client</option>
+            <option value="Signature Differs / Technical Return">Signature Differs / Technical Return</option>
+            <option value="Stale Cheque (Expired)">Stale Cheque (Expired)</option>
+            <option value="Account Closed">Account Closed</option>
+          </select>
+        </div>
+
+        <div style={{ background: "rgba(220, 38, 38, 0.08)", border: "1px solid rgba(220, 38, 38, 0.2)", padding: "10px 14px", borderRadius: 8, fontSize: 12.5, color: "#DC2626", marginBottom: 16 }}>
+          ⚠️ <b>Accounting Effect:</b> Debits <b>Accounts Receivable (Client: {voucher.party})</b> ({pkr(netAmt)}) &amp; Credits <b>Cheques in Hand / PDC Receivable</b> ({pkr(netAmt)}). The client's ledger outstanding balance will be re-opened for recovery!
+        </div>
+
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
+          <button className="btn" onClick={onClose}>Cancel</button>
+          <button className="btn" style={{ background: "#DC2626", color: "#FFFFFF", borderColor: "#DC2626", fontWeight: 700 }} onClick={() => { onBounce(voucher.id, bounceDate, reason); onClose(); }}>
+            ⚠️ Confirm Mark as Bounced
+          </button>
+        </div>
+      </div>
+    </ModalShell>
+  );
+}
+
 function VoucherModal({
   defaultType,
   projects = [],
@@ -12239,6 +12609,12 @@ function VoucherModal({
   const [cvInstrumentNo, setCvInstrumentNo] = useState("");
   const [cvInstrumentDate, setCvInstrumentDate] = useState(TODAY_STR);
   const [cvDrawnBank, setCvDrawnBank] = useState("");
+
+  // RV Receive Mode & PDC Instrument State
+  const [rvReceiveMode, setRvReceiveMode] = useState("Bank"); // "Bank" | "PDC" | "Cash"
+  const [rvChequeNo, setRvChequeNo] = useState("");
+  const [rvChequeDate, setRvChequeDate] = useState(TODAY_STR);
+  const [rvDrawnBank, setRvDrawnBank] = useState("");
 
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState("Office & Administration");
@@ -12504,12 +12880,14 @@ function VoucherModal({
         bankAccountId: via === "Cash" ? "bank-cash" : selectedBankId,
       });
     } else if (type === "RV") {
+      const isPdc = rvReceiveMode === "PDC";
+      const pdcDesc = isPdc ? ` (PDC Chq #${rvChequeNo || 'PDC'}, Maturity: ${rvChequeDate}${rvDrawnBank ? `, Drawn: ${rvDrawnBank}` : ""})` : "";
       onSubmit("RV", {
         voucherNo,
         projectId, date,
         party: effectiveParty,
         clientId: partyMode === "master" ? selectedClientId : null,
-        description,
+        description: description || `Client Receipt - ${effectiveParty}${pdcDesc}`,
         amount: receiptGross,
         netAmount: netDeposit,
         applySst,
@@ -12518,8 +12896,14 @@ function VoucherModal({
         applyWht,
         whtRate: Number(whtRate) || 0,
         whtAmount: rvWhtVal,
-        via,
-        bankAccountId: via === "Cash" ? "bank-cash" : selectedBankId,
+        via: rvReceiveMode === "Cash" ? "Cash" : "Bank",
+        receiveMode: isPdc ? "pdc" : (rvReceiveMode === "Cash" ? "cash" : "bank"),
+        isPdc,
+        chequeNo: rvChequeNo,
+        chequeDate: rvChequeDate,
+        drawnBank: rvDrawnBank,
+        bankAccountId: isPdc ? selectedBankId : (via === "Cash" ? "bank-cash" : selectedBankId),
+        targetBankId: selectedBankId,
         settleAR
       });
     } else if (type === "CV") {
@@ -12907,15 +13291,56 @@ function VoucherModal({
               <input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="e.g. 500000" style={{ fontWeight: 700, fontSize: 14 }} />
             </div>
             <div className="field">
-              <label>Receive Through</label>
-              <select value={via} onChange={e => handleViaChange(e.target.value)}>
+              <label>Receipt Instrument / Method *</label>
+              <select value={rvReceiveMode} onChange={e => {
+                const mode = e.target.value;
+                setRvReceiveMode(mode);
+                if (mode === "Cash") handleViaChange("Cash");
+                else handleViaChange("Bank");
+              }}>
+                <option value="Bank">Direct Bank Deposit / Online IBFT</option>
+                <option value="PDC">📜 Post-Dated Cheque (PDC / Cheques in Hand)</option>
                 <option value="Cash">Cash (Petty Cash Vault)</option>
-                <option value="Bank">Bank Account</option>
               </select>
             </div>
           </div>
 
-          {via === "Bank" && (
+          {rvReceiveMode === "PDC" && (
+            <div className="card" style={{ padding: "10px 14px", marginBottom: 12, background: "rgba(245, 158, 11, 0.08)", border: "1px solid rgba(245, 158, 11, 0.3)", borderRadius: 8 }}>
+              <div style={{ fontWeight: 700, fontSize: 13, color: "#B45309", marginBottom: 8, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span>📜 Post-Dated Cheque (PDC) Instrument Details</span>
+                <span style={{ fontSize: 11, background: "#FEF3C7", padding: "2px 6px", borderRadius: 4, color: "#92400E", fontWeight: 700 }}>Asset: Cheques in Hand</span>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 8 }}>
+                <div className="field" style={{ margin: 0 }}>
+                  <label>Cheque # *</label>
+                  <input value={rvChequeNo} onChange={e => setRvChequeNo(e.target.value)} placeholder="e.g. Chq # 948201" style={{ fontWeight: 600 }} />
+                </div>
+                <div className="field" style={{ margin: 0 }}>
+                  <label>Cheque Maturity Date (Date on Cheque) *</label>
+                  <input type="date" value={rvChequeDate} onChange={e => setRvChequeDate(e.target.value)} style={{ fontWeight: 600 }} />
+                </div>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                <div className="field" style={{ margin: 0 }}>
+                  <label>Drawn On Bank (Client's Bank)</label>
+                  <input value={rvDrawnBank} onChange={e => setRvDrawnBank(e.target.value)} placeholder="e.g. Meezan Bank / Standard Chartered" />
+                </div>
+                <div className="field" style={{ margin: 0 }}>
+                  <label>Target Deposit Bank (AdPulse Receiving Bank)</label>
+                  <select value={selectedBankId} onChange={e => setSelectedBankId(e.target.value)}>
+                    {realBankAccounts.map(b => (
+                      <option key={b.id} value={b.id}>
+                        {b.bankName} — {b.accountTitle} ({b.accountNumber})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {rvReceiveMode === "Bank" && (
             <div className="field">
               <label>Select Receiving Bank Account</label>
               <select value={selectedBankId} onChange={e => setSelectedBankId(e.target.value)}>
@@ -13000,16 +13425,18 @@ function VoucherModal({
                     </div>
                   )}
                   <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14, fontWeight: 800, borderTop: "1.5px solid #0F172A", paddingTop: 6, marginTop: 4, color: "#0F172A" }}>
-                    <span>Net Deposited via {via}:</span>
-                    <span className="mono" style={{ color: "#0284C7" }}>{pkr(netDeposit)}</span>
+                    <span>{rvReceiveMode === "PDC" ? "Net Cheque in Hand (PDC):" : `Net Deposited via ${via}:`}</span>
+                    <span className="mono" style={{ color: rvReceiveMode === "PDC" ? "#D97706" : "#0284C7" }}>{pkr(netDeposit)}</span>
                   </div>
                 </div>
               </div>
             )}
           </div>
 
-          <div style={{ background: "rgba(5, 150, 105, 0.08)", border: "1px solid rgba(5, 150, 105, 0.2)", padding: "10px 14px", borderRadius: 8, fontSize: 12.5, color: "#059669", marginBottom: 14 }}>
-            {via === "Cash" ? (
+          <div style={{ background: rvReceiveMode === "PDC" ? "rgba(245, 158, 11, 0.08)" : "rgba(5, 150, 105, 0.08)", border: `1px solid ${rvReceiveMode === "PDC" ? "rgba(245, 158, 11, 0.3)" : "rgba(5, 150, 105, 0.2)"}`, padding: "10px 14px", borderRadius: 8, fontSize: 12.5, color: rvReceiveMode === "PDC" ? "#B45309" : "#059669", marginBottom: 14 }}>
+            {rvReceiveMode === "PDC" ? (
+              <>📜 <b>Post-Dated Cheque (PDC) Rule:</b> Debits <b>Cheques in Hand / PDC Receivable</b> ({pkr(netDeposit)}){applyWht ? ` & WHT Receivable (${pkr(rvWhtVal)})` : ""}{applySst ? ` & SRB Tax Payable (${pkr(rvSstVal)})` : ""} &amp; Credits <b>{settleAR ? "Accounts Receivable" : "Direct Revenue"}</b> ({pkr(receiptGross)}). Real Bank balance is <b>NOT</b> touched until cheque maturity/deposit!</>
+            ) : via === "Cash" ? (
               <>💡 <b>Cash Receipt Rule:</b> Debits <b>Petty Cash Vault</b> ({pkr(netDeposit)}){applyWht ? ` & WHT Receivable (${pkr(rvWhtVal)})` : ""}{applySst ? ` & SRB Tax Payable (${pkr(rvSstVal)})` : ""} &amp; Credits <b>{settleAR ? "Accounts Receivable" : "Direct Revenue"}</b> ({pkr(receiptGross)}). Petty cash balance increases automatically.</>
             ) : (
               <>💡 <b>Bank Receipt Rule:</b> Debits <b>{selectedBankObj?.bankName || "Selected Bank"}</b> ({pkr(netDeposit)}){applyWht ? ` & WHT Receivable (${pkr(rvWhtVal)})` : ""}{applySst ? ` & SRB Tax Payable (${pkr(rvSstVal)})` : ""} &amp; Credits <b>{settleAR ? "Accounts Receivable" : "Direct Revenue"}</b> ({pkr(receiptGross)}). Bank balance increases automatically.</>
