@@ -2873,8 +2873,9 @@ export default function App() {
 
     if (type === "PV") {
       const glKey = accountKey || getGLAccountKeyForSubcategory(category, subcategory) || "expense";
-      const paymentAccount = via === "Cash" ? "cash" : "bank";
-      const bAccountId = via === "Cash" ? "bank-cash" : (bankAccountId || bankAccounts.find(b => b.accountType !== "Petty Cash")?.id || "bank-hbl");
+      const isCash = via === "Cash" || paymentMode === "Petty Cash";
+      const paymentAccount = isCash ? "cash" : "bank";
+      const bAccountId = isCash ? "bank-cash" : (bankAccountId || bankAccounts.find(b => b.accountType !== "Petty Cash")?.id || "bank-hbl");
       const memoText = subcategory ? `${category} → ${subcategory}` : (category || "Payment");
       
       const billAmt = Number(amount) || 0;
@@ -2882,6 +2883,11 @@ export default function App() {
       const sstAmt = applySst ? (Number(sstAmount) || 0) : 0;
       const whtAmt = applyWht ? (Number(whtAmount) || 0) : 0;
       const paidAmt = netAmount !== undefined ? Number(netAmount) : Math.max(0, billAmt - commAmt + sstAmt - whtAmt);
+
+      const payingBankObj = bankAccounts.find(b => b.id === bAccountId);
+      const paidMemo = isCash 
+        ? "Paid via Petty Cash Vault" 
+        : `Paid via ${paymentMode || 'Bank'}${instrumentNo ? ` #${instrumentNo}` : ""} (${payingBankObj?.bankName || 'Bank'})`;
 
       journalLines = [
         { account: glKey, debit: billAmt, credit: 0, memo: memoText },
@@ -2895,7 +2901,7 @@ export default function App() {
       if (whtAmt > 0) {
         journalLines.push({ account: "wht_payable", debit: 0, credit: whtAmt, memo: `WHT Withheld from Vendor (${whtRate || 1}%)` });
       }
-      journalLines.push({ account: paymentAccount, bankAccountId: bAccountId, debit: 0, credit: paidAmt, memo: `Paid via ${via === "Cash" ? "Cash" : "Bank"}` });
+      journalLines.push({ account: paymentAccount, bankAccountId: bAccountId, debit: 0, credit: paidAmt, memo: paidMemo });
 
     } else if (type === "RV") {
       const isChequeInHand = isPdc || receiveMode === "pdc" || receiveMode === "PDC";
@@ -12610,6 +12616,11 @@ function VoucherModal({
   const [cvInstrumentDate, setCvInstrumentDate] = useState(TODAY_STR);
   const [cvDrawnBank, setCvDrawnBank] = useState("");
 
+  // PV Payment Mode & Instrument State
+  const [pvPaymentMode, setPvPaymentMode] = useState("Cross Cheque"); // "Cross Cheque" | "Online Bank Transfer" | "Pay Order" | "Petty Cash"
+  const [pvInstrumentNo, setPvInstrumentNo] = useState("");
+  const [pvInstrumentDate, setPvInstrumentDate] = useState(TODAY_STR);
+
   // RV Receive Mode & PDC Instrument State
   const [rvReceiveMode, setRvReceiveMode] = useState("Bank"); // "Bank" | "PDC" | "Cash"
   const [rvChequeNo, setRvChequeNo] = useState("");
@@ -12641,7 +12652,15 @@ function VoucherModal({
 
   const handleTypeChange = (newType) => {
     setType(newType);
-    setVoucherNo(getNextVoucherNo(newType, vouchers, via));
+    let currentVia = via;
+    if (newType === "PV") {
+      currentVia = pvPaymentMode === "Petty Cash" ? "Cash" : "Bank";
+      setVia(currentVia);
+    } else if (newType === "RV") {
+      currentVia = rvReceiveMode === "Cash" ? "Cash" : "Bank";
+      setVia(currentVia);
+    }
+    setVoucherNo(getNextVoucherNo(newType, vouchers, currentVia));
     if (newType === "PV" && whtRate === 3) setWhtRate(1);
     if (newType === "RV" && whtRate === 1) setWhtRate(3);
   };
@@ -12859,14 +12878,20 @@ function VoucherModal({
         amount: Number(amount), sourceBankId, targetBankId
       });
     } else if (type === "PV") {
+      const isCash = pvPaymentMode === "Petty Cash";
+      const instDesc = isCash ? "Petty Cash Vault" : `${pvPaymentMode}${pvInstrumentNo ? ` #${pvInstrumentNo}` : ""}`;
+      const autoDesc = description || `Vendor Payment - ${effectiveParty} via ${instDesc}`;
       onSubmit("PV", {
         voucherNo,
         projectId, date,
         party: effectiveParty,
         vendorId: partyMode === "master" ? selectedVendorId : null,
-        description,
+        description: autoDesc,
         amount: billAmount,
         netAmount: netPayable,
+        paymentMode: pvPaymentMode,
+        instrumentNo: isCash ? "" : pvInstrumentNo,
+        instrumentDate: isCash ? date : pvInstrumentDate,
         applyCommission,
         agencyCommissionRate: Number(agencyCommissionRate) || 0,
         agencyCommissionAmount: commVal,
@@ -12876,8 +12901,9 @@ function VoucherModal({
         applyWht,
         whtRate: Number(whtRate) || 0,
         whtAmount: whtVal,
-        category, subcategory, accountKey: glKey, via,
-        bankAccountId: via === "Cash" ? "bank-cash" : selectedBankId,
+        category, subcategory, accountKey: glKey,
+        via: isCash ? "Cash" : "Bank",
+        bankAccountId: isCash ? "bank-cash" : selectedBankId,
       });
     } else if (type === "RV") {
       const isPdc = rvReceiveMode === "PDC";
@@ -13141,24 +13167,54 @@ function VoucherModal({
               <input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="e.g. 20000" style={{ fontWeight: 700, fontSize: 14 }} />
             </div>
             <div className="field">
-              <label>Payment Through</label>
-              <select value={via} onChange={e => handleViaChange(e.target.value)}>
-                <option value="Cash">Cash (Petty Cash Vault)</option>
-                <option value="Bank">Bank Account</option>
+              <label>Payment Mode / Instrument *</label>
+              <select value={pvPaymentMode} onChange={e => {
+                const mode = e.target.value;
+                setPvPaymentMode(mode);
+                const newVia = mode === "Petty Cash" ? "Cash" : "Bank";
+                handleViaChange(newVia);
+              }}>
+                <option value="Cross Cheque">📜 Cross Cheque</option>
+                <option value="Online Bank Transfer">⚡ Online Bank Transfer (IBFT)</option>
+                <option value="Pay Order">🏛️ Pay Order / Demand Draft</option>
+                <option value="Petty Cash">💵 Petty Cash (Cash Vault)</option>
               </select>
             </div>
           </div>
 
-          {via === "Bank" && (
-            <div className="field" style={{ marginTop: 2 }}>
-              <label>Select Bank Account</label>
-              <select value={selectedBankId} onChange={e => setSelectedBankId(e.target.value)}>
-                {realBankAccounts.map(b => (
-                  <option key={b.id} value={b.id}>
-                    {b.bankName} — {b.accountTitle} ({b.accountNumber})
-                  </option>
-                ))}
-              </select>
+          {pvPaymentMode !== "Petty Cash" ? (
+            <div className="card" style={{ padding: "10px 14px", marginBottom: 12, background: "rgba(2, 132, 199, 0.05)", border: "1px solid rgba(2, 132, 199, 0.2)", borderRadius: 8 }}>
+              <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: 10, marginBottom: 8 }}>
+                <div className="field" style={{ margin: 0 }}>
+                  <label>Paying Bank Account *</label>
+                  <select value={selectedBankId} onChange={e => setSelectedBankId(e.target.value)}>
+                    {realBankAccounts.map(b => (
+                      <option key={b.id} value={b.id}>
+                        {b.bankName} — {b.accountTitle} ({b.accountNumber})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="field" style={{ margin: 0 }}>
+                  <label>{pvPaymentMode === "Cross Cheque" ? "Cheque # *" : pvPaymentMode === "Online Bank Transfer" ? "Transaction / Ref #" : "Instrument # *"}</label>
+                  <input
+                    value={pvInstrumentNo}
+                    onChange={e => setPvInstrumentNo(e.target.value)}
+                    placeholder={pvPaymentMode === "Cross Cheque" ? "e.g. Chq # 591024" : pvPaymentMode === "Online Bank Transfer" ? "e.g. Ref # FT240918" : "e.g. PO-88192"}
+                    style={{ fontWeight: 600 }}
+                  />
+                </div>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 10 }}>
+                <div className="field" style={{ margin: 0 }}>
+                  <label>Instrument Date ({pvPaymentMode === "Cross Cheque" ? "Cheque Date" : "Transfer / Issue Date"})</label>
+                  <input type="date" value={pvInstrumentDate} onChange={e => setPvInstrumentDate(e.target.value)} />
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div style={{ background: "rgba(217, 119, 6, 0.08)", border: "1px solid rgba(217, 119, 6, 0.2)", padding: "8px 12px", borderRadius: 6, marginBottom: 12, fontSize: 12, color: "#D97706" }}>
+              💵 <b>Disbursement Source:</b> Office Petty Cash Custodian (CASH-VAULT-01).
             </div>
           )}
 
@@ -13264,7 +13320,7 @@ function VoucherModal({
                     </div>
                   )}
                   <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14, fontWeight: 800, borderTop: "1.5px solid #0F172A", paddingTop: 6, marginTop: 4, color: "#0F172A" }}>
-                    <span>Net Payable (Paid via {via}):</span>
+                    <span>Net Payable (Paid via {pvPaymentMode}):</span>
                     <span className="mono" style={{ color: "#059669" }}>{pkr(netPayable)}</span>
                   </div>
                 </div>
@@ -13272,11 +13328,11 @@ function VoucherModal({
             )}
           </div>
 
-          <div style={{ background: via === "Cash" ? "rgba(217, 119, 6, 0.08)" : "rgba(5, 150, 105, 0.08)", border: `1px solid ${via === "Cash" ? "rgba(217, 119, 6, 0.2)" : "rgba(5, 150, 105, 0.2)"}`, padding: "10px 14px", borderRadius: 8, fontSize: 12.5, color: via === "Cash" ? "#D97706" : "#059669", marginBottom: 14 }}>
-            {via === "Cash" ? (
-              <>💡 <b>Cash Payment Rule:</b> Debits <b>{glAccountObj.name}</b> ({pkr(billAmount)}) &amp; Credits <b>Petty Cash Vault</b> ({pkr(netPayable)}). Petty cash balance decreases automatically.</>
+          <div style={{ background: pvPaymentMode === "Petty Cash" ? "rgba(217, 119, 6, 0.08)" : "rgba(5, 150, 105, 0.08)", border: `1px solid ${pvPaymentMode === "Petty Cash" ? "rgba(217, 119, 6, 0.2)" : "rgba(5, 150, 105, 0.2)"}`, padding: "10px 14px", borderRadius: 8, fontSize: 12.5, color: pvPaymentMode === "Petty Cash" ? "#D97706" : "#059669", marginBottom: 14 }}>
+            {pvPaymentMode === "Petty Cash" ? (
+              <>💵 <b>Petty Cash Payment Rule:</b> Debits <b>{glAccountObj.name}</b> ({pkr(billAmount)}) &amp; Credits <b>Petty Cash Vault</b> ({pkr(netPayable)}). Cash vault balance decreases automatically.</>
             ) : (
-              <>💡 <b>Bank Payment Rule:</b> Debits <b>{glAccountObj.name}</b> ({pkr(billAmount)}) &amp; Credits <b>{selectedBankObj?.bankName || "Selected Bank"}</b> ({pkr(netPayable)}). Bank balance decreases automatically.</>
+              <>💳 <b>{pvPaymentMode} Payment Rule:</b> Debits <b>{glAccountObj.name}</b> ({pkr(billAmount)}) &amp; Credits <b>{selectedBankObj?.bankName || "Selected Bank"}</b> ({pkr(netPayable)}){pvInstrumentNo ? ` [${pvPaymentMode} #${pvInstrumentNo}]` : ""}. Bank balance decreases automatically.</>
             )}
           </div>
         </>

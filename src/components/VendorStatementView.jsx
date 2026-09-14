@@ -461,7 +461,7 @@ export default function VendorStatementView({
       const typeLabel = isDirect ? "Direct Settlement" : "Vendor Payment";
       const defaultDesc = isDirect
         ? `Direct Settlement by Client (${v.party || "Client"})${v.instrumentNo ? ` [${v.paymentMode || 'Inst'} #${v.instrumentNo}]` : ""}`
-        : (v.description || "Vendor Payment");
+        : (v.description || `Vendor Payment${v.paymentMode ? ` [${v.paymentMode}${v.instrumentNo ? ` #${v.instrumentNo}` : ''}]` : ''}`);
       rawRows.push({
         id: v.id,
         date: v.date,
