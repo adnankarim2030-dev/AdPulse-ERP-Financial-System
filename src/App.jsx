@@ -2856,7 +2856,7 @@ export default function App() {
   function createVoucher(type, payload = {}) {
     const {
       voucherNo: customVoucherNo, projectId, date, party, description, amount, netAmount,
-      clientId, vendorId,
+      clientId, vendorId, vendor, paymentMode, instrumentNo, instrumentDate, drawnBank,
       category, subcategory, accountKey, via, bankAccountId, sourceBankId, targetBankId,
       settleAR, lines,
       applyCommission, agencyCommissionRate, agencyCommissionAmount,
@@ -2946,6 +2946,8 @@ export default function App() {
       netAmount: netAmount !== undefined ? Number(netAmount) : Number(amount),
       clientId: clientId || null,
       vendorId: vendorId || null,
+      vendor: vendor || (type === "CV" ? category : null),
+      paymentMode, instrumentNo, instrumentDate, drawnBank,
       category, subcategory, via, bankAccountId, sourceBankId, targetBankId,
       applyCommission, agencyCommissionRate, agencyCommissionAmount,
       applySst, sstRate, sstAmount,
@@ -5339,7 +5341,7 @@ export default function App() {
                       const clientInvoices = invoices.filter(i => i.clientId === c.id || (i.client && i.client.toLowerCase() === c.name.toLowerCase()));
                       const clientVouchers = vouchers.filter(v => v.clientId === c.id || (v.party && v.party.toLowerCase().includes(c.name.toLowerCase())));
                       const totalInvoiced = clientInvoices.reduce((s, i) => s + (Number(i.totalAmount || i.amount) || 0), 0);
-                      const totalReceived = clientVouchers.filter(v => v.type === "RV").reduce((s, v) => s + (Number(v.amount) || 0), 0);
+                      const totalReceived = clientVouchers.filter(v => v.type === "RV" || v.type === "CV").reduce((s, v) => s + (Number(v.amount) || 0), 0);
                       const outstanding = (Number(c.openingBalance) || 0) + totalInvoiced - totalReceived;
 
                       return (
@@ -5449,9 +5451,9 @@ export default function App() {
                   <tbody>
                     {vendors.filter(v => !vendorSearchQuery || v.name.toLowerCase().includes(vendorSearchQuery.toLowerCase()) || (v.companyName && v.companyName.toLowerCase().includes(vendorSearchQuery.toLowerCase()))).map(v => {
                       const vendorExpenses = expenses.filter(e => e.vendorId === v.id || (e.vendor && e.vendor.toLowerCase().includes(v.name.toLowerCase())));
-                      const vendorVouchers = vouchers.filter(vo => vo.vendorId === v.id || (vo.party && vo.party.toLowerCase().includes(v.name.toLowerCase())));
+                      const vendorVouchers = vouchers.filter(vo => vo.vendorId === v.id || (vo.category && vo.category.toLowerCase().includes(v.name.toLowerCase())) || (vo.vendor && vo.vendor.toLowerCase().includes(v.name.toLowerCase())) || (vo.party && vo.party.toLowerCase().includes(v.name.toLowerCase())));
                       const totalExpenses = vendorExpenses.reduce((s, e) => s + (Number(e.amount) || 0), 0);
-                      const totalPayments = vendorVouchers.filter(vo => vo.type === "PV").reduce((s, vo) => s + (Number(vo.amount) || 0), 0);
+                      const totalPayments = vendorVouchers.filter(vo => vo.type === "PV" || vo.type === "CV").reduce((s, vo) => s + (Number(vo.amount) || 0), 0);
                       const payable = (Number(v.openingBalance) || 0) + totalExpenses - totalPayments;
 
                       return (
@@ -12232,6 +12234,12 @@ function VoucherModal({
   const [cvVendorName, setCvVendorName] = useState("");
   const [customCvVendorName, setCustomCvVendorName] = useState("");
 
+  // Party payment instrument state (CV: Direct Client -> Vendor Settlement)
+  const [cvPaymentMode, setCvPaymentMode] = useState("Cross Cheque");
+  const [cvInstrumentNo, setCvInstrumentNo] = useState("");
+  const [cvInstrumentDate, setCvInstrumentDate] = useState(TODAY_STR);
+  const [cvDrawnBank, setCvDrawnBank] = useState("");
+
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState("Office & Administration");
   const [subcategory, setSubcategory] = useState("Office Rent");
@@ -12515,14 +12523,21 @@ function VoucherModal({
         settleAR
       });
     } else if (type === "CV") {
+      const modeDesc = `${cvPaymentMode}${cvInstrumentNo ? ` #${cvInstrumentNo}` : ""}${cvDrawnBank ? ` (${cvDrawnBank})` : ""}`;
+      const autoDesc = description || `Direct settlement by Client ${effectiveCvClient} to Vendor ${effectiveCvVendor} via ${modeDesc}`;
       onSubmit("CV", {
         voucherNo,
         projectId, date,
         party: effectiveCvClient,
         category: effectiveCvVendor,
+        vendor: effectiveCvVendor,
         clientId: clientPartyMode === "master" ? cvClientId : null,
         vendorId: vendorPartyMode === "master" ? cvVendorId : null,
-        description: description || `Direct settlement: Client ${effectiveCvClient} ➔ Vendor ${effectiveCvVendor}`,
+        paymentMode: cvPaymentMode,
+        instrumentNo: cvInstrumentNo,
+        instrumentDate: cvInstrumentDate,
+        drawnBank: cvDrawnBank,
+        description: autoDesc,
         amount: Number(amount),
       });
     } else {
@@ -13048,6 +13063,31 @@ function VoucherModal({
 
       {type === "CV" && (
         <>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 10 }}>
+            <div className="field" style={{ margin: 0 }}>
+              <label>Payment / Settlement Mode *</label>
+              <select value={cvPaymentMode} onChange={e => setCvPaymentMode(e.target.value)}>
+                <option value="Cross Cheque">Cross Cheque</option>
+                <option value="Online Bank Transfer">Online IBFT / Transfer</option>
+                <option value="Pay Order">Pay Order / Demand Draft</option>
+                <option value="Direct Cash">Direct Cash Settlement</option>
+              </select>
+            </div>
+            <div className="field" style={{ margin: 0 }}>
+              <label>{cvPaymentMode === "Cross Cheque" ? "Cheque #" : cvPaymentMode === "Online Bank Transfer" ? "Transaction / Ref #" : "Instrument # (Optional)"}</label>
+              <input value={cvInstrumentNo} onChange={e => setCvInstrumentNo(e.target.value)} placeholder={cvPaymentMode === "Cross Cheque" ? "e.g. Chq # 492019" : "e.g. Ref # FT-92810"} />
+            </div>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 10 }}>
+            <div className="field" style={{ margin: 0 }}>
+              <label>Instrument Date (Cheque / Transfer Date)</label>
+              <input type="date" value={cvInstrumentDate} onChange={e => setCvInstrumentDate(e.target.value)} />
+            </div>
+            <div className="field" style={{ margin: 0 }}>
+              <label>Drawn On Bank / Branch (Optional)</label>
+              <input value={cvDrawnBank} onChange={e => setCvDrawnBank(e.target.value)} placeholder="e.g. HBL / Meezan Bank" />
+            </div>
+          </div>
           <div className="field"><label>Settlement Amount (PKR) *</label>
             <input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="e.g. 150000" style={{ fontWeight: 700, fontSize: 14 }} />
           </div>

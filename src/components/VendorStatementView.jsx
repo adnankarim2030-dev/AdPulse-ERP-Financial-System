@@ -414,6 +414,7 @@ export default function VendorStatementView({
       if (!item || !selectedVendor) return false;
       if (item.vendorId === selectedVendor.id) return true;
       if (item.vendor && item.vendor.toLowerCase().includes(vendorNameNorm)) return true;
+      if (item.category && item.category.toLowerCase().includes(vendorNameNorm)) return true;
       if (item.party && item.party.toLowerCase().includes(vendorNameNorm)) return true;
       return false;
     };
@@ -431,8 +432,8 @@ export default function VendorStatementView({
       opening += Number(exp.amount) || 0;
     });
 
-    // Prior Payments (Debits)
-    vouchers.filter(v => isVendorMatch(v) && isProjectMatch(v) && v.date < dateFrom && v.type === "PV").forEach(v => {
+    // Prior Payments / Direct Settlements (Debits)
+    vouchers.filter(v => isVendorMatch(v) && isProjectMatch(v) && v.date < dateFrom && (v.type === "PV" || v.type === "CV")).forEach(v => {
       opening -= Number(v.amount) || 0;
     });
 
@@ -454,14 +455,19 @@ export default function VendorStatementView({
       });
     });
 
-    vouchers.filter(v => isVendorMatch(v) && isProjectMatch(v) && v.date >= dateFrom && v.date <= dateTo && v.type === "PV").forEach(v => {
+    vouchers.filter(v => isVendorMatch(v) && isProjectMatch(v) && v.date >= dateFrom && v.date <= dateTo && (v.type === "PV" || v.type === "CV")).forEach(v => {
       const proj = projects.find(p => p.id === v.projectId);
+      const isDirect = v.type === "CV";
+      const typeLabel = isDirect ? "Direct Settlement" : "Vendor Payment";
+      const defaultDesc = isDirect
+        ? `Direct Settlement by Client (${v.party || "Client"})${v.instrumentNo ? ` [${v.paymentMode || 'Inst'} #${v.instrumentNo}]` : ""}`
+        : (v.description || "Vendor Payment");
       rawRows.push({
         id: v.id,
         date: v.date,
-        ref: v.voucherNo || ("PV-" + v.id.toUpperCase()),
-        type: "Vendor Payment",
-        project: proj ? proj.name : (v.description || "Vendor Payment"),
+        ref: v.voucherNo || ((isDirect ? "CV-" : "PV-") + v.id.toUpperCase()),
+        type: typeLabel,
+        project: proj ? proj.name : defaultDesc,
         debit: Number(v.amount) || 0,
         credit: 0,
         status: v.status || "Posted",

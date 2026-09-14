@@ -443,8 +443,8 @@ export default function ClientStatementView({
       opening += Number(inv.totalAmount || inv.amount) || 0;
     });
 
-    // Prior Receipts / Vouchers
-    const priorVouchers = vouchers.filter(v => isClientMatch(v) && isProjectMatch(v) && v.date < dateFrom && v.type === "RV");
+    // Prior Receipts / Vouchers / Direct Settlements
+    const priorVouchers = vouchers.filter(v => isClientMatch(v) && isProjectMatch(v) && v.date < dateFrom && (v.type === "RV" || v.type === "CV"));
     priorVouchers.forEach(v => {
       opening -= Number(v.amount) || 0;
     });
@@ -469,18 +469,22 @@ export default function ClientStatementView({
       });
     });
 
-    // Add Receipts / Vouchers
-    vouchers.filter(v => isClientMatch(v) && isProjectMatch(v) && v.date >= dateFrom && v.date <= dateTo && (v.type === "RV" || v.type === "PV")).forEach(v => {
+    // Add Receipts / Vouchers / Direct Settlements
+    vouchers.filter(v => isClientMatch(v) && isProjectMatch(v) && v.date >= dateFrom && v.date <= dateTo && (v.type === "RV" || v.type === "PV" || v.type === "CV")).forEach(v => {
       const proj = projects.find(p => p.id === v.projectId);
-      const isReceipt = v.type === "RV";
+      const isCredit = (v.type === "RV" || v.type === "CV");
+      const typeLabel = v.type === "CV" ? "Direct Settlement" : (v.type === "RV" ? "Receipt" : "Payment");
+      const defaultDesc = v.type === "CV"
+        ? `Direct Settlement to Vendor (${v.category || v.vendor || "Vendor"})${v.instrumentNo ? ` [${v.paymentMode || 'Inst'} #${v.instrumentNo}]` : ""}`
+        : (v.description || "Client Transaction");
       rawRows.push({
         id: v.id,
         date: v.date,
         ref: v.voucherNo || ("VCH-" + v.id.toUpperCase()),
-        type: isReceipt ? "Receipt" : "Payment",
-        project: proj ? proj.name : (v.description || "Client Transaction"),
-        debit: isReceipt ? 0 : Number(v.amount) || 0,
-        credit: isReceipt ? Number(v.amount) || 0 : 0,
+        type: typeLabel,
+        project: proj ? proj.name : defaultDesc,
+        debit: isCredit ? 0 : Number(v.amount) || 0,
+        credit: isCredit ? Number(v.amount) || 0 : 0,
         status: v.status || "Posted",
         raw: v
       });
