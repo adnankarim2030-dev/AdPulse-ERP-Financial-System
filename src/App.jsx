@@ -1942,6 +1942,8 @@ export default function App() {
   const [voucherDefaultType, setVoucherDefaultType] = useState("JV");
   const [clearingPdcVoucher, setClearingPdcVoucher] = useState(null);
   const [bouncingPdcVoucher, setBouncingPdcVoucher] = useState(null);
+  const [voucherTypeFilter, setVoucherTypeFilter] = useState("all");
+  const [voucherSearchQuery, setVoucherSearchQuery] = useState("");
 
   /* AI Document Review UI States */
   const [docStatusFilter, setDocStatusFilter] = useState("all");
@@ -7467,70 +7469,259 @@ export default function App() {
 
         {tab === "vouchers" && (
           <>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-              <div style={{ display: "flex", gap: 8 }}>
-                <button className="btn" style={{ background: "#0284C7", color: "#FFFFFF", borderColor: "#0284C7", fontWeight: 700 }} onClick={() => { setVoucherDefaultType("CV"); setShowVoucherForm(true); }}>⚡ Direct Client ➔ Vendor Settlement</button>
-                <button className="btn btn-primary" onClick={() => { setVoucherDefaultType("JV"); setShowVoucherForm(true); }}><Plus size={14} /> New Voucher</button>
+            {/* KPI METRIC CARDS HEADER */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 12, marginBottom: 18 }}>
+              <div className="card" style={{ padding: "14px 18px", borderLeft: "4px solid #059669" }}>
+                <div style={{ fontSize: 11.5, color: "var(--ink-muted)", fontWeight: 700, textTransform: "uppercase" }}>Total Receipts (RV)</div>
+                <div className="mono" style={{ fontSize: 20, fontWeight: 800, marginTop: 4, color: "#059669" }}>
+                  {pkr(vouchers.filter(v => v.type === "RV").reduce((sum, v) => sum + (Number(v.amount) || 0), 0))}
+                </div>
+                <div style={{ fontSize: 11, color: "var(--ink-muted)", marginTop: 2 }}>{vouchers.filter(v => v.type === "RV").length} Receipts Recorded</div>
               </div>
 
+              <div className="card" style={{ padding: "14px 18px", borderLeft: "4px solid #D97706" }}>
+                <div style={{ fontSize: 11.5, color: "var(--ink-muted)", fontWeight: 700, textTransform: "uppercase" }}>Total Payments (PV)</div>
+                <div className="mono" style={{ fontSize: 20, fontWeight: 800, marginTop: 4, color: "#D97706" }}>
+                  {pkr(vouchers.filter(v => v.type === "PV").reduce((sum, v) => sum + (Number(v.amount) || 0), 0))}
+                </div>
+                <div style={{ fontSize: 11, color: "var(--ink-muted)", marginTop: 2 }}>{vouchers.filter(v => v.type === "PV").length} Vendor & Operating Payouts</div>
+              </div>
+
+              <div className="card" style={{ padding: "14px 18px", borderLeft: "4px solid #0284C7" }}>
+                <div style={{ fontSize: 11.5, color: "var(--ink-muted)", fontWeight: 700, textTransform: "uppercase" }}>Direct Settlements (CV)</div>
+                <div className="mono" style={{ fontSize: 20, fontWeight: 800, marginTop: 4, color: "#0284C7" }}>
+                  {pkr(vouchers.filter(v => v.type === "CV").reduce((sum, v) => sum + (Number(v.amount) || 0), 0))}
+                </div>
+                <div style={{ fontSize: 11, color: "var(--ink-muted)", marginTop: 2 }}>{vouchers.filter(v => v.type === "CV").length} Direct Client-to-Vendor</div>
+              </div>
+
+              <div className="card" style={{ padding: "14px 18px", borderLeft: "4px solid #8B5CF6" }}>
+                <div style={{ fontSize: 11.5, color: "var(--ink-muted)", fontWeight: 700, textTransform: "uppercase" }}>PDC Cheques In-Hand</div>
+                <div className="mono" style={{ fontSize: 20, fontWeight: 800, marginTop: 4, color: "#7C3AED" }}>
+                  {pkr(vouchers.filter(v => v.isPdc && v.pdcStatus === "In-Hand").reduce((sum, v) => sum + (Number(v.amount) || 0), 0))}
+                </div>
+                <div style={{ fontSize: 11, color: "var(--ink-muted)", marginTop: 2 }}>{vouchers.filter(v => v.isPdc && v.pdcStatus === "In-Hand").length} Cheques Awaiting Maturity</div>
+              </div>
             </div>
 
+            {/* TOP ACTION BUTTONS */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 10, marginBottom: 16 }}>
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                <button className="btn" style={{ background: "#D97706", color: "#FFFFFF", borderColor: "#D97706", fontWeight: 700 }} onClick={() => { setVoucherDefaultType("PV"); setShowVoucherForm(true); }}>
+                  💸 New Payment Voucher (PV)
+                </button>
+                <button className="btn" style={{ background: "#059669", color: "#FFFFFF", borderColor: "#059669", fontWeight: 700 }} onClick={() => { setVoucherDefaultType("RV"); setShowVoucherForm(true); }}>
+                  💰 New Receipt Voucher (RV)
+                </button>
+                <button className="btn" style={{ background: "#0284C7", color: "#FFFFFF", borderColor: "#0284C7", fontWeight: 700 }} onClick={() => { setVoucherDefaultType("CV"); setShowVoucherForm(true); }}>
+                  ⚡ Direct Client ➔ Vendor Settlement (CV)
+                </button>
+                <button className="btn" style={{ background: "var(--bg)", borderColor: "var(--rule)", fontWeight: 600 }} onClick={() => { setVoucherDefaultType("CTV"); setShowVoucherForm(true); }}>
+                  🔄 Contra Transfer (CTV)
+                </button>
+                <button className="btn btn-primary" onClick={() => { setVoucherDefaultType("JV"); setShowVoucherForm(true); }}>
+                  <Plus size={14} /> Journal Voucher (JV)
+                </button>
+              </div>
+            </div>
+
+            {/* FILTER PILLS & SEARCH TOOLBAR */}
+            <div className="card" style={{ padding: "12px 16px", marginBottom: 16, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
+              <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                {[
+                  { key: "all", label: `All Vouchers (${vouchers.length})` },
+                  { key: "PV", label: `Payments (${vouchers.filter(v => v.type === "PV").length})`, color: "#D97706" },
+                  { key: "RV", label: `Receipts (${vouchers.filter(v => v.type === "RV").length})`, color: "#059669" },
+                  { key: "CV", label: `Client ➔ Vendor (${vouchers.filter(v => v.type === "CV").length})`, color: "#0284C7" },
+                  { key: "CTV", label: `Contra (${vouchers.filter(v => v.type === "CTV").length})`, color: "#64748B" },
+                  { key: "PDC", label: `PDC In-Hand (${vouchers.filter(v => v.isPdc).length})`, color: "#7C3AED" },
+                ].map(item => (
+                  <button
+                    key={item.key}
+                    className={"btn" + (voucherTypeFilter === item.key ? " btn-primary" : "")}
+                    style={{
+                      fontSize: 12.5,
+                      padding: "5px 12px",
+                      background: voucherTypeFilter === item.key ? (item.color || "var(--primary)") : "var(--bg)",
+                      borderColor: voucherTypeFilter === item.key ? (item.color || "var(--primary)") : "var(--rule)",
+                      color: voucherTypeFilter === item.key ? "#FFFFFF" : "var(--ink)"
+                    }}
+                    onClick={() => setVoucherTypeFilter(item.key)}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+
+              <div style={{ position: "relative", minWidth: 240 }}>
+                <Search size={14} style={{ position: "absolute", left: 10, top: 10, color: "var(--ink-muted)" }} />
+                <input
+                  value={voucherSearchQuery}
+                  onChange={e => setVoucherSearchQuery(e.target.value)}
+                  placeholder="Search voucher #, party, instrument, mode…"
+                  style={{ paddingLeft: 30, fontSize: 12.5, height: 34, width: "100%" }}
+                />
+              </div>
+            </div>
+
+            {/* VOUCHERS TABLE */}
             <div className="card">
               <div className="table-responsive">
                 <table>
                   <thead>
                     <tr>
-                      <th>Voucher #</th><th>Voucher Type</th><th>Date</th><th>Party / Payee</th><th>Description</th>
-                      <th style={{ textAlign: "right" }}>Amount</th><th>Status / Settlement</th><th>Print</th>
+                      <th>Voucher #</th>
+                      <th>Type</th>
+                      <th>Date</th>
+                      <th>Party / Payee</th>
+                      <th>Payment Instrument &amp; Mode</th>
+                      <th>Description</th>
+                      <th style={{ textAlign: "right" }}>Amount (PKR)</th>
+                      <th>Status / Settlement</th>
+                      <th>Print</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {vouchers.map(v => (
-                      <tr key={v.id}>
-                        <td className="mono" style={{ fontWeight: 700, color: "var(--gold)" }}>{v.voucherNo}</td>
-                        <td><span className="badge-mini">{VOUCHER_TYPES[v.type]}</span></td>
-                        <td className="mono">{fmtDate(v.date)}</td>
-                        <td>{v.party || "—"}</td>
-                        <td style={{ color: "var(--ink-muted)" }}>{v.description}</td>
-                        <td className="mono" style={{ textAlign: "right", fontWeight: 600 }}>{pkr(v.amount)}</td>
-                        <td>
-                          {v.isPdc ? (
-                            v.pdcStatus === "In-Hand" ? (
-                              <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
-                                <span className="badge-mini" style={{ background: "#FEF3C7", color: "#92400E", border: "1px solid #F59E0B", whiteSpace: "nowrap" }}>
-                                  ⏳ PDC In-Hand (Due: {fmtDate(v.chequeDate || v.date)})
-                                </span>
-                                <div style={{ display: "flex", gap: 4 }}>
-                                  <button className="btn btn-primary" style={{ padding: "2px 6px", fontSize: 10.5, background: "#059669", borderColor: "#059669" }} onClick={() => setClearingPdcVoucher(v)}>
-                                    ✅ Clear
-                                  </button>
-                                  <button className="btn" style={{ padding: "2px 6px", fontSize: 10.5, background: "#DC2626", color: "#FFF", borderColor: "#DC2626" }} onClick={() => setBouncingPdcVoucher(v)}>
-                                    ⚠️ Bounce
-                                  </button>
+                    {(() => {
+                      const filteredVouchers = vouchers.filter(v => {
+                        if (voucherTypeFilter === "PDC") {
+                          if (!v.isPdc) return false;
+                        } else if (voucherTypeFilter !== "all" && v.type !== voucherTypeFilter) {
+                          return false;
+                        }
+
+                        if (voucherSearchQuery) {
+                          const q = voucherSearchQuery.toLowerCase();
+                          const vNo = (v.voucherNo || "").toLowerCase();
+                          const pty = (v.party || "").toLowerCase();
+                          const desc = (v.description || "").toLowerCase();
+                          const mode = (v.paymentMode || v.via || "").toLowerCase();
+                          const inst = (v.instrumentNo || v.chequeNo || "").toLowerCase();
+                          return vNo.includes(q) || pty.includes(q) || desc.includes(q) || mode.includes(q) || inst.includes(q);
+                        }
+                        return true;
+                      });
+
+                      if (filteredVouchers.length === 0) {
+                        return (
+                          <tr>
+                            <td colSpan={9} style={{ textAlign: "center", padding: 36, color: "var(--ink-muted)" }}>
+                              No vouchers found matching your filter criteria.
+                            </td>
+                          </tr>
+                        );
+                      }
+
+                      return filteredVouchers.map(v => {
+                        const isPV = v.type === "PV";
+                        const isRV = v.type === "RV";
+                        const isCV = v.type === "CV";
+                        const isCTV = v.type === "CTV";
+
+                        const typeBg = isPV ? "rgba(217, 119, 6, 0.12)" : isRV ? "rgba(5, 150, 105, 0.12)" : isCV ? "rgba(2, 132, 199, 0.12)" : "rgba(100, 116, 139, 0.12)";
+                        const typeColor = isPV ? "#D97706" : isRV ? "#059669" : isCV ? "#0284C7" : "#475569";
+
+                        return (
+                          <tr key={v.id}>
+                            <td className="mono" style={{ fontWeight: 700, color: typeColor }}>{v.voucherNo}</td>
+                            <td>
+                              <span className="badge-mini" style={{ background: typeBg, color: typeColor, border: `1px solid ${typeColor}` }}>
+                                {VOUCHER_TYPES[v.type] || v.type}
+                              </span>
+                            </td>
+                            <td className="mono">{fmtDate(v.date)}</td>
+                            <td style={{ fontWeight: 600 }}>{v.party || "—"}</td>
+                            <td>
+                              {v.paymentMode || v.via ? (
+                                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                                  <span style={{ fontSize: 11.5, fontWeight: 700, color: "var(--ink)" }}>
+                                    {v.paymentMode || (v.via === "Cash" ? "Cash" : "Bank")}
+                                  </span>
+                                  {(v.instrumentNo || v.chequeNo) && (
+                                    <span className="mono" style={{ fontSize: 11, color: "var(--ink-muted)" }}>
+                                      #{v.instrumentNo || v.chequeNo} {v.drawnBank ? `(${v.drawnBank})` : ""}
+                                    </span>
+                                  )}
                                 </div>
-                              </div>
-                            ) : v.pdcStatus === "Cleared" ? (
-                              <span className="badge-mini" style={{ background: "#DCFCE7", color: "#166534", border: "1px solid #16A34A" }}>
-                                ✅ Cleared ({fmtDate(v.clearedDate || v.date)})
-                              </span>
-                            ) : (
-                              <span className="badge-mini" style={{ background: "#FEE2E2", color: "#991B1B", border: "1px solid #DC2626" }}>
-                                ⚠️ Bounced ({fmtDate(v.bouncedDate || v.date)})
-                              </span>
-                            )
-                          ) : (
-                            <span className="badge-mini" style={{ background: "var(--bg)", border: "1px solid var(--rule)" }}>
-                              Posted
-                            </span>
-                          )}
-                        </td>
-                        <td>
-                          <button className="btn" style={{ padding: "4px 7px", fontSize: 12 }} onClick={() => setPrintDoc(v)}>
-                            <Printer size={13} />
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
+                              ) : isCTV ? (
+                                <span style={{ fontSize: 11.5, color: "var(--ink-muted)" }}>
+                                  {v.sourceBankId || 'Bank'} ➔ {v.targetBankId || 'Cash Vault'}
+                                </span>
+                              ) : (
+                                <span style={{ fontSize: 11.5, color: "var(--ink-muted)" }}>Standard Vault</span>
+                              )}
+                            </td>
+                            <td style={{ color: "var(--ink-muted)", maxWidth: 280, wordBreak: "break-word" }}>
+                              <div>{v.description}</div>
+                              {/* Show tax/comm breakdown chips if present */}
+                              {(v.applyCommission || v.applySst || v.applyWht) && (
+                                <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginTop: 4 }}>
+                                  {v.applyCommission && v.agencyCommissionAmount && (
+                                    <span style={{ fontSize: 10, padding: "1px 5px", borderRadius: 3, background: "#FEF3C7", color: "#92400E" }}>
+                                      Comm: -{pkr(v.agencyCommissionAmount)}
+                                    </span>
+                                  )}
+                                  {v.applySst && v.sstAmount && (
+                                    <span style={{ fontSize: 10, padding: "1px 5px", borderRadius: 3, background: "#E0F2FE", color: "#0369A1" }}>
+                                      SST: {isPV ? '+' : '-'}{pkr(v.sstAmount)}
+                                    </span>
+                                  )}
+                                  {v.applyWht && v.whtAmount && (
+                                    <span style={{ fontSize: 10, padding: "1px 5px", borderRadius: 3, background: "#FEE2E2", color: "#991B1B" }}>
+                                      WHT: -{pkr(v.whtAmount)}
+                                    </span>
+                                  )}
+                                </div>
+                              )}
+                            </td>
+                            <td className="mono" style={{ textAlign: "right", fontWeight: 700, color: typeColor }}>
+                              <div>{pkr(v.amount)}</div>
+                              {v.netAmount !== undefined && Number(v.netAmount) !== Number(v.amount) && (
+                                <div style={{ fontSize: 10.5, color: "var(--ink-muted)", fontWeight: 500 }}>
+                                  Net: {pkr(v.netAmount)}
+                                </div>
+                              )}
+                            </td>
+                            <td>
+                              {v.isPdc ? (
+                                v.pdcStatus === "In-Hand" ? (
+                                  <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+                                    <span className="badge-mini" style={{ background: "#FEF3C7", color: "#92400E", border: "1px solid #F59E0B", whiteSpace: "nowrap" }}>
+                                      ⏳ PDC In-Hand (Due: {fmtDate(v.chequeDate || v.date)})
+                                    </span>
+                                    <div style={{ display: "flex", gap: 4 }}>
+                                      <button className="btn btn-primary" style={{ padding: "2px 6px", fontSize: 10.5, background: "#059669", borderColor: "#059669" }} onClick={() => setClearingPdcVoucher(v)}>
+                                        ✅ Clear
+                                      </button>
+                                      <button className="btn" style={{ padding: "2px 6px", fontSize: 10.5, background: "#DC2626", color: "#FFF", borderColor: "#DC2626" }} onClick={() => setBouncingPdcVoucher(v)}>
+                                        ⚠️ Bounce
+                                      </button>
+                                    </div>
+                                  </div>
+                                ) : v.pdcStatus === "Cleared" ? (
+                                  <span className="badge-mini" style={{ background: "#DCFCE7", color: "#166534", border: "1px solid #16A34A" }}>
+                                    ✅ Cleared ({fmtDate(v.clearedDate || v.date)})
+                                  </span>
+                                ) : (
+                                  <span className="badge-mini" style={{ background: "#FEE2E2", color: "#991B1B", border: "1px solid #DC2626" }}>
+                                    ⚠️ Bounced ({fmtDate(v.bouncedDate || v.date)})
+                                  </span>
+                                )
+                              ) : (
+                                <span className="badge-mini" style={{ background: "var(--bg)", border: "1px solid var(--rule)" }}>
+                                  Posted
+                                </span>
+                              )}
+                            </td>
+                            <td>
+                              <button className="btn" style={{ padding: "4px 7px", fontSize: 12 }} onClick={() => setPrintDoc(v)}>
+                                <Printer size={13} />
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      });
+                    })()}
                   </tbody>
                 </table>
               </div>
