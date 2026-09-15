@@ -1117,70 +1117,219 @@ function seedExpenses() {
 }
 
 function seedVouchers() {
-  const todayStr = TODAY_STR;
   return [
+    // 1. RV with Dual Tax (WHT + SST deducted from Gross)
     {
-      id: "vch-001",
-      voucherNo: "RV-001",
+      id: "vch-rv-001",
+      voucherNo: "BRV-26-001",
       type: "RV",
-      date: "2026-08-08",
+      date: "2026-08-05",
       partyType: "Client",
+      party: "Imtiaz Retail",
       clientId: "cli-101",
       projectId: "prj-008",
-      bankAccountId: "bank-hbl",
-      party: "Imtiaz Retail",
-      description: "Receipt applied against Invoice INV-001 for Back to School Campaign",
+      description: "Client Receipt against INV-001 (Gross: 500k, Less: WHT 3% & SST 13%)",
       amount: 500000,
+      netAmount: 420000,
+      applyWht: true,
+      whtRate: 3,
+      whtAmount: 15000,
+      applySst: true,
+      sstRate: 13,
+      sstAmount: 65000,
       via: "Bank",
+      receiveMode: "bank",
+      isPdc: false,
+      bankAccountId: "bank-hbl",
+      settleAR: true,
       createdBy: "Adpulsewahab",
       postedBy: "Adpulsewahab",
       status: "Posted"
     },
+
+    // 2. RV with Post-Dated Cheque (PDC) In-Hand
     {
-      id: "vch-002",
-      voucherNo: "PV-001",
-      type: "PV",
+      id: "vch-rv-pdc-001",
+      voucherNo: "BRV-26-002",
+      type: "RV",
+      date: "2026-08-10",
+      partyType: "Client",
+      party: "Prime Estate Enterprises",
+      clientId: "cli-102",
+      projectId: "prj-004",
+      description: "PDC Cheque In-Hand for Launch Campaign (Maturity: 25 Sep 2026)",
+      amount: 750000,
+      netAmount: 630000,
+      applyWht: true,
+      whtRate: 3,
+      whtAmount: 22500,
+      applySst: true,
+      sstRate: 13,
+      sstAmount: 97500,
+      via: "Bank",
+      receiveMode: "pdc",
+      isPdc: true,
+      pdcStatus: "In-Hand",
+      chequeNo: "948201",
+      chequeDate: "2026-09-25",
+      drawnBank: "Standard Chartered Bank",
+      bankAccountId: "bank-hbl",
+      targetBankId: "bank-hbl",
+      settleAR: true,
+      createdBy: "Adpulsewahab",
+      postedBy: "Adpulsewahab",
+      status: "In-Hand"
+    },
+
+    // 3. Direct Client-to-Vendor Settlement (CV) via Cross Cheque
+    {
+      id: "vch-cv-001",
+      voucherNo: "CV-26-001",
+      type: "CV",
       date: "2026-08-12",
+      party: "Prime Estate Enterprises",
+      category: "ABC Printing",
+      vendor: "ABC Printing",
+      clientId: "cli-102",
+      vendorId: "vnd-101",
+      projectId: "prj-004",
+      paymentMode: "Cross Cheque",
+      instrumentNo: "771920",
+      instrumentDate: "2026-08-12",
+      drawnBank: "Meezan Bank",
+      description: "Direct Settlement: Prime Estate paid ABC Printing via Cross Cheque #771920",
+      amount: 200000,
+      netAmount: 200000,
+      createdBy: "AdpulseCEO",
+      postedBy: "AdpulseCEO",
+      status: "Posted"
+    },
+
+    // 4. Direct Client-to-Vendor Settlement (CV) via Online IBFT
+    {
+      id: "vch-cv-002",
+      voucherNo: "CV-26-002",
+      type: "CV",
+      date: "2026-08-15",
+      party: "Kinza Beverages",
+      category: "Meta Ads",
+      vendor: "Meta Ads",
+      clientId: "cli-103",
+      vendorId: "vnd-102",
+      projectId: "prj-001",
+      paymentMode: "Online Bank Transfer",
+      instrumentNo: "IBFT-883910",
+      instrumentDate: "2026-08-15",
+      drawnBank: "Habib Bank Limited",
+      description: "Direct Settlement: Kinza Beverages paid Meta Ads via Online IBFT #IBFT-883910",
+      amount: 150000,
+      netAmount: 150000,
+      createdBy: "Adpulsewahab",
+      postedBy: "Adpulsewahab",
+      status: "Posted"
+    },
+
+    // 5. Payment Voucher (PV) via Cross Cheque (with Agency Commission, SST, WHT)
+    {
+      id: "vch-pv-001",
+      voucherNo: "BPV-26-001",
+      type: "PV",
+      date: "2026-08-14",
       partyType: "Vendor",
+      party: "ABC Printing",
       vendorId: "vnd-101",
       projectId: "prj-008",
+      category: "Printing & Production",
+      subcategory: "Large Format Printing",
+      accountKey: "printing_production",
+      description: "Vendor Payment - ABC Printing via Cross Cheque #682014 (HBL Main Ops)",
+      amount: 250000,
+      applyCommission: true,
+      agencyCommissionRate: 10,
+      agencyCommissionAmount: 25000,
+      applySst: true,
+      sstRate: 15,
+      sstAmount: 33750,
+      applyWht: true,
+      whtRate: 1,
+      whtAmount: 2500,
+      netAmount: 256250,
+      paymentMode: "Cross Cheque",
+      instrumentNo: "682014",
+      instrumentDate: "2026-08-14",
+      via: "Bank",
       bankAccountId: "bank-hbl",
-      party: "ABC Printing",
-      description: "Partial Vendor Payment for Back to School Printing (EXP-001)",
-      amount: 150000,
-      via: "Bank",
       createdBy: "Adpulseshawal",
       postedBy: "Adpulseshawal",
       status: "Posted"
     },
+
+    // 6. Payment Voucher (PV) via Online Bank Transfer (IBFT)
     {
-      id: "vch-301",
-      voucherNo: "PV-2026-001",
+      id: "vch-pv-002",
+      voucherNo: "BPV-26-002",
       type: "PV",
-      date: "2026-08-01",
+      date: "2026-08-16",
       partyType: "Vendor",
-      vendorId: "vnd-101",
-      party: "ABC Printing",
-      description: "Payment for Independence Day OOH Banner Printing",
-      amount: 45000,
+      party: "Meta Ads",
+      vendorId: "vnd-102",
+      projectId: "prj-005",
+      category: "Digital Marketing",
+      subcategory: "Social Media Ads",
+      accountKey: "digital_marketing",
+      description: "Vendor Payment - Meta Ads via Online Bank Transfer #FT-2026-9921 (MCB)",
+      amount: 180000,
+      netAmount: 180000,
+      paymentMode: "Online Bank Transfer",
+      instrumentNo: "FT-2026-9921",
+      instrumentDate: "2026-08-16",
       via: "Bank",
-      createdBy: "Adpulseshawal",
-      postedBy: "Adpulseshawal",
-      status: "Posted"
-    },
-    {
-      id: "vch-302",
-      voucherNo: "RV-2026-001",
-      type: "RV",
-      date: "2026-08-01",
-      partyType: "Client",
-      clientId: "cli-102",
-      party: "Prime Estate Enterprises",
-      description: "Advance Receipt for Q3 Digital Branding Package",
-      amount: 150000,
-      via: "Bank",
+      bankAccountId: "bank-mcb",
       createdBy: "Adpulsewahab",
       postedBy: "Adpulsewahab",
+      status: "Posted"
+    },
+
+    // 7. Payment Voucher (PV) via Petty Cash Vault
+    {
+      id: "vch-pv-003",
+      voucherNo: "CPV-26-001",
+      type: "PV",
+      date: "2026-08-18",
+      partyType: "Vendor",
+      party: "K-Electric & High-Speed Fiber",
+      vendorId: null,
+      projectId: null,
+      category: "Office & Administration",
+      subcategory: "Utilities (Electricity, Water, Gas)",
+      accountKey: "utilities",
+      description: "Utility & Office Internet Bill Settlement via Petty Cash Vault",
+      amount: 28000,
+      netAmount: 28000,
+      paymentMode: "Petty Cash",
+      instrumentNo: "",
+      instrumentDate: "2026-08-18",
+      via: "Cash",
+      bankAccountId: "bank-cash",
+      createdBy: "Adpulseshawal",
+      postedBy: "Adpulseshawal",
+      status: "Posted"
+    },
+
+    // 8. Contra Transfer Voucher (CTV) Bank to Cash Vault
+    {
+      id: "vch-ctv-001",
+      voucherNo: "CTV-26-001",
+      type: "CTV",
+      date: "2026-08-02",
+      party: "Habib Bank Limited (HBL) → Petty Cash Vault",
+      description: "Internal Contra Transfer: Cash replenishment from HBL to Petty Cash Vault",
+      amount: 50000,
+      netAmount: 50000,
+      sourceBankId: "bank-hbl",
+      targetBankId: "bank-cash",
+      createdBy: "AdpulseCEO",
+      postedBy: "AdpulseCEO",
       status: "Posted"
     }
   ];
@@ -1322,21 +1471,83 @@ function buildInitialJournal(invoices, expenses, vouchers) {
   (vouchers || []).forEach(v => {
     const vBankId = v.bankAccountId || (v.via === "Cash" ? "bank-cash" : "bank-hbl");
     if (v.type === "RV") {
+      const isChequeInHand = v.isPdc || v.receiveMode === "pdc" || v.receiveMode === "PDC";
+      const depositAccount = isChequeInHand ? "cheques_in_hand" : (v.via === "Cash" ? "cash" : "bank");
+      const bAccountId = isChequeInHand ? null : vBankId;
+      
+      const grossAmt = Number(v.amount) || 0;
+      const whtAmt = v.applyWht ? (Number(v.whtAmount) || 0) : 0;
+      const sstAmt = v.applySst ? (Number(v.sstAmount) || 0) : 0;
+      const receivedDeposit = v.netAmount !== undefined ? Number(v.netAmount) : Math.max(0, grossAmt - whtAmt - sstAmt);
+      const creditAcc = v.settleAR === false ? "revenue" : "ar";
+
+      const lines = [
+        { 
+          account: depositAccount, 
+          bankAccountId: bAccountId, 
+          debit: receivedDeposit, 
+          credit: 0, 
+          memo: isChequeInHand 
+            ? `PDC Cheque In-Hand (Chq #${v.chequeNo || 'PDC'}, Maturity: ${v.chequeDate || v.date}, Drawn: ${v.drawnBank || 'Client Bank'})`
+            : `Received via ${v.via === "Cash" ? "Cash" : "Bank"}` 
+        }
+      ];
+      if (whtAmt > 0) {
+        lines.push({ account: "wht_receivable", debit: whtAmt, credit: 0, memo: `WHT Withheld by Client (${v.whtRate || 3}%)` });
+      }
+      if (sstAmt > 0) {
+        lines.push({ account: "srb_payable", debit: sstAmt, credit: 0, memo: `SST Withheld by Client (${v.sstRate || 13}%)` });
+      }
+      lines.push({ account: creditAcc, debit: 0, credit: grossAmt, memo: v.settleAR === false ? "Direct Service Revenue" : "Client Invoice Settlement" });
+
       entries.push({
         id: uid(), date: v.date, reference: v.voucherNo || ("RV-" + v.id.toUpperCase()),
         description: `Receipt - ${v.party} (${v.description})`,
-        lines: [
-          { account: v.via === "Cash" ? "cash" : "bank", bankAccountId: vBankId, debit: Number(v.amount) || 0, credit: 0 },
-          { account: "ar", debit: 0, credit: Number(v.amount) || 0 }
-        ]
+        lines
       });
     } else if (v.type === "PV") {
+      const glKey = v.accountKey || getGLAccountKeyForSubcategory(v.category, v.subcategory) || "expense";
+      const isCash = v.via === "Cash" || v.paymentMode === "Petty Cash";
+      const paymentAccount = isCash ? "cash" : "bank";
+      const bAccountId = isCash ? "bank-cash" : vBankId;
+      const memoText = v.subcategory ? `${v.category} → ${v.subcategory}` : (v.category || "Payment");
+      
+      const billAmt = Number(v.amount) || 0;
+      const commAmt = v.applyCommission ? (Number(v.agencyCommissionAmount) || 0) : 0;
+      const sstAmt = v.applySst ? (Number(v.sstAmount) || 0) : 0;
+      const whtAmt = v.applyWht ? (Number(v.whtAmount) || 0) : 0;
+      const paidAmt = v.netAmount !== undefined ? Number(v.netAmount) : Math.max(0, billAmt - commAmt + sstAmt - whtAmt);
+
+      const paidMemo = isCash 
+        ? "Paid via Petty Cash Vault" 
+        : `Paid via ${v.paymentMode || 'Bank'}${v.instrumentNo ? ` #${v.instrumentNo}` : ""}`;
+
+      const lines = [
+        { account: glKey, debit: billAmt, credit: 0, memo: memoText },
+      ];
+      if (sstAmt > 0) {
+        lines.push({ account: "srb_payable", debit: sstAmt, credit: 0, memo: `Input Sales Tax / SST (${v.sstRate || 15}%)` });
+      }
+      if (commAmt > 0) {
+        lines.push({ account: "revenue", debit: 0, credit: commAmt, memo: `Agency Commission Income (${v.agencyCommissionRate || 10}%)` });
+      }
+      if (whtAmt > 0) {
+        lines.push({ account: "wht_payable", debit: 0, credit: whtAmt, memo: `WHT Withheld from Vendor (${v.whtRate || 1}%)` });
+      }
+      lines.push({ account: paymentAccount, bankAccountId: bAccountId, debit: 0, credit: paidAmt, memo: paidMemo });
+
       entries.push({
         id: uid(), date: v.date, reference: v.voucherNo || ("PV-" + v.id.toUpperCase()),
         description: `Payment - ${v.party} (${v.description})`,
+        lines
+      });
+    } else if (v.type === "CV") {
+      entries.push({
+        id: uid(), date: v.date, reference: v.voucherNo || ("CV-" + v.id.toUpperCase()),
+        description: `Direct Settlement: ${v.party} → ${v.vendor || v.category} (${v.description})`,
         lines: [
-          { account: "ap", debit: Number(v.amount) || 0, credit: 0 },
-          { account: v.via === "Cash" ? "cash" : "bank", bankAccountId: vBankId, debit: 0, credit: Number(v.amount) || 0 }
+          { account: "ap", debit: Number(v.amount) || 0, credit: 0, memo: `AP Settlement: ${v.vendor || v.category}` },
+          { account: "ar", debit: 0, credit: Number(v.amount) || 0, memo: `AR Settlement: ${v.party}` }
         ]
       });
     } else if (v.type === "CTV") {
@@ -1373,29 +1584,7 @@ function seedPayrollRuns() {
 }
 
 function buildInitialData() {
-  return {
-    clients: [],
-    vendors: [],
-    projects: [],
-    invoices: [],
-    expenses: [],
-    vouchers: [],
-    auditLogs: [],
-    bankAccounts: [
-      { id: "bank-hbl", bankName: "Habib Bank Limited (HBL)", accountTitle: "AdPulse IMC PVT LTD (Main Ops)", accountNumber: "0014-2289-1001", iban: "PK36HABB00001422891001", accountType: "Current Account", branch: "Shahrah-e-Faisal Branch", openingBalance: 0, color: "#059669" },
-      { id: "bank-mcb", bankName: "MCB Bank Ltd", accountTitle: "AdPulse Financial Services", accountNumber: "0088-1122-3344", iban: "PK91MUCB008811223344", accountType: "Corporate Account", branch: "II Chundrigar Road Branch", openingBalance: 0, color: "#0284C7" },
-      { id: "bank-cash", bankName: "Petty Cash Vault", accountTitle: "Office Petty Cash Custodian", accountNumber: "CASH-VAULT-01", iban: "N/A (Cash in Hand)", accountType: "Petty Cash", branch: "Main Office Counter", openingBalance: 0, color: "#D97706" }
-    ],
-    hoardings: [],
-    employees: [],
-    inventoryItems: [],
-    inventoryLogs: [],
-    leaveRequests: [],
-    payrollRuns: [],
-    monthlyAttendance: {},
-    journal: [],
-    documents: []
-  };
+  return buildSeedDemoData();
 }
 
 function buildSeedDemoData() {
@@ -1650,7 +1839,7 @@ export default function App() {
   /* Financial & Operations state */
   const [seedData] = useState(buildInitialData);
 
-  const STORAGE_KEY = "adpulse_erp_financial_clean_v7";
+  const STORAGE_KEY = "adpulse_erp_financial_clean_v8";
 
   // Helper to load state from localStorage or fallback to default
   const getInitialState = (key, fallback) => {
