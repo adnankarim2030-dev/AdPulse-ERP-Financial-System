@@ -252,7 +252,7 @@ export function VendorStatementPrintModal({ vendor, dateFrom, dateTo, statementD
             </div>
 
             {/* 4 SUMMARY METRIC CARDS */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, marginBottom: 12 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, marginBottom: 8 }}>
               <div style={{ background: "#FFFFFF", padding: "6px 10px", borderRadius: 5, border: "1px solid #000000", textAlign: "center" }}>
                 <div style={{ fontSize: 8.5, color: "#475569", fontWeight: 700, textTransform: "uppercase" }}>Opening Payable</div>
                 <div style={{ fontSize: 11.5, fontWeight: 800, color: "#1E293B", marginTop: 2 }}>{pkr(statementData.openingPayable)}</div>
@@ -270,6 +270,17 @@ export function VendorStatementPrintModal({ vendor, dateFrom, dateTo, statementD
                 <div style={{ fontSize: 12, fontWeight: 900, color: "#B45309", marginTop: 2 }}>{pkr(statementData.closingPayable)}</div>
               </div>
             </div>
+
+            {/* TAX BREAKDOWN BANNER IN VENDOR PRINT MODAL */}
+            {(statementData.totalGrossBilled > 0 || statementData.totalPayments > 0) && (
+              <div style={{ display: "flex", justifyContent: "space-between", background: "#FFFBEB", border: "1px solid #FCD34D", borderRadius: 4, padding: "4px 8px", marginBottom: 10, fontSize: 8, color: "#78350F" }}>
+                <span><b>Gross AP Billed:</b> {pkr(statementData.totalGrossBilled || statementData.totalExpenses)}</span>
+                <span><b>Agency Comm:</b> {pkr(statementData.totalCommission || 0)}</span>
+                <span><b>Input SST:</b> {pkr(statementData.totalInputSst || 0)}</span>
+                <span><b>WHT Deducted (FBR):</b> {pkr(statementData.totalWhtDeducted || 0)}</span>
+                <span><b>Net Paid (Disbursed):</b> {pkr(statementData.totalPayments)}</span>
+              </div>
+            )}
 
             {/* TRANSACTIONS TABLE - 7 STANDARD SUB-LEDGER COLUMNS */}
             <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 12, fontSize: 9.5, tableLayout: "fixed" }}>
@@ -318,7 +329,24 @@ export function VendorStatementPrintModal({ vendor, dateFrom, dateTo, statementD
                       <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "center", fontWeight: 600, fontSize: 8.8, color: row.type === "Vendor Bill" ? "#D97706" : "#059669" }}>
                         {row.type}
                       </td>
-                      <td style={{ border: "1px solid #000", padding: "5px 5px", wordBreak: "break-word", fontSize: 9 }}>{row.project}</td>
+                      <td style={{ border: "1px solid #000", padding: "5px 5px", wordBreak: "break-word", fontSize: 9 }}>
+                        <div style={{ fontWeight: 600 }}>{row.project}</div>
+                        {row.taxBreakdown && row.taxBreakdown.kind === "bill" && (
+                          <div style={{ fontSize: 7.8, color: "#92400E", marginTop: 2, lineHeight: 1.2 }}>
+                            Gross Bill: {pkr(row.taxBreakdown.gross)} {row.taxBreakdown.category ? `[${row.taxBreakdown.category}]` : ""}
+                          </div>
+                        )}
+                        {row.taxBreakdown && row.taxBreakdown.kind === "payment" && (
+                          <div style={{ fontSize: 7.8, color: "#047857", marginTop: 2, lineHeight: 1.2 }}>
+                            Gross: {pkr(row.taxBreakdown.gross)} {row.taxBreakdown.comm > 0 ? `| Comm (${row.taxBreakdown.commRate}%): -${pkr(row.taxBreakdown.comm)}` : ""} {row.taxBreakdown.sst > 0 ? `| Input SST (${row.taxBreakdown.sstRate}%): +${pkr(row.taxBreakdown.sst)}` : ""} {row.taxBreakdown.wht > 0 ? `| WHT (${row.taxBreakdown.whtRate}%): -${pkr(row.taxBreakdown.wht)}` : ""} | Net Paid: {pkr(row.taxBreakdown.net)} {row.taxBreakdown.mode ? `[${row.taxBreakdown.mode}${row.taxBreakdown.instrumentNo ? ` #${row.taxBreakdown.instrumentNo}` : ""}]` : ""}
+                          </div>
+                        )}
+                        {row.taxBreakdown && row.taxBreakdown.kind === "direct_settlement" && (
+                          <div style={{ fontSize: 7.8, color: "#B45309", marginTop: 2, lineHeight: 1.2 }}>
+                            Direct Settled: {pkr(row.taxBreakdown.amount)} {row.taxBreakdown.mode ? `[${row.taxBreakdown.mode}${row.taxBreakdown.instrumentNo ? ` #${row.taxBreakdown.instrumentNo}` : ""}]` : ""}
+                          </div>
+                        )}
+                      </td>
                       <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "right", color: row.debit > 0 ? "#059669" : "inherit", fontSize: 9, fontWeight: row.debit > 0 ? 700 : 400 }}>
                         {row.debit > 0 ? pkr(row.debit) : "—"}
                       </td>
@@ -390,6 +418,7 @@ export default function VendorStatementView({
   const [dateTo, setDateTo] = useState("2026-08-31");
   const [selectedProjectId, setSelectedProjectId] = useState("all");
   const [showPrintModal, setShowPrintModal] = useState(false);
+  const [showTaxBreakdown, setShowTaxBreakdown] = useState(true);
 
   useEffect(() => {
     if (selectedVendorId) {
@@ -405,7 +434,7 @@ export default function VendorStatementView({
   // Compute transactions & opening balance from posted entries
   const statementData = useMemo(() => {
     if (!selectedVendor) {
-      return { openingPayable: 0, rows: [], totalExpenses: 0, totalPayments: 0, closingPayable: 0 };
+      return { openingPayable: 0, rows: [], totalExpenses: 0, totalPayments: 0, closingPayable: 0, totalGrossBilled: 0, totalGrossPaid: 0, totalCommission: 0, totalInputSst: 0, totalWhtDeducted: 0, totalNetPaid: 0 };
     }
 
     const vendorNameNorm = (selectedVendor.name || "").toLowerCase();
@@ -442,6 +471,7 @@ export default function VendorStatementView({
 
     expenses.filter(e => isVendorMatch(e) && isProjectMatch(e) && e.date >= dateFrom && e.date <= dateTo).forEach(exp => {
       const proj = projects.find(p => p.id === exp.projectId);
+      const gross = Number(exp.amount) || 0;
       rawRows.push({
         id: exp.id,
         date: exp.date,
@@ -449,8 +479,14 @@ export default function VendorStatementView({
         type: "Vendor Bill",
         project: proj ? proj.name : (exp.category || "Operating Expense"),
         debit: 0,
-        credit: Number(exp.amount) || 0,
+        credit: gross,
         status: exp.status === "paid" ? "Paid" : "Unpaid AP",
+        taxBreakdown: {
+          kind: "bill",
+          gross,
+          category: exp.category,
+          subcategory: exp.subcategory
+        },
         raw: exp
       });
     });
@@ -462,6 +498,42 @@ export default function VendorStatementView({
       const defaultDesc = isDirect
         ? `Direct Settlement by Client (${v.party || "Client"})${v.instrumentNo ? ` [${v.paymentMode || 'Inst'} #${v.instrumentNo}]` : ""}`
         : (v.description || `Vendor Payment${v.paymentMode ? ` [${v.paymentMode}${v.instrumentNo ? ` #${v.instrumentNo}` : ''}]` : ''}`);
+
+      const gross = Number(v.grossAmount) || Number(v.amount) || 0;
+      const comm = Number(v.commAmount) || 0;
+      const commRate = Number(v.commRate) || 0;
+      const sst = Number(v.sstAmount) || 0;
+      const sstRate = Number(v.sstRate) || 0;
+      const wht = Number(v.whtAmount) || 0;
+      const whtRate = Number(v.whtRate) || 0;
+      const net = Number(v.netAmount) || Number(v.amount) || 0;
+
+      let taxBreakdown = null;
+      if (isDirect) {
+        taxBreakdown = {
+          kind: "direct_settlement",
+          amount: Number(v.amount) || 0,
+          mode: v.paymentMode || "Direct Settlement",
+          instrumentNo: v.instrumentNo || v.chequeNo,
+          client: v.party || v.client || "Client"
+        };
+      } else {
+        taxBreakdown = {
+          kind: "payment",
+          gross,
+          comm,
+          commRate,
+          sst,
+          sstRate,
+          wht,
+          whtRate,
+          net,
+          mode: v.paymentMode || (v.chequeNo ? "Cross Cheque" : "Bank Transfer"),
+          instrumentNo: v.instrumentNo || v.chequeNo,
+          bank: v.bankAccount || v.bank
+        };
+      }
+
       rawRows.push({
         id: v.id,
         date: v.date,
@@ -471,6 +543,7 @@ export default function VendorStatementView({
         debit: Number(v.amount) || 0,
         credit: 0,
         status: v.status || "Posted",
+        taxBreakdown,
         raw: v
       });
     });
@@ -482,10 +555,26 @@ export default function VendorStatementView({
     let totalExpenses = 0;
     let totalPayments = 0;
 
+    let totalGrossBilled = 0;
+    let totalGrossPaid = 0;
+    let totalCommission = 0;
+    let totalInputSst = 0;
+    let totalWhtDeducted = 0;
+
     const rowsWithBalance = rawRows.map(r => {
       running = running + r.credit - r.debit;
       totalExpenses += r.credit;
       totalPayments += r.debit;
+
+      if (r.type === "Vendor Bill") {
+        totalGrossBilled += r.credit;
+      }
+      if (r.taxBreakdown && r.taxBreakdown.kind === "payment") {
+        totalGrossPaid += (r.taxBreakdown.gross || r.debit);
+        totalCommission += (r.taxBreakdown.comm || 0);
+        totalInputSst += (r.taxBreakdown.sst || 0);
+        totalWhtDeducted += (r.taxBreakdown.wht || 0);
+      }
       return { ...r, runningBalance: running };
     });
 
@@ -494,7 +583,12 @@ export default function VendorStatementView({
       rows: rowsWithBalance,
       totalExpenses,
       totalPayments,
-      closingPayable: running
+      closingPayable: running,
+      totalGrossBilled,
+      totalGrossPaid,
+      totalCommission,
+      totalInputSst,
+      totalWhtDeducted
     };
   }, [selectedVendor, selectedProjectId, dateFrom, dateTo, expenses, vouchers, projects]);
 
@@ -547,6 +641,22 @@ export default function VendorStatementView({
         </div>
 
         <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginTop: 14, borderTop: "1px solid var(--rule)", paddingTop: 10 }}>
+          <button
+            className="btn"
+            onClick={() => setShowTaxBreakdown(!showTaxBreakdown)}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
+              fontSize: 13,
+              background: showTaxBreakdown ? "rgba(217, 119, 6, 0.12)" : "var(--bg)",
+              borderColor: "#D97706",
+              color: "#D97706",
+              fontWeight: 600
+            }}
+          >
+            {showTaxBreakdown ? "✓ Tax & Gross Breakdown: ON" : "Show Tax & Gross Breakdown"}
+          </button>
           <button className="btn" onClick={handleExportExcel} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, background: "#059669", borderColor: "#059669", color: "#FFFFFF" }}>
             <Download size={15} /> Export Excel
           </button>
@@ -601,6 +711,42 @@ export default function VendorStatementView({
                 <div style={{ fontSize: 17, fontWeight: 900, color: "#D97706", marginTop: 4 }}>{pkr(statementData.closingPayable)}</div>
               </div>
             </div>
+
+            {/* TAX BREAKDOWN SUMMARY RIBBON */}
+            {showTaxBreakdown && (
+              <div style={{
+                marginTop: 14,
+                padding: "10px 16px",
+                borderRadius: 8,
+                background: "rgba(217, 119, 6, 0.06)",
+                border: "1px dashed #D97706",
+                display: "grid",
+                gridTemplateColumns: "repeat(5, 1fr)",
+                gap: 12,
+                fontSize: 12
+              }}>
+                <div>
+                  <div style={{ fontSize: 11, color: "var(--ink-muted)", fontWeight: 600 }}>Gross AP Bills Incurred</div>
+                  <div style={{ fontSize: 13, fontWeight: 800, color: "#1E293B", marginTop: 2 }}>{pkr(statementData.totalGrossBilled || statementData.totalExpenses)}</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: 11, color: "var(--ink-muted)", fontWeight: 600 }}>Agency Commission Deducted</div>
+                  <div style={{ fontSize: 13, fontWeight: 800, color: "#D97706", marginTop: 2 }}>{pkr(statementData.totalCommission)}</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: 11, color: "var(--ink-muted)", fontWeight: 600 }}>Input SST Claimed (Adjustable)</div>
+                  <div style={{ fontSize: 13, fontWeight: 800, color: "#0284C7", marginTop: 2 }}>{pkr(statementData.totalInputSst)}</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: 11, color: "var(--ink-muted)", fontWeight: 600 }}>Vendor WHT Deducted (FBR)</div>
+                  <div style={{ fontSize: 13, fontWeight: 800, color: "#DC2626", marginTop: 2 }}>{pkr(statementData.totalWhtDeducted)}</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: 11, color: "var(--ink-muted)", fontWeight: 600 }}>Net Disbursed / Paid Out</div>
+                  <div style={{ fontSize: 13, fontWeight: 800, color: "#059669", marginTop: 2 }}>{pkr(statementData.totalPayments)}</div>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* STATEMENT TABLE */}
@@ -653,7 +799,58 @@ export default function VendorStatementView({
                           {row.type}
                         </span>
                       </td>
-                      <td>{row.project}</td>
+                      <td>
+                        <div style={{ fontWeight: 600 }}>{row.project}</div>
+                        {showTaxBreakdown && row.taxBreakdown && (
+                          <div style={{ marginTop: 5, display: "flex", flexWrap: "wrap", gap: 6 }}>
+                            {row.taxBreakdown.kind === "bill" && (
+                              <span style={{ fontSize: 10.5, padding: "2px 6px", borderRadius: 4, background: "rgba(217, 119, 6, 0.12)", color: "#B45309", fontWeight: 700 }}>
+                                Gross Bill: {pkr(row.taxBreakdown.gross)} {row.taxBreakdown.category ? `[${row.taxBreakdown.category}]` : ""}
+                              </span>
+                            )}
+                            {row.taxBreakdown.kind === "payment" && (
+                              <>
+                                <span style={{ fontSize: 10.5, padding: "2px 6px", borderRadius: 4, background: "rgba(100, 116, 139, 0.12)", color: "#475569", fontWeight: 600 }}>
+                                  Gross: {pkr(row.taxBreakdown.gross)}
+                                </span>
+                                {row.taxBreakdown.comm > 0 && (
+                                  <span style={{ fontSize: 10.5, padding: "2px 6px", borderRadius: 4, background: "rgba(217, 119, 6, 0.12)", color: "#B45309", fontWeight: 700 }}>
+                                    - Comm ({row.taxBreakdown.commRate}%): {pkr(row.taxBreakdown.comm)}
+                                  </span>
+                                )}
+                                {row.taxBreakdown.sst > 0 && (
+                                  <span style={{ fontSize: 10.5, padding: "2px 6px", borderRadius: 4, background: "rgba(2, 132, 199, 0.12)", color: "#0284C7", fontWeight: 700 }}>
+                                    + Input SST ({row.taxBreakdown.sstRate}%): {pkr(row.taxBreakdown.sst)}
+                                  </span>
+                                )}
+                                {row.taxBreakdown.wht > 0 && (
+                                  <span style={{ fontSize: 10.5, padding: "2px 6px", borderRadius: 4, background: "rgba(220, 38, 38, 0.12)", color: "#DC2626", fontWeight: 700 }}>
+                                    - WHT ({row.taxBreakdown.whtRate}%): {pkr(row.taxBreakdown.wht)}
+                                  </span>
+                                )}
+                                <span style={{ fontSize: 10.5, padding: "2px 6px", borderRadius: 4, background: "rgba(5, 150, 105, 0.12)", color: "#059669", fontWeight: 800 }}>
+                                  Net Paid: {pkr(row.taxBreakdown.net)}
+                                </span>
+                                {row.taxBreakdown.mode && (
+                                  <span style={{ fontSize: 10, padding: "2px 6px", borderRadius: 4, background: "var(--bg)", border: "1px solid var(--rule)", color: "var(--ink-muted)" }}>
+                                    {row.taxBreakdown.mode}{row.taxBreakdown.instrumentNo ? ` #${row.taxBreakdown.instrumentNo}` : ""}
+                                  </span>
+                                )}
+                              </>
+                            )}
+                            {row.taxBreakdown.kind === "direct_settlement" && (
+                              <>
+                                <span style={{ fontSize: 10.5, padding: "2px 6px", borderRadius: 4, background: "rgba(217, 119, 6, 0.12)", color: "#B45309", fontWeight: 700 }}>
+                                  Direct Settled: {pkr(row.taxBreakdown.amount)}
+                                </span>
+                                <span style={{ fontSize: 10, padding: "2px 6px", borderRadius: 4, background: "var(--bg)", border: "1px solid var(--rule)", color: "var(--ink-muted)" }}>
+                                  Client: {row.taxBreakdown.client} {row.taxBreakdown.instrumentNo ? `[#${row.taxBreakdown.instrumentNo}]` : ""}
+                                </span>
+                              </>
+                            )}
+                          </div>
+                        )}
+                      </td>
                       <td style={{ textAlign: "right", color: row.debit > 0 ? "#059669" : "inherit", fontWeight: row.debit > 0 ? 700 : 400 }}>
                         {row.debit > 0 ? pkr(row.debit) : "—"}
                       </td>

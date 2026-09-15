@@ -253,7 +253,7 @@ export function ClientStatementPrintModal({ client, dateFrom, dateTo, statementD
             </div>
 
             {/* 4 SUMMARY METRIC CARDS */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, marginBottom: 12 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, marginBottom: 8 }}>
               <div style={{ background: "#FFFFFF", padding: "6px 10px", borderRadius: 5, border: "1px solid #000000", textAlign: "center" }}>
                 <div style={{ fontSize: 8.5, color: "#475569", fontWeight: 700, textTransform: "uppercase" }}>Opening Balance</div>
                 <div style={{ fontSize: 11.5, fontWeight: 800, color: "#1E293B", marginTop: 2 }}>{pkr(statementData.openingBalance)}</div>
@@ -271,6 +271,17 @@ export function ClientStatementPrintModal({ client, dateFrom, dateTo, statementD
                 <div style={{ fontSize: 12, fontWeight: 900, color: "#0369A1", marginTop: 2 }}>{pkr(statementData.closingBalance)}</div>
               </div>
             </div>
+
+            {/* TAX BREAKDOWN BANNER IN PRINT MODAL */}
+            {statementData.totalGrossInvoiced > 0 && (
+              <div style={{ display: "flex", justifyContent: "space-between", background: "#F8FAFC", border: "1px solid #94A3B8", borderRadius: 4, padding: "4px 8px", marginBottom: 10, fontSize: 8, color: "#1E293B" }}>
+                <span><b>Gross Invoiced:</b> {pkr(statementData.totalGrossInvoiced)}</span>
+                <span><b>Output SST (SRB/PRA):</b> {pkr(statementData.totalSstInvoiced)}</span>
+                <span><b>WHT Withheld (FBR):</b> {pkr(statementData.totalWhtWithheld)}</span>
+                <span><b>SST Withheld:</b> {pkr(statementData.totalSstWithheld)}</span>
+                <span><b>Net Realized:</b> {pkr(statementData.totalReceived)}</span>
+              </div>
+            )}
 
             {/* TRANSACTIONS TABLE - 7 STANDARD SUB-LEDGER COLUMNS */}
             <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 12, fontSize: 9.5, tableLayout: "fixed" }}>
@@ -319,7 +330,24 @@ export function ClientStatementPrintModal({ client, dateFrom, dateTo, statementD
                       <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "center", fontWeight: 600, fontSize: 8.8, color: row.type === "Invoice" ? "#0284C7" : "#059669" }}>
                         {row.type}
                       </td>
-                      <td style={{ border: "1px solid #000", padding: "5px 5px", wordBreak: "break-word", fontSize: 9 }}>{row.project}</td>
+                      <td style={{ border: "1px solid #000", padding: "5px 5px", wordBreak: "break-word", fontSize: 9 }}>
+                        <div style={{ fontWeight: 600 }}>{row.project}</div>
+                        {row.taxBreakdown && row.taxBreakdown.kind === "invoice" && (
+                          <div style={{ fontSize: 7.8, color: "#475569", marginTop: 2, lineHeight: 1.2 }}>
+                            Gross: {pkr(row.taxBreakdown.gross)} {row.taxBreakdown.sst > 0 ? `| SST (${row.taxBreakdown.sstRate}%): +${pkr(row.taxBreakdown.sst)}` : ""} {row.taxBreakdown.discount > 0 ? `| Disc: -${pkr(row.taxBreakdown.discount)}` : ""}
+                          </div>
+                        )}
+                        {row.taxBreakdown && row.taxBreakdown.kind === "receipt" && (
+                          <div style={{ fontSize: 7.8, color: "#047857", marginTop: 2, lineHeight: 1.2 }}>
+                            Gross: {pkr(row.taxBreakdown.gross)} {row.taxBreakdown.wht > 0 ? `| WHT (${row.taxBreakdown.whtRate}%): -${pkr(row.taxBreakdown.wht)}` : ""} {row.taxBreakdown.sst > 0 ? `| SST Withheld (${row.taxBreakdown.sstRate}%): -${pkr(row.taxBreakdown.sst)}` : ""} | Net Rec: {pkr(row.taxBreakdown.net)} {row.taxBreakdown.mode ? `[${row.taxBreakdown.mode}${row.taxBreakdown.instrumentNo ? ` #${row.taxBreakdown.instrumentNo}` : ""}]` : ""}
+                          </div>
+                        )}
+                        {row.taxBreakdown && row.taxBreakdown.kind === "direct_settlement" && (
+                          <div style={{ fontSize: 7.8, color: "#B45309", marginTop: 2, lineHeight: 1.2 }}>
+                            Direct Settled: {pkr(row.taxBreakdown.amount)} {row.taxBreakdown.mode ? `[${row.taxBreakdown.mode}${row.taxBreakdown.instrumentNo ? ` #${row.taxBreakdown.instrumentNo}` : ""}]` : ""}
+                          </div>
+                        )}
+                      </td>
                       <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "right", color: row.debit > 0 ? "#0284C7" : "inherit", fontSize: 9, fontWeight: row.debit > 0 ? 700 : 400 }}>
                         {row.debit > 0 ? pkr(row.debit) : "—"}
                       </td>
@@ -392,6 +420,7 @@ export default function ClientStatementView({
   const [selectedProjectId, setSelectedProjectId] = useState("all");
   const [selectedTxType, setSelectedTxType] = useState("all");
   const [showPrintModal, setShowPrintModal] = useState(false);
+  const [showTaxBreakdown, setShowTaxBreakdown] = useState(true);
 
   useEffect(() => {
     if (selectedClientId) {
@@ -455,6 +484,13 @@ export default function ClientStatementView({
     // Add Invoices
     invoices.filter(i => isClientMatch(i) && isProjectMatch(i) && i.issueDate >= dateFrom && i.issueDate <= dateTo).forEach(inv => {
       const proj = projects.find(p => p.id === inv.projectId);
+      const gross = Number(inv.subtotal || (Number(inv.totalAmount || inv.amount || 0) - Number(inv.tax || inv.salesTax || 0) + Number(inv.discount || 0))) || Number(inv.totalAmount || inv.amount) || 0;
+      const discount = Number(inv.discount) || 0;
+      const comm = Number(inv.agencyCommission || inv.commission) || 0;
+      const sst = Number(inv.tax || inv.salesTax || inv.sstAmount) || 0;
+      const sstRate = Number(inv.salesTaxRate || inv.taxRate) || (gross > 0 && sst > 0 ? Math.round((sst / gross) * 100) : 0);
+      const total = Number(inv.totalAmount || inv.amount) || 0;
+
       rawRows.push({
         id: inv.id,
         date: inv.issueDate,
@@ -462,9 +498,18 @@ export default function ClientStatementView({
         ref: cleanInvoiceNo(inv.invoiceNo || inv.id),
         type: "Invoice",
         project: proj ? proj.name : (inv.description || "General"),
-        debit: Number(inv.totalAmount || inv.amount) || 0,
+        debit: total,
         credit: 0,
         status: inv.paid ? "Paid" : "Outstanding",
+        taxBreakdown: {
+          kind: "invoice",
+          gross,
+          discount,
+          comm,
+          sst,
+          sstRate,
+          total
+        },
         raw: inv
       });
     });
@@ -489,6 +534,38 @@ export default function ClientStatementView({
           : `Post-Dated Cheque In-Hand [Chq #${v.chequeNo || 'PDC'}] (Due: ${v.chequeDate || v.date})`;
       }
 
+      // Compute Receipt Tax Details
+      const netPaid = Number(v.amount) || 0;
+      const wht = Number(v.whtAmount) || 0;
+      const whtRate = Number(v.whtRate) || 0;
+      const sst = Number(v.sstWithheld) || 0;
+      const sstRate = Number(v.sstRate) || 0;
+      const grossSettled = Number(v.grossAmount) || (netPaid + wht + sst);
+
+      let taxBreakdown = null;
+      if (v.type === "RV") {
+        taxBreakdown = {
+          kind: "receipt",
+          gross: grossSettled,
+          wht,
+          whtRate,
+          sst,
+          sstRate,
+          net: netPaid,
+          mode: v.paymentMode || (v.isPdc ? "Post-Dated Cheque" : "Cross Cheque / Bank"),
+          instrumentNo: v.instrumentNo || v.chequeNo,
+          bank: v.bankAccount || v.bank
+        };
+      } else if (v.type === "CV") {
+        taxBreakdown = {
+          kind: "direct_settlement",
+          amount: netPaid,
+          mode: v.paymentMode || "Direct Settlement",
+          instrumentNo: v.instrumentNo || v.chequeNo,
+          vendor: v.category || v.vendor || v.party || "Vendor"
+        };
+      }
+
       rawRows.push({
         id: v.id,
         date: v.date,
@@ -498,6 +575,7 @@ export default function ClientStatementView({
         debit: isCredit ? 0 : Number(v.amount) || 0,
         credit: isCredit ? Number(v.amount) || 0 : 0,
         status: v.isPdc ? (v.pdcStatus || "In-Hand") : (v.status || "Posted"),
+        taxBreakdown,
         raw: v
       });
     });
@@ -511,16 +589,35 @@ export default function ClientStatementView({
     // Sort chronologically
     filteredRows.sort((a, b) => new Date(a.date) - new Date(b.date));
 
-    // Calculate Running Balance
+    // Calculate Running Balance and Tax Metrics
     let running = opening;
     let totalInvoiced = 0;
     let totalReceived = 0;
     let creditNotes = 0;
 
+    let totalGrossInvoiced = 0;
+    let totalSstInvoiced = 0;
+    let totalGrossReceived = 0;
+    let totalWhtWithheld = 0;
+    let totalSstWithheld = 0;
+
     const rowsWithBalance = filteredRows.map(r => {
       running = running + r.debit - r.credit;
-      if (r.type === "Invoice") totalInvoiced += r.debit;
-      if (r.type === "Receipt") totalReceived += r.credit;
+      if (r.type === "Invoice") {
+        totalInvoiced += r.debit;
+        if (r.taxBreakdown) {
+          totalGrossInvoiced += (r.taxBreakdown.gross || r.debit);
+          totalSstInvoiced += (r.taxBreakdown.sst || 0);
+        }
+      }
+      if (r.type === "Receipt" || r.type === "PDC Cheque" || r.type === "Direct Settlement") {
+        totalReceived += r.credit;
+        if (r.taxBreakdown && r.taxBreakdown.kind === "receipt") {
+          totalGrossReceived += (r.taxBreakdown.gross || r.credit);
+          totalWhtWithheld += (r.taxBreakdown.wht || 0);
+          totalSstWithheld += (r.taxBreakdown.sst || 0);
+        }
+      }
       if (r.type === "Credit Note") creditNotes += r.credit;
       return { ...r, runningBalance: running };
     });
@@ -531,7 +628,12 @@ export default function ClientStatementView({
       totalInvoiced,
       totalReceived,
       creditNotes,
-      closingBalance: running
+      closingBalance: running,
+      totalGrossInvoiced,
+      totalSstInvoiced,
+      totalGrossReceived,
+      totalWhtWithheld,
+      totalSstWithheld
     };
   }, [selectedClient, selectedProjectId, selectedTxType, dateFrom, dateTo, invoices, vouchers, projects]);
 
@@ -639,6 +741,22 @@ export default function ClientStatementView({
         </div>
 
         <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginTop: 14, borderTop: "1px solid var(--rule)", paddingTop: 10 }}>
+          <button
+            className="btn"
+            onClick={() => setShowTaxBreakdown(!showTaxBreakdown)}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
+              fontSize: 13,
+              background: showTaxBreakdown ? "rgba(2, 132, 199, 0.12)" : "var(--bg)",
+              borderColor: "#0284C7",
+              color: "#0284C7",
+              fontWeight: 600
+            }}
+          >
+            {showTaxBreakdown ? "✓ Tax & Gross Breakdown: ON" : "Show Tax & Gross Breakdown"}
+          </button>
           <button className="btn" onClick={handleExportExcel} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, background: "#059669", borderColor: "#059669", color: "#FFFFFF" }}>
             <Download size={15} /> Export Excel
           </button>
@@ -703,6 +821,42 @@ export default function ClientStatementView({
                 <div style={{ fontSize: 15, fontWeight: 800, color: agingReport.total > 0 ? "#DC2626" : "#059669", marginTop: 4 }}>{pkr(agingReport.days30 + agingReport.days60 + agingReport.days90 + agingReport.days90Plus)}</div>
               </div>
             </div>
+
+            {/* TAX BREAKDOWN SUMMARY RIBBON */}
+            {showTaxBreakdown && (
+              <div style={{
+                marginTop: 14,
+                padding: "10px 16px",
+                borderRadius: 8,
+                background: "rgba(2, 132, 199, 0.06)",
+                border: "1px dashed #0284C7",
+                display: "grid",
+                gridTemplateColumns: "repeat(5, 1fr)",
+                gap: 12,
+                fontSize: 12
+              }}>
+                <div>
+                  <div style={{ fontSize: 11, color: "var(--ink-muted)", fontWeight: 600 }}>Pre-Tax Gross Invoiced</div>
+                  <div style={{ fontSize: 13, fontWeight: 800, color: "#1E293B", marginTop: 2 }}>{pkr(statementData.totalGrossInvoiced)}</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: 11, color: "var(--ink-muted)", fontWeight: 600 }}>Output SST (Sales Tax)</div>
+                  <div style={{ fontSize: 13, fontWeight: 800, color: "#0284C7", marginTop: 2 }}>{pkr(statementData.totalSstInvoiced)}</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: 11, color: "var(--ink-muted)", fontWeight: 600 }}>Client WHT Withheld (FBR)</div>
+                  <div style={{ fontSize: 13, fontWeight: 800, color: "#D97706", marginTop: 2 }}>{pkr(statementData.totalWhtWithheld)}</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: 11, color: "var(--ink-muted)", fontWeight: 600 }}>Client SST Withheld (SRB)</div>
+                  <div style={{ fontSize: 13, fontWeight: 800, color: "#8B5CF6", marginTop: 2 }}>{pkr(statementData.totalSstWithheld)}</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: 11, color: "var(--ink-muted)", fontWeight: 600 }}>Net Cash Realized</div>
+                  <div style={{ fontSize: 13, fontWeight: 800, color: "#059669", marginTop: 2 }}>{pkr(statementData.totalReceived)}</div>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* CLIENT AGING BAR */}
@@ -782,7 +936,68 @@ export default function ClientStatementView({
                           {row.type}
                         </span>
                       </td>
-                      <td>{row.project}</td>
+                      <td>
+                        <div style={{ fontWeight: 600 }}>{row.project}</div>
+                        {showTaxBreakdown && row.taxBreakdown && (
+                          <div style={{ marginTop: 5, display: "flex", flexWrap: "wrap", gap: 6 }}>
+                            {row.taxBreakdown.kind === "invoice" && (
+                              <>
+                                <span style={{ fontSize: 10.5, padding: "2px 6px", borderRadius: 4, background: "rgba(100, 116, 139, 0.12)", color: "#475569", fontWeight: 600 }}>
+                                  Gross: {pkr(row.taxBreakdown.gross)}
+                                </span>
+                                {row.taxBreakdown.sst > 0 && (
+                                  <span style={{ fontSize: 10.5, padding: "2px 6px", borderRadius: 4, background: "rgba(2, 132, 199, 0.12)", color: "#0284C7", fontWeight: 700 }}>
+                                    + Output SST ({row.taxBreakdown.sstRate}%): {pkr(row.taxBreakdown.sst)}
+                                  </span>
+                                )}
+                                {row.taxBreakdown.discount > 0 && (
+                                  <span style={{ fontSize: 10.5, padding: "2px 6px", borderRadius: 4, background: "rgba(220, 38, 38, 0.12)", color: "#DC2626", fontWeight: 600 }}>
+                                    - Discount: {pkr(row.taxBreakdown.discount)}
+                                  </span>
+                                )}
+                                <span style={{ fontSize: 10.5, padding: "2px 6px", borderRadius: 4, background: "rgba(15, 23, 42, 0.08)", color: "#0F172A", fontWeight: 700 }}>
+                                  Total: {pkr(row.taxBreakdown.total)}
+                                </span>
+                              </>
+                            )}
+                            {row.taxBreakdown.kind === "receipt" && (
+                              <>
+                                <span style={{ fontSize: 10.5, padding: "2px 6px", borderRadius: 4, background: "rgba(100, 116, 139, 0.12)", color: "#475569", fontWeight: 600 }}>
+                                  Gross Settled: {pkr(row.taxBreakdown.gross)}
+                                </span>
+                                {row.taxBreakdown.wht > 0 && (
+                                  <span style={{ fontSize: 10.5, padding: "2px 6px", borderRadius: 4, background: "rgba(217, 119, 6, 0.12)", color: "#B45309", fontWeight: 700 }}>
+                                    - Less WHT ({row.taxBreakdown.whtRate}%): {pkr(row.taxBreakdown.wht)}
+                                  </span>
+                                )}
+                                {row.taxBreakdown.sst > 0 && (
+                                  <span style={{ fontSize: 10.5, padding: "2px 6px", borderRadius: 4, background: "rgba(139, 92, 246, 0.12)", color: "#7C3AED", fontWeight: 700 }}>
+                                    - Less SST ({row.taxBreakdown.sstRate}%): {pkr(row.taxBreakdown.sst)}
+                                  </span>
+                                )}
+                                <span style={{ fontSize: 10.5, padding: "2px 6px", borderRadius: 4, background: "rgba(5, 150, 105, 0.12)", color: "#059669", fontWeight: 800 }}>
+                                  Net Deposited: {pkr(row.taxBreakdown.net)}
+                                </span>
+                                {row.taxBreakdown.mode && (
+                                  <span style={{ fontSize: 10, padding: "2px 6px", borderRadius: 4, background: "var(--bg)", border: "1px solid var(--rule)", color: "var(--ink-muted)" }}>
+                                    {row.taxBreakdown.mode}{row.taxBreakdown.instrumentNo ? ` #${row.taxBreakdown.instrumentNo}` : ""}
+                                  </span>
+                                )}
+                              </>
+                            )}
+                            {row.taxBreakdown.kind === "direct_settlement" && (
+                              <>
+                                <span style={{ fontSize: 10.5, padding: "2px 6px", borderRadius: 4, background: "rgba(217, 119, 6, 0.12)", color: "#B45309", fontWeight: 700 }}>
+                                  Direct Settled: {pkr(row.taxBreakdown.amount)}
+                                </span>
+                                <span style={{ fontSize: 10, padding: "2px 6px", borderRadius: 4, background: "var(--bg)", border: "1px solid var(--rule)", color: "var(--ink-muted)" }}>
+                                  Vendor: {row.taxBreakdown.vendor} {row.taxBreakdown.instrumentNo ? `[#${row.taxBreakdown.instrumentNo}]` : ""}
+                                </span>
+                              </>
+                            )}
+                          </div>
+                        )}
+                      </td>
                       <td style={{ textAlign: "right", color: row.debit > 0 ? "#0284C7" : "inherit", fontWeight: row.debit > 0 ? 700 : 400 }}>
                         {row.debit > 0 ? pkr(row.debit) : "—"}
                       </td>
