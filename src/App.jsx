@@ -533,13 +533,14 @@ function getGLAccountKeyForSubcategory(catName, subName) {
   if (!catName) return "expense";
   const catObj = EXPENSE_CLASSIFICATION[catName];
   if (!catObj) {
-    if (catName === "Ad Spend") return "ad_spend";
-    if (catName === "Software") return "software";
-    if (catName === "Rent") return "rent";
-    if (catName === "Contractor") return "contractor";
-    if (catName === "Utilities") return "utilities";
-    if (catName === "Payroll") return "payroll";
-    if (catName === "Production Vendor") return "direct_vendor";
+    const c = catName.toLowerCase();
+    if (c.includes("ad spend") || c.includes("digital marketing") || c.includes("meta") || c.includes("media spend")) return "ad_spend";
+    if (c.includes("software") || c.includes("subscription")) return "software";
+    if (c.includes("rent")) return "rent";
+    if (c.includes("contractor") || c.includes("freelance")) return "contractor";
+    if (c.includes("utilit") || c.includes("electric") || c.includes("internet") || c.includes("fiber")) return "utilities";
+    if (c.includes("payroll") || c.includes("salar")) return "payroll";
+    if (c.includes("production") || c.includes("printing") || c.includes("billboard") || c.includes("ooh") || c.includes("vendor")) return "direct_vendor";
     return "expense";
   }
   const subObj = catObj.subcategories.find(s => s.name === subName);
@@ -1241,7 +1242,7 @@ function seedVouchers() {
       projectId: "prj-008",
       category: "Printing & Production",
       subcategory: "Large Format Printing",
-      accountKey: "printing_production",
+      accountKey: "direct_vendor",
       description: "Vendor Payment - ABC Printing via Cross Cheque #682014 (HBL Main Ops)",
       amount: 250000,
       applyCommission: true,
@@ -1276,7 +1277,7 @@ function seedVouchers() {
       projectId: "prj-005",
       category: "Digital Marketing",
       subcategory: "Social Media Ads",
-      accountKey: "digital_marketing",
+      accountKey: "ad_spend",
       description: "Vendor Payment - Meta Ads via Online Bank Transfer #FT-2026-9921 (MCB)",
       amount: 180000,
       netAmount: 180000,
