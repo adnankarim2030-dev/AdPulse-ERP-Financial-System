@@ -15476,7 +15476,46 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
     <div className="modal-backdrop" onClick={onClose}>
       <style>{`
         @page { size: ${PAGE_SIZES[pageSize] || pageSize} ${pageOrientation}; margin: ${pageMargin}; }
-        .print-area table, .print-area th, .print-area td { border-color: #000000 !important; }
+        .print-area table {
+          width: 100% !important;
+          max-width: 100% !important;
+          table-layout: fixed !important;
+          border-collapse: collapse !important;
+          min-width: 0 !important;
+          margin-bottom: 14px !important;
+          border: 1px solid #000000 !important;
+        }
+        .print-area th {
+          font-size: 8.5px !important;
+          padding: 6px 3px !important;
+          text-align: center !important;
+          vertical-align: middle !important;
+          font-weight: 800 !important;
+          box-sizing: border-box !important;
+          line-height: 1.25 !important;
+          background: #F1F5F9 !important;
+          color: #0F172A !important;
+          border: 1px solid #000000 !important;
+          letter-spacing: normal !important;
+          text-transform: uppercase !important;
+          white-space: normal !important;
+          word-break: break-word !important;
+          box-shadow: none !important;
+        }
+        .print-area td {
+          font-size: 9px !important;
+          padding: 5px 3px !important;
+          vertical-align: middle !important;
+          box-sizing: border-box !important;
+          border: 1px solid #000000 !important;
+          color: #0F172A !important;
+          font-weight: 600 !important;
+          line-height: 1.25 !important;
+          word-break: break-word !important;
+          background: transparent !important;
+          box-shadow: none !important;
+          white-space: normal !important;
+        }
         .no-print-header select option {
           background-color: #1E293B !important;
           color: #FFFFFF !important;
