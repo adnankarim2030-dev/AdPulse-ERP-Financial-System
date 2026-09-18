@@ -53,7 +53,7 @@ function fmtDate(d) {
 export function cleanInvoiceNo(raw) {
   if (!raw) return "INV-26-001";
   let s = String(raw).trim();
-  if (/^inv[-_]/i.test(s)) {
+  if (/^(inv|po|ro|exp|brv|crv|bpv|cpv|jv|ctv|cv|rv|pv|prj)[-_]/i.test(s)) {
     return s.toUpperCase();
   }
   return "INV-" + s.toUpperCase();
@@ -15149,25 +15149,34 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
     ? (totalAmountAfterDiscount - agencyCommissionVal)
     : (totalAmountAfterDiscount + agencyCommissionVal);
 
+  const isRV = doc.type === "RV" || docTitle.includes("RECEIPT") || (doc.voucherNo && String(doc.voucherNo).toUpperCase().includes("RV"));
+  const isPV = doc.type === "PV" || docTitle.includes("PAYMENT") || (doc.voucherNo && String(doc.voucherNo).toUpperCase().includes("PV"));
+
   const hasSst = Boolean(doc.applySst);
-  const sstRatePct = doc.sstRate !== undefined ? Number(doc.sstRate) : 15;
+  const sstRatePct = doc.sstRate !== undefined ? Number(doc.sstRate) : (isRV ? 13 : 15);
   const isSstOnComm = doc.sstBasis === "commission" || doc.sstOnCommission;
-  const sstBaseAmt = isSstOnComm ? agencyCommissionVal : grossAmountWithComm;
+  const sstBaseAmt = isSstOnComm ? agencyCommissionVal : (isRV ? grandTotal : grossAmountWithComm);
   const sstAmt = hasSst
     ? (doc.sstAmount !== undefined ? Number(doc.sstAmount) : (sstBaseAmt * (sstRatePct / 100)))
     : 0;
 
-  const netTotalBeforeWht = grossAmountWithComm + sstAmt;
-
   const hasWht = Boolean(doc.applyWht);
   const whtRatePct = doc.whtRate !== undefined ? Number(doc.whtRate) : 3;
+  const whtBaseAmt = isRV ? grandTotal : (grossAmountWithComm + (isPV ? 0 : sstAmt));
   const whtAmt = hasWht
-    ? (doc.whtAmount !== undefined ? Number(doc.whtAmount) : (netTotalBeforeWht * (whtRatePct / 100)))
+    ? (doc.whtAmount !== undefined ? Number(doc.whtAmount) : (whtBaseAmt * (whtRatePct / 100)))
     : 0;
 
-  const finalPayable = doc.totalAmount !== undefined && Number(doc.totalAmount) > 0
-    ? Number(doc.totalAmount)
-    : (netTotalBeforeWht - whtAmt);
+  let finalPayable;
+  if (isRV) {
+    finalPayable = doc.netAmount !== undefined ? Number(doc.netAmount) : Math.max(0, grandTotal - sstAmt - whtAmt);
+  } else if (isPV) {
+    finalPayable = doc.netAmount !== undefined ? Number(doc.netAmount) : Math.max(0, grossAmountWithComm + sstAmt - whtAmt);
+  } else if (doc.totalAmount !== undefined && Number(doc.totalAmount) > 0) {
+    finalPayable = Number(doc.totalAmount);
+  } else {
+    finalPayable = grossAmountWithComm + sstAmt - whtAmt;
+  }
 
   const netAmt = rawBaseAmt;
   const totalAmt = finalPayable;
@@ -15201,6 +15210,48 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
   const renderTotals = (colSpanAmount) => {
     const labelStyle = { border: "1px solid #000000", padding: "6px 12px", fontWeight: 800, textAlign: "right", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9.5, whiteSpace: "nowrap" };
     const valStyle = { border: "1px solid #000000", padding: "6px 4px", textAlign: "center", verticalAlign: "middle", fontWeight: 800, boxSizing: "border-box", fontSize: 9.5, whiteSpace: "nowrap" };
+
+    if (isRV) {
+      return (
+        <React.Fragment>
+          {/* 1. GROSS SETTLEMENT AMOUNT */}
+          <tr>
+            <td colSpan={colSpanAmount} style={labelStyle}>GROSS SETTLEMENT AMOUNT</td>
+            <td style={valStyle}>{pkr(grandTotal)}</td>
+          </tr>
+
+          {/* 2. LESS: SINDH SALES TAX (SST) WITHHELD */}
+          {hasSst && (
+            <tr>
+              <td colSpan={colSpanAmount} style={{ ...labelStyle, color: "#DC2626" }}>
+                LESS: SINDH SALES TAX (SST) WITHHELD ({sstRatePct}%)
+              </td>
+              <td style={{ ...valStyle, color: "#DC2626" }}>- {pkr(sstAmt)}</td>
+            </tr>
+          )}
+
+          {/* 3. LESS: WITHHOLDING TAX (WHT) DEDUCTION */}
+          {hasWht && (
+            <tr>
+              <td colSpan={colSpanAmount} style={{ ...labelStyle, color: "#DC2626" }}>
+                LESS: WITHHOLDING TAX (WHT) DEDUCTION ({whtRatePct}%)
+              </td>
+              <td style={{ ...valStyle, color: "#DC2626" }}>- {pkr(whtAmt)}</td>
+            </tr>
+          )}
+
+          {/* 4. NET RECEIVED / DEPOSIT AMOUNT */}
+          <tr style={{ background: "#F1F5F9", fontWeight: 800 }}>
+            <td colSpan={colSpanAmount} style={{ border: "1px solid #000000", padding: "7px 12px", fontSize: 10, textAlign: "right", verticalAlign: "middle", boxSizing: "border-box", fontWeight: 800, whiteSpace: "nowrap" }}>
+              NET RECEIVED / DEPOSIT AMOUNT
+            </td>
+            <td style={{ border: "1px solid #000000", padding: "7px 4px", textAlign: "center", verticalAlign: "middle", fontSize: 10, color: "#059669", boxSizing: "border-box", fontWeight: 800, whiteSpace: "nowrap" }}>
+              {pkr(finalPayable)}
+            </td>
+          </tr>
+        </React.Fragment>
+      );
+    }
 
     const showHierarchy = hasDiscount || hasCommission || hasSst;
 
@@ -15326,10 +15377,10 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
     }
 
     csvContent += `\n`;
-    csvContent += `Subtotal Amount (PKR):,${(doc.amount || 0).toFixed(2)}\n`;
-    if (doc.applySst) csvContent += `SRB Sales Tax (15%):,${(doc.sstAmount || 0).toFixed(2)}\n`;
-    if (doc.applyWht) csvContent += `WHT Withholding (3%):,${(doc.whtAmount || 0).toFixed(2)}\n`;
-    csvContent += `NET TOTAL RECEIVABLE (PKR):,${(doc.totalAmount || doc.amount || 0).toFixed(2)}\n\n`;
+    csvContent += `Subtotal / Gross Settlement (PKR):,${(grandTotal || doc.amount || 0).toFixed(2)}\n`;
+    if (hasSst) csvContent += `${isRV ? 'Less: SRB Sales Tax Withheld' : 'SRB Sales Tax'} (${sstRatePct}%):,${(isRV ? -sstAmt : sstAmt).toFixed(2)}\n`;
+    if (hasWht) csvContent += `Less: WHT Withholding (${whtRatePct}%):,-${(whtAmt || 0).toFixed(2)}\n`;
+    csvContent += `${isRV ? 'NET RECEIVED / DEPOSIT AMOUNT' : 'NET TOTAL RECEIVABLE'} (PKR):,${(finalPayable).toFixed(2)}\n\n`;
     csvContent += `Special Notes & Terms:,"${(specialNote || "").replace(/\n/g, ' ').replace(/"/g, '""')}"\n`;
 
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
