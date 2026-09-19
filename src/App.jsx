@@ -28,6 +28,10 @@ import ProjectFinancialDashboard from "./components/ProjectFinancialDashboard.js
 import AiDocumentDuplicateModal from "./components/AiDocumentDuplicateModal.jsx";
 import GlobalSearchBar from "./components/GlobalSearchBar.jsx";
 import StaffAuditTimeline from "./components/StaffAuditTimeline.jsx";
+import {
+  REAL_CLIENTS, REAL_VENDORS, REAL_PROJECTS,
+  REAL_INVOICES, REAL_EXPENSES, REAL_VOUCHERS, REAL_JOURNAL
+} from "./data/realLedgerSeedData.js";
 
 /* ---------- HELPERS & FORMATTERS ---------- */
 
@@ -1589,12 +1593,12 @@ function buildInitialData() {
 }
 
 function buildSeedDemoData() {
-  const clients = seedClients();
-  const vendors = seedVendors();
-  const projects = seedProjects();
-  const invoices = seedInvoices();
-  const expenses = seedExpenses();
-  const vouchers = seedVouchers();
+  const clients = (typeof REAL_CLIENTS !== "undefined" && Array.isArray(REAL_CLIENTS) && REAL_CLIENTS.length > 0) ? REAL_CLIENTS : seedClients();
+  const vendors = (typeof REAL_VENDORS !== "undefined" && Array.isArray(REAL_VENDORS) && REAL_VENDORS.length > 0) ? REAL_VENDORS : seedVendors();
+  const projects = (typeof REAL_PROJECTS !== "undefined" && Array.isArray(REAL_PROJECTS) && REAL_PROJECTS.length > 0) ? REAL_PROJECTS : seedProjects();
+  const invoices = (typeof REAL_INVOICES !== "undefined" && Array.isArray(REAL_INVOICES) && REAL_INVOICES.length > 0) ? REAL_INVOICES : seedInvoices();
+  const expenses = (typeof REAL_EXPENSES !== "undefined" && Array.isArray(REAL_EXPENSES) && REAL_EXPENSES.length > 0) ? REAL_EXPENSES : seedExpenses();
+  const vouchers = (typeof REAL_VOUCHERS !== "undefined" && Array.isArray(REAL_VOUCHERS) && REAL_VOUCHERS.length > 0) ? REAL_VOUCHERS : seedVouchers();
   const auditLogs = seedAuditLogs();
   const bankAccounts = seedBankAccounts();
   const hoardings = seedHoardings();
@@ -1604,7 +1608,7 @@ function buildSeedDemoData() {
   const leaveRequests = seedLeaveRequests();
   const payrollRuns = seedPayrollRuns();
   const monthlyAttendance = seedMonthlyAttendance(employees);
-  const journal = buildInitialJournal(invoices, expenses, vouchers);
+  const journal = (typeof REAL_JOURNAL !== "undefined" && Array.isArray(REAL_JOURNAL) && REAL_JOURNAL.length > 0) ? REAL_JOURNAL : buildInitialJournal(invoices, expenses, vouchers);
 
   return {
     clients,
@@ -1840,7 +1844,7 @@ export default function App() {
   /* Financial & Operations state */
   const [seedData] = useState(buildInitialData);
 
-  const STORAGE_KEY = "adpulse_erp_financial_clean_v8";
+  const STORAGE_KEY = "adpulse_erp_financial_clean_v9_master";
 
   // Helper to load state from localStorage or fallback to default
   const getInitialState = (key, fallback) => {
