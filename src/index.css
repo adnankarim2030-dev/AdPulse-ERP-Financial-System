@@ -812,22 +812,22 @@ tr:last-child td {
     overflow: visible !important;
   }
 
-  /* Hide navigation, topbars, buttons and headers during print */
-  .sidebar, .topbar, .mobile-toggle, .btn, .no-print, .no-print-header {
+  /* Hide navigation, topbars, background content, tables, buttons and headers during print */
+  .sidebar,
+  .topbar,
+  .mobile-toggle,
+  .btn,
+  .no-print,
+  .no-print-header,
+  .main,
+  .content,
+  .erp-root > .main,
+  .erp-root > .sidebar,
+  .erp-root > .topbar {
     display: none !important;
   }
 
-  .content {
-    display: block !important;
-    background: #ffffff !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    overflow: visible !important;
-    height: auto !important;
-    width: 100% !important;
-  }
-
-  .erp-root, .main {
+  .erp-root {
     display: block !important;
     height: auto !important;
     width: 100% !important;
@@ -883,6 +883,8 @@ tr:last-child td {
     background: #ffffff !important;
     color: #0F172A !important;
     overflow: visible !important;
+    page-break-after: avoid !important;
+    page-break-inside: avoid !important;
   }
 
   .print-area table {

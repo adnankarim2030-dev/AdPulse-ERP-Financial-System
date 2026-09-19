@@ -15562,7 +15562,7 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
             width: 100% !important;
             overflow: visible !important;
           }
-          .no-print-header, .sidebar, .topbar, .btn, .mobile-toggle { display: none !important; }
+          .no-print-header, .sidebar, .topbar, .btn, .mobile-toggle, .content, .main, .erp-root > .main, .erp-root > .sidebar, .erp-root > .topbar { display: none !important; }
           .modal-backdrop {
             background: none !important;
             padding: 0 !important;
@@ -16475,7 +16475,7 @@ function ClientStatementPrintModal({ clientName, invoices, projects, onClose }) 
       <style>{`
         @page { size: ${pageSize} portrait; margin: 8mm; }
         @media print {
-          .no-print-header, .sidebar, .topbar, .btn, .mobile-toggle { display: none !important; }
+          .no-print-header, .sidebar, .topbar, .btn, .mobile-toggle, .content, .main, .erp-root > .main, .erp-root > .sidebar, .erp-root > .topbar { display: none !important; }
           .modal-backdrop { background: none !important; padding: 0 !important; position: static !important; display: block !important; width: 100% !important; max-width: 100% !important; margin: 0 !important; }
           .modal { box-shadow: none !important; border: none !important; width: 100% !important; max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
           .print-area { padding: 0 !important; border: none !important; min-height: 880px !important; display: flex !important; flex-direction: column !important; justify-content: space-between !important; }
@@ -16692,7 +16692,7 @@ function ProjectStatementPrintModal({ project, invoices, expenses, onClose }) {
       <style>{`
         @page { size: ${pageSize} portrait; margin: 8mm; }
         @media print {
-          .no-print-header, .sidebar, .topbar, .btn, .mobile-toggle { display: none !important; }
+          .no-print-header, .sidebar, .topbar, .btn, .mobile-toggle, .content, .main, .erp-root > .main, .erp-root > .sidebar, .erp-root > .topbar { display: none !important; }
           .modal-backdrop { background: none !important; padding: 0 !important; position: static !important; display: block !important; width: 100% !important; max-width: 100% !important; margin: 0 !important; }
           .modal { box-shadow: none !important; border: none !important; width: 100% !important; max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
           .print-area { padding: 0 !important; border: none !important; min-height: 880px !important; display: flex !important; flex-direction: column !important; justify-content: space-between !important; }
