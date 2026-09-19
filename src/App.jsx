@@ -15208,8 +15208,8 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
   };
 
   const renderTotals = (colSpanAmount) => {
-    const labelStyle = { border: "1px solid #000000", padding: "6px 12px", fontWeight: 800, textAlign: "right", verticalAlign: "middle", boxSizing: "border-box", fontSize: 9.5, whiteSpace: "nowrap" };
-    const valStyle = { border: "1px solid #000000", padding: "6px 4px", textAlign: "center", verticalAlign: "middle", fontWeight: 800, boxSizing: "border-box", fontSize: 9.5, whiteSpace: "nowrap" };
+    const labelStyle = { border: "1px solid #000000", padding: "7px 12px", fontWeight: 800, textAlign: "right", verticalAlign: "middle", boxSizing: "border-box", fontSize: 11.5, whiteSpace: "nowrap" };
+    const valStyle = { border: "1px solid #000000", padding: "7px 6px", textAlign: "center", verticalAlign: "middle", fontWeight: 800, boxSizing: "border-box", fontSize: 12, whiteSpace: "nowrap" };
 
     if (isRV) {
       return (
@@ -15242,10 +15242,10 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
 
           {/* 4. NET RECEIVED / DEPOSIT AMOUNT */}
           <tr style={{ background: "#F1F5F9", fontWeight: 800 }}>
-            <td colSpan={colSpanAmount} style={{ border: "1px solid #000000", padding: "7px 12px", fontSize: 10, textAlign: "right", verticalAlign: "middle", boxSizing: "border-box", fontWeight: 800, whiteSpace: "nowrap" }}>
+            <td colSpan={colSpanAmount} style={{ border: "1px solid #000000", padding: "8px 12px", fontSize: 12.5, textAlign: "right", verticalAlign: "middle", boxSizing: "border-box", fontWeight: 800, whiteSpace: "nowrap" }}>
               NET RECEIVED / DEPOSIT AMOUNT
             </td>
-            <td style={{ border: "1px solid #000000", padding: "7px 4px", textAlign: "center", verticalAlign: "middle", fontSize: 10, color: "#059669", boxSizing: "border-box", fontWeight: 800, whiteSpace: "nowrap" }}>
+            <td style={{ border: "1px solid #000000", padding: "8px 6px", textAlign: "center", verticalAlign: "middle", fontSize: 12.5, color: "#059669", boxSizing: "border-box", fontWeight: 800, whiteSpace: "nowrap" }}>
               {pkr(finalPayable)}
             </td>
           </tr>
@@ -15317,8 +15317,8 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
 
             {/* 7. NET AMOUNT */}
             <tr style={{ background: "#F1F5F9", fontWeight: 800 }}>
-              <td colSpan={colSpanAmount} style={{ border: "1px solid #000000", padding: "7px 12px", fontSize: 10, textAlign: "right", verticalAlign: "middle", boxSizing: "border-box", fontWeight: 800, whiteSpace: "nowrap" }}>NET AMOUNT</td>
-              <td style={{ border: "1px solid #000000", padding: "7px 4px", textAlign: "center", verticalAlign: "middle", fontSize: 10, color: "#0F172A", boxSizing: "border-box", fontWeight: 800, whiteSpace: "nowrap" }}>{pkr(finalPayable)}</td>
+              <td colSpan={colSpanAmount} style={{ border: "1px solid #000000", padding: "8px 12px", fontSize: 12.5, textAlign: "right", verticalAlign: "middle", boxSizing: "border-box", fontWeight: 800, whiteSpace: "nowrap" }}>NET AMOUNT</td>
+              <td style={{ border: "1px solid #000000", padding: "8px 6px", textAlign: "center", verticalAlign: "middle", fontSize: 12.5, color: "#0F172A", boxSizing: "border-box", fontWeight: 800, whiteSpace: "nowrap" }}>{pkr(finalPayable)}</td>
             </tr>
           </React.Fragment>
         ) : (
@@ -15334,8 +15334,8 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
               </tr>
             )}
             <tr style={{ background: "#F1F5F9", fontWeight: 800 }}>
-              <td colSpan={colSpanAmount} style={{ border: "1px solid #000000", padding: "7px 12px", fontSize: 10, textAlign: "right", verticalAlign: "middle", boxSizing: "border-box", fontWeight: 800, whiteSpace: "nowrap" }}>GRAND TOTAL PAYABLE</td>
-              <td style={{ border: "1px solid #000000", padding: "7px 4px", textAlign: "center", verticalAlign: "middle", fontSize: 10, color: "#0F172A", boxSizing: "border-box", fontWeight: 800, whiteSpace: "nowrap" }}>{pkr(finalPayable)}</td>
+              <td colSpan={colSpanAmount} style={{ border: "1px solid #000000", padding: "8px 12px", fontSize: 12.5, textAlign: "right", verticalAlign: "middle", boxSizing: "border-box", fontWeight: 800, whiteSpace: "nowrap" }}>GRAND TOTAL PAYABLE</td>
+              <td style={{ border: "1px solid #000000", padding: "8px 6px", textAlign: "center", verticalAlign: "middle", fontSize: 12.5, color: "#0F172A", boxSizing: "border-box", fontWeight: 800, whiteSpace: "nowrap" }}>{pkr(finalPayable)}</td>
             </tr>
           </React.Fragment>
         )}
@@ -15486,8 +15486,8 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
           border: 1px solid #000000 !important;
         }
         .print-area th {
-          font-size: 8.5px !important;
-          padding: 6px 3px !important;
+          font-size: 11px !important;
+          padding: 8px 4px !important;
           text-align: center !important;
           vertical-align: middle !important;
           font-weight: 800 !important;
@@ -15503,14 +15503,14 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
           box-shadow: none !important;
         }
         .print-area td {
-          font-size: 9px !important;
-          padding: 5px 3px !important;
+          font-size: 11.5px !important;
+          padding: 7px 4px !important;
           vertical-align: middle !important;
           box-sizing: border-box !important;
           border: 1px solid #000000 !important;
           color: #0F172A !important;
           font-weight: 600 !important;
-          line-height: 1.25 !important;
+          line-height: 1.3 !important;
           word-break: break-word !important;
           background: transparent !important;
           box-shadow: none !important;
@@ -15721,19 +15721,19 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
 
               {/* Center Heading (Mathematically Centered) */}
               <div style={{ textAlign: "center", padding: "0 10px" }}>
-                <h2 style={{ margin: 0, fontSize: 19, fontWeight: 800, textDecoration: "underline", letterSpacing: "1px", textTransform: "uppercase", color: (docTitle.includes("RELEASE") || docTitle.includes("PURCHASE")) ? "#1E3A8A" : docTitle.includes("TAX") ? "#A81C1C" : docTitle.includes("VOUCHER") ? "#059669" : "#0F172A" }}>
+                <h2 style={{ margin: 0, fontSize: 22, fontWeight: 800, textDecoration: "underline", letterSpacing: "1px", textTransform: "uppercase", color: (docTitle.includes("RELEASE") || docTitle.includes("PURCHASE")) ? "#1E3A8A" : docTitle.includes("TAX") ? "#A81C1C" : docTitle.includes("VOUCHER") ? "#059669" : "#0F172A" }}>
                   {docTitle}
                 </h2>
                 {docTitle.includes("TAX") && (
-                  <div style={{ fontSize: 10.5, fontWeight: 600, color: "#475569", marginTop: 2 }}>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: "#475569", marginTop: 2 }}>
                     Sindh Revenue Board (SRB) Regn. # SA054896-8
                   </div>
                 )}
               </div>
 
               {/* Right Meta Info */}
-              <div style={{ textAlign: "right", fontSize: 12.5, fontWeight: 700, display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
-                <div style={{ marginBottom: 3 }}>DATE: <span style={{ fontWeight: 500 }}>{fmtDate(doc.date || doc.issueDate || TODAY)}</span></div>
+              <div style={{ textAlign: "right", fontSize: 13.5, fontWeight: 700, display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+                <div style={{ marginBottom: 4 }}>DATE: <span style={{ fontWeight: 600 }}>{fmtDate(doc.date || doc.issueDate || TODAY)}</span></div>
                 <div>
                   {docTitle.includes("RELEASE") || doc.type === "RELEASE ORDER" ? "RO NO:" :
                    docTitle.includes("PURCHASE") || doc.type === "PURCHASE ORDER" ? "PO NO:" :
@@ -15747,15 +15747,15 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
             </div>
 
             {/* CLIENT / PARTY, PROJECT & SERVICE INFO CARD */}
-            <div style={{ fontSize: 11, fontWeight: 700, marginBottom: 14, display: "grid", gridTemplateColumns: "1fr 1.2fr 1fr", gap: 10, alignItems: "center", background: "#F8FAFC", padding: "8px 12px", border: "1px solid #000000", borderRadius: 6, boxSizing: "border-box" }}>
+            <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 16, display: "grid", gridTemplateColumns: "1fr 1.2fr 1fr", gap: 10, alignItems: "center", background: "#F8FAFC", padding: "10px 14px", border: "1px solid #000000", borderRadius: 6, boxSizing: "border-box" }}>
               <div style={{ wordBreak: "break-word", textAlign: "left" }}>
-                {(docTitle.includes("PURCHASE") || docTitle.includes("RELEASE") || doc.type === "PV" || doc.type === "EXPENSE") ? "VENDOR / PARTY:" : (docTitle.includes("RECEIPT") || doc.type === "RV" ? "RECEIVED FROM:" : "CLIENT:")} <span style={{ fontWeight: 600, color: "#0F172A" }}>{(doc.client || doc.party || doc.vendor || doc.payee || "CLIENT / PARTY").toUpperCase()}</span>
+                {(docTitle.includes("PURCHASE") || docTitle.includes("RELEASE") || doc.type === "PV" || doc.type === "EXPENSE") ? "VENDOR / PARTY:" : (docTitle.includes("RECEIPT") || doc.type === "RV" ? "RECEIVED FROM:" : "CLIENT:")} <span style={{ fontWeight: 700, color: "#0F172A" }}>{(doc.client || doc.party || doc.vendor || doc.payee || "CLIENT / PARTY").toUpperCase()}</span>
               </div>
               <div style={{ wordBreak: "break-word", textAlign: "left" }}>
-                PROJECT / SCOPE: <span style={{ fontWeight: 600, color: "#0F172A" }}>{(doc.projectName || doc.project || (doc.description ? doc.description.replace(/^OOH Advertising\s*—\s*/i, "").replace(/\s*\(\d+\s*sites\)$/i, "") : "PROJECT SCOPE")).toUpperCase()}</span>
+                PROJECT / SCOPE: <span style={{ fontWeight: 700, color: "#0F172A" }}>{(doc.projectName || doc.project || (doc.description ? doc.description.replace(/^OOH Advertising\s*—\s*/i, "").replace(/\s*\(\d+\s*sites\)$/i, "") : "PROJECT SCOPE")).toUpperCase()}</span>
               </div>
               <div style={{ wordBreak: "break-word", textAlign: "right" }}>
-                SERVICE / TYPE: <span style={{ fontWeight: 600, color: "#A81C1C" }}>{(() => {
+                SERVICE / TYPE: <span style={{ fontWeight: 700, color: "#A81C1C" }}>{(() => {
                   const svc = doc.serviceCategory;
                   if (svc && svc.toUpperCase() !== "INVOICE") return svc.toUpperCase();
                   const typ = doc.type;
@@ -15772,10 +15772,10 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
             {(() => {
               const thStyle = {
                 border: "1px solid #000000",
-                padding: "6px 3px",
+                padding: "8px 4px",
                 textAlign: "center",
                 verticalAlign: "middle",
-                fontSize: 8.5,
+                fontSize: 11,
                 fontWeight: 800,
                 boxSizing: "border-box",
                 lineHeight: 1.25,
@@ -15786,35 +15786,37 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
 
               const tdCenter = {
                 border: "1px solid #000000",
-                padding: "6px 3px",
+                padding: "7px 4px",
                 textAlign: "center",
                 verticalAlign: "middle",
                 boxSizing: "border-box",
-                fontSize: 9
+                fontSize: 11.5,
+                lineHeight: 1.3
               };
 
               const tdLeft = {
                 border: "1px solid #000000",
-                padding: "6px 5px",
+                padding: "7px 6px",
                 textAlign: "left",
                 verticalAlign: "middle",
                 fontWeight: 600,
                 wordBreak: "break-word",
                 boxSizing: "border-box",
-                fontSize: 9
+                fontSize: 11.5,
+                lineHeight: 1.3
               };
 
               if (template === "NEWSPAPER") {
                 return (
-                  <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", fontSize: 9, boxSizing: "border-box", tableLayout: "fixed" }}>
+                  <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", fontSize: 11.5, boxSizing: "border-box", tableLayout: "fixed" }}>
                     <colgroup>
                       <col style={{ width: "18%" }} />
-                      <col style={{ width: "11%" }} />
+                      <col style={{ width: "10%" }} />
                       <col style={{ width: "6%" }} />
-                      <col style={{ width: "9%" }} />
-                      <col style={{ width: "9%" }} />
+                      <col style={{ width: "10%" }} />
+                      <col style={{ width: "10%" }} />
                       <col style={{ width: "11%" }} />
-                      <col style={{ width: "12%" }} />
+                      <col style={{ width: "11%" }} />
                       <col style={{ width: "10%" }} />
                       <col style={{ width: "14%" }} />
                     </colgroup>
@@ -15834,7 +15836,7 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
                     <tbody>
                       {doc.newspaperItems && doc.newspaperItems.length > 0 ? (
                         doc.newspaperItems.map((item, idx) => (
-                          <tr key={idx} style={{ minHeight: 28 }}>
+                          <tr key={idx} style={{ minHeight: 34 }}>
                             <td style={{ ...tdLeft, fontWeight: 700 }}>{item.newspaper}</td>
                             <td style={tdCenter}>{item.edition}</td>
                             <td style={tdCenter}>{item.columns}</td>
@@ -15842,12 +15844,12 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
                             <td style={{ ...tdCenter, fontWeight: 700 }}>{(Number(item.totalCcm) || 0).toLocaleString("en-US")}</td>
                             <td style={tdCenter}>{pkr(item.rateCcm)}</td>
                             <td style={tdCenter}>{pkr(item.mediaAmount)}</td>
-                            <td style={tdCenter}>{pkr(item.agencyFee)} <span style={{ fontSize: 7.5 }}>({item.agencyFeePct}%)</span></td>
+                            <td style={tdCenter}>{pkr(item.agencyFee)} <span style={{ fontSize: 9 }}>({item.agencyFeePct}%)</span></td>
                             <td style={{ ...tdCenter, fontWeight: 700 }}>{pkr(item.amount)}</td>
                           </tr>
                         ))
                       ) : (
-                        <tr>
+                        <tr style={{ minHeight: 34 }}>
                           <td style={{ ...tdLeft, fontWeight: 700 }}>Daily Newspaper</td>
                           <td style={tdCenter}>Karachi</td>
                           <td style={tdCenter}>4</td>
@@ -15855,7 +15857,7 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
                           <td style={{ ...tdCenter, fontWeight: 700 }}>48</td>
                           <td style={tdCenter}>2,500</td>
                           <td style={tdCenter}>120,000</td>
-                          <td style={tdCenter}>12,000 <span style={{ fontSize: 7.5 }}>(10%)</span></td>
+                          <td style={tdCenter}>12,000 <span style={{ fontSize: 9 }}>(10%)</span></td>
                           <td style={{ ...tdCenter, fontWeight: 700 }}>132,000</td>
                         </tr>
                       )}
@@ -15867,7 +15869,7 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
 
               if (template === "PRINTING") {
                 return (
-                  <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", fontSize: 9, boxSizing: "border-box", tableLayout: "fixed" }}>
+                  <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", fontSize: 11.5, boxSizing: "border-box", tableLayout: "fixed" }}>
                     <colgroup>
                       <col style={{ width: "4%" }} />
                       <col style={{ width: "28%" }} />
@@ -15893,7 +15895,7 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
                     <tbody>
                       {doc.printingItems && doc.printingItems.length > 0 ? (
                         doc.printingItems.map((item, idx) => (
-                          <tr key={idx} style={{ minHeight: 28 }}>
+                          <tr key={idx} style={{ minHeight: 34 }}>
                             <td style={{ ...tdCenter, fontWeight: 700 }}>{idx + 1}</td>
                             <td style={tdLeft}>{item.description || doc.description || `Printing Item #${idx + 1}`}</td>
                             <td style={tdCenter}>{item.height}</td>
@@ -15905,7 +15907,7 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
                           </tr>
                         ))
                       ) : (
-                        <tr>
+                        <tr style={{ minHeight: 34 }}>
                           <td style={{ ...tdCenter, fontWeight: 700 }}>1</td>
                           <td style={tdLeft}>{doc.description || "PRINTING & INSTALLATION WORK"}</td>
                           <td style={tdCenter}>10</td>
@@ -15917,12 +15919,12 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
                         </tr>
                       )}
                       <tr style={{ fontWeight: 800, background: "#F8FAFC" }}>
-                        <td colSpan={4} style={{ border: "1px solid #000000", padding: "6px 8px", textAlign: "right", verticalAlign: "middle", fontSize: 9, fontWeight: 800, whiteSpace: "nowrap", boxSizing: "border-box" }}>TOTAL PRINTING &amp; INSTALLATION:</td>
-                        <td style={{ border: "1px solid #000000", padding: "6px 2px", textAlign: "center", verticalAlign: "middle", fontWeight: 800, fontSize: 9, color: "#0369A1", whiteSpace: "nowrap", boxSizing: "border-box" }}>
-                          {doc.printingItems && doc.printingItems.length > 0 ? doc.printingItems.reduce((s, i) => s + (Number(i.totalSqFt) || 0), 0).toFixed(1) : "120.0"} <span style={{ fontSize: 7.5 }}>SQ.FT</span>
+                        <td colSpan={4} style={{ border: "1px solid #000000", padding: "7px 8px", textAlign: "right", verticalAlign: "middle", fontSize: 11.5, fontWeight: 800, whiteSpace: "nowrap", boxSizing: "border-box" }}>TOTAL PRINTING &amp; INSTALLATION:</td>
+                        <td style={{ border: "1px solid #000000", padding: "7px 4px", textAlign: "center", verticalAlign: "middle", fontWeight: 800, fontSize: 12, color: "#0369A1", whiteSpace: "nowrap", boxSizing: "border-box" }}>
+                          {doc.printingItems && doc.printingItems.length > 0 ? doc.printingItems.reduce((s, i) => s + (Number(i.totalSqFt) || 0), 0).toFixed(1) : "120.0"} <span style={{ fontSize: 9 }}>SQ.FT</span>
                         </td>
-                        <td colSpan={2} style={{ border: "1px solid #000000", padding: "6px 8px", textAlign: "right", verticalAlign: "middle", fontSize: 9, color: "#475569", fontWeight: 800, whiteSpace: "nowrap", boxSizing: "border-box" }}>Subtotal:</td>
-                        <td style={{ border: "1px solid #000000", padding: "6px 2px", textAlign: "center", verticalAlign: "middle", fontWeight: 800, fontSize: 9.5, whiteSpace: "nowrap", boxSizing: "border-box" }}>{pkr(netAmt)}</td>
+                        <td colSpan={2} style={{ border: "1px solid #000000", padding: "7px 8px", textAlign: "right", verticalAlign: "middle", fontSize: 11.5, color: "#475569", fontWeight: 800, whiteSpace: "nowrap", boxSizing: "border-box" }}>Subtotal:</td>
+                        <td style={{ border: "1px solid #000000", padding: "7px 4px", textAlign: "center", verticalAlign: "middle", fontWeight: 800, fontSize: 12, whiteSpace: "nowrap", boxSizing: "border-box" }}>{pkr(netAmt)}</td>
                       </tr>
                       {renderTotals(7)}
                     </tbody>
@@ -15932,12 +15934,12 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
 
               if (template === "OOH" || (doc.oohSites && doc.oohSites.length > 0)) {
                 return (
-                  <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", fontSize: 9, boxSizing: "border-box", tableLayout: "fixed" }}>
+                  <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", fontSize: 11.5, boxSizing: "border-box", tableLayout: "fixed" }}>
                     <colgroup>
                       <col style={{ width: "4%" }} />
-                      <col style={{ width: "22%" }} />
+                      <col style={{ width: "21%" }} />
                       <col style={{ width: "10%" }} />
-                      <col style={{ width: "10%" }} />
+                      <col style={{ width: "11%" }} />
                       <col style={{ width: "11%" }} />
                       <col style={{ width: "11%" }} />
                       <col style={{ width: "6%" }} />
@@ -15960,7 +15962,7 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
                     <tbody>
                       {doc.oohSites && doc.oohSites.length > 0 ? (
                         doc.oohSites.map((site, idx) => (
-                          <tr key={idx} style={{ minHeight: 28 }}>
+                          <tr key={idx} style={{ minHeight: 34 }}>
                             <td style={{ ...tdCenter, fontWeight: 700 }}>{idx + 1}</td>
                             <td style={tdLeft}>{site.location || site.name || `OOH Site #${idx + 1}`}</td>
                             <td style={tdCenter}>{site.width && site.height ? `${site.width}x${site.height}` : (site.size || "10x20")}</td>
@@ -15973,7 +15975,7 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
                           </tr>
                         ))
                       ) : (
-                        <tr>
+                        <tr style={{ minHeight: 34 }}>
                           <td style={{ ...tdCenter, fontWeight: 700 }}>1</td>
                           <td style={tdLeft}>{doc.description || "OOH Billboard Display"}</td>
                           <td style={tdCenter}>10x20</td>
@@ -15986,16 +15988,16 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
                         </tr>
                       )}
                       <tr style={{ fontWeight: 800, background: "#F8FAFC" }}>
-                        <td colSpan={3} style={{ border: "1px solid #000000", padding: "6px 8px", textAlign: "right", verticalAlign: "middle", fontSize: 9, fontWeight: 800, whiteSpace: "nowrap", boxSizing: "border-box" }}>
+                        <td colSpan={3} style={{ border: "1px solid #000000", padding: "7px 8px", textAlign: "right", verticalAlign: "middle", fontSize: 11.5, fontWeight: 800, whiteSpace: "nowrap", boxSizing: "border-box" }}>
                           TOTAL CAMPAIGN SQ.FT:
                         </td>
-                        <td style={{ border: "1px solid #000000", padding: "6px 2px", textAlign: "center", verticalAlign: "middle", fontWeight: 800, fontSize: 9.5, color: "#0284C7", whiteSpace: "nowrap", boxSizing: "border-box" }}>
+                        <td style={{ border: "1px solid #000000", padding: "7px 4px", textAlign: "center", verticalAlign: "middle", fontWeight: 800, fontSize: 12, color: "#0284C7", whiteSpace: "nowrap", boxSizing: "border-box" }}>
                           {oohCalculatedSqft > 0 ? oohCalculatedSqft.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 1 }) : (doc.oohSites && doc.oohSites.length > 0 ? doc.oohSites.reduce((s, i) => s + (Number(i.sqft) || 0), 0).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 1 }) : "200")}
                         </td>
-                        <td colSpan={4} style={{ border: "1px solid #000000", padding: "6px 8px", textAlign: "right", verticalAlign: "middle", fontSize: 9, fontWeight: 800, color: "#334155", whiteSpace: "nowrap", boxSizing: "border-box" }}>
+                        <td colSpan={4} style={{ border: "1px solid #000000", padding: "7px 8px", textAlign: "right", verticalAlign: "middle", fontSize: 11.5, fontWeight: 800, color: "#334155", whiteSpace: "nowrap", boxSizing: "border-box" }}>
                           TOTAL NET AMOUNT:
                         </td>
-                        <td style={{ border: "1px solid #000000", padding: "6px 2px", textAlign: "center", verticalAlign: "middle", color: "#0F172A", fontWeight: 800, fontSize: 9.5, whiteSpace: "nowrap", boxSizing: "border-box" }}>
+                        <td style={{ border: "1px solid #000000", padding: "7px 4px", textAlign: "center", verticalAlign: "middle", color: "#0F172A", fontWeight: 800, fontSize: 12, whiteSpace: "nowrap", boxSizing: "border-box" }}>
                           {pkr(netAmt)}
                         </td>
                       </tr>
@@ -16007,7 +16009,7 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
 
               if (template === "EVENT") {
                 return (
-                  <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", fontSize: 9, boxSizing: "border-box", tableLayout: "fixed" }}>
+                  <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", fontSize: 11.5, boxSizing: "border-box", tableLayout: "fixed" }}>
                     <colgroup>
                       <col style={{ width: "5%" }} />
                       <col style={{ width: "40%" }} />
@@ -16029,7 +16031,7 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
                     <tbody>
                       {doc.eventItems && doc.eventItems.length > 0 ? (
                         doc.eventItems.map((item, idx) => (
-                          <tr key={idx} style={{ minHeight: 28 }}>
+                          <tr key={idx} style={{ minHeight: 34 }}>
                             <td style={{ ...tdCenter, fontWeight: 700 }}>{idx + 1}</td>
                             <td style={tdLeft}>{item.description}</td>
                             <td style={{ ...tdCenter, fontWeight: 700 }}>{item.qty}</td>
@@ -16039,7 +16041,7 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
                           </tr>
                         ))
                       ) : (
-                        <tr>
+                        <tr style={{ minHeight: 34 }}>
                           <td style={{ ...tdCenter, fontWeight: 700 }}>1</td>
                           <td style={tdLeft}>{doc.description || "Event Execution Service"}</td>
                           <td style={{ ...tdCenter, fontWeight: 700 }}>1</td>
@@ -16056,7 +16058,7 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
 
               if (template === "PRINT_MEDIA") {
                 return (
-                  <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", fontSize: 9, boxSizing: "border-box", tableLayout: "fixed" }}>
+                  <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", fontSize: 11.5, boxSizing: "border-box", tableLayout: "fixed" }}>
                     <colgroup>
                       <col style={{ width: "5%" }} />
                       <col style={{ width: "24%" }} />
@@ -16080,7 +16082,7 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
                     <tbody>
                       {doc.printMediaItems && doc.printMediaItems.length > 0 ? (
                         doc.printMediaItems.map((item, idx) => (
-                          <tr key={idx} style={{ minHeight: 28 }}>
+                          <tr key={idx} style={{ minHeight: 34 }}>
                             <td style={{ ...tdCenter, fontWeight: 700 }}>{idx + 1}</td>
                             <td style={tdLeft}>{item.description || doc.description}</td>
                             <td style={tdLeft}>{item.publication}</td>
@@ -16103,7 +16105,7 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
 
               if (template === "ELECTRONIC") {
                 return (
-                  <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", fontSize: 9, boxSizing: "border-box", tableLayout: "fixed" }}>
+                  <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", fontSize: 11.5, boxSizing: "border-box", tableLayout: "fixed" }}>
                     <colgroup>
                       <col style={{ width: "13%" }} />
                       <col style={{ width: "15%" }} />
@@ -16127,7 +16129,7 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
                     <tbody>
                       {doc.broadcastItems && doc.broadcastItems.length > 0 ? (
                         doc.broadcastItems.map((item, idx) => (
-                          <tr key={idx} style={{ minHeight: 28 }}>
+                          <tr key={idx} style={{ minHeight: 34 }}>
                             <td style={tdCenter}>{fmtDate(item.telecastDate)}</td>
                             <td style={{ ...tdCenter, fontWeight: 700 }}>{item.channel}</td>
                             <td style={tdLeft}>{item.programSlot}</td>
@@ -16150,7 +16152,7 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
 
               if (template === "DIGITAL") {
                 return (
-                  <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", fontSize: 9, boxSizing: "border-box", tableLayout: "fixed" }}>
+                  <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", fontSize: 11.5, boxSizing: "border-box", tableLayout: "fixed" }}>
                     <colgroup>
                       <col style={{ width: "18%" }} />
                       <col style={{ width: "26%" }} />
@@ -16170,7 +16172,7 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
                     <tbody>
                       {doc.digitalItems && doc.digitalItems.length > 0 ? (
                         doc.digitalItems.map((item, idx) => (
-                          <tr key={idx} style={{ minHeight: 28 }}>
+                          <tr key={idx} style={{ minHeight: 34 }}>
                             <td style={{ ...tdCenter, fontWeight: 700 }}>{item.platform}</td>
                             <td style={tdLeft}>{item.format}</td>
                             <td style={tdCenter}>{item.campaignDates || "Active Flight"}</td>
@@ -16191,7 +16193,7 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
 
               if (template === "RADIO") {
                 return (
-                  <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", fontSize: 9, boxSizing: "border-box", tableLayout: "fixed" }}>
+                  <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", fontSize: 11.5, boxSizing: "border-box", tableLayout: "fixed" }}>
                     <colgroup>
                       <col style={{ width: "13%" }} />
                       <col style={{ width: "15%" }} />
@@ -16215,7 +16217,7 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
                     <tbody>
                       {doc.radioItems && doc.radioItems.length > 0 ? (
                         doc.radioItems.map((item, idx) => (
-                          <tr key={idx} style={{ minHeight: 28 }}>
+                          <tr key={idx} style={{ minHeight: 34 }}>
                             <td style={tdCenter}>{fmtDate(item.broadcastDate)}</td>
                             <td style={{ ...tdCenter, fontWeight: 700 }}>{item.station}</td>
                             <td style={tdLeft}>{item.programSlot}</td>
@@ -16238,7 +16240,7 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
 
               // General / Standard Template
               return (
-                <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", fontSize: 9.5, boxSizing: "border-box", tableLayout: "fixed" }}>
+                <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", fontSize: 11.5, boxSizing: "border-box", tableLayout: "fixed" }}>
                   <colgroup>
                     <col style={{ width: "5%" }} />
                     <col style={{ width: "47%" }} />
@@ -16256,11 +16258,11 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr style={{ minHeight: 50 }}>
+                    <tr style={{ minHeight: 46 }}>
                       <td style={{ ...tdCenter, fontWeight: 700 }}>1</td>
                       <td style={tdLeft}>
-                        <div style={{ fontWeight: 700, fontSize: 10.5 }}>{doc.description || "Media & Production Scope"}</div>
-                        {doc.projectCode && <div style={{ fontSize: 9, color: "#64748B", marginTop: 2 }}>Project Reference: {doc.projectCode}</div>}
+                        <div style={{ fontWeight: 700, fontSize: 12 }}>{doc.description || "Media & Production Scope"}</div>
+                        {doc.projectCode && <div style={{ fontSize: 10, color: "#64748B", marginTop: 2 }}>Project Reference: {doc.projectCode}</div>}
                       </td>
                       <td style={{ ...tdCenter, fontWeight: 700 }}>1</td>
                       <td style={{ ...tdCenter, fontWeight: 600 }}>{pkr(netAmt)}</td>
@@ -16273,13 +16275,13 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
             })()}
 
             {/* AMOUNT IN WORDS */}
-            <div style={{ fontSize: 10.5, fontStyle: "italic", marginBottom: 8, background: "#F8FAFC", padding: "5px 10px", border: "1px solid #000000", borderRadius: 4 }}>
+            <div style={{ fontSize: 12, fontStyle: "italic", marginBottom: 12, background: "#F8FAFC", padding: "8px 12px", border: "1px solid #000000", borderRadius: 4 }}>
               Amount in words: <b style={{ fontStyle: "normal", color: "#000000" }}>{amountInWords(totalAmt)}</b>
             </div>
 
             {/* SPECIAL NOTES & TERMS SECTION */}
-            <div style={{ fontSize: 9.2, lineHeight: 1.35, color: "#1E293B", background: "#F8FAFC", padding: "6px 10px", border: "1px solid #000000", borderRadius: 6 }}>
-              <div style={{ fontWeight: 800, textDecoration: "underline", marginBottom: 3, color: "#0F172A", textTransform: "uppercase", fontSize: 9.5 }}>
+            <div style={{ fontSize: 11, lineHeight: 1.45, color: "#1E293B", background: "#F8FAFC", padding: "10px 14px", border: "1px solid #000000", borderRadius: 6 }}>
+              <div style={{ fontWeight: 800, textDecoration: "underline", marginBottom: 5, color: "#0F172A", textTransform: "uppercase", fontSize: 11.5 }}>
                 Special Notes &amp; Terms:
               </div>
               {specialNote ? (
@@ -16301,17 +16303,17 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
           {/* BOTTOM PINNED FOOTER: SIGNATURES & RED BANNER (DIRECTLY TOGETHER AT BOTTOM) */}
           <div style={{ marginTop: "auto", paddingTop: 16 }}>
             {/* SIGNATURES - DIRECTLY ABOVE RED BANNER */}
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 12, fontSize: 10.5, fontWeight: 700 }}>
-              <div style={{ textAlign: "center", width: 210 }}>
-                <div style={{ borderTop: "1.5px solid #000000", paddingTop: 4, letterSpacing: "0.3px" }}>ACCOUNTANT SIGNATURE</div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 16, fontSize: 12, fontWeight: 700 }}>
+              <div style={{ textAlign: "center", width: 230 }}>
+                <div style={{ borderTop: "1.5px solid #000000", paddingTop: 5, letterSpacing: "0.3px" }}>ACCOUNTANT SIGNATURE</div>
               </div>
-              <div style={{ textAlign: "center", width: 210 }}>
-                <div style={{ borderTop: "1.5px solid #000000", paddingTop: 4, letterSpacing: "0.3px" }}>RECEIVER'S SIGNATURE</div>
+              <div style={{ textAlign: "center", width: 230 }}>
+                <div style={{ borderTop: "1.5px solid #000000", paddingTop: 5, letterSpacing: "0.3px" }}>RECEIVER'S SIGNATURE</div>
               </div>
             </div>
 
             {/* FOOTER BRAND BANNER */}
-            <div className="invoice-footer-banner" style={{ background: "#A81C1C", backgroundImage: "linear-gradient(90deg, #A81C1C 0%, #1D3B4E 100%)", color: "#FFFFFF", padding: "6px 12px", borderRadius: 4, display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 9.5, fontWeight: 600, boxSizing: "border-box", WebkitPrintColorAdjust: "exact", printColorAdjust: "exact" }}>
+            <div className="invoice-footer-banner" style={{ background: "#A81C1C", backgroundImage: "linear-gradient(90deg, #A81C1C 0%, #1D3B4E 100%)", color: "#FFFFFF", padding: "8px 14px", borderRadius: 4, display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 10.5, fontWeight: 600, boxSizing: "border-box", WebkitPrintColorAdjust: "exact", printColorAdjust: "exact" }}>
               <div>📞 +92 21 37526834</div>
               <div>✉️ communication@adpulse.pk | 🌐 www.adpulse.pk</div>
               <div>📍 Office # 213, 2nd Floor, Park Tower, Block 5 Clifton, Karachi.</div>
