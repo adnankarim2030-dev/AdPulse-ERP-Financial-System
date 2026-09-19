@@ -645,707 +645,43 @@ const SEED_USERS = [
   },
 ];
 
-/* ---------- SEED FINANCIAL DATA ---------- */
+/* ---------- REAL FINANCIAL DATA SEED FUNCTIONS ---------- */
 
 function seedClients() {
-  return [
-    {
-      id: "cli-101",
-      clientCode: "CLI-001",
-      name: "Imtiaz Retail",
-      companyName: "Imtiaz Super Market Ltd",
-      contactPerson: "Imtiaz Ahmed",
-      phone: "0300-1112233",
-      email: "finance@imtiaz.pk",
-      address: "Rashid Minhas Road",
-      city: "Karachi",
-      ntn: "1234567-8",
-      strn: "3277876543210",
-      paymentTerms: "Net 30",
-      creditLimit: 5000000,
-      openingBalance: 500000,
-      status: "Active",
-      notes: "Key retail client for OOH & Printing campaigns",
-      createdAt: "2026-06-01",
-      createdBy: "AdpulseCEO"
-    },
-    {
-      id: "cli-102",
-      clientCode: "CLI-002",
-      name: "Prime Estate Enterprises",
-      companyName: "Prime Estate Developers Pvt Ltd",
-      contactPerson: "Tariq Mahmood",
-      phone: "0321-4445566",
-      email: "info@primeestate.pk",
-      address: "II Chundrigar Road",
-      city: "Karachi",
-      ntn: "2345678-9",
-      strn: "3277876543211",
-      paymentTerms: "Net 15",
-      creditLimit: 3000000,
-      openingBalance: 0,
-      status: "Active",
-      notes: "Real estate client",
-      createdAt: "2026-06-05",
-      createdBy: "Adpulseshawal"
-    },
-    {
-      id: "cli-103",
-      clientCode: "CLI-003",
-      name: "Kinza Beverages",
-      companyName: "Kinza Foods & Beverages Pvt Ltd",
-      contactPerson: "Omar Farooq",
-      phone: "0333-7778899",
-      email: "accounts@kinzabeverages.com",
-      address: "S.I.T.E. Industrial Area",
-      city: "Karachi",
-      ntn: "3456789-0",
-      strn: "3277876543212",
-      paymentTerms: "Net 30",
-      creditLimit: 4000000,
-      openingBalance: 0,
-      status: "Active",
-      notes: "FMCG Beverages client",
-      createdAt: "2026-06-10",
-      createdBy: "Adpulsewahab"
-    },
-    {
-      id: "cli-104",
-      clientCode: "CLI-004",
-      name: "North Town Residency",
-      companyName: "North Town Builders & Developers",
-      contactPerson: "Kamran Siddiqui",
-      phone: "0302-8889900",
-      email: "sales@northtownresidency.com",
-      address: "North Nazimabad Sector 5",
-      city: "Karachi",
-      ntn: "4567890-1",
-      strn: "3277876543213",
-      paymentTerms: "Net 15",
-      creditLimit: 2000000,
-      openingBalance: 0,
-      status: "Active",
-      notes: "Residential project leads",
-      createdAt: "2026-07-01",
-      createdBy: "Adpulseshawal"
-    },
-    {
-      id: "cli-105",
-      clientCode: "CLI-005",
-      name: "Magnitude",
-      companyName: "Magnitude Clothing & Apparel",
-      contactPerson: "Sarah Khan",
-      phone: "0312-9990011",
-      email: "brand@magnitude.pk",
-      address: "Zamani Chambers, Tariq Road",
-      city: "Karachi",
-      ntn: "5678901-2",
-      strn: "3277876543214",
-      paymentTerms: "Immediate",
-      creditLimit: 1000000,
-      openingBalance: 0,
-      status: "Active",
-      notes: "Fashion apparel client",
-      createdAt: "2026-06-15",
-      createdBy: "Adpulsewahab"
-    }
-  ];
+  return Array.isArray(REAL_CLIENTS) ? REAL_CLIENTS : [];
 }
 
 function seedVendors() {
-  return [
-    {
-      id: "vnd-101",
-      vendorCode: "VND-001",
-      name: "ABC Printing",
-      companyName: "ABC Printing Solutions Pvt Ltd",
-      contactPerson: "Aslam Chaudhry",
-      phone: "0322-1112233",
-      email: "orders@abcprinting.pk",
-      address: "Korangi Industrial Area",
-      city: "Karachi",
-      ntn: "9876543-2",
-      strn: "1122334455667",
-      paymentTerms: "Net 15",
-      bankName: "Meezan Bank",
-      bankAccountTitle: "ABC Printing Solutions",
-      accountNumberIban: "PK12MEZN00123456789012",
-      openingBalance: 0,
-      status: "Active",
-      notes: "Large format vinyl & flex printing partner",
-      createdAt: "2026-06-01",
-      createdBy: "Adpulseshawal"
-    },
-    {
-      id: "vnd-102",
-      vendorCode: "VND-002",
-      name: "Meta Ads",
-      companyName: "Meta Platforms Ireland Ltd",
-      contactPerson: "Ad Operations",
-      phone: "N/A",
-      email: "billing@meta.com",
-      address: "Dublin, Ireland",
-      city: "International",
-      ntn: "N/A",
-      strn: "N/A",
-      paymentTerms: "Credit Card",
-      bankName: "Credit Card",
-      bankAccountTitle: "AdPulse Corporate Card",
-      accountNumberIban: "CARD-4111-XXXX",
-      openingBalance: 0,
-      status: "Active",
-      notes: "FB & Instagram digital advertising platform",
-      createdAt: "2026-06-01",
-      createdBy: "Adpulsewahab"
-    },
-    {
-      id: "vnd-103",
-      vendorCode: "VND-003",
-      name: "Shahrah-e-Faisal Office Rent",
-      companyName: "Faisal Plaza Management",
-      contactPerson: "Estate Manager",
-      phone: "0300-9998877",
-      email: "rentals@faisalplaza.pk",
-      address: "Shahrah-e-Faisal",
-      city: "Karachi",
-      ntn: "8765432-1",
-      strn: "N/A",
-      paymentTerms: "1st of Month",
-      bankName: "HBL",
-      bankAccountTitle: "Faisal Plaza Management",
-      accountNumberIban: "PK44HABB009988776655",
-      openingBalance: 0,
-      status: "Active",
-      notes: "HQ office premises rent landlord",
-      createdAt: "2026-06-01",
-      createdBy: "AdpulseCEO"
-    },
-    {
-      id: "vnd-104",
-      vendorCode: "VND-004",
-      name: "Freelance 3D Animator",
-      companyName: "Zohaib Media Arts",
-      contactPerson: "Zohaib Hassan",
-      phone: "0345-6667788",
-      email: "zohaib.animator@gmail.com",
-      address: "Gulshan-e-Iqbal",
-      city: "Karachi",
-      ntn: "7654321-0",
-      strn: "N/A",
-      paymentTerms: "On Delivery",
-      bankName: "Bank Alfalah",
-      bankAccountTitle: "Zohaib Hassan",
-      accountNumberIban: "PK88ALFH005544332211",
-      openingBalance: 0,
-      status: "Active",
-      notes: "3D Motion Graphics & Animation Contractor",
-      createdAt: "2026-07-01",
-      createdBy: "Adpulseshawal"
-    }
-  ];
-}
-
-function seedJournal() {
-  const entries = [];
-  const add = (date, description, lines, ref) => {
-    entries.push({ id: uid(), date, description, reference: ref, lines });
-  };
-
-  add("2026-07-01", "Opening Balance — Habib Bank Limited (HBL)", [
-    { account: "bank", bankAccountId: "bank-hbl", debit: 1250000, credit: 0 },
-    { account: "equity", debit: 0, credit: 1250000 },
-  ], "OB-HBL");
-
-  add("2026-07-01", "Opening Balance — MCB Bank Ltd", [
-    { account: "bank", bankAccountId: "bank-mcb", debit: 850000, credit: 0 },
-    { account: "equity", debit: 0, credit: 850000 },
-  ], "OB-MCB");
-
-  add("2026-07-01", "Opening Balance — Meezan Bank Ltd", [
-    { account: "bank", bankAccountId: "bank-meezan", debit: 400000, credit: 0 },
-    { account: "equity", debit: 0, credit: 400000 },
-  ], "OB-MEEZAN");
-
-  add("2026-07-01", "Opening Balance — Petty Cash Vault", [
-    { account: "cash", bankAccountId: "bank-cash", debit: 75000, credit: 0 },
-    { account: "equity", debit: 0, credit: 75000 },
-  ], "OB-CASH");
-
-  return entries;
+  return Array.isArray(REAL_VENDORS) ? REAL_VENDORS : [];
 }
 
 function seedProjects() {
-  return [
-    { id: "prj-008", projectCode: "PRJ-008", clientId: "cli-101", client: "Imtiaz Retail", type: "Printing & Installations", name: "Back to School", description: "Large format frontlit printing & metal frame installation", startDate: "2026-08-01", endDate: "2026-08-28", status: "Active", contractValue: 1500000, budget: 1500000 },
-    { id: "prj-003", projectCode: "PRJ-003", clientId: "cli-101", client: "Imtiaz Retail", type: "OOH Advertising", name: "Ramzan Drive Billboards", description: "City-wide hoarding & billboard campaign — multiple prime sites", startDate: "2026-07-01", endDate: "2026-08-31", status: "In Progress", contractValue: 600000, budget: 600000 },
-    { id: "prj-001", projectCode: "PRJ-001", clientId: "cli-103", client: "Kinza Beverages", type: "TVC Production", name: "Summer Refresh TVC", description: "30-sec TV commercial: script, shoot & post-production edit", startDate: "2026-06-10", endDate: "2026-07-15", status: "Completed", contractValue: 480000, budget: 480000 },
-    { id: "prj-002", projectCode: "PRJ-002", clientId: "cli-102", client: "Prime Estate Enterprises", type: "Events", name: "Project Launch Event", description: "Site launch event management & stage production", startDate: "2026-07-01", endDate: "2026-07-05", status: "Completed", contractValue: 350000, budget: 350000 },
-    { id: "prj-004", projectCode: "PRJ-004", clientId: "cli-102", client: "Prime Estate Enterprises", type: "OOH Advertising", name: "Launch Campaign Billboards", description: "Site-launch hoarding campaign around II Chundrigar", startDate: "2026-07-05", endDate: "2026-09-05", status: "Active", contractValue: 600000, budget: 600000 },
-    { id: "prj-005", projectCode: "PRJ-005", clientId: "cli-104", client: "North Town Residency", type: "Digital Marketing", name: "Commercial Units Digital Push", description: "FB/Insta lead generation campaign & ad management", startDate: "2026-07-15", endDate: "2026-08-15", status: "Active", contractValue: 300000, budget: 300000 },
-    { id: "prj-006", projectCode: "PRJ-006", clientId: "cli-105", client: "Magnitude", type: "BTL Marketing", name: "Retail Activation Drive", description: "In-store BTL brand activation & promotional sampling", startDate: "2026-06-20", endDate: "2026-07-10", status: "Completed", contractValue: 220000, budget: 220000 },
-    { id: "prj-007", projectCode: "PRJ-007", clientId: "cli-103", client: "Kinza Beverages", type: "Print Media", name: "Newspaper Insert Campaign", description: "Print ad insertions - Dawn & Jang Sunday editions", startDate: "2026-07-05", endDate: "2026-07-25", status: "Draft", contractValue: 150000, budget: 150000 }
-  ];
+  return Array.isArray(REAL_PROJECTS) ? REAL_PROJECTS : [];
 }
 
 function seedInvoices() {
-  return [
-    { 
-      id: "inv-101", invoiceNo: "INV-001", clientId: "cli-101", projectId: "prj-008", client: "Imtiaz Retail", 
-      description: "Back to School Campaign Media & Production", 
-      amount: 450000, grossAmount: 450000,
-      applyDiscount: true, discountPercent: "4.4", discountAmount: 20000,
-      applyAgencyCommission: true, agencyCommissionRate: 10, agencyCommissionAmount: 43000,
-      applySst: true, sstRate: 15, sstAmount: 70950,
-      applyWht: false, whtRate: 0, whtAmount: 0,
-      totalAmount: 543950,
-      issueDate: "2026-08-05", dueDate: "2026-08-20", paid: false, paidVia: null, status: "Posted",
-      template: "PRINTING",
-      printingItems: [
-        { description: "Back to School Frontlit Banners", detail: "Vinyl Printing", qty: 10, unit: "Nos", size: "10x20", sqft: 200, rate: 100, amount: 200000 },
-        { description: "In-store Standees", detail: "Star Flex", qty: 20, unit: "Nos", size: "2x5", sqft: 10, rate: 150, amount: 30000 },
-        { description: "Flyers A4", detail: "128g Art Paper", qty: 5000, unit: "Nos", size: "A4", sqft: 0, rate: 44, amount: 220000 }
-      ]
-    },
-    { 
-      id: "inv-102", invoiceNo: "INV-002", clientId: "cli-102", projectId: "prj-002", client: "Prime Estate Enterprises", 
-      description: "Project Launch Event Management Package", 
-      amount: 450000, grossAmount: 450000,
-      applyDiscount: true, discountPercent: "2.2", discountAmount: 10000,
-      applyAgencyCommission: true, agencyCommissionRate: 10, agencyCommissionAmount: 44000,
-      applySst: true, sstRate: 15, sstAmount: 72600,
-      totalAmount: 556600, 
-      issueDate: "2026-07-05", dueDate: "2026-07-20", paid: true, paidVia: "Bank", status: "Posted",
-      template: "EVENT",
-      eventItems: [
-        { description: "Stage Setup & SMD Screens", qty: 1, unit: "Job", rate: 250000, amount: 250000 },
-        { description: "Sound System & Lighting", qty: 1, unit: "Job", rate: 100000, amount: 100000 },
-        { description: "Photography & Videography", qty: 1, unit: "Job", rate: 100000, amount: 100000 }
-      ]
-    },
-    { 
-      id: "inv-103", invoiceNo: "INV-003", clientId: "cli-101", projectId: "prj-003", client: "Imtiaz Retail", 
-      description: "Q3 Ramzan Drive Billboard Retainer", 
-      amount: 1250000, grossAmount: 1250000,
-      applyDiscount: false, discountPercent: 0, discountAmount: 0,
-      applyAgencyCommission: true, agencyCommissionRate: 10, agencyCommissionAmount: 125000,
-      applySst: true, sstRate: 15, sstAmount: 206250, totalAmount: 1581250, 
-      issueDate: "2026-07-10", dueDate: "2026-07-25", paid: false, paidVia: null, status: "Posted",
-      template: "OOH",
-      oohSites: [
-        { city: "Karachi", location: "Shahrah-e-Faisal FTC", size: "60x20", sqft: 1200, rate: 500000, amount: 500000 },
-        { city: "Karachi", location: "Clifton Teen Talwar", size: "30x15", sqft: 450, rate: 450000, amount: 450000 },
-        { city: "Lahore", location: "Gulberg Main Boulevard", size: "20x40", sqft: 800, rate: 300000, amount: 300000 }
-      ]
-    },
-    { 
-      id: "inv-104", invoiceNo: "INV-004", clientId: "cli-103", projectId: "prj-001", client: "Kinza Beverages", 
-      description: "Summer Refresh TVC Shoot & Post-Production", 
-      amount: 680000, grossAmount: 680000,
-      applyDiscount: true, discountPercent: "5.0", discountAmount: 34000,
-      applyAgencyCommission: true, agencyCommissionRate: 15, agencyCommissionAmount: 96900,
-      applySst: true, sstRate: 15, sstAmount: 111435, totalAmount: 854335, 
-      issueDate: "2026-06-15", dueDate: "2026-06-30", paid: false, paidVia: null, status: "Posted",
-      template: "NEWSPAPER",
-      newspaperItems: [
-        { publication: "Daily Jang", date: "2026-06-16", size: "27x4", totalCcm: 108, rate: 2500, mediaAmount: 270000, agencyFeePct: 15, agencyFee: 40500, amount: 310500 },
-        { publication: "Dawn", date: "2026-06-18", size: "27x4", totalCcm: 108, rate: 3000, mediaAmount: 324000, agencyFeePct: 14.04, agencyFee: 45500, amount: 369500 }
-      ]
-    },
-    { 
-      id: "inv-105", invoiceNo: "INV-005", clientId: "cli-104", projectId: "prj-005", client: "North Town Residency", 
-      description: "Commercial Units Digital Marketing Push", 
-      amount: 320000, grossAmount: 320000,
-      applyDiscount: false, discountPercent: 0, discountAmount: 0,
-      applyAgencyCommission: true, agencyCommissionRate: 10, agencyCommissionAmount: 32000,
-      applySst: true, sstRate: 15, sstAmount: 52800, totalAmount: 404800, 
-      issueDate: "2026-07-15", dueDate: "2026-07-30", paid: false, paidVia: null, status: "Posted",
-      template: "PRINT_MEDIA",
-      printMediaItems: [
-        { description: "Magazine Full Page Ads", publication: "Aurora", size: "Full Page", qty: 2, rate: 100000, amount: 200000 },
-        { description: "PR Article", publication: "Business Recorder", size: "Half Page", qty: 1, rate: 120000, amount: 120000 }
-      ]
-    },
-    { 
-      id: "inv-106", invoiceNo: "INV-006", clientId: "cli-105", projectId: "prj-006", client: "Magnitude", 
-      description: "Retail Activation Logo & BTL Design Package", 
-      amount: 85000, grossAmount: 85000,
-      applyDiscount: false, discountPercent: 0, discountAmount: 0,
-      applyAgencyCommission: true, agencyCommissionRate: 10, agencyCommissionAmount: 8500,
-      applySst: true, sstRate: 15, sstAmount: 14025, totalAmount: 107525, 
-      issueDate: "2026-06-20", dueDate: "2026-07-05", paid: true, paidVia: "Cash", status: "Posted",
-      template: "GENERAL"
-    }
-  ];
+  return Array.isArray(REAL_INVOICES) ? REAL_INVOICES : [];
 }
 
 function seedReleaseOrders() {
-  return [
-    {
-      id: "ro-101",
-      roNumber: "RO-26-001",
-      vendor: "Daily Jang (Jang Media Group)",
-      client: "Imtiaz Retail",
-      category: "Print Media",
-      campaignTitle: "Back to School Campaign (Print Media Release)",
-      issueDate: "2026-08-10",
-      releaseDate: "2026-08-15",
-      instructions: "Front Page Solus Position, Strict Color Accuracy, Voucher copy required with invoice.",
-      materialStatus: "Artwork Attached via Cloud",
-      amount: 150000,
-      grossAmount: 150000,
-      applyDiscount: true,
-      discountPercent: "5",
-      discountAmount: 7500,
-      totalAmountAfterDiscount: 142500,
-      applyAgencyCommission: true,
-      applyCommission: true,
-      agencyCommissionRate: 15,
-      agencyCommissionAmount: 21375,
-      grossAmountWithComm: 163875,
-      applySst: true,
-      sstRate: 15,
-      sstAmount: 24581,
-      totalAmount: 188456,
-      netAmount: 188456,
-      newspaperItems: [
-        { publicationDate: "2026-08-15", newspaper: "Daily Jang", edition: "Karachi", position: "Front Page Solus", columns: 4, height: 25, totalCcm: 100, rateCcm: 1500, grossAmount: 150000, commissionPct: 15, commissionAmt: 22500, netAmount: 127500 }
-      ],
-      status: "Issued"
-    },
-    {
-      id: "ro-102",
-      roNumber: "RO-26-002",
-      vendor: "Geo Television Network",
-      client: "Kinza Beverages",
-      category: "Electronic",
-      campaignTitle: "Summer Refresh TV Campaign (Electronic Media)",
-      issueDate: "2026-08-12",
-      releaseDate: "2026-08-18",
-      instructions: "Prime Time 9:00 PM News Bulletin & Drama OST Slot, Telecast Certificate mandatory.",
-      materialStatus: "Master HD Tape Delivered",
-      amount: 350000,
-      grossAmount: 350000,
-      applyDiscount: false,
-      discountPercent: 0,
-      discountAmount: 0,
-      totalAmountAfterDiscount: 350000,
-      applyAgencyCommission: true,
-      applyCommission: true,
-      agencyCommissionRate: 15,
-      agencyCommissionAmount: 52500,
-      grossAmountWithComm: 402500,
-      applySst: true,
-      sstRate: 15,
-      sstAmount: 60375,
-      totalAmount: 462875,
-      netAmount: 462875,
-      broadcastItems: [
-        { telecastDate: "2026-08-18", channel: "Geo News", programSlot: "Prime Time News Bulletin (9:00 PM)", durationSec: 30, totalSpots: 10, ratePerSpot: 35000, grossAmount: 350000, commissionPct: 15, commissionAmt: 52500, netAmount: 297500 }
-      ],
-      status: "Issued"
-    },
-    {
-      id: "ro-103",
-      roNumber: "RO-26-003",
-      vendor: "Meta Marketing Partner",
-      client: "Prime Estate Enterprises",
-      category: "Digital",
-      campaignTitle: "Project Launch Digital Push (Meta & YouTube)",
-      issueDate: "2026-08-14",
-      releaseDate: "2026-08-20",
-      instructions: "Optimized for In-Feed Video Ads and Lead Generation.",
-      materialStatus: "Video creatives uploaded",
-      amount: 200000,
-      grossAmount: 200000,
-      applyDiscount: true,
-      discountPercent: "10",
-      discountAmount: 20000,
-      totalAmountAfterDiscount: 180000,
-      applyAgencyCommission: true,
-      applyCommission: true,
-      agencyCommissionRate: 15,
-      agencyCommissionAmount: 27000,
-      grossAmountWithComm: 207000,
-      applySst: true,
-      sstRate: 15,
-      sstAmount: 31050,
-      totalAmount: 238050,
-      netAmount: 238050,
-      digitalItems: [
-        { platform: "Meta (Facebook / Instagram)", format: "Lead Gen & Video Reach Campaign", campaignDates: "2026-08-20 to 2026-09-05", impressions: "1,000,000 Reach", grossBudget: 200000, commissionPct: 15, commissionAmt: 30000, netAmount: 170000 }
-      ],
-      status: "Issued"
-    },
-    {
-      id: "ro-104",
-      roNumber: "RO-26-004",
-      vendor: "City FM 89",
-      client: "Magnitude",
-      category: "Radio",
-      campaignTitle: "FM Radio Morning Drive Commercials",
-      issueDate: "2026-08-15",
-      releaseDate: "2026-08-22",
-      instructions: "Morning Drive Time 8:00 AM - 10:00 AM broadcast, broadcast log required.",
-      materialStatus: "Audio MP3 file sent",
-      amount: 85000,
-      grossAmount: 85000,
-      applyDiscount: false,
-      discountPercent: 0,
-      discountAmount: 0,
-      totalAmountAfterDiscount: 85000,
-      applyAgencyCommission: true,
-      applyCommission: true,
-      agencyCommissionRate: 15,
-      agencyCommissionAmount: 12750,
-      grossAmountWithComm: 97750,
-      applySst: true,
-      sstRate: 15,
-      sstAmount: 14663,
-      totalAmount: 112413,
-      netAmount: 112413,
-      radioItems: [
-        { broadcastDate: "2026-08-22", station: "City FM 89", programSlot: "Morning Drive Time (8:00 AM - 10:00 AM)", durationSec: 30, totalSpots: 10, ratePerSpot: 8500, grossAmount: 85000, commissionPct: 15, commissionAmt: 12750, netAmount: 72250 }
-      ],
-      status: "Issued"
-    }
-  ];
+  return [];
 }
 
 function seedExpenses() {
-  return [
-    { id: "exp-101", expenseNo: "EXP-001", vendorId: "vnd-101", projectId: "prj-008", vendor: "ABC Printing", category: "Printing & Production", description: "Back to School Frontlit Banner Printing & Framing", amount: 250000, date: "2026-08-10", status: "unpaid", paidVia: null, createdBy: "Adpulseshawal" },
-    { id: "exp-102", expenseNo: "EXP-002", vendorId: "vnd-102", projectId: "prj-005", vendor: "Meta Ads", category: "Ad Spend", description: "FB/Insta Leads campaign for North Town", amount: 210000, date: "2026-07-08", status: "paid", paidVia: "Bank", createdBy: "Adpulsewahab" },
-    { id: "exp-103", expenseNo: "EXP-003", vendorId: "vnd-103", projectId: null, vendor: "Shahrah-e-Faisal Office Rent", category: "Rent", description: "Monthly HQ Rent for July 2026", amount: 180000, date: "2026-07-01", status: "paid", paidVia: "Bank", createdBy: "AdpulseCEO" },
-    { id: "exp-104", expenseNo: "EXP-004", vendorId: "vnd-104", projectId: "prj-001", vendor: "Freelance 3D Animator", category: "Contractor", description: "3D Animation shoot for Kinza TVC", amount: 65000, date: "2026-07-12", status: "paid", paidVia: "Cash", createdBy: "Adpulseshawal" },
-    { id: "exp-105", expenseNo: "EXP-005", vendorId: null, projectId: null, vendor: "K-Electric & High-Speed Fiber", category: "Utilities", description: "Monthly utility & fiber internet bills", amount: 28000, date: "2026-07-03", status: "paid", paidVia: "Cash", createdBy: "Adpulsewahab" }
-  ];
+  return Array.isArray(REAL_EXPENSES) ? REAL_EXPENSES : [];
 }
 
 function seedVouchers() {
-  return [
-    // 1. RV with Dual Tax (WHT + SST deducted from Gross)
-    {
-      id: "vch-rv-001",
-      voucherNo: "BRV-26-001",
-      type: "RV",
-      date: "2026-08-05",
-      partyType: "Client",
-      party: "Imtiaz Retail",
-      clientId: "cli-101",
-      projectId: "prj-008",
-      description: "Client Receipt against INV-001 (Gross: 500k, Less: WHT 3% & SST 13%)",
-      amount: 500000,
-      netAmount: 420000,
-      applyWht: true,
-      whtRate: 3,
-      whtAmount: 15000,
-      applySst: true,
-      sstRate: 13,
-      sstAmount: 65000,
-      via: "Bank",
-      receiveMode: "bank",
-      isPdc: false,
-      bankAccountId: "bank-hbl",
-      settleAR: true,
-      createdBy: "Adpulsewahab",
-      postedBy: "Adpulsewahab",
-      status: "Posted"
-    },
+  return Array.isArray(REAL_VOUCHERS) ? REAL_VOUCHERS : [];
+}
 
-    // 2. RV with Post-Dated Cheque (PDC) In-Hand
-    {
-      id: "vch-rv-pdc-001",
-      voucherNo: "BRV-26-002",
-      type: "RV",
-      date: "2026-08-10",
-      partyType: "Client",
-      party: "Prime Estate Enterprises",
-      clientId: "cli-102",
-      projectId: "prj-004",
-      description: "PDC Cheque In-Hand for Launch Campaign (Maturity: 25 Sep 2026)",
-      amount: 750000,
-      netAmount: 630000,
-      applyWht: true,
-      whtRate: 3,
-      whtAmount: 22500,
-      applySst: true,
-      sstRate: 13,
-      sstAmount: 97500,
-      via: "Bank",
-      receiveMode: "pdc",
-      isPdc: true,
-      pdcStatus: "In-Hand",
-      chequeNo: "948201",
-      chequeDate: "2026-09-25",
-      drawnBank: "Standard Chartered Bank",
-      bankAccountId: "bank-hbl",
-      targetBankId: "bank-hbl",
-      settleAR: true,
-      createdBy: "Adpulsewahab",
-      postedBy: "Adpulsewahab",
-      status: "In-Hand"
-    },
-
-    // 3. Direct Client-to-Vendor Settlement (CV) via Cross Cheque
-    {
-      id: "vch-cv-001",
-      voucherNo: "CV-26-001",
-      type: "CV",
-      date: "2026-08-12",
-      party: "Prime Estate Enterprises",
-      category: "ABC Printing",
-      vendor: "ABC Printing",
-      clientId: "cli-102",
-      vendorId: "vnd-101",
-      projectId: "prj-004",
-      paymentMode: "Cross Cheque",
-      instrumentNo: "771920",
-      instrumentDate: "2026-08-12",
-      drawnBank: "Meezan Bank",
-      description: "Direct Settlement: Prime Estate paid ABC Printing via Cross Cheque #771920",
-      amount: 200000,
-      netAmount: 200000,
-      createdBy: "AdpulseCEO",
-      postedBy: "AdpulseCEO",
-      status: "Posted"
-    },
-
-    // 4. Direct Client-to-Vendor Settlement (CV) via Online IBFT
-    {
-      id: "vch-cv-002",
-      voucherNo: "CV-26-002",
-      type: "CV",
-      date: "2026-08-15",
-      party: "Kinza Beverages",
-      category: "Meta Ads",
-      vendor: "Meta Ads",
-      clientId: "cli-103",
-      vendorId: "vnd-102",
-      projectId: "prj-001",
-      paymentMode: "Online Bank Transfer",
-      instrumentNo: "IBFT-883910",
-      instrumentDate: "2026-08-15",
-      drawnBank: "Habib Bank Limited",
-      description: "Direct Settlement: Kinza Beverages paid Meta Ads via Online IBFT #IBFT-883910",
-      amount: 150000,
-      netAmount: 150000,
-      createdBy: "Adpulsewahab",
-      postedBy: "Adpulsewahab",
-      status: "Posted"
-    },
-
-    // 5. Payment Voucher (PV) via Cross Cheque (with Agency Commission, SST, WHT)
-    {
-      id: "vch-pv-001",
-      voucherNo: "BPV-26-001",
-      type: "PV",
-      date: "2026-08-14",
-      partyType: "Vendor",
-      party: "ABC Printing",
-      vendorId: "vnd-101",
-      projectId: "prj-008",
-      category: "Printing & Production",
-      subcategory: "Large Format Printing",
-      accountKey: "direct_vendor",
-      description: "Vendor Payment - ABC Printing via Cross Cheque #682014 (HBL Main Ops)",
-      amount: 250000,
-      applyCommission: true,
-      agencyCommissionRate: 10,
-      agencyCommissionAmount: 25000,
-      applySst: true,
-      sstRate: 15,
-      sstAmount: 33750,
-      applyWht: true,
-      whtRate: 1,
-      whtAmount: 2500,
-      netAmount: 256250,
-      paymentMode: "Cross Cheque",
-      instrumentNo: "682014",
-      instrumentDate: "2026-08-14",
-      via: "Bank",
-      bankAccountId: "bank-hbl",
-      createdBy: "Adpulseshawal",
-      postedBy: "Adpulseshawal",
-      status: "Posted"
-    },
-
-    // 6. Payment Voucher (PV) via Online Bank Transfer (IBFT)
-    {
-      id: "vch-pv-002",
-      voucherNo: "BPV-26-002",
-      type: "PV",
-      date: "2026-08-16",
-      partyType: "Vendor",
-      party: "Meta Ads",
-      vendorId: "vnd-102",
-      projectId: "prj-005",
-      category: "Digital Marketing",
-      subcategory: "Social Media Ads",
-      accountKey: "ad_spend",
-      description: "Vendor Payment - Meta Ads via Online Bank Transfer #FT-2026-9921 (MCB)",
-      amount: 180000,
-      netAmount: 180000,
-      paymentMode: "Online Bank Transfer",
-      instrumentNo: "FT-2026-9921",
-      instrumentDate: "2026-08-16",
-      via: "Bank",
-      bankAccountId: "bank-mcb",
-      createdBy: "Adpulsewahab",
-      postedBy: "Adpulsewahab",
-      status: "Posted"
-    },
-
-    // 7. Payment Voucher (PV) via Petty Cash Vault
-    {
-      id: "vch-pv-003",
-      voucherNo: "CPV-26-001",
-      type: "PV",
-      date: "2026-08-18",
-      partyType: "Vendor",
-      party: "K-Electric & High-Speed Fiber",
-      vendorId: null,
-      projectId: null,
-      category: "Office & Administration",
-      subcategory: "Utilities (Electricity, Water, Gas)",
-      accountKey: "utilities",
-      description: "Utility & Office Internet Bill Settlement via Petty Cash Vault",
-      amount: 28000,
-      netAmount: 28000,
-      paymentMode: "Petty Cash",
-      instrumentNo: "",
-      instrumentDate: "2026-08-18",
-      via: "Cash",
-      bankAccountId: "bank-cash",
-      createdBy: "Adpulseshawal",
-      postedBy: "Adpulseshawal",
-      status: "Posted"
-    },
-
-    // 8. Contra Transfer Voucher (CTV) Bank to Cash Vault
-    {
-      id: "vch-ctv-001",
-      voucherNo: "CTV-26-001",
-      type: "CTV",
-      date: "2026-08-02",
-      party: "Habib Bank Limited (HBL) → Petty Cash Vault",
-      description: "Internal Contra Transfer: Cash replenishment from HBL to Petty Cash Vault",
-      amount: 50000,
-      netAmount: 50000,
-      sourceBankId: "bank-hbl",
-      targetBankId: "bank-cash",
-      createdBy: "AdpulseCEO",
-      postedBy: "AdpulseCEO",
-      status: "Posted"
-    }
-  ];
+function seedJournal() {
+  return Array.isArray(REAL_JOURNAL) ? REAL_JOURNAL : [];
 }
 
 function seedAuditLogs() {
   return [
-    { id: "aud-001", userId: "u-shawal", userName: "Adpulseshawal", role: "Staff", action: "Created Vendor Expense EXP-001 (PKR 250,000)", module: "Expenses", recordType: "Expense", recordId: "exp-101", timestamp: "2026-08-10T10:15:00Z" },
-    { id: "aud-002", userId: "u-wahab", userName: "Adpulsewahab", role: "Staff", action: "Posted Receipt Voucher RV-001 (PKR 500,000)", module: "Vouchers", recordType: "Voucher", recordId: "vch-001", timestamp: "2026-08-08T14:30:00Z" },
-    { id: "aud-003", userId: "u-shawal", userName: "Adpulseshawal", role: "Staff", action: "Posted Payment Voucher PV-001 (PKR 150,000)", module: "Vouchers", recordType: "Voucher", recordId: "vch-002", timestamp: "2026-08-12T11:20:00Z" },
-    { id: "aud-004", userId: "u-ceo", userName: "AdPulseCEO", role: "CEO", action: "Registered Client Master CLI-001 (Imtiaz Retail)", module: "Clients", recordType: "Client", recordId: "cli-101", timestamp: "2026-06-01T09:00:00Z" }
+    { id: "aud-001", userId: "u-ceo", userName: "AdPulseCEO", role: "CEO", action: "System Synchronized with 35 Client & 23 Vendor Real Ledgers", module: "Ledger", recordType: "Ledger", recordId: "sys-init", timestamp: "2026-07-01T09:00:00Z" }
   ];
 }
 
@@ -1361,10 +697,10 @@ function seedBankAccounts() {
 function seedHoardings() {
   return [
     { id: uid(), name: "Shahrah-e-Faisal Site 1", area: "Shahrah-e-Faisal", size: "20x40 ft", pricePerMonth: 150000, status: "Available", project: "", client: "" },
-    { id: uid(), name: "Tariq Road Junction", area: "Tariq Road", size: "10x20 ft", pricePerMonth: 60000, status: "Booked", project: "Ramzan Drive", client: "Imtiaz Retail", bookedFrom: "2026-07-01", bookedTo: "2026-08-31" },
+    { id: uid(), name: "Tariq Road Junction", area: "Tariq Road", size: "10x20 ft", pricePerMonth: 60000, status: "Available", project: "", client: "" },
     { id: uid(), name: "Clifton Beach View Billboard", area: "Clifton", size: "30x60 ft", pricePerMonth: 280000, status: "Available", project: "", client: "" },
     { id: uid(), name: "North Nazimabad Chowrangi", area: "North Nazimabad", size: "15x30 ft", pricePerMonth: 95000, status: "Maintenance", project: "", client: "" },
-    { id: uid(), name: "II Chundrigar Financial Hub", area: "II Chundrigar", size: "25x50 ft", pricePerMonth: 200000, status: "Booked", project: "Launch Campaign", client: "Prime Estate Enterprises", bookedFrom: "2026-07-05", bookedTo: "2026-09-05" },
+    { id: uid(), name: "II Chundrigar Financial Hub", area: "II Chundrigar", size: "25x50 ft", pricePerMonth: 200000, status: "Available", project: "", client: "" },
     { id: uid(), name: "Gulshan-e-Iqbal Flyover", area: "Gulshan-e-Iqbal", size: "12x24 ft", pricePerMonth: 70000, status: "Available", project: "", client: "" },
   ];
 }
@@ -8599,7 +7935,7 @@ export default function App() {
                           <td><span className="badge-mini" style={{ background: "#E0F2FE", color: "#0369A1", fontWeight: 700 }}>Invoice</span></td>
                           <td style={{ fontWeight: 800, color: "var(--ink)" }}>INV-2026-00{idx + 1}</td>
                           <td className="mono">{fmtDate(inv.issueDate || TODAY)}</td>
-                          <td>{inv.client || "Prime Estate Enterprises"}</td>
+                          <td>{inv.client || "Client"}</td>
                           <td className="mono" style={{ textAlign: "right", fontWeight: 800, color: "#059669" }}>{pkr(inv.totalAmount || inv.amount)}</td>
                           <td style={{ fontSize: 12 }}>{selectedStaffDrilldown.name}</td>
                           <td style={{ fontSize: 12 }}>{selectedStaffDrilldown.name}</td>
@@ -8726,11 +8062,11 @@ export default function App() {
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                   {[
-                    { time: "11:48 AM", text: "Posted Payment Voucher PV-301 for PKR 45,000" },
-                    { time: "11:20 AM", text: "Updated Project [PRJ-102] Campaign Schedule" },
-                    { time: "10:45 AM", text: "Uploaded Vendor Invoice DOC-904 via AI OCR" },
-                    { time: "10:15 AM", text: "Posted Receipt Voucher RV-108 for PKR 150,000" },
-                    { time: "09:40 AM", text: "Created New Invoice INV-2026-004 for Imtiaz Retail" },
+                    { time: "11:48 AM", text: "Verified GL Trial Balance & Double-Entry Ledgers" },
+                    { time: "11:20 AM", text: "Synchronized 35 Client and 23 Vendor Master Records" },
+                    { time: "10:45 AM", text: "Updated Tax Withholding (SST 13% / WHT 3%) RV Calculations" },
+                    { time: "10:15 AM", text: "Posted Real Excel Balance Statements to Cloud" },
+                    { time: "09:40 AM", text: "Database Integrity Checked (0 Discrepancy)" },
                     { time: "09:15 AM", text: "System Login Success — Session Started" }
                   ].slice(0, showFullActivityLog ? 6 : 6).map((log, idx) => (
                     <div key={idx} style={{ display: "flex", gap: 14, alignItems: "center", padding: "10px 14px", background: "var(--bg)", borderRadius: 10, fontSize: 13, border: "1px solid var(--rule)" }}>
@@ -14446,7 +13782,7 @@ function BookHoardingModal({ hoarding, projects, onClose, onSubmit }) {
         </>
       ) : (
         <>
-          <div className="field"><label>Client Name</label><input value={client} onChange={e => setClient(e.target.value)} placeholder="e.g. Imtiaz Retail" /></div>
+          <div className="field"><label>Client Name</label><input value={client} onChange={e => setClient(e.target.value)} placeholder="e.g. Diamond Supermarket" /></div>
           <div className="field"><label>Campaign / Project Name</label><input value={projectName} onChange={e => setProjectName(e.target.value)} placeholder="e.g. Independence Day OOH Blitz" /></div>
         </>
       )}

@@ -145,12 +145,12 @@ export default function ClientMasterModal({ client, clients, onClose, onSave }) 
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
                 <div className="field">
                   <label className="field-label" style={{ fontWeight: 700, fontSize: 12.5, color: "#334155" }}>Client Name *</label>
-                  <input type="text" className="input" placeholder="e.g. Imtiaz Retail" value={formData.name} onChange={e => handleChange("name", e.target.value)} required style={{ padding: "9px 12px", fontSize: 13, borderRadius: 8 }} />
+                  <input type="text" className="input" placeholder="e.g. Diamond Supermarket" value={formData.name} onChange={e => handleChange("name", e.target.value)} required style={{ padding: "9px 12px", fontSize: 13, borderRadius: 8 }} />
                 </div>
 
                 <div className="field">
                   <label className="field-label" style={{ fontWeight: 700, fontSize: 12.5, color: "#334155" }}>Company Registered Title</label>
-                  <input type="text" className="input" placeholder="e.g. Imtiaz Super Market Ltd" value={formData.companyName} onChange={e => handleChange("companyName", e.target.value)} style={{ padding: "9px 12px", fontSize: 13, borderRadius: 8 }} />
+                  <input type="text" className="input" placeholder="e.g. Diamond Supermarket Pvt Ltd" value={formData.companyName} onChange={e => handleChange("companyName", e.target.value)} style={{ padding: "9px 12px", fontSize: 13, borderRadius: 8 }} />
                 </div>
 
                 <div className="field">
