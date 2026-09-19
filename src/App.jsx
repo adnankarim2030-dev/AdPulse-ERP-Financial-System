@@ -1279,6 +1279,7 @@ export default function App() {
   const [cashBankFilter, setCashBankFilter] = useState("all");
 
   const [showVoucherForm, setShowVoucherForm] = useState(false);
+  const [editingVoucher, setEditingVoucher] = useState(null);
   const [voucherDefaultType, setVoucherDefaultType] = useState("JV");
   const [clearingPdcVoucher, setClearingPdcVoucher] = useState(null);
   const [bouncingPdcVoucher, setBouncingPdcVoucher] = useState(null);
@@ -2513,7 +2514,190 @@ export default function App() {
     };
     setVouchers(v => [vRecord, ...v]);
     setShowVoucherForm(false);
+    setEditingVoucher(null);
     return voucherNo;
+  }
+
+  function updateVoucher(voucherId, type, payload = {}) {
+    const {
+      voucherNo: customVoucherNo, projectId, date, party, description, amount, netAmount,
+      clientId, vendorId, vendor, paymentMode, instrumentNo, instrumentDate, drawnBank,
+      receiveMode, isPdc, chequeNo, chequeDate,
+      category, subcategory, accountKey, via, bankAccountId, sourceBankId, targetBankId,
+      settleAR, lines,
+      applyCommission, agencyCommissionRate, agencyCommissionAmount,
+      applySst, sstRate, sstAmount,
+      applyWht, whtRate, whtAmount
+    } = payload;
+
+    const existingVoucher = vouchers.find(v => v.id === voucherId);
+    const voucherNo = customVoucherNo || existingVoucher?.voucherNo || getNextVoucherNo(type, vouchers, via);
+    let journalLines = lines;
+
+    if (type === "PV") {
+      const glKey = accountKey || getGLAccountKeyForSubcategory(category, subcategory) || "expense";
+      const isCash = via === "Cash" || paymentMode === "Petty Cash";
+      const paymentAccount = isCash ? "cash" : "bank";
+      const bAccountId = isCash ? "bank-cash" : (bankAccountId || bankAccounts.find(b => b.accountType !== "Petty Cash")?.id || "bank-hbl");
+      const memoText = subcategory ? `${category} → ${subcategory}` : (category || "Payment");
+      
+      const billAmt = Number(amount) || 0;
+      const commAmt = applyCommission ? (Number(agencyCommissionAmount) || 0) : 0;
+      const sstAmt = applySst ? (Number(sstAmount) || 0) : 0;
+      const whtAmt = applyWht ? (Number(whtAmount) || 0) : 0;
+      const paidAmt = netAmount !== undefined ? Number(netAmount) : Math.max(0, billAmt - commAmt + sstAmt - whtAmt);
+
+      const payingBankObj = bankAccounts.find(b => b.id === bAccountId);
+      const paidMemo = isCash 
+        ? "Paid via Petty Cash Vault" 
+        : `Paid via ${paymentMode || 'Bank'}${instrumentNo ? ` #${instrumentNo}` : ""} (${payingBankObj?.bankName || 'Bank'})`;
+
+      journalLines = [
+        { account: glKey, debit: billAmt, credit: 0, memo: memoText },
+      ];
+      if (sstAmt > 0) {
+        journalLines.push({ account: "srb_payable", debit: sstAmt, credit: 0, memo: `Input Sales Tax / SST (${sstRate || 15}%)` });
+      }
+      if (commAmt > 0) {
+        journalLines.push({ account: "revenue", debit: 0, credit: commAmt, memo: `Agency Commission Income (${agencyCommissionRate || 10}%)` });
+      }
+      if (whtAmt > 0) {
+        journalLines.push({ account: "wht_payable", debit: 0, credit: whtAmt, memo: `WHT Withheld from Vendor (${whtRate || 1}%)` });
+      }
+      journalLines.push({ account: paymentAccount, bankAccountId: bAccountId, debit: 0, credit: paidAmt, memo: paidMemo });
+
+    } else if (type === "RV") {
+      const isChequeInHand = isPdc || receiveMode === "pdc" || receiveMode === "PDC";
+      const depositAccount = isChequeInHand ? "cheques_in_hand" : (via === "Cash" ? "cash" : "bank");
+      const bAccountId = isChequeInHand ? null : (via === "Cash" ? "bank-cash" : (bankAccountId || bankAccounts.find(b => b.accountType !== "Petty Cash")?.id || "bank-hbl"));
+      
+      const grossAmt = Number(amount) || 0;
+      const whtAmt = applyWht ? (Number(whtAmount) || 0) : 0;
+      const sstAmt = applySst ? (Number(sstAmount) || 0) : 0;
+      const receivedDeposit = netAmount !== undefined ? Number(netAmount) : Math.max(0, grossAmt - whtAmt - sstAmt);
+      const creditAcc = settleAR ? "ar" : "revenue";
+
+      journalLines = [
+        { 
+          account: depositAccount, 
+          bankAccountId: bAccountId, 
+          debit: receivedDeposit, 
+          credit: 0, 
+          memo: isChequeInHand 
+            ? `PDC Cheque In-Hand (Chq #${chequeNo || 'PDC'}, Maturity: ${chequeDate || date}, Drawn: ${drawnBank || 'Client Bank'})`
+            : `Received via ${via === "Cash" ? "Cash" : "Bank"}` 
+        }
+      ];
+      if (whtAmt > 0) {
+        journalLines.push({ account: "wht_receivable", debit: whtAmt, credit: 0, memo: `WHT Withheld by Client (${whtRate || 3}%)` });
+      }
+      if (sstAmt > 0) {
+        journalLines.push({ account: "srb_payable", debit: sstAmt, credit: 0, memo: `SST Withheld by Client (${sstRate || 13}%)` });
+      }
+      journalLines.push({ account: creditAcc, debit: 0, credit: grossAmt, memo: settleAR ? "Client Invoice Settlement" : "Direct Service Revenue" });
+
+    } else if (type === "CTV") {
+      const srcBank = bankAccounts.find(b => b.id === sourceBankId) || bankAccounts.find(b => b.id === "bank-cash") || bankAccounts[0];
+      const tgtBank = bankAccounts.find(b => b.id === targetBankId) || bankAccounts.find(b => b.id !== "bank-cash") || bankAccounts[1];
+      
+      const srcAccType = (srcBank?.id === "bank-cash" || srcBank?.accountType === "Petty Cash") ? "cash" : "bank";
+      const tgtAccType = (tgtBank?.id === "bank-cash" || tgtBank?.accountType === "Petty Cash") ? "cash" : "bank";
+
+      journalLines = [
+        { account: tgtAccType, bankAccountId: tgtBank?.id, debit: Number(amount), credit: 0, memo: `Contra Transfer into ${tgtBank?.bankName || 'Target'}` },
+        { account: srcAccType, bankAccountId: srcBank?.id, debit: 0, credit: Number(amount), memo: `Contra Transfer from ${srcBank?.bankName || 'Source'}` },
+      ];
+    } else if (type === "CV") {
+      journalLines = [
+        { account: "ap", debit: Number(amount), credit: 0 },
+        { account: "ar", debit: 0, credit: Number(amount) },
+      ];
+    }
+
+    // Update GL Journal Entry
+    setJournal(prev => {
+      const existingIndex = prev.findIndex(j => j.reference === voucherNo || (existingVoucher?.voucherNo && j.reference === existingVoucher.voucherNo) || j.reference === `VCH-${voucherId}`);
+      if (existingIndex !== -1) {
+        const next = [...prev];
+        next[existingIndex] = {
+          ...next[existingIndex],
+          date: date || TODAY_STR,
+          reference: voucherNo,
+          description: projectId ? `[Project] ${description}` : description,
+          lines: journalLines || next[existingIndex].lines
+        };
+        return next;
+      } else {
+        postEntry(date, projectId ? `[Project] ${description}` : description, journalLines, voucherNo);
+        return prev;
+      }
+    });
+
+    const isChequeInHand = isPdc || receiveMode === "pdc" || receiveMode === "PDC";
+    setVouchers(list => list.map(v => {
+      if (v.id === voucherId) {
+        return {
+          ...v,
+          voucherNo,
+          type,
+          projectId: projectId || null,
+          date,
+          party,
+          description,
+          amount: Number(amount),
+          netAmount: netAmount !== undefined ? Number(netAmount) : Number(amount),
+          clientId: clientId || null,
+          vendorId: vendorId || null,
+          vendor: vendor || (type === "CV" ? category : null),
+          paymentMode,
+          instrumentNo,
+          instrumentDate,
+          drawnBank,
+          receiveMode: isChequeInHand ? "pdc" : (via === "Cash" ? "cash" : "bank"),
+          isPdc: Boolean(isChequeInHand),
+          pdcStatus: isChequeInHand ? (v.pdcStatus || "In-Hand") : null,
+          chequeNo: chequeNo || null,
+          chequeDate: chequeDate || null,
+          targetBankId: targetBankId || bankAccountId || null,
+          category,
+          subcategory,
+          via,
+          bankAccountId,
+          sourceBankId,
+          applyCommission,
+          agencyCommissionRate,
+          agencyCommissionAmount,
+          applySst,
+          sstRate,
+          sstAmount,
+          applyWht,
+          whtRate,
+          whtAmount
+        };
+      }
+      return v;
+    }));
+
+    logAudit({
+      userId: currentUser?.id || "u-staff",
+      userName: currentUser?.name || "Staff",
+      role: currentUser?.role || "Staff",
+      action: `Updated Voucher #${voucherNo} (${party}) — Amount: ${pkr(amount)}`,
+      module: "Vouchers",
+      recordType: "Voucher",
+      recordId: voucherId,
+      timestamp: new Date().toISOString()
+    });
+
+    setShowVoucherForm(false);
+    setEditingVoucher(null);
+    return voucherNo;
+  }
+
+  function handleEditVoucher(v) {
+    setEditingVoucher(v);
+    setVoucherDefaultType(v.type || "PV");
+    setShowVoucherForm(true);
   }
 
   function clearPdcCheque(voucherId, clearanceDate = TODAY_STR, targetBankId = "bank-hbl") {
@@ -3323,60 +3507,164 @@ export default function App() {
       return;
     }
 
-    const baseAmt = Number(extracted.baseAmount) || 0;
-    const taxAmt = Number(extracted.taxAmount) || 0;
+    const targetType = extracted.targetErpDocType || extracted.documentType || "Vendor Expense";
+    const baseAmt = Number(extracted.baseAmount) || Number(extracted.amount) || 0;
+    const taxAmt = Number(extracted.taxAmount) || Number(extracted.sstAmount) || 0;
+    const whtAmt = Number(extracted.whtAmount) || 0;
     const totalAmt = Number(extracted.totalAmount) || (baseAmt + taxAmt);
     const category = extracted.category || "Marketing & Advertising";
     const subcategory = extracted.subcategory || "Meta / Facebook Ads";
-    const glKey = getGLAccountKeyForSubcategory(category, subcategory);
+    const glKey = getGLAccountKeyForSubcategory(category, subcategory) || "expense";
 
     const paymentMode = extracted.paymentMode || "Bank";
     const bankAccountId = paymentMode === "Cash" ? "bank-cash" : (extracted.bankAccountId || "bank-hbl");
-
-    const journalLines = [
-      { account: glKey, debit: baseAmt, credit: 0, memo: `${category} → ${subcategory}` },
-    ];
-    if (taxAmt > 0) {
-      journalLines.push({ account: "srb_payable", debit: taxAmt, credit: 0, memo: "Input Sales Tax" });
-    }
-
-    if (paymentMode === "Cash") {
-      journalLines.push({ account: "cash", bankAccountId: "bank-cash", debit: 0, credit: totalAmt });
-    } else if (paymentMode === "Bank") {
-      journalLines.push({ account: "bank", bankAccountId, debit: 0, credit: totalAmt });
-    } else {
-      journalLines.push({ account: "ap", debit: 0, credit: totalAmt });
-    }
-
     const docRef = extracted.documentNumber || `DOC-${doc.id.toUpperCase().slice(0, 6)}`;
-    let postDesc = `[AI Doc: ${extracted.documentType || 'Invoice'}] ${extracted.party} - ${extracted.description || 'Uploaded Document'}`;
-    if (overrideReason) {
-      postDesc += ` (OVERRIDE: ${overrideReason})`;
+    const date = extracted.date || TODAY.toISOString().slice(0, 10);
+    const dueDate = extracted.dueDate || new Date(Date.now() + 15 * 86400000).toISOString().slice(0, 10);
+
+    if (targetType === "Client Invoice" || targetType === "Invoice") {
+      const invRecord = {
+        id: uid(),
+        invoiceNo: docRef.startsWith("INV") ? docRef : `INV-${docRef}`,
+        clientId: extracted.clientId || null,
+        projectId: extracted.projectId || null,
+        client: extracted.party,
+        description: extracted.description || "Client Sales & Media Production",
+        amount: baseAmt || totalAmt,
+        grossAmount: baseAmt || totalAmt,
+        applyDiscount: false,
+        discountPercent: 0,
+        discountAmount: 0,
+        applyAgencyCommission: Boolean(extracted.applyCommission),
+        agencyCommissionRate: Number(extracted.agencyCommissionRate) || 0,
+        agencyCommissionAmount: Number(extracted.agencyCommissionAmount) || 0,
+        applySst: Boolean(extracted.applySst || taxAmt > 0),
+        sstRate: Number(extracted.sstRate) || 15,
+        sstAmount: taxAmt,
+        totalAmount: totalAmt,
+        issueDate: date,
+        dueDate: dueDate,
+        paid: paymentMode !== "Unpaid",
+        paidVia: paymentMode === "Cash" ? "Cash" : (paymentMode === "Bank" ? "Bank" : null),
+        status: "Posted",
+        template: "GENERAL",
+        documentId: doc.id
+      };
+      setInvoices(prev => [invRecord, ...prev]);
+
+      const netRev = totalAmt - taxAmt;
+      const invJournalLines = [
+        { account: "ar", debit: totalAmt, credit: 0, memo: `Client Invoice - ${extracted.party}` },
+        { account: "revenue", debit: 0, credit: netRev, memo: "Sales Revenue" },
+      ];
+      if (taxAmt > 0) {
+        invJournalLines.push({ account: "srb_payable", debit: 0, credit: taxAmt, memo: "SRB Sales Tax Payable" });
+      }
+      postEntry(date, `[Converted ERP Invoice] ${extracted.party} (${extracted.description || 'Sales Billing'})`, invJournalLines, invRecord.invoiceNo);
+
+    } else if (targetType === "Payment Voucher" || targetType === "PV") {
+      createVoucher("PV", {
+        voucherNo: docRef.startsWith("BPV") || docRef.startsWith("CPV") ? docRef : `BPV-26-${Math.floor(Math.random()*899+100)}`,
+        projectId: extracted.projectId || null,
+        date: date,
+        party: extracted.party,
+        vendorId: extracted.vendorId || null,
+        description: `[Converted ERP Voucher] ${extracted.party} - ${extracted.description || 'Vendor Payment'}`,
+        amount: baseAmt || totalAmt,
+        netAmount: totalAmt - whtAmt,
+        paymentMode: paymentMode === "Cash" ? "Petty Cash" : (extracted.paymentInstrumentMode || "Online Bank Transfer"),
+        instrumentNo: extracted.instrumentNo || "",
+        instrumentDate: date,
+        applyCommission: Boolean(extracted.applyCommission),
+        agencyCommissionRate: Number(extracted.agencyCommissionRate) || 0,
+        agencyCommissionAmount: Number(extracted.agencyCommissionAmount) || 0,
+        applySst: Boolean(extracted.applySst || taxAmt > 0),
+        sstRate: Number(extracted.sstRate) || 15,
+        sstAmount: taxAmt,
+        applyWht: Boolean(extracted.applyWht || whtAmt > 0),
+        whtRate: Number(extracted.whtRate) || 1,
+        whtAmount: whtAmt,
+        category,
+        subcategory,
+        accountKey: glKey,
+        via: paymentMode === "Cash" ? "Cash" : "Bank",
+        bankAccountId
+      });
+
+    } else if (targetType === "Receipt Voucher" || targetType === "RV") {
+      createVoucher("RV", {
+        voucherNo: docRef.startsWith("BRV") || docRef.startsWith("CRV") ? docRef : `BRV-26-${Math.floor(Math.random()*899+100)}`,
+        projectId: extracted.projectId || null,
+        date: date,
+        party: extracted.party,
+        clientId: extracted.clientId || null,
+        description: `[Converted ERP Voucher] ${extracted.party} - ${extracted.description || 'Client Receipt'}`,
+        amount: totalAmt,
+        netAmount: Math.max(0, totalAmt - whtAmt - taxAmt),
+        applySst: Boolean(extracted.applySst || taxAmt > 0),
+        sstRate: Number(extracted.sstRate) || 13,
+        sstAmount: taxAmt,
+        applyWht: Boolean(extracted.applyWht || whtAmt > 0),
+        whtRate: Number(extracted.whtRate) || 3,
+        whtAmount: whtAmt,
+        via: paymentMode === "Cash" ? "Cash" : "Bank",
+        receiveMode: extracted.receiveMode || (paymentMode === "Cash" ? "cash" : "bank"),
+        isPdc: Boolean(extracted.isPdc),
+        chequeNo: extracted.chequeNo || "",
+        chequeDate: extracted.chequeDate || date,
+        drawnBank: extracted.drawnBank || "",
+        bankAccountId,
+        settleAR: true
+      });
+
+    } else {
+      // Vendor Expense / Bill (Default)
+      const journalLines = [
+        { account: glKey, debit: baseAmt, credit: 0, memo: `${category} → ${subcategory}` },
+      ];
+      if (taxAmt > 0) {
+        journalLines.push({ account: "srb_payable", debit: taxAmt, credit: 0, memo: "Input Sales Tax (SRB)" });
+      }
+
+      if (paymentMode === "Cash") {
+        journalLines.push({ account: "cash", bankAccountId: "bank-cash", debit: 0, credit: totalAmt, memo: "Paid via Petty Cash" });
+      } else if (paymentMode === "Bank") {
+        journalLines.push({ account: "bank", bankAccountId, debit: 0, credit: totalAmt, memo: "Paid via Bank" });
+      } else {
+        journalLines.push({ account: "ap", debit: 0, credit: totalAmt, memo: "Accounts Payable" });
+      }
+
+      let postDesc = `[Converted ERP Bill] ${extracted.party} - ${extracted.description || 'Operating Expense'}`;
+      if (overrideReason) {
+        postDesc += ` (OVERRIDE: ${overrideReason})`;
+      }
+
+      postEntry(date, postDesc, journalLines, docRef);
+
+      const expRecord = {
+        id: uid(),
+        vendor: extracted.party,
+        vendorId: extracted.vendorId || null,
+        category,
+        subcategory,
+        accountKey: glKey,
+        amount: totalAmt,
+        date: date,
+        status: paymentMode === "Unpaid" ? "unpaid" : "paid",
+        paidVia: paymentMode === "Cash" ? "Cash" : (paymentMode === "Bank" ? "Bank" : null),
+        projectId: extracted.projectId || null,
+        documentId: doc.id,
+        docNumber: docRef,
+        overrideReason: overrideReason || null
+      };
+      setExpenses(prev => [expRecord, ...prev]);
     }
-
-    postEntry(extracted.date || TODAY.toISOString().slice(0, 10), postDesc, journalLines, docRef);
-
-    const expRecord = {
-      id: uid(),
-      vendor: extracted.party,
-      category,
-      subcategory,
-      accountKey: glKey,
-      amount: totalAmt,
-      date: extracted.date || TODAY.toISOString().slice(0, 10),
-      status: paymentMode === "Unpaid" ? "unpaid" : "paid",
-      paidVia: paymentMode === "Cash" ? "Cash" : "Bank",
-      projectId: extracted.projectId || null,
-      documentId: doc.id,
-      docNumber: docRef,
-      overrideReason: overrideReason || null
-    };
-    setExpenses(prev => [expRecord, ...prev]);
 
     setDocuments(docs => docs.map(d => d.id === docId
       ? {
           ...d,
           status: "posted",
+          targetErpDocType: targetType,
           extracted,
           duplicateRisk: dupEval,
           postedAt: TODAY.toISOString().slice(0, 10),
@@ -3385,6 +3673,17 @@ export default function App() {
         }
       : d
     ));
+
+    logAudit({
+      userId: currentUser?.id || "u-staff",
+      userName: currentUser?.name || "Staff",
+      role: currentUser?.role || "Staff",
+      action: `Converted & Posted Document [${targetType}] #${docRef} for ${extracted.party} (${pkr(totalAmt)})`,
+      module: "Documents",
+      recordType: "Document",
+      recordId: docId,
+      timestamp: new Date().toISOString()
+    });
 
     setReviewingDocId(null);
     setCompareDocData(null);
@@ -6918,7 +7217,7 @@ export default function App() {
                       <th>Description</th>
                       <th style={{ textAlign: "right" }}>Amount (PKR)</th>
                       <th>Status / Settlement</th>
-                      <th>Print</th>
+                      <th style={{ textAlign: "center" }}>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -7054,9 +7353,14 @@ export default function App() {
                               )}
                             </td>
                             <td>
-                              <button className="btn" style={{ padding: "4px 7px", fontSize: 12 }} onClick={() => setPrintDoc(v)}>
-                                <Printer size={13} />
-                              </button>
+                              <div style={{ display: "flex", gap: 5, justifyContent: "center" }}>
+                                <button className="btn" style={{ padding: "4px 7px", fontSize: 12, color: "#0284C7" }} title="Edit Voucher" onClick={() => handleEditVoucher(v)}>
+                                  <Edit size={13} />
+                                </button>
+                                <button className="btn" style={{ padding: "4px 7px", fontSize: 12 }} title="Print Voucher" onClick={() => setPrintDoc(v)}>
+                                  <Printer size={13} />
+                                </button>
+                              </div>
                             </td>
                           </tr>
                         );
@@ -7075,19 +7379,19 @@ export default function App() {
             <div className="card" style={{ padding: "14px 20px", marginBottom: 18, background: "linear-gradient(135deg, rgba(2, 132, 199, 0.06), rgba(5, 150, 105, 0.06))", border: "1px solid rgba(2, 132, 199, 0.15)" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
                 <div>
-                  <div style={{ fontWeight: 700, fontSize: 15, color: "var(--ink)" }}>AI Document OCR &amp; Accounting Posting Workflow</div>
+                  <div style={{ fontWeight: 700, fontSize: 15, color: "var(--ink)" }}>AI Document OCR &amp; ERP Format Conversion Pipeline</div>
                   <div style={{ fontSize: 12.5, color: "var(--ink-muted)", marginTop: 2 }}>
-                    Upload Invoice, Quotation, PO, or Receipt. System extracts data for user review. No financial entry is posted automatically.
+                    Upload any external document (Vendor Bill, Client Invoice, Voucher). System converts it to Standard ERP Document Format for full review &amp; verification before ledger posting.
                   </div>
                 </div>
                 <div style={{ display: "flex", gap: 6, fontSize: 11.5, fontWeight: 700 }}>
                   <span style={{ background: "#E0F2FE", color: "#0369A1", padding: "4px 8px", borderRadius: 12 }}>1. UPLOAD</span>
                   <span style={{ color: "var(--ink-muted)" }}>→</span>
-                  <span style={{ background: "#FEF3C7", color: "#B45309", padding: "4px 8px", borderRadius: 12 }}>2. AI EXTRACT</span>
+                  <span style={{ background: "#FEF3C7", color: "#B45309", padding: "4px 8px", borderRadius: 12 }}>2. AUTO-CONVERT TO ERP</span>
                   <span style={{ color: "var(--ink-muted)" }}>→</span>
-                  <span style={{ background: "#F3E8FF", color: "#6B21A8", padding: "4px 8px", borderRadius: 12 }}>3. EDIT &amp; REVIEW</span>
+                  <span style={{ background: "#F3E8FF", color: "#6B21A8", padding: "4px 8px", borderRadius: 12 }}>3. VERIFY &amp; EDIT</span>
                   <span style={{ color: "var(--ink-muted)" }}>→</span>
-                  <span style={{ background: "#DCFCE7", color: "#15803D", padding: "4px 8px", borderRadius: 12 }}>4. ACCOUNTING PREVIEW &amp; POST</span>
+                  <span style={{ background: "#DCFCE7", color: "#15803D", padding: "4px 8px", borderRadius: 12 }}>4. APPROVE &amp; POST TO LEDGERS</span>
                 </div>
               </div>
             </div>
@@ -7176,16 +7480,16 @@ export default function App() {
                               <Loader2 size={12} className="spin" /> READING…
                             </span>
                           )}
-                          {doc.status === "ready_for_review" && <span style={{ fontSize: 11.5, background: "#E0F2FE", color: "#0369A1", padding: "2px 8px", borderRadius: 10, fontWeight: 700 }}>READY FOR REVIEW</span>}
-                          {doc.status === "draft" && <span style={{ fontSize: 11.5, background: "#FEF3C7", color: "#B45309", padding: "2px 8px", borderRadius: 10, fontWeight: 700 }}>DRAFT</span>}
-                          {doc.status === "posted" && <span style={{ fontSize: 11.5, background: "#DCFCE7", color: "#15803D", padding: "2px 8px", borderRadius: 10, fontWeight: 700 }}>POSTED</span>}
+                          {doc.status === "ready_for_review" && <span style={{ fontSize: 11.5, background: "#E0F2FE", color: "#0369A1", padding: "2px 8px", borderRadius: 10, fontWeight: 700 }}>CONVERTED TO ERP FORMAT</span>}
+                          {doc.status === "draft" && <span style={{ fontSize: 11.5, background: "#FEF3C7", color: "#B45309", padding: "2px 8px", borderRadius: 10, fontWeight: 700 }}>ERP DRAFT</span>}
+                          {doc.status === "posted" && <span style={{ fontSize: 11.5, background: "#DCFCE7", color: "#15803D", padding: "2px 8px", borderRadius: 10, fontWeight: 700 }}>POSTED TO LEDGER</span>}
                           {doc.status === "duplicate" && <span style={{ fontSize: 11.5, background: "#FEE2E2", color: "#991B1B", padding: "2px 8px", borderRadius: 10, fontWeight: 700 }}>DUPLICATE</span>}
                         </div>
 
                         {doc.extracted && (
                           <div style={{ background: "var(--bg)", padding: 10, borderRadius: 6, fontSize: 12, marginBottom: 12, border: "1px solid var(--rule)" }}>
                             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-                              <span style={{ color: "var(--ink-muted)" }}>Type: <strong>{doc.extracted.documentType}</strong></span>
+                              <span style={{ color: "var(--ink-muted)" }}>ERP Target: <strong style={{ color: "#0284C7" }}>{doc.targetErpDocType || doc.extracted.documentType}</strong></span>
                               <span style={{ color: "#059669", fontWeight: 700 }}>Confidence: {doc.extracted.aiConfidence}</span>
                             </div>
                             <div style={{ fontWeight: 600, color: "var(--ink)", marginBottom: 2 }}>
@@ -7202,16 +7506,16 @@ export default function App() {
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid var(--rule)", paddingTop: 10 }}>
                         <span style={{ fontSize: 11, color: "var(--ink-muted)" }}>{doc.uploadedAt || "Today"} • {doc.fileSize || "PDF"}</span>
                         <div style={{ display: "flex", gap: 6 }}>
-                          <button className="btn" style={{ padding: "4px 8px", fontSize: 12, color: "#DC2626" }} onClick={() => deleteDocument(doc.id)}>
+                          <button className="btn" style={{ padding: "4px 8px", fontSize: 12, color: "#DC2626" }} title="Delete Document" onClick={() => deleteDocument(doc.id)}>
                             <Trash2 size={13} />
                           </button>
                           {doc.status !== "posted" ? (
-                            <button className="btn btn-primary" style={{ padding: "5px 12px", fontSize: 12.5, fontWeight: 700 }} onClick={() => setReviewingDocId(doc.id)}>
-                              Review &amp; Edit Data
+                            <button className="btn btn-primary" style={{ padding: "5px 12px", fontSize: 12.5, fontWeight: 700, background: "#0284C7", borderColor: "#0284C7" }} onClick={() => setReviewingDocId(doc.id)}>
+                              🔄 Convert &amp; Review in ERP Format
                             </button>
                           ) : (
-                            <button className="btn" style={{ padding: "5px 12px", fontSize: 12.5 }} onClick={() => setReviewingDocId(doc.id)}>
-                              View Record
+                            <button className="btn" style={{ padding: "5px 12px", fontSize: 12.5, fontWeight: 600 }} onClick={() => setReviewingDocId(doc.id)}>
+                              👁️ View Converted ERP Record
                             </button>
                           )}
                         </div>
@@ -8149,8 +8453,15 @@ export default function App() {
           bankAccounts={bankAccounts}
           vouchers={vouchers}
           defaultType={voucherDefaultType}
-          onClose={() => setShowVoucherForm(false)}
-          onSubmit={createVoucher}
+          voucherToEdit={editingVoucher}
+          onClose={() => { setShowVoucherForm(false); setEditingVoucher(null); }}
+          onSubmit={(type, payload) => {
+            if (editingVoucher) {
+              updateVoucher(editingVoucher.id, type, payload);
+            } else {
+              createVoucher(type, payload);
+            }
+          }}
         />
       )}
       {clearingPdcVoucher && (
@@ -8171,7 +8482,7 @@ export default function App() {
       {showClientModal && <ClientMasterModal clients={clients} client={editingClient} onClose={() => { setShowClientModal(false); setEditingClient(null); }} onSave={handleSaveClient} />}
       {showVendorModal && <VendorMasterModal vendors={vendors} vendor={editingVendor} onClose={() => { setShowVendorModal(false); setEditingVendor(null); }} onSave={handleSaveVendor} />}
       {duplicateDocWarning && <AiDocumentDuplicateModal duplicateMatch={duplicateDocWarning.duplicateMatch} incomingDoc={duplicateDocWarning.incomingDoc} existingDoc={duplicateDocWarning.existingDoc} onClose={() => setDuplicateDocWarning(null)} onOverridePosting={duplicateDocWarning.onOverridePosting} />}
-      {reviewingDocId && <DocumentReviewModal doc={documents.find(d => d.id === reviewingDocId)} projects={projects} bankAccounts={bankAccounts} onClose={() => setReviewingDocId(null)} onSaveDraft={saveDocumentDraft} onPost={postDocumentToLedger} onCreateProjectTrigger={() => { setReviewingDocId(null); setShowProjectForm(true); }} />}
+      {reviewingDocId && <DocumentReviewModal doc={documents.find(d => d.id === reviewingDocId)} projects={projects} clients={clients} vendors={vendors} bankAccounts={bankAccounts} onClose={() => setReviewingDocId(null)} onSaveDraft={saveDocumentDraft} onPost={postDocumentToLedger} onCreateProjectTrigger={() => { setReviewingDocId(null); setShowProjectForm(true); }} />}
       {compareDocData && <CompareDocumentsModal doc={compareDocData.doc} duplicateMatch={compareDocData.duplicateMatch} onClose={() => setCompareDocData(null)} onCancelUpload={() => { deleteDocument(compareDocData.doc.id); setCompareDocData(null); }} onOverride={(docId, reason) => postDocumentToLedger(docId, null, reason)} />}
 
 
@@ -12295,6 +12606,7 @@ function BouncePdcModal({ voucher, onClose, onBounce }) {
 
 function VoucherModal({
   defaultType,
+  voucherToEdit = null,
   projects = [],
   clients = [],
   vendors = [],
@@ -12306,67 +12618,67 @@ function VoucherModal({
   onClose,
   onSubmit
 }) {
-  const [type, setType] = useState(defaultType || "PV");
-  const [via, setVia] = useState("Cash"); // "Cash" or "Bank"
-  const [voucherNo, setVoucherNo] = useState(() => getNextVoucherNo(defaultType || "PV", vouchers, "Cash"));
-  const [projectId, setProjectId] = useState("");
-  const [description, setDescription] = useState("");
-  const [date, setDate] = useState(TODAY_STR);
+  const [type, setType] = useState(voucherToEdit?.type || defaultType || "PV");
+  const [via, setVia] = useState(voucherToEdit?.via || (voucherToEdit?.receiveMode === "cash" || voucherToEdit?.paymentMode === "Petty Cash" ? "Cash" : "Bank"));
+  const [voucherNo, setVoucherNo] = useState(voucherToEdit?.voucherNo || (() => getNextVoucherNo(defaultType || "PV", vouchers, "Cash")));
+  const [projectId, setProjectId] = useState(voucherToEdit?.projectId || "");
+  const [description, setDescription] = useState(voucherToEdit?.description || "");
+  const [date, setDate] = useState(voucherToEdit?.date || TODAY_STR);
   
   // Party selection state (RV & PV)
-  const [partyMode, setPartyMode] = useState("master"); // "master" or "custom"
-  const [selectedClientId, setSelectedClientId] = useState("");
-  const [selectedVendorId, setSelectedVendorId] = useState("");
-  const [customPartyName, setCustomPartyName] = useState("");
-  const [party, setParty] = useState("");
+  const [partyMode, setPartyMode] = useState(voucherToEdit?.party ? (clients.some(c => c.name === voucherToEdit.party) || vendors.some(v => v.name === voucherToEdit.party) ? "master" : "custom") : "master");
+  const [selectedClientId, setSelectedClientId] = useState(voucherToEdit?.clientId || "");
+  const [selectedVendorId, setSelectedVendorId] = useState(voucherToEdit?.vendorId || "");
+  const [customPartyName, setCustomPartyName] = useState(voucherToEdit?.party || "");
+  const [party, setParty] = useState(voucherToEdit?.party || "");
 
   // Party selection state (CV: Direct Client -> Vendor Settlement)
   const [clientPartyMode, setClientPartyMode] = useState("master");
-  const [cvClientId, setCvClientId] = useState("");
-  const [cvClientName, setCvClientName] = useState("");
+  const [cvClientId, setCvClientId] = useState(voucherToEdit?.type === "CV" ? (voucherToEdit?.clientId || "") : "");
+  const [cvClientName, setCvClientName] = useState(voucherToEdit?.type === "CV" ? (voucherToEdit?.party || "") : "");
   const [customCvClientName, setCustomCvClientName] = useState("");
 
   const [vendorPartyMode, setVendorPartyMode] = useState("master");
-  const [cvVendorId, setCvVendorId] = useState("");
-  const [cvVendorName, setCvVendorName] = useState("");
+  const [cvVendorId, setCvVendorId] = useState(voucherToEdit?.type === "CV" ? (voucherToEdit?.vendorId || "") : "");
+  const [cvVendorName, setCvVendorName] = useState(voucherToEdit?.type === "CV" ? (voucherToEdit?.vendor || voucherToEdit?.category || "") : "");
   const [customCvVendorName, setCustomCvVendorName] = useState("");
 
   // Party payment instrument state (CV: Direct Client -> Vendor Settlement)
-  const [cvPaymentMode, setCvPaymentMode] = useState("Cross Cheque");
-  const [cvInstrumentNo, setCvInstrumentNo] = useState("");
-  const [cvInstrumentDate, setCvInstrumentDate] = useState(TODAY_STR);
-  const [cvDrawnBank, setCvDrawnBank] = useState("");
+  const [cvPaymentMode, setCvPaymentMode] = useState(voucherToEdit?.paymentMode || "Cross Cheque");
+  const [cvInstrumentNo, setCvInstrumentNo] = useState(voucherToEdit?.instrumentNo || "");
+  const [cvInstrumentDate, setCvInstrumentDate] = useState(voucherToEdit?.instrumentDate || TODAY_STR);
+  const [cvDrawnBank, setCvDrawnBank] = useState(voucherToEdit?.drawnBank || "");
 
   // PV Payment Mode & Instrument State
-  const [pvPaymentMode, setPvPaymentMode] = useState("Cross Cheque"); // "Cross Cheque" | "Online Bank Transfer" | "Pay Order" | "Petty Cash"
-  const [pvInstrumentNo, setPvInstrumentNo] = useState("");
-  const [pvInstrumentDate, setPvInstrumentDate] = useState(TODAY_STR);
+  const [pvPaymentMode, setPvPaymentMode] = useState(voucherToEdit?.paymentMode || "Cross Cheque");
+  const [pvInstrumentNo, setPvInstrumentNo] = useState(voucherToEdit?.instrumentNo || "");
+  const [pvInstrumentDate, setPvInstrumentDate] = useState(voucherToEdit?.instrumentDate || TODAY_STR);
 
   // RV Receive Mode & PDC Instrument State
-  const [rvReceiveMode, setRvReceiveMode] = useState("Bank"); // "Bank" | "PDC" | "Cash"
-  const [rvChequeNo, setRvChequeNo] = useState("");
-  const [rvChequeDate, setRvChequeDate] = useState(TODAY_STR);
-  const [rvDrawnBank, setRvDrawnBank] = useState("");
+  const [rvReceiveMode, setRvReceiveMode] = useState(voucherToEdit?.receiveMode === "pdc" || voucherToEdit?.isPdc ? "PDC" : (voucherToEdit?.receiveMode === "cash" || voucherToEdit?.via === "Cash" ? "Cash" : "Bank"));
+  const [rvChequeNo, setRvChequeNo] = useState(voucherToEdit?.chequeNo || "");
+  const [rvChequeDate, setRvChequeDate] = useState(voucherToEdit?.chequeDate || TODAY_STR);
+  const [rvDrawnBank, setRvDrawnBank] = useState(voucherToEdit?.drawnBank || "");
 
-  const [amount, setAmount] = useState("");
-  const [category, setCategory] = useState("Office & Administration");
-  const [subcategory, setSubcategory] = useState("Office Rent");
+  const [amount, setAmount] = useState(voucherToEdit?.amount !== undefined ? voucherToEdit.amount : "");
+  const [category, setCategory] = useState(voucherToEdit?.category || "Office & Administration");
+  const [subcategory, setSubcategory] = useState(voucherToEdit?.subcategory || "Office Rent");
 
   // PV (Vendor Payment) Breakdown Options
-  const [applyCommission, setApplyCommission] = useState(false);
-  const [agencyCommissionRate, setAgencyCommissionRate] = useState(10);
-  const [agencyCommissionAmount, setAgencyCommissionAmount] = useState("");
+  const [applyCommission, setApplyCommission] = useState(Boolean(voucherToEdit?.applyCommission));
+  const [agencyCommissionRate, setAgencyCommissionRate] = useState(voucherToEdit?.agencyCommissionRate || 10);
+  const [agencyCommissionAmount, setAgencyCommissionAmount] = useState(voucherToEdit?.agencyCommissionAmount || "");
 
-  const [applySst, setApplySst] = useState(false);
-  const [sstRate, setSstRate] = useState(15);
-  const [sstAmount, setSstAmount] = useState("");
+  const [applySst, setApplySst] = useState(Boolean(voucherToEdit?.applySst));
+  const [sstRate, setSstRate] = useState(voucherToEdit?.sstRate || 15);
+  const [sstAmount, setSstAmount] = useState(voucherToEdit?.sstAmount || "");
 
-  const [applyWht, setApplyWht] = useState(false);
-  const [whtRate, setWhtRate] = useState(type === "PV" ? 1 : 3);
-  const [whtAmount, setWhtAmount] = useState("");
+  const [applyWht, setApplyWht] = useState(Boolean(voucherToEdit?.applyWht));
+  const [whtRate, setWhtRate] = useState(voucherToEdit?.whtRate !== undefined ? voucherToEdit.whtRate : (type === "PV" ? 1 : 3));
+  const [whtAmount, setWhtAmount] = useState(voucherToEdit?.whtAmount || "");
 
-  const [settleAR, setSettleAR] = useState(true);
-  const [lines, setLines] = useState([
+  const [settleAR, setSettleAR] = useState(voucherToEdit?.settleAR !== undefined ? voucherToEdit.settleAR : true);
+  const [lines, setLines] = useState(voucherToEdit?.lines && Array.isArray(voucherToEdit.lines) ? voucherToEdit.lines : [
     { account: "cash", debit: "", credit: "" },
     { account: "revenue", debit: "", credit: "" },
   ]);
@@ -12683,7 +12995,7 @@ function VoucherModal({
   }
 
   return (
-    <ModalShell title="Generate Financial Voucher" onClose={onClose}>
+    <ModalShell title={voucherToEdit ? `✏️ Edit Financial Voucher — ${voucherNo}` : `Generate Financial Voucher (${VOUCHER_TYPES[type] || type})`} onClose={onClose}>
       <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: 12, marginBottom: 14 }}>
         <div className="field" style={{ margin: 0 }}>
           <label>Voucher Type</label>
@@ -13322,19 +13634,39 @@ function VoucherModal({
         </>
       )}
 
-      <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center" }} disabled={!valid} onClick={submit}>
-        Post Voucher Entry
+      <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", fontWeight: 700, padding: 12, marginTop: 10 }} disabled={!valid} onClick={submit}>
+        {voucherToEdit ? "💾 Save Changes & Update General Ledger" : `✓ Post ${VOUCHER_TYPES[type] || type} Voucher Entry`}
       </button>
     </ModalShell>
   );
 }
 
-function DocumentReviewModal({ doc, projects = [], bankAccounts = [], onClose, onSaveDraft, onPost, onCreateProjectTrigger }) {
+function DocumentReviewModal({ doc, projects = [], clients = [], vendors = [], bankAccounts = [], onClose, onSaveDraft, onPost, onCreateProjectTrigger }) {
   if (!doc) return null;
-  const [extracted, setExtracted] = useState({ ...(doc.extracted || {}) });
+  const [extracted, setExtracted] = useState(() => {
+    const initial = { ...(doc.extracted || {}) };
+    if (!initial.targetErpDocType) {
+      const dt = (initial.documentType || "").toLowerCase();
+      if (dt.includes("receipt") || dt.includes("crv") || dt.includes("brv")) initial.targetErpDocType = "Receipt Voucher";
+      else if (dt.includes("payment") || dt.includes("bpv") || dt.includes("cpv")) initial.targetErpDocType = "Payment Voucher";
+      else if (dt.includes("invoice") || dt.includes("client")) initial.targetErpDocType = "Client Invoice";
+      else initial.targetErpDocType = "Vendor Expense";
+    }
+    if (!initial.date) initial.date = TODAY.toISOString().slice(0, 10);
+    if (!initial.dueDate) initial.dueDate = new Date(Date.now() + 15 * 86400000).toISOString().slice(0, 10);
+    if (initial.applySst === undefined) initial.applySst = Number(initial.taxAmount || 0) > 0;
+    if (initial.sstRate === undefined) initial.sstRate = 15;
+    if (initial.applyWht === undefined) initial.applyWht = Number(initial.whtAmount || 0) > 0;
+    if (initial.whtRate === undefined) initial.whtRate = 1;
+    return initial;
+  });
+
   const [zoom, setZoom] = useState(100);
   const [page, setPage] = useState(1);
   const [validationErrors, setValidationErrors] = useState([]);
+  const [activeTab, setActiveTab] = useState("editor"); // "editor" | "erp_preview"
+
+  const targetErpDocType = extracted.targetErpDocType || "Vendor Expense";
 
   const category = extracted.category || "Marketing & Advertising";
   const subcategory = extracted.subcategory || "Meta / Facebook Ads";
@@ -13352,8 +13684,10 @@ function DocumentReviewModal({ doc, projects = [], bankAccounts = [], onClose, o
   const selectedBankObj = bankAccounts.find(b => b.id === extracted.bankAccountId) || realBankAccounts[0];
 
   const baseAmt = Number(extracted.baseAmount) || Number(extracted.amount) || 0;
-  const taxAmt = Number(extracted.taxAmount) || 0;
-  const totalAmt = Number(extracted.totalAmount) || (baseAmt + taxAmt);
+  const taxAmt = extracted.applySst ? (Number(extracted.taxAmount) || Math.round(baseAmt * (Number(extracted.sstRate) || 15) / 100)) : 0;
+  const whtAmt = extracted.applyWht ? (Number(extracted.whtAmount) || Math.round(baseAmt * (Number(extracted.whtRate) || 1) / 100)) : 0;
+  const totalAmt = baseAmt + taxAmt;
+  const netSettlementAmt = Math.max(0, totalAmt - whtAmt);
 
   const updateField = (key, val) => {
     setExtracted(prev => {
@@ -13362,10 +13696,40 @@ function DocumentReviewModal({ doc, projects = [], bankAccounts = [], onClose, o
         const subList = EXPENSE_CLASSIFICATION[val]?.subcategories || [];
         next.subcategory = subList[0]?.name || "";
       }
-      if (key === "baseAmount" || key === "taxAmount") {
+      if (key === "targetErpDocType") {
+        if (val === "Client Invoice" && !next.documentNumber?.startsWith("INV-")) {
+          next.documentNumber = `INV-${new Date().getFullYear()}-${Math.floor(Math.random() * 899 + 100)}`;
+        } else if (val === "Payment Voucher" && !next.documentNumber?.startsWith("BPV-")) {
+          next.documentNumber = `BPV-26-${Math.floor(Math.random() * 899 + 100)}`;
+        } else if (val === "Receipt Voucher" && !next.documentNumber?.startsWith("BRV-")) {
+          next.documentNumber = `BRV-26-${Math.floor(Math.random() * 899 + 100)}`;
+        } else if (val === "Vendor Expense" && !next.documentNumber?.startsWith("EXP-")) {
+          next.documentNumber = `EXP-${new Date().getFullYear()}-${Math.floor(Math.random() * 899 + 100)}`;
+        }
+      }
+      if (key === "vendorId") {
+        const vObj = vendors.find(v => v.id === val);
+        if (vObj) next.party = vObj.name;
+      }
+      if (key === "clientId") {
+        const cObj = clients.find(c => c.id === val);
+        if (cObj) next.party = cObj.name;
+      }
+      if (key === "baseAmount" || key === "taxAmount" || key === "sstRate" || key === "applySst" || key === "applyWht" || key === "whtRate" || key === "whtAmount") {
         const b = key === "baseAmount" ? Number(val) || 0 : Number(prev.baseAmount) || 0;
-        const t = key === "taxAmount" ? Number(val) || 0 : Number(prev.taxAmount) || 0;
+        const sstOn = key === "applySst" ? Boolean(val) : prev.applySst;
+        const sRate = key === "sstRate" ? Number(val) || 15 : Number(prev.sstRate) || 15;
+        const t = sstOn ? (key === "taxAmount" ? Number(val) || 0 : Math.round(b * (sRate / 100))) : 0;
+        
+        const whtOn = key === "applyWht" ? Boolean(val) : prev.applyWht;
+        const wRate = key === "whtRate" ? Number(val) || 1 : Number(prev.whtRate) || 1;
+        const w = whtOn ? (key === "whtAmount" ? Number(val) || 0 : Math.round(b * (wRate / 100))) : 0;
+
+        next.baseAmount = b;
+        next.taxAmount = t;
+        next.whtAmount = w;
         next.totalAmount = b + t;
+        next.netAmount = Math.max(0, (b + t) - w);
       }
       return next;
     });
@@ -13373,12 +13737,14 @@ function DocumentReviewModal({ doc, projects = [], bankAccounts = [], onClose, o
 
   const handlePost = () => {
     const errs = [];
-    if (!extracted.party) errs.push("Party / Vendor / Customer Name is required.");
-    if (!extracted.documentNumber) errs.push("Document / Invoice Number is required.");
+    if (!extracted.party) errs.push("Party / Vendor / Client Name is required.");
+    if (!extracted.documentNumber) errs.push("ERP Document Number is required.");
     if (!extracted.date) errs.push("Document Date is required.");
-    if (!extracted.category) errs.push("Expense Category is required.");
-    if (totalAmt <= 0) errs.push("Total Amount must be greater than 0.");
-    if (extracted.paymentMode === "Bank" && !extracted.bankAccountId) errs.push("Bank Account selection is mandatory.");
+    if (totalAmt <= 0) errs.push("Total Amount must be greater than PKR 0.");
+    if (targetErpDocType === "Vendor Expense" && !extracted.category) errs.push("Expense Category is required.");
+    if (extracted.paymentMode === "Bank" && !extracted.bankAccountId && realBankAccounts.length === 0) {
+      errs.push("Bank Account selection is required for bank payment.");
+    }
 
     if (errs.length > 0) {
       setValidationErrors(errs);
@@ -13386,32 +13752,82 @@ function DocumentReviewModal({ doc, projects = [], bankAccounts = [], onClose, o
     }
 
     setValidationErrors([]);
-    onPost(doc.id, extracted);
+    onPost(doc.id, {
+      ...extracted,
+      targetErpDocType,
+      baseAmount: baseAmt,
+      taxAmount: taxAmt,
+      whtAmount: whtAmt,
+      totalAmount: totalAmt,
+      netAmount: netSettlementAmt
+    });
   };
 
   const handleDraft = () => {
-    onSaveDraft(doc.id, extracted);
+    onSaveDraft(doc.id, {
+      ...extracted,
+      targetErpDocType,
+      baseAmount: baseAmt,
+      taxAmount: taxAmt,
+      whtAmount: whtAmt,
+      totalAmount: totalAmt,
+      netAmount: netSettlementAmt
+    });
   };
 
+  const erpDocTypes = [
+    { id: "Vendor Expense", label: "🏢 Vendor Expense (Bill)", color: "#4F46E5", desc: "Vendor invoice or operating expense debited to GL expense" },
+    { id: "Client Invoice", label: "📄 Client Invoice (AR)", color: "#0284C7", desc: "Client media production or fee invoice debited to AR" },
+    { id: "Payment Voucher", label: "💳 Payment Voucher (PV)", color: "#D97706", desc: "Bank/Cash payment voucher settling vendor or expenses" },
+    { id: "Receipt Voucher", label: "💰 Receipt Voucher (RV)", color: "#059669", desc: "Client payment collection credited to AR" }
+  ];
+
   return (
-    <ModalShell title={`AI Document Review & Accounting Entry — ${doc.fileName}`} onClose={onClose} width="94vw" style={{ maxWidth: 1300 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "var(--bg)", padding: "10px 14px", borderRadius: 8, marginBottom: 14, border: "1px solid var(--rule)" }}>
-        <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
-          <span style={{ fontWeight: 700, fontSize: 13, color: "var(--ink)" }}>Document Type: <span style={{ color: "#0284C7" }}>{extracted.documentType || "Invoice"}</span></span>
-          <span style={{ fontSize: 12, background: "rgba(5, 150, 105, 0.12)", color: "#059669", padding: "2px 8px", borderRadius: 12, fontWeight: 700 }}>AI Confidence: {extracted.aiConfidence || "96%"}</span>
+    <ModalShell title={`🔄 AdPulse ERP Document Converter & Reviewer — ${doc.fileName}`} onClose={onClose} width="95vw" style={{ maxWidth: 1360 }}>
+      {/* TOP HEADER: CONVERSION PIPELINE BANNER */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "var(--bg)", padding: "10px 14px", borderRadius: 8, marginBottom: 14, border: "1px solid var(--rule)", flexWrap: "wrap", gap: 10 }}>
+        <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+          <span style={{ fontSize: 11, background: "#3B82F6", color: "#FFFFFF", padding: "3px 8px", borderRadius: 4, fontWeight: 800, letterSpacing: "0.5px" }}>
+            ERP CONVERTER PIPELINE
+          </span>
+          <span style={{ fontSize: 12.5, fontWeight: 700, color: "var(--ink)" }}>
+            Original Doc: <span style={{ color: "var(--gold)" }}>{extracted.documentType || "Source Document"}</span>
+          </span>
+          <span style={{ fontSize: 12, background: "rgba(5, 150, 105, 0.12)", color: "#059669", padding: "2px 8px", borderRadius: 12, fontWeight: 700 }}>
+            AI Confidence: {extracted.aiConfidence || "98%"}
+          </span>
           
           {doc.duplicateRisk?.level === "LOW RISK" && (
-            <span style={{ fontSize: 12, background: "#DCFCE7", color: "#15803D", padding: "2px 8px", borderRadius: 12, fontWeight: 700 }}>✓ No Duplicate Found</span>
+            <span style={{ fontSize: 12, background: "#DCFCE7", color: "#15803D", padding: "2px 8px", borderRadius: 12, fontWeight: 700 }}>✓ No Duplicate</span>
           )}
           {doc.duplicateRisk?.level === "MEDIUM RISK" && (
-            <span style={{ fontSize: 12, background: "#FEF3C7", color: "#B45309", padding: "2px 8px", borderRadius: 12, fontWeight: 700 }}>⚠ Possible Duplicate ({doc.duplicateRisk.riskScore}%)</span>
+            <span style={{ fontSize: 12, background: "#FEF3C7", color: "#B45309", padding: "2px 8px", borderRadius: 12, fontWeight: 700 }}>⚠ Duplicate Risk ({doc.duplicateRisk.riskScore}%)</span>
           )}
           {(doc.duplicateRisk?.level === "HIGH RISK" || doc.duplicateRisk?.level === "EXACT DUPLICATE") && (
             <span style={{ fontSize: 12, background: "#FEE2E2", color: "#991B1B", padding: "2px 8px", borderRadius: 12, fontWeight: 700 }}>✕ Duplicate Detected ({doc.duplicateRisk.riskScore}%)</span>
           )}
         </div>
-        <div style={{ fontSize: 12, color: "var(--ink-muted)" }}>
-          Status: <strong style={{ textTransform: "uppercase", color: "var(--gold)" }}>{doc.status.replace("_", " ")}</strong>
+
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <div style={{ display: "flex", background: "rgba(0,0,0,0.06)", borderRadius: 6, padding: 2 }}>
+            <button
+              className="btn"
+              style={{ padding: "4px 10px", fontSize: 12, borderRadius: 5, background: activeTab === "editor" ? "var(--gold)" : "transparent", color: activeTab === "editor" ? "#000" : "var(--ink)", fontWeight: 700, border: "none" }}
+              onClick={() => setActiveTab("editor")}
+            >
+              ✏️ ERP Data Editor
+            </button>
+            <button
+              className="btn"
+              style={{ padding: "4px 10px", fontSize: 12, borderRadius: 5, background: activeTab === "erp_preview" ? "var(--gold)" : "transparent", color: activeTab === "erp_preview" ? "#000" : "var(--ink)", fontWeight: 700, border: "none" }}
+              onClick={() => setActiveTab("erp_preview")}
+            >
+              📋 ERP Formatted Document
+            </button>
+          </div>
+          <span style={{ fontSize: 12, color: "var(--ink-muted)" }}>
+            Status: <strong style={{ textTransform: "uppercase", color: "var(--gold)" }}>{doc.status.replace("_", " ")}</strong>
+          </span>
         </div>
       </div>
 
@@ -13427,7 +13843,6 @@ function DocumentReviewModal({ doc, projects = [], bankAccounts = [], onClose, o
         </div>
       )}
 
-
       {validationErrors.length > 0 && (
         <div style={{ background: "rgba(220, 38, 38, 0.08)", border: "1px solid rgba(220, 38, 38, 0.2)", padding: "10px 14px", borderRadius: 8, fontSize: 12.5, color: "#DC2626", marginBottom: 14 }}>
           <strong>Cannot Post Transaction — Please fix the following errors:</strong>
@@ -13437,13 +13852,51 @@ function DocumentReviewModal({ doc, projects = [], bankAccounts = [], onClose, o
         </div>
       )}
 
-      <div style={{ display: "grid", gridTemplateColumns: "380px 1fr", gap: 20, maxHeight: "78vh", overflowY: "auto", paddingRight: 6 }}>
+      {/* TARGET ERP FORMAT SELECTOR TABS */}
+      <div style={{ background: "var(--bg)", border: "1.5px solid var(--rule)", borderRadius: 10, padding: 12, marginBottom: 14 }}>
+        <div style={{ fontSize: 11.5, fontWeight: 800, color: "var(--ink-muted)", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 8, display: "flex", justifyContent: "space-between" }}>
+          <span>Step 1: Select Target ERP Document Format to Convert Into</span>
+          <span style={{ color: "#0284C7", fontWeight: 700 }}>Active Target: {targetErpDocType}</span>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 10 }}>
+          {erpDocTypes.map(t => {
+            const isSelected = targetErpDocType === t.id;
+            return (
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => updateField("targetErpDocType", t.id)}
+                style={{
+                  textAlign: "left",
+                  padding: "10px 12px",
+                  borderRadius: 8,
+                  border: isSelected ? `2px solid ${t.color}` : "1px solid var(--rule)",
+                  background: isSelected ? `${t.color}15` : "var(--surface)",
+                  cursor: "pointer",
+                  transition: "all 0.15s ease",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 3
+                }}
+              >
+                <div style={{ fontWeight: 800, fontSize: 13, color: isSelected ? t.color : "var(--ink)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <span>{t.label}</span>
+                  {isSelected && <span style={{ fontSize: 14 }}>✓</span>}
+                </div>
+                <div style={{ fontSize: 11, color: "var(--ink-muted)", lineHeight: 1.3 }}>{t.desc}</div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "400px 1fr", gap: 20, maxHeight: "72vh", overflowY: "auto", paddingRight: 6 }}>
         
-        {/* LEFT COLUMN: ORIGINAL DOCUMENT PREVIEW */}
+        {/* LEFT COLUMN: ORIGINAL DOCUMENT ATTACHMENT */}
         <div style={{ background: "var(--bg)", border: "1px solid var(--rule)", borderRadius: 8, padding: 14, display: "flex", flexDirection: "column" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
             <span style={{ fontWeight: 700, fontSize: 13, display: "flex", alignItems: "center", gap: 6 }}>
-              <FileCheck2 size={15} color="var(--gold)" /> Original Document Preview
+              <FileCheck2 size={15} color="var(--gold)" /> Original Source Document
             </span>
             <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
               <button className="btn" style={{ padding: "3px 7px", fontSize: 11 }} onClick={() => setZoom(z => Math.max(50, z - 15))}>-</button>
@@ -13457,16 +13910,16 @@ function DocumentReviewModal({ doc, projects = [], bankAccounts = [], onClose, o
             </div>
           </div>
 
-          <div style={{ flex: 1, minHeight: 400, background: "#0F172A", borderRadius: 6, display: "flex", alignItems: "center", justifyContent: "center", overflow: "auto", position: "relative", padding: 10 }}>
+          <div style={{ flex: 1, minHeight: 420, background: "#0F172A", borderRadius: 6, display: "flex", alignItems: "center", justifyContent: "center", overflow: "auto", position: "relative", padding: 10 }}>
             {doc.fileDataUrl && doc.fileDataUrl.startsWith("data:image") ? (
               <img src={doc.fileDataUrl} alt="Uploaded Document" style={{ transform: `scale(${zoom / 100})`, transformOrigin: "top center", transition: "transform 0.2s ease", maxWidth: "100%", height: "auto", borderRadius: 4 }} />
             ) : (
-              <div style={{ color: "#94A3B8", textAlign: "center", padding: 30 }}>
-                <FileText size={48} style={{ marginBottom: 12, opacity: 0.7 }} />
-                <div style={{ fontSize: 14, fontWeight: 700, color: "#F8FAFC" }}>{doc.fileName}</div>
-                <div style={{ fontSize: 12, marginTop: 4 }}>{doc.fileSize || "PDF Document"}</div>
+              <div style={{ color: "#94A3B8", textAlign: "center", padding: 20, width: "100%" }}>
+                <FileText size={42} style={{ marginBottom: 10, opacity: 0.7 }} />
+                <div style={{ fontSize: 13, fontWeight: 700, color: "#F8FAFC" }}>{doc.fileName}</div>
+                <div style={{ fontSize: 11.5, marginTop: 4 }}>{doc.fileSize || "PDF Document"}</div>
                 {doc.fileDataUrl && (
-                  <iframe src={doc.fileDataUrl} title="Document Preview" style={{ width: "100%", height: 380, border: "none", marginTop: 12, borderRadius: 6, background: "#FFFFFF" }} />
+                  <iframe src={doc.fileDataUrl} title="Document Preview" style={{ width: "100%", height: 360, border: "none", marginTop: 10, borderRadius: 6, background: "#FFFFFF" }} />
                 )}
               </div>
             )}
@@ -13478,159 +13931,387 @@ function DocumentReviewModal({ doc, projects = [], bankAccounts = [], onClose, o
           </div>
         </div>
 
-        {/* RIGHT COLUMN: AI EXTRACTED DATA (100% EDITABLE FORM) */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        {/* RIGHT COLUMN: CONVERTED ERP DOCUMENT VIEW / FORM */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-            <div className="field" style={{ margin: 0 }}>
-              <label>Document Type</label>
-              <select value={extracted.documentType || "Invoice"} onChange={e => updateField("documentType", e.target.value)}>
-                <option value="Invoice">Invoice</option>
-                <option value="Payment Voucher">Payment Voucher</option>
-                <option value="Receipt Voucher">Receipt Voucher</option>
-                <option value="Quotation">Quotation</option>
-                <option value="Purchase Order">Purchase Order</option>
-                <option value="Expense Receipt">Expense Receipt</option>
-                <option value="Bill">Bill</option>
-                <option value="Credit Note">Credit Note</option>
-                <option value="Debit Note">Debit Note</option>
-                <option value="Bank Statement">Bank Statement</option>
-                <option value="Other">Other Business Document</option>
-              </select>
-            </div>
-
-            <div className="field" style={{ margin: 0 }}>
-              <label>Document / Invoice #</label>
-              <input value={extracted.documentNumber || ""} onChange={e => updateField("documentNumber", e.target.value)} placeholder="e.g. INV-1023" />
-            </div>
-          </div>
-
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-            <div className="field" style={{ margin: 0 }}>
-              <label>Document Date</label>
-              <input type="date" value={extracted.date || ""} onChange={e => updateField("date", e.target.value)} />
-            </div>
-            <div className="field" style={{ margin: 0 }}>
-              <label>Due Date</label>
-              <input type="date" value={extracted.dueDate || ""} onChange={e => updateField("dueDate", e.target.value)} />
-            </div>
-          </div>
-
-          <div className="field" style={{ margin: 0 }}>
-            <label>Vendor / Client / Party Name *</label>
-            <input value={extracted.party || ""} onChange={e => updateField("party", e.target.value)} placeholder="Vendor or Customer Name" />
-          </div>
-
-          <div className="field" style={{ margin: 0 }}>
-            <label style={{ display: "flex", justifyContent: "space-between" }}>
-              <span>Link to Client Project / Cost Center</span>
-              {!extracted.projectId && (
-                <button type="button" onClick={onCreateProjectTrigger} style={{ background: "none", border: "none", color: "#0284C7", fontSize: 11.5, cursor: "pointer", textDecoration: "underline", padding: 0 }}>
-                  + Create New Project
-                </button>
-              )}
-            </label>
-            <select value={extracted.projectId || ""} onChange={e => updateField("projectId", e.target.value)}>
-              <option value="">-- General Overhead / No Project --</option>
-              {projects.map(p => (
-                <option key={p.id} value={p.id}>{p.projectCode} — {p.client} ({p.name})</option>
-              ))}
-            </select>
-          </div>
-
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-            <div className="field" style={{ margin: 0 }}>
-              <label>Expense Category (A-P)</label>
-              <select value={category} onChange={e => updateField("category", e.target.value)}>
-                {EXPENSE_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-              </select>
-            </div>
-            <div className="field" style={{ margin: 0 }}>
-              <label>Expense Subcategory</label>
-              <select value={subcategory} onChange={e => updateField("subcategory", e.target.value)}>
-                {currentSubcategories.map(s => <option key={s.name} value={s.name}>{s.name}</option>)}
-              </select>
-            </div>
-          </div>
-
-          <div style={{ background: "rgba(2, 132, 199, 0.08)", border: "1px solid rgba(2, 132, 199, 0.2)", padding: "7px 10px", borderRadius: 6, fontSize: 12 }}>
-            Mapped GL Account: <strong style={{ color: "#0284C7" }}>{glAccountObj.code} — {glAccountObj.name}</strong>
-          </div>
-
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
-            <div className="field" style={{ margin: 0 }}>
-              <label>Subtotal (PKR)</label>
-              <input type="number" value={extracted.baseAmount || 0} onChange={e => updateField("baseAmount", e.target.value)} />
-            </div>
-            <div className="field" style={{ margin: 0 }}>
-              <label>Tax Amount (PKR)</label>
-              <input type="number" value={extracted.taxAmount || 0} onChange={e => updateField("taxAmount", e.target.value)} />
-            </div>
-            <div className="field" style={{ margin: 0 }}>
-              <label>Total Amount (PKR)</label>
-              <input type="number" value={extracted.totalAmount || 0} onChange={e => updateField("totalAmount", e.target.value)} />
-            </div>
-          </div>
-
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-            <div className="field" style={{ margin: 0 }}>
-              <label>Payment Settlement Mode</label>
-              <select value={extracted.paymentMode || "Bank"} onChange={e => updateField("paymentMode", e.target.value)}>
-                <option value="Unpaid">Unpaid (Accounts Payable / Credit)</option>
-                <option value="Cash">Paid via Cash (Petty Cash Vault)</option>
-                <option value="Bank">Paid via Bank Account</option>
-              </select>
-            </div>
-
-            {extracted.paymentMode === "Bank" && (
-              <div className="field" style={{ margin: 0 }}>
-                <label>Select Bank Account</label>
-                <select value={extracted.bankAccountId || selectedBankObj?.id || ""} onChange={e => updateField("bankAccountId", e.target.value)}>
-                  {realBankAccounts.map(b => (
-                    <option key={b.id} value={b.id}>{b.bankName} — {b.accountTitle}</option>
-                  ))}
-                </select>
+          {activeTab === "erp_preview" ? (
+            /* OFFICIAL CONVERTED ERP DOCUMENT PREVIEW */
+            <div style={{ background: "#FFFFFF", border: "2px solid #0F172A", borderRadius: 10, padding: 18, color: "#0F172A", boxShadow: "0 4px 15px rgba(0,0,0,0.08)" }}>
+              {/* ERP DOCUMENT HEADER */}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", borderBottom: "2px solid #0F172A", paddingBottom: 12, marginBottom: 14 }}>
+                <div>
+                  <div style={{ fontSize: 18, fontWeight: 900, color: "#0F172A", letterSpacing: "0.5px" }}>ADPULSE MEDIA NETWORK</div>
+                  <div style={{ fontSize: 11, color: "#475569", fontWeight: 600 }}>FINANCIAL ACCOUNTING &amp; ERP VOUCHER SYSTEM</div>
+                  <div style={{ fontSize: 10.5, color: "#64748B", marginTop: 2 }}>Office # 213, 2nd Floor, Park Tower, Clifton, Karachi | NTN: 8291044-2 | SRB: S8291044</div>
+                </div>
+                <div style={{ textAlign: "right" }}>
+                  <span style={{ display: "inline-block", background: targetErpDocType === "Client Invoice" ? "#0284C7" : targetErpDocType === "Receipt Voucher" ? "#059669" : targetErpDocType === "Payment Voucher" ? "#D97706" : "#4F46E5", color: "#FFFFFF", padding: "4px 12px", borderRadius: 6, fontWeight: 900, fontSize: 12, letterSpacing: "1px", textTransform: "uppercase" }}>
+                    {targetErpDocType}
+                  </span>
+                  <div style={{ fontFamily: "monospace", fontWeight: 800, fontSize: 13, marginTop: 4, color: "#0F172A" }}>
+                    {extracted.documentNumber || "DOC-REF-001"}
+                  </div>
+                  <div style={{ fontSize: 11, color: "#475569" }}>Date: <b>{fmtDate(extracted.date)}</b></div>
+                </div>
               </div>
-            )}
-          </div>
 
-          <div className="field" style={{ margin: 0 }}>
-            <label>Particulars / Notes</label>
-            <input value={extracted.description || ""} onChange={e => updateField("description", e.target.value)} placeholder="Description or particulars" />
-          </div>
-
-          {/* LIVE ACCOUNTING ENTRY PREVIEW */}
-          <div style={{ background: "var(--bg)", border: "1px solid var(--rule)", padding: "10px 14px", borderRadius: 8, marginTop: 4 }}>
-            <div style={{ fontSize: 12, fontWeight: 700, color: "var(--ink-muted)", textTransform: "uppercase", marginBottom: 6 }}>
-              ⚡ Accounting Double-Entry Preview
-            </div>
-            <div style={{ fontSize: 12.5, fontFamily: "monospace" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", color: "#059669", marginBottom: 2 }}>
-                <span>Debit  : {glAccountObj.code} — {glAccountObj.name}</span>
-                <span>{pkr(baseAmt)}</span>
+              {/* ERP METADATA GRID */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, background: "#F8FAFC", padding: 12, borderRadius: 6, border: "1px solid #E2E8F0", marginBottom: 14, fontSize: 12 }}>
+                <div>
+                  <div style={{ color: "#64748B", fontSize: 10.5, fontWeight: 700, textTransform: "uppercase" }}>
+                    {targetErpDocType.includes("Client") || targetErpDocType === "Receipt Voucher" ? "Client / Customer:" : "Vendor / Payee:"}
+                  </div>
+                  <div style={{ fontSize: 14, fontWeight: 800, color: "#0F172A", marginTop: 2 }}>{extracted.party || "—"}</div>
+                  <div style={{ fontSize: 11, color: "#475569", marginTop: 2 }}>
+                    Settlement: <b>{extracted.paymentMode || "Bank"}</b> {extracted.bankAccountId ? `(${bankAccounts.find(b => b.id === extracted.bankAccountId)?.bankName || "Bank"})` : ""}
+                  </div>
+                </div>
+                <div>
+                  <div style={{ color: "#64748B", fontSize: 10.5, fontWeight: 700, textTransform: "uppercase" }}>Linked Project / Cost Center:</div>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: "#0284C7", marginTop: 2 }}>
+                    {projects.find(p => p.id === extracted.projectId)?.name || projects.find(p => p.id === extracted.projectId)?.projectCode || "General Business Overhead"}
+                  </div>
+                  <div style={{ fontSize: 11, color: "#475569", marginTop: 2 }}>
+                    Description: {extracted.description || "Media & Production Operations"}
+                  </div>
+                </div>
               </div>
-              {taxAmt > 0 && (
-                <div style={{ display: "flex", justifyContent: "space-between", color: "#059669", marginBottom: 2 }}>
-                  <span>Debit  : 1140 — Input Sales Tax (SRB)</span>
-                  <span>{pkr(taxAmt)}</span>
+
+              {/* CONVERTED LINE ITEMS & TAX BREAKDOWN TABLE */}
+              <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 12, fontSize: 12 }}>
+                <thead>
+                  <tr style={{ background: "#0F172A", color: "#FFFFFF" }}>
+                    <th style={{ padding: "6px 10px", textAlign: "left", fontSize: 11, fontWeight: 800 }}>ACCOUNT / DESCRIPTION</th>
+                    <th style={{ padding: "6px 10px", textAlign: "center", fontSize: 11, fontWeight: 800 }}>GL CODE</th>
+                    <th style={{ padding: "6px 10px", textAlign: "right", fontSize: 11, fontWeight: 800 }}>AMOUNT (PKR)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style={{ padding: "8px 10px", borderBottom: "1px solid #E2E8F0" }}>
+                      <b>{targetErpDocType === "Client Invoice" ? "Media & Marketing Campaign Services" : `${category} — ${subcategory}`}</b>
+                      <div style={{ fontSize: 11, color: "#64748B" }}>{extracted.description || "Original Document Converted Entry"}</div>
+                    </td>
+                    <td style={{ padding: "8px 10px", borderBottom: "1px solid #E2E8F0", textAlign: "center", fontFamily: "monospace", fontWeight: 700 }}>
+                      {targetErpDocType === "Client Invoice" ? "4010" : glAccountObj.code}
+                    </td>
+                    <td style={{ padding: "8px 10px", borderBottom: "1px solid #E2E8F0", textAlign: "right", fontWeight: 700 }}>
+                      {pkr(baseAmt)}
+                    </td>
+                  </tr>
+                  {taxAmt > 0 && (
+                    <tr style={{ background: "#F0FDF4" }}>
+                      <td style={{ padding: "6px 10px", borderBottom: "1px solid #E2E8F0", color: "#15803D" }}>
+                        + Sindh Sales Tax (SRB SST @ {extracted.sstRate || 15}%)
+                      </td>
+                      <td style={{ padding: "6px 10px", borderBottom: "1px solid #E2E8F0", textAlign: "center", fontFamily: "monospace", color: "#15803D" }}>
+                        {targetErpDocType === "Client Invoice" ? "2020" : "1140"}
+                      </td>
+                      <td style={{ padding: "6px 10px", borderBottom: "1px solid #E2E8F0", textAlign: "right", fontWeight: 700, color: "#15803D" }}>
+                        {pkr(taxAmt)}
+                      </td>
+                    </tr>
+                  )}
+                  {whtAmt > 0 && (
+                    <tr style={{ background: "#FEF2F2" }}>
+                      <td style={{ padding: "6px 10px", borderBottom: "1px solid #E2E8F0", color: "#991B1B" }}>
+                        - FBR Withholding Tax (WHT @ {extracted.whtRate || 1}%)
+                      </td>
+                      <td style={{ padding: "6px 10px", borderBottom: "1px solid #E2E8F0", textAlign: "center", fontFamily: "monospace", color: "#991B1B" }}>
+                        2030
+                      </td>
+                      <td style={{ padding: "6px 10px", borderBottom: "1px solid #E2E8F0", textAlign: "right", fontWeight: 700, color: "#991B1B" }}>
+                        -{pkr(whtAmt)}
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+                <tfoot>
+                  <tr style={{ background: "#F8FAFC", fontWeight: 900 }}>
+                    <td colSpan={2} style={{ padding: "8px 10px", textAlign: "right", fontSize: 12 }}>Gross Total Amount:</td>
+                    <td style={{ padding: "8px 10px", textAlign: "right", fontSize: 13, color: "#0F172A" }}>{pkr(totalAmt)}</td>
+                  </tr>
+                  <tr style={{ background: "#E2E8F0", fontWeight: 900 }}>
+                    <td colSpan={2} style={{ padding: "8px 10px", textAlign: "right", fontSize: 12.5, color: "#0284C7" }}>Net Payable / Settlement:</td>
+                    <td style={{ padding: "8px 10px", textAlign: "right", fontSize: 14, color: "#0284C7" }}>{pkr(netSettlementAmt)}</td>
+                  </tr>
+                </tfoot>
+              </table>
+
+              {/* AMOUNT IN WORDS */}
+              <div style={{ fontSize: 11, fontStyle: "italic", color: "#475569", background: "#F1F5F9", padding: "6px 10px", borderRadius: 4, marginBottom: 12 }}>
+                Net Amount in words: <b style={{ fontStyle: "normal", color: "#0F172A" }}>{amountInWords(netSettlementAmt)}</b>
+              </div>
+
+              {/* LIVE GENERAL LEDGER DOUBLE ENTRY BOX */}
+              <div style={{ background: "#0F172A", color: "#F8FAFC", padding: 12, borderRadius: 6, fontSize: 11.5, fontFamily: "monospace" }}>
+                <div style={{ color: "#38BDF8", fontWeight: 800, marginBottom: 6, fontSize: 11, textTransform: "uppercase" }}>
+                  ⚡ General Ledger Double-Entry Distribution
+                </div>
+                {targetErpDocType === "Client Invoice" ? (
+                  <>
+                    <div style={{ display: "flex", justifyContent: "space-between", color: "#4ADE80" }}>
+                      <span>DEBIT  : 1040 — Accounts Receivable ({extracted.party || "Client"})</span>
+                      <span>{pkr(totalAmt)}</span>
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "space-between", color: "#FBBF24" }}>
+                      <span>CREDIT : 4010 — Sales &amp; Agency Production Revenue</span>
+                      <span>{pkr(baseAmt)}</span>
+                    </div>
+                    {taxAmt > 0 && (
+                      <div style={{ display: "flex", justifyContent: "space-between", color: "#FBBF24" }}>
+                        <span>CREDIT : 2020 — SRB Sales Tax Output Payable</span>
+                        <span>{pkr(taxAmt)}</span>
+                      </div>
+                    )}
+                  </>
+                ) : targetErpDocType === "Receipt Voucher" ? (
+                  <>
+                    <div style={{ display: "flex", justifyContent: "space-between", color: "#4ADE80" }}>
+                      <span>DEBIT  : {extracted.paymentMode === "Cash" ? "1010 — Petty Cash Vault" : `1020 — ${selectedBankObj?.bankName || "Bank"}`}</span>
+                      <span>{pkr(netSettlementAmt)}</span>
+                    </div>
+                    {whtAmt > 0 && (
+                      <div style={{ display: "flex", justifyContent: "space-between", color: "#4ADE80" }}>
+                        <span>DEBIT  : 1150 — Advance Income Tax Deducted (WHT)</span>
+                        <span>{pkr(whtAmt)}</span>
+                      </div>
+                    )}
+                    <div style={{ display: "flex", justifyContent: "space-between", color: "#FBBF24" }}>
+                      <span>CREDIT : 1040 — Accounts Receivable ({extracted.party || "Client"})</span>
+                      <span>{pkr(totalAmt)}</span>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div style={{ display: "flex", justifyContent: "space-between", color: "#4ADE80" }}>
+                      <span>DEBIT  : {glAccountObj.code} — {glAccountObj.name}</span>
+                      <span>{pkr(baseAmt)}</span>
+                    </div>
+                    {taxAmt > 0 && (
+                      <div style={{ display: "flex", justifyContent: "space-between", color: "#4ADE80" }}>
+                        <span>DEBIT  : 1140 — Input Sales Tax (SRB)</span>
+                        <span>{pkr(taxAmt)}</span>
+                      </div>
+                    )}
+                    <div style={{ display: "flex", justifyContent: "space-between", color: "#FBBF24" }}>
+                      <span>CREDIT : {extracted.paymentMode === "Cash" ? "1010 — Petty Cash Vault" : extracted.paymentMode === "Bank" ? `1020 — ${selectedBankObj?.bankName || "Bank"}` : "2010 — Accounts Payable (AP)"}</span>
+                      <span>{pkr(totalAmt)}</span>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          ) : (
+            /* ERP DATA EDITOR FORM */
+            <>
+              {/* DOCUMENT IDENTIFIERS */}
+              <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr 1fr", gap: 10 }}>
+                <div className="field" style={{ margin: 0 }}>
+                  <label>ERP Document Ref # *</label>
+                  <input
+                    value={extracted.documentNumber || ""}
+                    onChange={e => updateField("documentNumber", e.target.value)}
+                    placeholder="e.g. INV-2026-001 or EXP-1002"
+                    style={{ fontWeight: 700 }}
+                  />
+                </div>
+                <div className="field" style={{ margin: 0 }}>
+                  <label>Document Date *</label>
+                  <input type="date" value={extracted.date || ""} onChange={e => updateField("date", e.target.value)} />
+                </div>
+                <div className="field" style={{ margin: 0 }}>
+                  <label>Due Date</label>
+                  <input type="date" value={extracted.dueDate || ""} onChange={e => updateField("dueDate", e.target.value)} />
+                </div>
+              </div>
+
+              {/* PARTY MASTER SELECTOR */}
+              <div style={{ background: "var(--bg)", border: "1px solid var(--rule)", padding: 12, borderRadius: 8 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                  <label style={{ margin: 0, fontWeight: 700, fontSize: 12 }}>
+                    {targetErpDocType.includes("Client") || targetErpDocType === "Receipt Voucher" ? "🏢 Select Master Client (35 Active)" : "🏭 Select Master Vendor (23 Active)"} *
+                  </label>
+                  <span style={{ fontSize: 11, color: "var(--gold)" }}>Fast Match from ERP Master</span>
+                </div>
+
+                {targetErpDocType.includes("Client") || targetErpDocType === "Receipt Voucher" ? (
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                    <select
+                      value={extracted.clientId || ""}
+                      onChange={e => updateField("clientId", e.target.value)}
+                      style={{ background: "var(--surface)", fontWeight: 600 }}
+                    >
+                      <option value="">-- Choose from 35 Master Clients --</option>
+                      {clients.map(c => (
+                        <option key={c.id} value={c.id}>{c.name} {c.city ? `(${c.city})` : ""}</option>
+                      ))}
+                    </select>
+                    <input
+                      value={extracted.party || ""}
+                      onChange={e => updateField("party", e.target.value)}
+                      placeholder="Or enter custom client name"
+                    />
+                  </div>
+                ) : (
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                    <select
+                      value={extracted.vendorId || ""}
+                      onChange={e => updateField("vendorId", e.target.value)}
+                      style={{ background: "var(--surface)", fontWeight: 600 }}
+                    >
+                      <option value="">-- Choose from 23 Master Vendors --</option>
+                      {vendors.map(v => (
+                        <option key={v.id} value={v.id}>{v.name} {v.city ? `(${v.city})` : ""}</option>
+                      ))}
+                    </select>
+                    <input
+                      value={extracted.party || ""}
+                      onChange={e => updateField("party", e.target.value)}
+                      placeholder="Or enter custom vendor name"
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* PROJECT & EXPENSE CLASSIFICATION */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                <div className="field" style={{ margin: 0 }}>
+                  <label style={{ display: "flex", justifyContent: "space-between" }}>
+                    <span>Link Project / Cost Center</span>
+                    {!extracted.projectId && (
+                      <button type="button" onClick={onCreateProjectTrigger} style={{ background: "none", border: "none", color: "#0284C7", fontSize: 11.5, cursor: "pointer", textDecoration: "underline", padding: 0 }}>
+                        + New Project
+                      </button>
+                    )}
+                  </label>
+                  <select value={extracted.projectId || ""} onChange={e => updateField("projectId", e.target.value)}>
+                    <option value="">-- General Overhead / No Project --</option>
+                    {projects.map(p => (
+                      <option key={p.id} value={p.id}>{p.projectCode} — {p.client} ({p.name})</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="field" style={{ margin: 0 }}>
+                  <label>Settlement Payment Mode</label>
+                  <select value={extracted.paymentMode || "Bank"} onChange={e => updateField("paymentMode", e.target.value)}>
+                    <option value="Unpaid">Unpaid (Accounts Payable / AR Credit)</option>
+                    <option value="Cash">Cash (Petty Cash Vault)</option>
+                    <option value="Bank">Online Bank Transfer / Cheque</option>
+                  </select>
+                </div>
+              </div>
+
+              {extracted.paymentMode === "Bank" && (
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                  <div className="field" style={{ margin: 0 }}>
+                    <label>Company Bank Account *</label>
+                    <select value={extracted.bankAccountId || selectedBankObj?.id || ""} onChange={e => updateField("bankAccountId", e.target.value)}>
+                      {realBankAccounts.map(b => (
+                        <option key={b.id} value={b.id}>{b.bankName} — {b.accountTitle}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="field" style={{ margin: 0 }}>
+                    <label>Cheque / Transaction Ref #</label>
+                    <input value={extracted.instrumentNo || extracted.chequeNo || ""} onChange={e => updateField("instrumentNo", e.target.value)} placeholder="e.g. FT-2609-1234 or Chq # 40819" />
+                  </div>
                 </div>
               )}
-              <div style={{ display: "flex", justifyContent: "space-between", color: "#D97706" }}>
-                <span>
-                  Credit : {extracted.paymentMode === "Cash" ? "1010 — Petty Cash Vault" : extracted.paymentMode === "Bank" ? `1020 — ${selectedBankObj?.bankName || "Bank"}` : "2010 — Accounts Payable (AP)"}
-                </span>
-                <span>{pkr(totalAmt)}</span>
+
+              {targetErpDocType !== "Client Invoice" && (
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                  <div className="field" style={{ margin: 0 }}>
+                    <label>Expense Category (A-P)</label>
+                    <select value={category} onChange={e => updateField("category", e.target.value)}>
+                      {EXPENSE_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                    </select>
+                  </div>
+                  <div className="field" style={{ margin: 0 }}>
+                    <label>Expense Subcategory &amp; GL</label>
+                    <select value={subcategory} onChange={e => updateField("subcategory", e.target.value)}>
+                      {currentSubcategories.map(s => <option key={s.name} value={s.name}>{s.name}</option>)}
+                    </select>
+                  </div>
+                </div>
+              )}
+
+              {/* FINANCIAL AMOUNTS & TAXES */}
+              <div style={{ background: "var(--bg)", border: "1px solid var(--rule)", padding: 12, borderRadius: 8 }}>
+                <div style={{ fontSize: 11.5, fontWeight: 700, color: "var(--ink-muted)", textTransform: "uppercase", marginBottom: 8 }}>
+                  Financial Breakdown &amp; Tax Compliance (SRB &amp; FBR)
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
+                  <div className="field" style={{ margin: 0 }}>
+                    <label>Base Subtotal (PKR) *</label>
+                    <input
+                      type="number"
+                      value={extracted.baseAmount || 0}
+                      onChange={e => updateField("baseAmount", e.target.value)}
+                      style={{ fontWeight: 700, fontSize: 13.5 }}
+                    />
+                  </div>
+                  <div className="field" style={{ margin: 0 }}>
+                    <label style={{ display: "flex", justifyContent: "space-between" }}>
+                      <span>SST Tax (PKR)</span>
+                      <label style={{ fontSize: 11, cursor: "pointer" }}>
+                        <input type="checkbox" checked={Boolean(extracted.applySst)} onChange={e => updateField("applySst", e.target.checked)} style={{ marginRight: 4 }} />
+                        Apply {extracted.sstRate || 15}%
+                      </label>
+                    </label>
+                    <input
+                      type="number"
+                      value={extracted.taxAmount || 0}
+                      disabled={!extracted.applySst}
+                      onChange={e => updateField("taxAmount", e.target.value)}
+                    />
+                  </div>
+                  <div className="field" style={{ margin: 0 }}>
+                    <label style={{ display: "flex", justifyContent: "space-between" }}>
+                      <span>WHT Tax (PKR)</span>
+                      <label style={{ fontSize: 11, cursor: "pointer" }}>
+                        <input type="checkbox" checked={Boolean(extracted.applyWht)} onChange={e => updateField("applyWht", e.target.checked)} style={{ marginRight: 4 }} />
+                        Apply {extracted.whtRate || 1}%
+                      </label>
+                    </label>
+                    <input
+                      type="number"
+                      value={extracted.whtAmount || 0}
+                      disabled={!extracted.applyWht}
+                      onChange={e => updateField("whtAmount", e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 10, paddingTop: 8, borderTop: "1px dashed var(--rule)", fontSize: 13 }}>
+                  <div>
+                    Total Gross: <strong style={{ color: "var(--ink)" }}>{pkr(totalAmt)}</strong>
+                  </div>
+                  <div>
+                    Net Settlement Amount: <strong style={{ color: "#0284C7", fontSize: 14 }}>{pkr(netSettlementAmt)}</strong>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
+
+              <div className="field" style={{ margin: 0 }}>
+                <label>Particulars / Notes</label>
+                <input value={extracted.description || ""} onChange={e => updateField("description", e.target.value)} placeholder="Description or particulars" />
+              </div>
+            </>
+          )}
 
           {/* FOOTER ACTIONS */}
-          <div style={{ display: "flex", gap: 10, marginTop: 10 }}>
+          <div style={{ display: "flex", gap: 10, marginTop: 6 }}>
             <button className="btn" style={{ flex: 1, justifyContent: "center", padding: "10px" }} onClick={handleDraft}>
-              Save as Draft
+              💾 Save Converted ERP Draft
             </button>
-            <button className="btn btn-primary" style={{ flex: 1.5, justifyContent: "center", padding: "10px", fontWeight: 700 }} onClick={handlePost}>
-              Post Transaction
+            <button
+              className="btn btn-primary"
+              style={{ flex: 1.5, justifyContent: "center", padding: "10px", fontWeight: 800, fontSize: 13 }}
+              onClick={handlePost}
+            >
+              ✅ Approve &amp; Post to ERP Ledgers
             </button>
           </div>
 
