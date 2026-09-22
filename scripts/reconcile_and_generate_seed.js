@@ -284,7 +284,7 @@ for (const sheetName of vendorWb.SheetNames) {
       
       const rStr = r.filter(c => c !== null).map(c => String(c).trim().toUpperCase());
       if (rStr.some(s => s === 'TOTAL' || s === 'TOTAL AMOUNT' || s.includes('GRAND TOTAL') || s === 'TOTAL AMOUNT CASH')) {
-        continue;
+        break;
       }
 
       const desc = colDesc !== -1 && r[colDesc] !== null ? String(r[colDesc]).trim() : '';

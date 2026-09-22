@@ -826,11 +826,11 @@ export const REAL_VENDORS = [
     "paymentTerms": "Net 30",
     "creditLimit": 50000000,
     "openingBalance": 0,
-    "totalBilled": 2600000,
+    "totalBilled": 650000,
     "totalPaid": 650000,
-    "currentBalance": 1950000,
+    "currentBalance": 0,
     "status": "Active",
-    "notes": "Official Vendor Account - Ledger imported from Excel (Closing Balance: PKR 1,950,000)",
+    "notes": "Official Vendor Account - Ledger imported from Excel (Closing Balance: PKR 0)",
     "createdAt": "2026-06-01",
     "createdBy": "AdpulseCEO"
   },
@@ -1171,11 +1171,11 @@ export const REAL_VENDORS = [
     "paymentTerms": "Net 30",
     "creditLimit": 50000000,
     "openingBalance": 0,
-    "totalBilled": 1600000,
+    "totalBilled": 400000,
     "totalPaid": 400000,
-    "currentBalance": 1200000,
+    "currentBalance": 0,
     "status": "Active",
-    "notes": "Official Vendor Account - Ledger imported from Excel (Closing Balance: PKR 1,200,000)",
+    "notes": "Official Vendor Account - Ledger imported from Excel (Closing Balance: PKR 0)",
     "createdAt": "2026-06-01",
     "createdBy": "AdpulseCEO"
   },
@@ -1309,11 +1309,11 @@ export const REAL_VENDORS = [
     "paymentTerms": "Net 30",
     "creditLimit": 50000000,
     "openingBalance": 0,
-    "totalBilled": 4063000,
+    "totalBilled": 1363000,
     "totalPaid": 1363000,
-    "currentBalance": 2700000,
+    "currentBalance": 0,
     "status": "Active",
-    "notes": "Official Vendor Account - Ledger imported from Excel (Closing Balance: PKR 2,700,000)",
+    "notes": "Official Vendor Account - Ledger imported from Excel (Closing Balance: PKR 0)",
     "createdAt": "2026-06-01",
     "createdBy": "AdpulseCEO"
   },
@@ -3978,24 +3978,7 @@ export const REAL_EXPENSES = [
   },
   {
     "id": "exp-2",
-    "expenseNo": "EXP-1",
-    "vendor": "ADMAX",
-    "vendorId": "ven-001",
-    "projectId": null,
-    "category": "Outdoor Media & Fabrication",
-    "subcategory": "Billboard Rental & Hoardings",
-    "accountKey": "expense",
-    "description": "SHAHEED-E-MILLAT HOARDING 60X30 (23-6-26 TO 23-9-26) EXT",
-    "amount": 1950000,
-    "grossAmount": 1950000,
-    "date": "2026-06-20",
-    "paidVia": "Credit",
-    "status": "Unpaid",
-    "bankAccountId": null
-  },
-  {
-    "id": "exp-3",
-    "expenseNo": "EXP-26-003",
+    "expenseNo": "EXP-26-002",
     "vendor": "AD-CARE",
     "vendorId": "ven-003",
     "projectId": null,
@@ -4011,7 +3994,7 @@ export const REAL_EXPENSES = [
     "bankAccountId": null
   },
   {
-    "id": "exp-4",
+    "id": "exp-3",
     "expenseNo": "EXP-ADP-2026-26005",
     "vendor": "AXIS MEDIA",
     "vendorId": "ven-004",
@@ -4028,7 +4011,7 @@ export const REAL_EXPENSES = [
     "bankAccountId": null
   },
   {
-    "id": "exp-5",
+    "id": "exp-4",
     "expenseNo": "EXP-9",
     "vendor": "AZEEM BUKHARI",
     "vendorId": "ven-005",
@@ -4045,7 +4028,7 @@ export const REAL_EXPENSES = [
     "bankAccountId": null
   },
   {
-    "id": "exp-6",
+    "id": "exp-5",
     "expenseNo": "EXP-53",
     "vendor": "AZEEM BUKHARI",
     "vendorId": "ven-005",
@@ -4062,7 +4045,7 @@ export const REAL_EXPENSES = [
     "bankAccountId": null
   },
   {
-    "id": "exp-7",
+    "id": "exp-6",
     "expenseNo": "EXP-16",
     "vendor": "AZEEM BUKHARI",
     "vendorId": "ven-005",
@@ -4079,7 +4062,7 @@ export const REAL_EXPENSES = [
     "bankAccountId": null
   },
   {
-    "id": "exp-8",
+    "id": "exp-7",
     "expenseNo": "EXP-25",
     "vendor": "AZEEM BUKHARI",
     "vendorId": "ven-005",
@@ -4096,7 +4079,7 @@ export const REAL_EXPENSES = [
     "bankAccountId": null
   },
   {
-    "id": "exp-9",
+    "id": "exp-8",
     "expenseNo": "EXP-36",
     "vendor": "AZEEM BUKHARI",
     "vendorId": "ven-005",
@@ -4113,7 +4096,7 @@ export const REAL_EXPENSES = [
     "bankAccountId": null
   },
   {
-    "id": "exp-10",
+    "id": "exp-9",
     "expenseNo": "EXP-37",
     "vendor": "AZEEM BUKHARI",
     "vendorId": "ven-005",
@@ -4130,7 +4113,7 @@ export const REAL_EXPENSES = [
     "bankAccountId": null
   },
   {
-    "id": "exp-11",
+    "id": "exp-10",
     "expenseNo": "EXP-1",
     "vendor": "BRAND ACTIVE",
     "vendorId": "ven-006",
@@ -4147,7 +4130,7 @@ export const REAL_EXPENSES = [
     "bankAccountId": null
   },
   {
-    "id": "exp-12",
+    "id": "exp-11",
     "expenseNo": "EXP-18",
     "vendor": "DEPLEX INN",
     "vendorId": "ven-007",
@@ -4164,7 +4147,7 @@ export const REAL_EXPENSES = [
     "bankAccountId": null
   },
   {
-    "id": "exp-13",
+    "id": "exp-12",
     "expenseNo": "EXP-19",
     "vendor": "DEPLEX INN",
     "vendorId": "ven-007",
@@ -4181,7 +4164,7 @@ export const REAL_EXPENSES = [
     "bankAccountId": null
   },
   {
-    "id": "exp-14",
+    "id": "exp-13",
     "expenseNo": "EXP-NST2112",
     "vendor": "GRAVITY MEDIA",
     "vendorId": "ven-008",
@@ -4198,8 +4181,8 @@ export const REAL_EXPENSES = [
     "bankAccountId": null
   },
   {
-    "id": "exp-15",
-    "expenseNo": "EXP-26-015",
+    "id": "exp-14",
+    "expenseNo": "EXP-26-014",
     "vendor": "IMRAN ENTERPRISE",
     "vendorId": "ven-009",
     "projectId": null,
@@ -4215,7 +4198,7 @@ export const REAL_EXPENSES = [
     "bankAccountId": null
   },
   {
-    "id": "exp-16",
+    "id": "exp-15",
     "expenseNo": "EXP-11005793",
     "vendor": "IBRAHIM ANJARWALA",
     "vendorId": "ven-010",
@@ -4232,7 +4215,7 @@ export const REAL_EXPENSES = [
     "bankAccountId": null
   },
   {
-    "id": "exp-17",
+    "id": "exp-16",
     "expenseNo": "EXP-11005794",
     "vendor": "IBRAHIM ANJARWALA",
     "vendorId": "ven-010",
@@ -4249,7 +4232,7 @@ export const REAL_EXPENSES = [
     "bankAccountId": null
   },
   {
-    "id": "exp-18",
+    "id": "exp-17",
     "expenseNo": "EXP-11005795",
     "vendor": "IBRAHIM ANJARWALA",
     "vendorId": "ven-010",
@@ -4266,7 +4249,7 @@ export const REAL_EXPENSES = [
     "bankAccountId": null
   },
   {
-    "id": "exp-19",
+    "id": "exp-18",
     "expenseNo": "EXP-11005796",
     "vendor": "IBRAHIM ANJARWALA",
     "vendorId": "ven-010",
@@ -4283,8 +4266,8 @@ export const REAL_EXPENSES = [
     "bankAccountId": null
   },
   {
-    "id": "exp-20",
-    "expenseNo": "EXP-26-020",
+    "id": "exp-19",
+    "expenseNo": "EXP-26-019",
     "vendor": "K-GROUP",
     "vendorId": "ven-011",
     "projectId": null,
@@ -4300,7 +4283,7 @@ export const REAL_EXPENSES = [
     "bankAccountId": null
   },
   {
-    "id": "exp-21",
+    "id": "exp-20",
     "expenseNo": "EXP-471",
     "vendor": "MILLENNIUM GRAPHICS",
     "vendorId": "ven-012",
@@ -4317,7 +4300,7 @@ export const REAL_EXPENSES = [
     "bankAccountId": null
   },
   {
-    "id": "exp-22",
+    "id": "exp-21",
     "expenseNo": "EXP-1",
     "vendor": "MNB",
     "vendorId": "ven-013",
@@ -4334,7 +4317,7 @@ export const REAL_EXPENSES = [
     "bankAccountId": null
   },
   {
-    "id": "exp-23",
+    "id": "exp-22",
     "expenseNo": "EXP-2",
     "vendor": "MNB",
     "vendorId": "ven-013",
@@ -4351,7 +4334,7 @@ export const REAL_EXPENSES = [
     "bankAccountId": null
   },
   {
-    "id": "exp-24",
+    "id": "exp-23",
     "expenseNo": "EXP-6",
     "vendor": "MNB",
     "vendorId": "ven-013",
@@ -4368,7 +4351,7 @@ export const REAL_EXPENSES = [
     "bankAccountId": null
   },
   {
-    "id": "exp-25",
+    "id": "exp-24",
     "expenseNo": "EXP-11",
     "vendor": "MNB",
     "vendorId": "ven-013",
@@ -4385,7 +4368,7 @@ export const REAL_EXPENSES = [
     "bankAccountId": null
   },
   {
-    "id": "exp-26",
+    "id": "exp-25",
     "expenseNo": "EXP-1",
     "vendor": "MEDIA COMMUNICATION",
     "vendorId": "ven-014",
@@ -4402,7 +4385,7 @@ export const REAL_EXPENSES = [
     "bankAccountId": null
   },
   {
-    "id": "exp-27",
+    "id": "exp-26",
     "expenseNo": "EXP-1",
     "vendor": "NEXTIER - KAINAT",
     "vendorId": "ven-015",
@@ -4419,7 +4402,7 @@ export const REAL_EXPENSES = [
     "bankAccountId": null
   },
   {
-    "id": "exp-28",
+    "id": "exp-27",
     "expenseNo": "EXP-3",
     "vendor": "NEXTIER - KAINAT",
     "vendorId": "ven-015",
@@ -4436,7 +4419,7 @@ export const REAL_EXPENSES = [
     "bankAccountId": null
   },
   {
-    "id": "exp-29",
+    "id": "exp-28",
     "expenseNo": "EXP-1",
     "vendor": "R & D GROUP",
     "vendorId": "ven-016",
@@ -4453,7 +4436,7 @@ export const REAL_EXPENSES = [
     "bankAccountId": null
   },
   {
-    "id": "exp-30",
+    "id": "exp-29",
     "expenseNo": "EXP-3",
     "vendor": "R & D GROUP",
     "vendorId": "ven-016",
@@ -4470,24 +4453,7 @@ export const REAL_EXPENSES = [
     "bankAccountId": null
   },
   {
-    "id": "exp-31",
-    "expenseNo": "EXP-1",
-    "vendor": "R & D GROUP",
-    "vendorId": "ven-016",
-    "projectId": null,
-    "category": "Outdoor Media & Fabrication",
-    "subcategory": "Billboard Rental & Hoardings",
-    "accountKey": "expense",
-    "description": "DHA Creek Walk Digital Streamers  3x6, (QTY 10) &  2X3 (QTY 16) 13-July-26 to 13-Jan-27",
-    "amount": 1200000,
-    "grossAmount": 1200000,
-    "date": "2026-07-13",
-    "paidVia": "Credit",
-    "status": "Unpaid",
-    "bankAccountId": null
-  },
-  {
-    "id": "exp-32",
+    "id": "exp-30",
     "expenseNo": "EXP-1",
     "vendor": "RM ASSOCIATES",
     "vendorId": "ven-017",
@@ -4504,7 +4470,7 @@ export const REAL_EXPENSES = [
     "bankAccountId": null
   },
   {
-    "id": "exp-33",
+    "id": "exp-31",
     "expenseNo": "EXP-2",
     "vendor": "RM ASSOCIATES",
     "vendorId": "ven-017",
@@ -4521,7 +4487,7 @@ export const REAL_EXPENSES = [
     "bankAccountId": null
   },
   {
-    "id": "exp-34",
+    "id": "exp-32",
     "expenseNo": "EXP-5",
     "vendor": "RM ASSOCIATES",
     "vendorId": "ven-017",
@@ -4538,7 +4504,7 @@ export const REAL_EXPENSES = [
     "bankAccountId": null
   },
   {
-    "id": "exp-35",
+    "id": "exp-33",
     "expenseNo": "EXP-1",
     "vendor": "RING ADVERTISING",
     "vendorId": "ven-018",
@@ -4555,7 +4521,7 @@ export const REAL_EXPENSES = [
     "bankAccountId": null
   },
   {
-    "id": "exp-36",
+    "id": "exp-34",
     "expenseNo": "EXP-12485",
     "vendor": "SA ADVERTISING",
     "vendorId": "ven-019",
@@ -4572,7 +4538,7 @@ export const REAL_EXPENSES = [
     "bankAccountId": null
   },
   {
-    "id": "exp-37",
+    "id": "exp-35",
     "expenseNo": "EXP-1",
     "vendor": "Zaib Enterprises",
     "vendorId": "ven-022",
@@ -4589,7 +4555,7 @@ export const REAL_EXPENSES = [
     "bankAccountId": null
   },
   {
-    "id": "exp-38",
+    "id": "exp-36",
     "expenseNo": "EXP-2",
     "vendor": "Zaib Enterprises",
     "vendorId": "ven-022",
@@ -4601,23 +4567,6 @@ export const REAL_EXPENSES = [
     "amount": 900000,
     "grossAmount": 900000,
     "date": "2026-09-01",
-    "paidVia": "Credit",
-    "status": "Unpaid",
-    "bankAccountId": null
-  },
-  {
-    "id": "exp-39",
-    "expenseNo": "EXP-26-039",
-    "vendor": "Zaib Enterprises",
-    "vendorId": "ven-022",
-    "projectId": null,
-    "category": "Outdoor Media & Fabrication",
-    "subcategory": "Billboard Rental & Hoardings",
-    "accountKey": "expense",
-    "description": "DHA NMC BRIDGE 01 AND NMC BRIDGE 02 FOR 3 MONTHS",
-    "amount": 2700000,
-    "grossAmount": 2700000,
-    "date": "2026-06-29",
     "paidVia": "Credit",
     "status": "Unpaid",
     "bankAccountId": null
@@ -13955,26 +13904,6 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-exp-2",
-    "date": "2026-06-20",
-    "reference": "EXP-1",
-    "description": "[Vendor Bill] ADMAX — SHAHEED-E-MILLAT HOARDING 60X30 (23-6-26 TO 23-9-26) EXT",
-    "lines": [
-      {
-        "account": "expense",
-        "debit": 1950000,
-        "credit": 0,
-        "memo": "Operating Expense — SHAHEED-E-MILLAT HOARDING 60X30 (23-6-26 TO 23-9-26) EXT"
-      },
-      {
-        "account": "ap",
-        "debit": 0,
-        "credit": 1950000,
-        "memo": "Accounts Payable — ADMAX"
-      }
-    ]
-  },
-  {
     "id": "jnl-pv-2",
     "date": "2026-07-16",
     "reference": "BPV-26-002",
@@ -14058,9 +13987,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-exp-3",
+    "id": "jnl-exp-2",
     "date": "2026-08-11",
-    "reference": "EXP-26-003",
+    "reference": "EXP-26-002",
     "description": "[Vendor Bill] AD-CARE — STREMERS, PRINTING & FABRICATION PUNJAB (DINERS)",
     "lines": [
       {
@@ -14183,7 +14112,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-exp-4",
+    "id": "jnl-exp-3",
     "date": "2026-08-17",
     "reference": "EXP-ADP-2026-26005",
     "description": "[Vendor Bill] AXIS MEDIA — DINERS STREAMER CAMPAIGN KARACHI & SINDH",
@@ -14244,7 +14173,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-exp-5",
+    "id": "jnl-exp-4",
     "date": "2026-07-11",
     "reference": "EXP-9",
     "description": "[Vendor Bill] AZEEM BUKHARI — HMR Drone Shoot (11-07-2026)",
@@ -14285,7 +14214,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-exp-6",
+    "id": "jnl-exp-5",
     "date": "2026-07-20",
     "reference": "EXP-53",
     "description": "[Vendor Bill] AZEEM BUKHARI — Outdoor Drone shoot",
@@ -14326,7 +14255,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-exp-7",
+    "id": "jnl-exp-6",
     "date": "2026-08-24",
     "reference": "EXP-16",
     "description": "[Vendor Bill] AZEEM BUKHARI — Rafiq Juloos Video & Drone Shoot",
@@ -14367,7 +14296,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-exp-8",
+    "id": "jnl-exp-7",
     "date": "2026-09-09",
     "reference": "EXP-25",
     "description": "[Vendor Bill] AZEEM BUKHARI — GFS dealers Convention Video Graphy with Gimble and photography",
@@ -14387,7 +14316,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-exp-9",
+    "id": "jnl-exp-8",
     "date": "2026-09-09",
     "reference": "EXP-36",
     "description": "[Vendor Bill] AZEEM BUKHARI — Adpulse sign Board sites coverage approimate (75 to 90) drone shoot 2 days",
@@ -14407,7 +14336,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-exp-10",
+    "id": "jnl-exp-9",
     "date": "2026-09-14",
     "reference": "EXP-37",
     "description": "[Vendor Bill] AZEEM BUKHARI — Video and photography Dewan and lakhmir Sign Marriott Hotel",
@@ -14448,7 +14377,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-exp-11",
+    "id": "jnl-exp-10",
     "date": "2026-08-17",
     "reference": "EXP-1",
     "description": "[Vendor Bill] BRAND ACTIVE — Bukhari Commercial, Ittehad DHA, Karachi (03-Jul to 01-Aug, 2026) & PASTING CHARGES",
@@ -14468,7 +14397,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-exp-12",
+    "id": "jnl-exp-11",
     "date": "2026-08-24",
     "reference": "EXP-18",
     "description": "[Vendor Bill] DEPLEX INN — Bridge panel at Nazimabad Board Office (22-07-2026 to 10-08-2026) Falaknaz",
@@ -14488,7 +14417,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-exp-13",
+    "id": "jnl-exp-12",
     "date": "2026-08-24",
     "reference": "EXP-19",
     "description": "[Vendor Bill] DEPLEX INN — Billboard at Bukhari Commercial (15-07-2026 to 30-07-2026) H&H Home",
@@ -14508,7 +14437,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-exp-14",
+    "id": "jnl-exp-13",
     "date": "2026-07-31",
     "reference": "EXP-NST2112",
     "description": "[Vendor Bill] GRAVITY MEDIA — HOARDING AT AGRICULTURE COMPLEX GUUD CHOWK 60X20 (15-7-26 TO 31-7-26) 15 DAYS @ 220,000",
@@ -14549,9 +14478,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-exp-15",
+    "id": "jnl-exp-14",
     "date": "2026-07-31",
-    "reference": "EXP-26-015",
+    "reference": "EXP-26-014",
     "description": "[Vendor Bill] IMRAN ENTERPRISE — HOARDING AT AKBAR CNG 45X40 (15 DAYS), AUTO BHAN ROAD OPP RIDHAN 60X20 (15 DAYS) & AUTO BHAN ASKARI BANK 60X20 (10 DAYS)",
     "lines": [
       {
@@ -14611,7 +14540,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-exp-16",
+    "id": "jnl-exp-15",
     "date": "2026-07-25",
     "reference": "EXP-11005793",
     "description": "[Vendor Bill] IBRAHIM ANJARWALA — PDC Received from Mr. Ibrahim Anjarwala against Loan",
@@ -14631,7 +14560,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-exp-17",
+    "id": "jnl-exp-16",
     "date": "2026-07-30",
     "reference": "EXP-11005794",
     "description": "[Vendor Bill] IBRAHIM ANJARWALA — PDC Received from Mr. Ibrahim Anjarwala against Loan",
@@ -14651,7 +14580,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-exp-18",
+    "id": "jnl-exp-17",
     "date": "2026-08-25",
     "reference": "EXP-11005795",
     "description": "[Vendor Bill] IBRAHIM ANJARWALA — PDC Received from Mr. Ibrahim Anjarwala against Loan",
@@ -14671,7 +14600,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-exp-19",
+    "id": "jnl-exp-18",
     "date": "2026-08-30",
     "reference": "EXP-11005796",
     "description": "[Vendor Bill] IBRAHIM ANJARWALA — PDC Received from Mr. Ibrahim Anjarwala against Loan",
@@ -14691,9 +14620,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-exp-20",
+    "id": "jnl-exp-19",
     "date": "2026-08-17",
-    "reference": "EXP-26-020",
+    "reference": "EXP-26-019",
     "description": "[Vendor Bill] K-GROUP — Invoice Recevied from Media Solution against Diners",
     "lines": [
       {
@@ -14732,7 +14661,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-exp-21",
+    "id": "jnl-exp-20",
     "date": "2026-08-18",
     "reference": "EXP-471",
     "description": "[Vendor Bill] MILLENNIUM GRAPHICS — Shehbaz Flyover Panel, Hilltop Chari, Qasim Chowk, Naseem Nagar (17-July-25 to 31-July-25) 15 Days",
@@ -14752,7 +14681,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-exp-22",
+    "id": "jnl-exp-21",
     "date": "2026-06-30",
     "reference": "EXP-1",
     "description": "[Vendor Bill] MNB — Bridge Panel at Drig Road, Shahra-e-Faisal, Karachi 80x12 (15-5-26 to 12-6-26)",
@@ -14772,7 +14701,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-exp-23",
+    "id": "jnl-exp-22",
     "date": "2026-07-08",
     "reference": "EXP-2",
     "description": "[Vendor Bill] MNB — Bridge Panel at Drig Road, Shahra-e-Faisal, Karachi 80X12  (13-6-26 to 12-7-26), Bridge Panel at RJ Mall, Karachi 80x15 (6-6-26 to 5-7-26) & Bridge Panel at Millennium Mall, Karachi  80X12 For 30  Days (1-1-6-26 to 30-6-26)",
@@ -14855,7 +14784,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-exp-24",
+    "id": "jnl-exp-23",
     "date": "2026-07-31",
     "reference": "EXP-6",
     "description": "[Vendor Bill] MNB — Bridge Panel at Drig Road, Shahra-e-Faisal, Karachi 80X12  (13-7-26 to 30-7-26), Bridge Panel at RJ Mall Side 1 Karachi 80x15 (6-7-26 to 30-7-26), Bridge Panel at RJ Mall Side 2 Karachi 80x15 (16-7-26 to 30-7-26 & Bridge Panel at Millennium Mall, Karachi  80X12 For 30  Days (1-7-26 to 30-7-26)",
@@ -14959,7 +14888,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-exp-25",
+    "id": "jnl-exp-24",
     "date": "2026-09-08",
     "reference": "EXP-11",
     "description": "[Vendor Bill] MNB — Bridge Panel at Drig Road, Shahra-e-Faisal, Karachi 80X12  (1-8-26 to 30-8-26), Bridge Panel at RJ Mall Side 1 Karachi 80x15 (1-8-26 to 30-8-26), Bridge Panel at RJ Mall Side 2 Karachi 80x15 (1-8-26 to 30-8-26 & Bridge Panel at Millennium Mall, Karachi  80X12 For 30  Days (1-8-26 to 30-8-26)",
@@ -15021,7 +14950,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-exp-26",
+    "id": "jnl-exp-25",
     "date": "2026-06-30",
     "reference": "EXP-1",
     "description": "[Vendor Bill] MEDIA COMMUNICATION — Bahadurabad Site 33x55 (17-4-26 to 16-5-26)",
@@ -15041,7 +14970,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-exp-27",
+    "id": "jnl-exp-26",
     "date": "2026-06-30",
     "reference": "EXP-1",
     "description": "[Vendor Bill] NEXTIER - KAINAT — COMBINED PO Shahrah e Faisal 11-7-2026 to 10-10-26, Karsaz 11-7-2026 to 10-10-2026, Bahira Bridges 16-7-26 to 16-10-2026",
@@ -15082,7 +15011,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-exp-28",
+    "id": "jnl-exp-27",
     "date": "2026-07-01",
     "reference": "EXP-3",
     "description": "[Vendor Bill] NEXTIER - KAINAT — KARSAZ FOR MEDICAM 20-07-26 to 20-8-26",
@@ -15228,7 +15157,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-exp-29",
+    "id": "jnl-exp-28",
     "date": "2026-08-10",
     "reference": "EXP-1",
     "description": "[Vendor Bill] R & D GROUP — 2x Spots, Digital streamers at Zulfiqar Avenue Creek Walk, Phase 8, DHA, (13 July – 12 Aug 2026)",
@@ -15269,7 +15198,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-exp-30",
+    "id": "jnl-exp-29",
     "date": "2026-09-10",
     "reference": "EXP-3",
     "description": "[Vendor Bill] R & D GROUP — 2x Spots, Digital streamers at Zulfiqar Avenue Creek Walk, Phase 8, DHA, (13 Aug– 12 Sep 2026)",
@@ -15310,27 +15239,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-exp-31",
-    "date": "2026-07-13",
-    "reference": "EXP-1",
-    "description": "[Vendor Bill] R & D GROUP — DHA Creek Walk Digital Streamers  3x6, (QTY 10) &  2X3 (QTY 16) 13-July-26 to 13-Jan-27",
-    "lines": [
-      {
-        "account": "expense",
-        "debit": 1200000,
-        "credit": 0,
-        "memo": "Operating Expense — DHA Creek Walk Digital Streamers  3x6, (QTY 10) &  2X3 (QTY 16) 13-July-26 to 13-Jan-27"
-      },
-      {
-        "account": "ap",
-        "debit": 0,
-        "credit": 1200000,
-        "memo": "Accounts Payable — R & D GROUP"
-      }
-    ]
-  },
-  {
-    "id": "jnl-exp-32",
+    "id": "jnl-exp-30",
     "date": "2026-07-16",
     "reference": "EXP-1",
     "description": "[Vendor Bill] RM ASSOCIATES — OOH Campaign 16 May To 16 June One Month (Digital Streamers Shahrah e faisal and CSD road)",
@@ -15350,7 +15259,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-exp-33",
+    "id": "jnl-exp-31",
     "date": "2026-07-16",
     "reference": "EXP-2",
     "description": "[Vendor Bill] RM ASSOCIATES — OOH Campaign 16 June To 16 July One Month (Digital Streamers Shahrah e faisal and CSD road)",
@@ -15412,7 +15321,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-exp-34",
+    "id": "jnl-exp-32",
     "date": "2026-07-01",
     "reference": "EXP-5",
     "description": "[Vendor Bill] RM ASSOCIATES — Media Expense",
@@ -15453,7 +15362,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-exp-35",
+    "id": "jnl-exp-33",
     "date": "2026-07-10",
     "reference": "EXP-1",
     "description": "[Vendor Bill] RING ADVERTISING — Hoding For 45 Days For Korangi 60x30 (Duration 45 Days From 18 April To 2 June)",
@@ -15515,7 +15424,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-exp-36",
+    "id": "jnl-exp-34",
     "date": "2026-09-16",
     "reference": "EXP-12485",
     "description": "[Vendor Bill] SA ADVERTISING — Hoding For Chase-Up Fasialabad Sites City Heart Plaza 60x20 (26-8-26 to 9-9-26), D-Ground 60x20 (30-8-26 to 13-9-26), Abdullah Pur Chowk 60x20 (30-8-26 to 13-9-26) & Opp Misaqul Mall 60x20 (30-8-26 to 13-9-26)",
@@ -15555,7 +15464,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-exp-37",
+    "id": "jnl-exp-35",
     "date": "2026-07-18",
     "reference": "EXP-1",
     "description": "[Vendor Bill] Zaib Enterprises — Hoarding at Boat Basin 60x30 (9 Days) , Shahrah-e-Faisal 90x35 (7 Days) & Shahrah-e-Qaideen 55x30 (8 Days) for HMR",
@@ -15575,7 +15484,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-exp-38",
+    "id": "jnl-exp-36",
     "date": "2026-09-01",
     "reference": "EXP-2",
     "description": "[Vendor Bill] Zaib Enterprises — DHA NMC BRIDGE",
@@ -15633,26 +15542,6 @@ export const REAL_JOURNAL = [
         "debit": 0,
         "credit": 463000,
         "memo": "Petty Cash Vault"
-      }
-    ]
-  },
-  {
-    "id": "jnl-exp-39",
-    "date": "2026-06-29",
-    "reference": "EXP-26-039",
-    "description": "[Vendor Bill] Zaib Enterprises — DHA NMC BRIDGE 01 AND NMC BRIDGE 02 FOR 3 MONTHS",
-    "lines": [
-      {
-        "account": "expense",
-        "debit": 2700000,
-        "credit": 0,
-        "memo": "Operating Expense — DHA NMC BRIDGE 01 AND NMC BRIDGE 02 FOR 3 MONTHS"
-      },
-      {
-        "account": "ap",
-        "debit": 0,
-        "credit": 2700000,
-        "memo": "Accounts Payable — Zaib Enterprises"
       }
     ]
   },
