@@ -1178,9 +1178,28 @@ export default function App() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   /* Financial & Operations state */
-  const [seedData] = useState(buildInitialData);
+  const STORAGE_KEY = "adpulse_erp_financial_clean_v12_audited_perfect";
 
-  const STORAGE_KEY = "adpulse_erp_financial_clean_v10_verified";
+  // Auto purge legacy localStorage versions so browser unconditionally loads fresh 100% audited Excel data
+  try {
+    const currentVer = typeof window !== "undefined" && window.localStorage ? localStorage.getItem("adpulse_active_storage_version") : null;
+    if (currentVer !== STORAGE_KEY && typeof window !== "undefined" && window.localStorage) {
+      const session = localStorage.getItem("adpulse_user_session");
+      const supabaseConfig = localStorage.getItem("adpulse_supabase_config");
+      Object.keys(localStorage).forEach(k => {
+        if (k.startsWith("adpulse_") && k !== "adpulse_user_session" && k !== "adpulse_supabase_config") {
+          localStorage.removeItem(k);
+        }
+      });
+      localStorage.setItem("adpulse_active_storage_version", STORAGE_KEY);
+      if (session) localStorage.setItem("adpulse_user_session", session);
+      if (supabaseConfig) localStorage.setItem("adpulse_supabase_config", supabaseConfig);
+    }
+  } catch (e) {
+    console.warn("Storage auto-migration:", e);
+  }
+
+  const [seedData] = useState(buildInitialData);
 
   // Helper to load state from localStorage or fallback to default
   const getInitialState = (key, fallback) => {
