@@ -3,6 +3,22 @@ import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import './index.css'
 
+// Force immediate cache-purge of all stale legacy local data
+const CURRENT_BUILD_VERSION = "v20_verified_real_excel_ledger_final";
+try {
+  const activeVer = localStorage.getItem("adpulse_app_build_version");
+  if (activeVer !== CURRENT_BUILD_VERSION) {
+    const session = localStorage.getItem("adpulse_user_session");
+    const supabase = localStorage.getItem("adpulse_supabase_config");
+    localStorage.clear();
+    if (session) localStorage.setItem("adpulse_user_session", session);
+    if (supabase) localStorage.setItem("adpulse_supabase_config", supabase);
+    localStorage.setItem("adpulse_app_build_version", CURRENT_BUILD_VERSION);
+  }
+} catch (e) {
+  console.warn("Storage auto-flush error:", e);
+}
+
 class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);

@@ -1178,7 +1178,7 @@ export default function App() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   /* Financial & Operations state */
-  const STORAGE_KEY = "adpulse_erp_financial_clean_v12_audited_perfect";
+  const STORAGE_KEY = "adpulse_erp_financial_clean_v20_real_excel";
 
   // Auto purge legacy localStorage versions so browser unconditionally loads fresh 100% audited Excel data
   try {
@@ -1187,7 +1187,7 @@ export default function App() {
       const session = localStorage.getItem("adpulse_user_session");
       const supabaseConfig = localStorage.getItem("adpulse_supabase_config");
       Object.keys(localStorage).forEach(k => {
-        if (k.startsWith("adpulse_") && k !== "adpulse_user_session" && k !== "adpulse_supabase_config") {
+        if (k.startsWith("adpulse_") && k !== "adpulse_user_session" && k !== "adpulse_supabase_config" && k !== "adpulse_app_build_version") {
           localStorage.removeItem(k);
         }
       });
