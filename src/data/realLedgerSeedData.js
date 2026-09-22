@@ -7,7 +7,7 @@ export const REAL_CLIENTS = [
     "id": "cli-001",
     "clientCode": "CLI-001",
     "name": "CHASE UP",
-    "companyName": "CHASE UP Private Ltd",
+    "companyName": "CHASE UP (Pvt) Ltd",
     "contactPerson": "Finance & Accounts Department",
     "phone": "021-37526834",
     "email": "accounts@chaseup.pk",
@@ -29,11 +29,11 @@ export const REAL_CLIENTS = [
   {
     "id": "cli-002",
     "clientCode": "CLI-002",
-    "name": "CHASE VALUE CENTER",
-    "companyName": "CHASE VALUE CENTER Private Ltd",
+    "name": "CHASE VALUE",
+    "companyName": "CHASE VALUE (Pvt) Ltd",
     "contactPerson": "Finance & Accounts Department",
     "phone": "021-37526834",
-    "email": "accounts@chasevaluecenter.pk",
+    "email": "accounts@chasevalue.pk",
     "address": "Karachi, Pakistan",
     "city": "Karachi",
     "ntn": "06546501-8",
@@ -53,7 +53,7 @@ export const REAL_CLIENTS = [
     "id": "cli-003",
     "clientCode": "CLI-003",
     "name": "DEBS",
-    "companyName": "DEBS Private Ltd",
+    "companyName": "DEBS (Pvt) Ltd",
     "contactPerson": "Finance & Accounts Department",
     "phone": "021-37526834",
     "email": "accounts@debs.pk",
@@ -75,11 +75,11 @@ export const REAL_CLIENTS = [
   {
     "id": "cli-004",
     "clientCode": "CLI-004",
-    "name": "DECENT BUILDERS AND DEVELOPERS",
-    "companyName": "DECENT BUILDERS AND DEVELOPERS Private Ltd",
+    "name": "DECENT",
+    "companyName": "DECENT (Pvt) Ltd",
     "contactPerson": "Finance & Accounts Department",
     "phone": "021-37526834",
-    "email": "accounts@decentbuildersanddevelopers.pk",
+    "email": "accounts@decent.pk",
     "address": "Karachi, Pakistan",
     "city": "Karachi",
     "ntn": "06546501-8",
@@ -98,11 +98,11 @@ export const REAL_CLIENTS = [
   {
     "id": "cli-005",
     "clientCode": "CLI-005",
-    "name": "DESIGN MEDIA - Mr. Sajid Channa",
-    "companyName": "DESIGN MEDIA - Mr. Sajid Channa Private Ltd",
+    "name": "DESIGN MEDIA",
+    "companyName": "DESIGN MEDIA (Pvt) Ltd",
     "contactPerson": "Finance & Accounts Department",
     "phone": "021-37526834",
-    "email": "accounts@designmediamrsajidchanna.pk",
+    "email": "accounts@designmedia.pk",
     "address": "Karachi, Pakistan",
     "city": "Karachi",
     "ntn": "06546501-8",
@@ -121,11 +121,11 @@ export const REAL_CLIENTS = [
   {
     "id": "cli-006",
     "clientCode": "CLI-006",
-    "name": "DINERS - CASH",
-    "companyName": "DINERS - CASH Private Ltd",
+    "name": "DINERS",
+    "companyName": "DINERS (Pvt) Ltd",
     "contactPerson": "Finance & Accounts Department",
     "phone": "021-37526834",
-    "email": "accounts@dinerscash.pk",
+    "email": "accounts@diners.pk",
     "address": "Karachi, Pakistan",
     "city": "Karachi",
     "ntn": "06546501-8",
@@ -145,7 +145,7 @@ export const REAL_CLIENTS = [
     "id": "cli-007",
     "clientCode": "CLI-007",
     "name": "DVAGO",
-    "companyName": "DVAGO Private Ltd",
+    "companyName": "DVAGO (Pvt) Ltd",
     "contactPerson": "Finance & Accounts Department",
     "phone": "021-37526834",
     "email": "accounts@dvago.pk",
@@ -168,7 +168,7 @@ export const REAL_CLIENTS = [
     "id": "cli-008",
     "clientCode": "CLI-008",
     "name": "ESSANI GROUP",
-    "companyName": "ESSANI GROUP Private Ltd",
+    "companyName": "ESSANI GROUP (Pvt) Ltd",
     "contactPerson": "Finance & Accounts Department",
     "phone": "021-37526834",
     "email": "accounts@essanigroup.pk",
@@ -190,11 +190,11 @@ export const REAL_CLIENTS = [
   {
     "id": "cli-009",
     "clientCode": "CLI-009",
-    "name": "FALAKNAZ GROUP - ELITE TOWERS",
-    "companyName": "FALAKNAZ GROUP - ELITE TOWERS Private Ltd",
+    "name": "FALAKNAZ",
+    "companyName": "FALAKNAZ (Pvt) Ltd",
     "contactPerson": "Finance & Accounts Department",
     "phone": "021-37526834",
-    "email": "accounts@falaknazgroupelitetowers.pk",
+    "email": "accounts@falaknaz.pk",
     "address": "Karachi, Pakistan",
     "city": "Karachi",
     "ntn": "06546501-8",
@@ -214,7 +214,7 @@ export const REAL_CLIENTS = [
     "id": "cli-010",
     "clientCode": "CLI-010",
     "name": "FALAKNAZ SKYVIEW",
-    "companyName": "FALAKNAZ SKYVIEW Private Ltd",
+    "companyName": "FALAKNAZ SKYVIEW (Pvt) Ltd",
     "contactPerson": "Finance & Accounts Department",
     "phone": "021-37526834",
     "email": "accounts@falaknazskyview.pk",
@@ -237,7 +237,7 @@ export const REAL_CLIENTS = [
     "id": "cli-011",
     "clientCode": "CLI-011",
     "name": "FALAKNAZ GRANDE",
-    "companyName": "FALAKNAZ GRANDE Private Ltd",
+    "companyName": "FALAKNAZ GRANDE (Pvt) Ltd",
     "contactPerson": "Finance & Accounts Department",
     "phone": "021-37526834",
     "email": "accounts@falaknazgrande.pk",
@@ -260,7 +260,7 @@ export const REAL_CLIENTS = [
     "id": "cli-012",
     "clientCode": "CLI-012",
     "name": "FPCCI",
-    "companyName": "FPCCI Private Ltd",
+    "companyName": "FPCCI (Pvt) Ltd",
     "contactPerson": "Finance & Accounts Department",
     "phone": "021-37526834",
     "email": "accounts@fpcci.pk",
@@ -283,7 +283,7 @@ export const REAL_CLIENTS = [
     "id": "cli-013",
     "clientCode": "CLI-013",
     "name": "GOVERNOR HOUSE",
-    "companyName": "GOVERNOR HOUSE Private Ltd",
+    "companyName": "GOVERNOR HOUSE (Pvt) Ltd",
     "contactPerson": "Finance & Accounts Department",
     "phone": "021-37526834",
     "email": "accounts@governorhouse.pk",
@@ -306,7 +306,7 @@ export const REAL_CLIENTS = [
     "id": "cli-014",
     "clientCode": "CLI-014",
     "name": "GREENWICH UNIVERSITY",
-    "companyName": "GREENWICH UNIVERSITY Private Ltd",
+    "companyName": "GREENWICH UNIVERSITY (Pvt) Ltd",
     "contactPerson": "Finance & Accounts Department",
     "phone": "021-37526834",
     "email": "accounts@greenwichuniversity.pk",
@@ -328,11 +328,11 @@ export const REAL_CLIENTS = [
   {
     "id": "cli-015",
     "clientCode": "CLI-015",
-    "name": "HMR WATERFRONT PVT LTD",
-    "companyName": "HMR WATERFRONT PVT LTD Private Ltd",
+    "name": "HMR",
+    "companyName": "HMR (Pvt) Ltd",
     "contactPerson": "Finance & Accounts Department",
     "phone": "021-37526834",
-    "email": "accounts@hmrwaterfrontpvtltd.pk",
+    "email": "accounts@hmr.pk",
     "address": "Karachi, Pakistan",
     "city": "Karachi",
     "ntn": "06546501-8",
@@ -352,7 +352,7 @@ export const REAL_CLIENTS = [
     "id": "cli-016",
     "clientCode": "CLI-016",
     "name": "H&H",
-    "companyName": "H&H Private Ltd",
+    "companyName": "H&H (Pvt) Ltd",
     "contactPerson": "Finance & Accounts Department",
     "phone": "021-37526834",
     "email": "accounts@hh.pk",
@@ -374,11 +374,11 @@ export const REAL_CLIENTS = [
   {
     "id": "cli-017",
     "clientCode": "CLI-017",
-    "name": "HABITT STORE - CASH",
-    "companyName": "HABITT STORE - CASH Private Ltd",
+    "name": "HABBIT STORE",
+    "companyName": "HABBIT STORE (Pvt) Ltd",
     "contactPerson": "Finance & Accounts Department",
     "phone": "021-37526834",
-    "email": "accounts@habittstorecash.pk",
+    "email": "accounts@habbitstore.pk",
     "address": "Karachi, Pakistan",
     "city": "Karachi",
     "ntn": "06546501-8",
@@ -397,11 +397,11 @@ export const REAL_CLIENTS = [
   {
     "id": "cli-018",
     "clientCode": "CLI-018",
-    "name": "IMTIAZ GROUP SMC PVT LTD",
-    "companyName": "IMTIAZ GROUP SMC PVT LTD Private Ltd",
+    "name": "IMTIAZ",
+    "companyName": "IMTIAZ (Pvt) Ltd",
     "contactPerson": "Finance & Accounts Department",
     "phone": "021-37526834",
-    "email": "accounts@imtiazgroupsmcpvtltd.pk",
+    "email": "accounts@imtiaz.pk",
     "address": "Karachi, Pakistan",
     "city": "Karachi",
     "ntn": "06546501-8",
@@ -420,11 +420,11 @@ export const REAL_CLIENTS = [
   {
     "id": "cli-019",
     "clientCode": "CLI-019",
-    "name": "IDEMITSU LUBE PAKISTAN PVT LTD",
-    "companyName": "IDEMITSU LUBE PAKISTAN PVT LTD Private Ltd",
+    "name": "IDEMITSU",
+    "companyName": "IDEMITSU (Pvt) Ltd",
     "contactPerson": "Finance & Accounts Department",
     "phone": "021-37526834",
-    "email": "accounts@idemitsulubepakistanpvtltd.pk",
+    "email": "accounts@idemitsu.pk",
     "address": "Karachi, Pakistan",
     "city": "Karachi",
     "ntn": "06546501-8",
@@ -443,11 +443,11 @@ export const REAL_CLIENTS = [
   {
     "id": "cli-020",
     "clientCode": "CLI-020",
-    "name": "PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO",
-    "companyName": "PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO Private Ltd",
+    "name": "IGLOO",
+    "companyName": "IGLOO (Pvt) Ltd",
     "contactPerson": "Finance & Accounts Department",
     "phone": "021-37526834",
-    "email": "accounts@pakistandairyproductspvtltdigloo.pk",
+    "email": "accounts@igloo.pk",
     "address": "Karachi, Pakistan",
     "city": "Karachi",
     "ntn": "06546501-8",
@@ -466,11 +466,11 @@ export const REAL_CLIENTS = [
   {
     "id": "cli-021",
     "clientCode": "CLI-021",
-    "name": "MR. KAMRAN KARIM",
-    "companyName": "MR. KAMRAN KARIM Private Ltd",
+    "name": "KAMRAN KARIM",
+    "companyName": "KAMRAN KARIM (Pvt) Ltd",
     "contactPerson": "Finance & Accounts Department",
     "phone": "021-37526834",
-    "email": "accounts@mrkamrankarim.pk",
+    "email": "accounts@kamrankarim.pk",
     "address": "Karachi, Pakistan",
     "city": "Karachi",
     "ntn": "06546501-8",
@@ -489,11 +489,11 @@ export const REAL_CLIENTS = [
   {
     "id": "cli-022",
     "clientCode": "CLI-022",
-    "name": "KIA SMART SHEHZORE - WITH TAX",
-    "companyName": "KIA SMART SHEHZORE - WITH TAX Private Ltd",
+    "name": "KIA SHEHZORE",
+    "companyName": "KIA SHEHZORE (Pvt) Ltd",
     "contactPerson": "Finance & Accounts Department",
     "phone": "021-37526834",
-    "email": "accounts@kiasmartshehzorewithtax.pk",
+    "email": "accounts@kiashehzore.pk",
     "address": "Karachi, Pakistan",
     "city": "Karachi",
     "ntn": "06546501-8",
@@ -512,11 +512,11 @@ export const REAL_CLIENTS = [
   {
     "id": "cli-023",
     "clientCode": "CLI-023",
-    "name": "KINZA BEVERAGES",
-    "companyName": "KINZA BEVERAGES Private Ltd",
+    "name": "KINZA BEVRAGES",
+    "companyName": "KINZA BEVRAGES (Pvt) Ltd",
     "contactPerson": "Finance & Accounts Department",
     "phone": "021-37526834",
-    "email": "accounts@kinzabeverages.pk",
+    "email": "accounts@kinzabevrages.pk",
     "address": "Karachi, Pakistan",
     "city": "Karachi",
     "ntn": "06546501-8",
@@ -535,11 +535,11 @@ export const REAL_CLIENTS = [
   {
     "id": "cli-024",
     "clientCode": "CLI-024",
-    "name": "KIFAYAH PHARMACY & SUPER MARKET",
-    "companyName": "KIFAYAH PHARMACY & SUPER MARKET Private Ltd",
+    "name": "KIFAYAH",
+    "companyName": "KIFAYAH (Pvt) Ltd",
     "contactPerson": "Finance & Accounts Department",
     "phone": "021-37526834",
-    "email": "accounts@kifayahpharmacysupermarket.pk",
+    "email": "accounts@kifayah.pk",
     "address": "Karachi, Pakistan",
     "city": "Karachi",
     "ntn": "06546501-8",
@@ -559,7 +559,7 @@ export const REAL_CLIENTS = [
     "id": "cli-025",
     "clientCode": "CLI-025",
     "name": "MEDICAM",
-    "companyName": "MEDICAM Private Ltd",
+    "companyName": "MEDICAM (Pvt) Ltd",
     "contactPerson": "Finance & Accounts Department",
     "phone": "021-37526834",
     "email": "accounts@medicam.pk",
@@ -582,7 +582,7 @@ export const REAL_CLIENTS = [
     "id": "cli-026",
     "clientCode": "CLI-026",
     "name": "MATEEN SONS",
-    "companyName": "MATEEN SONS Private Ltd",
+    "companyName": "MATEEN SONS (Pvt) Ltd",
     "contactPerson": "Finance & Accounts Department",
     "phone": "021-37526834",
     "email": "accounts@mateensons.pk",
@@ -605,7 +605,7 @@ export const REAL_CLIENTS = [
     "id": "cli-027",
     "clientCode": "CLI-027",
     "name": "NAJEEB FAROOQUI",
-    "companyName": "NAJEEB FAROOQUI Private Ltd",
+    "companyName": "NAJEEB FAROOQUI (Pvt) Ltd",
     "contactPerson": "Finance & Accounts Department",
     "phone": "021-37526834",
     "email": "accounts@najeebfarooqui.pk",
@@ -627,11 +627,11 @@ export const REAL_CLIENTS = [
   {
     "id": "cli-028",
     "clientCode": "CLI-028",
-    "name": "TOYOTA FORTUNER LGN BK-7972",
-    "companyName": "TOYOTA FORTUNER LGN BK-7972 Private Ltd",
+    "name": "SALMAN MEO",
+    "companyName": "SALMAN MEO (Pvt) Ltd",
     "contactPerson": "Finance & Accounts Department",
     "phone": "021-37526834",
-    "email": "accounts@toyotafortunerlgnbk7972.pk",
+    "email": "accounts@salmanmeo.pk",
     "address": "Karachi, Pakistan",
     "city": "Karachi",
     "ntn": "06546501-8",
@@ -651,7 +651,7 @@ export const REAL_CLIENTS = [
     "id": "cli-029",
     "clientCode": "CLI-029",
     "name": "SHUJA AHMED",
-    "companyName": "SHUJA AHMED Private Ltd",
+    "companyName": "SHUJA AHMED (Pvt) Ltd",
     "contactPerson": "Finance & Accounts Department",
     "phone": "021-37526834",
     "email": "accounts@shujaahmed.pk",
@@ -674,7 +674,7 @@ export const REAL_CLIENTS = [
     "id": "cli-030",
     "clientCode": "CLI-030",
     "name": "SUMSUM",
-    "companyName": "SUMSUM Private Ltd",
+    "companyName": "SUMSUM (Pvt) Ltd",
     "contactPerson": "Finance & Accounts Department",
     "phone": "021-37526834",
     "email": "accounts@sumsum.pk",
@@ -696,11 +696,11 @@ export const REAL_CLIENTS = [
   {
     "id": "cli-031",
     "clientCode": "CLI-031",
-    "name": "SUNRIDGE FOODS",
-    "companyName": "SUNRIDGE FOODS Private Ltd",
+    "name": "SUNRIDGE",
+    "companyName": "SUNRIDGE (Pvt) Ltd",
     "contactPerson": "Finance & Accounts Department",
     "phone": "021-37526834",
-    "email": "accounts@sunridgefoods.pk",
+    "email": "accounts@sunridge.pk",
     "address": "Karachi, Pakistan",
     "city": "Karachi",
     "ntn": "06546501-8",
@@ -719,11 +719,11 @@ export const REAL_CLIENTS = [
   {
     "id": "cli-032",
     "clientCode": "CLI-032",
-    "name": "XEFAN - OTEL RESIDENCY - CASH",
-    "companyName": "XEFAN - OTEL RESIDENCY - CASH Private Ltd",
+    "name": "XEFAN",
+    "companyName": "XEFAN (Pvt) Ltd",
     "contactPerson": "Finance & Accounts Department",
     "phone": "021-37526834",
-    "email": "accounts@xefanotelresidencycash.pk",
+    "email": "accounts@xefan.pk",
     "address": "Karachi, Pakistan",
     "city": "Karachi",
     "ntn": "06546501-8",
@@ -742,11 +742,11 @@ export const REAL_CLIENTS = [
   {
     "id": "cli-033",
     "clientCode": "CLI-033",
-    "name": "Z GROUP OF COMPANIES",
-    "companyName": "Z GROUP OF COMPANIES Private Ltd",
+    "name": "Z-GROUP",
+    "companyName": "Z-GROUP (Pvt) Ltd",
     "contactPerson": "Finance & Accounts Department",
     "phone": "021-37526834",
-    "email": "accounts@zgroupofcompanies.pk",
+    "email": "accounts@zgroup.pk",
     "address": "Karachi, Pakistan",
     "city": "Karachi",
     "ntn": "06546501-8",
@@ -765,11 +765,11 @@ export const REAL_CLIENTS = [
   {
     "id": "cli-034",
     "clientCode": "CLI-034",
-    "name": "9th FIGURE",
-    "companyName": "9th FIGURE Private Ltd",
+    "name": "9 FIGURE",
+    "companyName": "9 FIGURE (Pvt) Ltd",
     "contactPerson": "Finance & Accounts Department",
     "phone": "021-37526834",
-    "email": "accounts@9thfigure.pk",
+    "email": "accounts@9figure.pk",
     "address": "Karachi, Pakistan",
     "city": "Karachi",
     "ntn": "06546501-8",
@@ -788,11 +788,11 @@ export const REAL_CLIENTS = [
   {
     "id": "cli-035",
     "clientCode": "CLI-035",
-    "name": "9th Avenue - CASH",
-    "companyName": "9th Avenue - CASH Private Ltd",
+    "name": "9th AVENUE",
+    "companyName": "9th AVENUE (Pvt) Ltd",
     "contactPerson": "Finance & Accounts Department",
     "phone": "021-37526834",
-    "email": "accounts@9thavenuecash.pk",
+    "email": "accounts@9thavenue.pk",
     "address": "Karachi, Pakistan",
     "city": "Karachi",
     "ntn": "06546501-8",
@@ -814,11 +814,11 @@ export const REAL_VENDORS = [
   {
     "id": "ven-001",
     "vendorCode": "VEN-001",
-    "name": "ADMAX ADVERTISING - MR. UMAIR BUKHARI",
-    "companyName": "ADMAX ADVERTISING - MR. UMAIR BUKHARI Enterprises",
+    "name": "ADMAX",
+    "companyName": "ADMAX Enterprises",
     "contactPerson": "Finance Department",
     "phone": "021-37526834",
-    "email": "accounts@admaxadvertisingmrumairbukhari.pk",
+    "email": "accounts@admax.pk",
     "address": "Karachi, Pakistan",
     "city": "Karachi",
     "ntn": "1234567-8",
@@ -860,11 +860,11 @@ export const REAL_VENDORS = [
   {
     "id": "ven-003",
     "vendorCode": "VEN-003",
-    "name": "ADCARE  (Mr. Aslam)",
-    "companyName": "ADCARE  (Mr. Aslam) Enterprises",
+    "name": "AD-CARE",
+    "companyName": "AD-CARE Enterprises",
     "contactPerson": "Finance Department",
     "phone": "021-37526834",
-    "email": "accounts@adcaremraslam.pk",
+    "email": "accounts@adcare.pk",
     "address": "Karachi, Pakistan",
     "city": "Karachi",
     "ntn": "1234567-8",
@@ -906,11 +906,11 @@ export const REAL_VENDORS = [
   {
     "id": "ven-005",
     "vendorCode": "VEN-005",
-    "name": "AZEEM BUKHARI PHOTOGRAPHER (HAKIM SONS)",
-    "companyName": "AZEEM BUKHARI PHOTOGRAPHER (HAKIM SONS) Enterprises",
+    "name": "AZEEM BUKHARI",
+    "companyName": "AZEEM BUKHARI Enterprises",
     "contactPerson": "Finance Department",
     "phone": "021-37526834",
-    "email": "accounts@azeembukhariphotographerhakimsons.pk",
+    "email": "accounts@azeembukhari.pk",
     "address": "Karachi, Pakistan",
     "city": "Karachi",
     "ntn": "1234567-8",
@@ -952,11 +952,11 @@ export const REAL_VENDORS = [
   {
     "id": "ven-007",
     "vendorCode": "VEN-007",
-    "name": "16-1-2026",
-    "companyName": "16-1-2026 Enterprises",
+    "name": "DEPLEX INN",
+    "companyName": "DEPLEX INN Enterprises",
     "contactPerson": "Finance Department",
     "phone": "021-37526834",
-    "email": "accounts@1612026.pk",
+    "email": "accounts@deplexinn.pk",
     "address": "Karachi, Pakistan",
     "city": "Karachi",
     "ntn": "1234567-8",
@@ -975,11 +975,11 @@ export const REAL_VENDORS = [
   {
     "id": "ven-008",
     "vendorCode": "VEN-008",
-    "name": "GRAVITY MEDIA - HYDERABAD",
-    "companyName": "GRAVITY MEDIA - HYDERABAD Enterprises",
+    "name": "GRAVITY MEDIA",
+    "companyName": "GRAVITY MEDIA Enterprises",
     "contactPerson": "Finance Department",
     "phone": "021-37526834",
-    "email": "accounts@gravitymediahyderabad.pk",
+    "email": "accounts@gravitymedia.pk",
     "address": "Karachi, Pakistan",
     "city": "Karachi",
     "ntn": "1234567-8",
@@ -998,11 +998,11 @@ export const REAL_VENDORS = [
   {
     "id": "ven-009",
     "vendorCode": "VEN-009",
-    "name": "IMRAN ENTERPRISE - HYDERABAD",
-    "companyName": "IMRAN ENTERPRISE - HYDERABAD Enterprises",
+    "name": "IMRAN ENTERPRISE",
+    "companyName": "IMRAN ENTERPRISE Enterprises",
     "contactPerson": "Finance Department",
     "phone": "021-37526834",
-    "email": "accounts@imranenterprisehyderabad.pk",
+    "email": "accounts@imranenterprise.pk",
     "address": "Karachi, Pakistan",
     "city": "Karachi",
     "ntn": "1234567-8",
@@ -1021,11 +1021,11 @@ export const REAL_VENDORS = [
   {
     "id": "ven-010",
     "vendorCode": "VEN-010",
-    "name": "MR. IBRAHIM ANJARWALA",
-    "companyName": "MR. IBRAHIM ANJARWALA Enterprises",
+    "name": "IBRAHIM ANJARWALA",
+    "companyName": "IBRAHIM ANJARWALA Enterprises",
     "contactPerson": "Finance Department",
     "phone": "021-37526834",
-    "email": "accounts@mribrahimanjarwala.pk",
+    "email": "accounts@ibrahimanjarwala.pk",
     "address": "Karachi, Pakistan",
     "city": "Karachi",
     "ntn": "1234567-8",
@@ -1044,11 +1044,11 @@ export const REAL_VENDORS = [
   {
     "id": "ven-011",
     "vendorCode": "VEN-011",
-    "name": "Kundanz Advertising (K-Group)",
-    "companyName": "Kundanz Advertising (K-Group) Enterprises",
+    "name": "K-GROUP",
+    "companyName": "K-GROUP Enterprises",
     "contactPerson": "Finance Department",
     "phone": "021-37526834",
-    "email": "accounts@kundanzadvertisingkgroup.pk",
+    "email": "accounts@kgroup.pk",
     "address": "Karachi, Pakistan",
     "city": "Karachi",
     "ntn": "1234567-8",
@@ -1067,11 +1067,11 @@ export const REAL_VENDORS = [
   {
     "id": "ven-012",
     "vendorCode": "VEN-012",
-    "name": "MILLENNIUM GRAPHIC",
-    "companyName": "MILLENNIUM GRAPHIC Enterprises",
+    "name": "MILLENNIUM GRAPHICS",
+    "companyName": "MILLENNIUM GRAPHICS Enterprises",
     "contactPerson": "Finance Department",
     "phone": "021-37526834",
-    "email": "accounts@millenniumgraphic.pk",
+    "email": "accounts@millenniumgraphics.pk",
     "address": "Karachi, Pakistan",
     "city": "Karachi",
     "ntn": "1234567-8",
@@ -1090,11 +1090,11 @@ export const REAL_VENDORS = [
   {
     "id": "ven-013",
     "vendorCode": "VEN-013",
-    "name": "MNB OOH Advertiisng",
-    "companyName": "MNB OOH Advertiisng Enterprises",
+    "name": "MNB",
+    "companyName": "MNB Enterprises",
     "contactPerson": "Finance Department",
     "phone": "021-37526834",
-    "email": "accounts@mnboohadvertiisng.pk",
+    "email": "accounts@mnb.pk",
     "address": "Karachi, Pakistan",
     "city": "Karachi",
     "ntn": "1234567-8",
@@ -1113,11 +1113,11 @@ export const REAL_VENDORS = [
   {
     "id": "ven-014",
     "vendorCode": "VEN-014",
-    "name": "Media Communication (Imran Sheikh)",
-    "companyName": "Media Communication (Imran Sheikh) Enterprises",
+    "name": "MEDIA COMMUNICATION",
+    "companyName": "MEDIA COMMUNICATION Enterprises",
     "contactPerson": "Finance Department",
     "phone": "021-37526834",
-    "email": "accounts@mediacommunicationimransheikh.pk",
+    "email": "accounts@mediacommunication.pk",
     "address": "Karachi, Pakistan",
     "city": "Karachi",
     "ntn": "1234567-8",
@@ -1136,11 +1136,11 @@ export const REAL_VENDORS = [
   {
     "id": "ven-015",
     "vendorCode": "VEN-015",
-    "name": "MS. KAINAT ZAHEER - NEXTIER",
-    "companyName": "MS. KAINAT ZAHEER - NEXTIER Enterprises",
+    "name": "NEXTIER - KAINAT",
+    "companyName": "NEXTIER - KAINAT Enterprises",
     "contactPerson": "Finance Department",
     "phone": "021-37526834",
-    "email": "accounts@mskainatzaheernextier.pk",
+    "email": "accounts@nextierkainat.pk",
     "address": "Karachi, Pakistan",
     "city": "Karachi",
     "ntn": "1234567-8",
@@ -1159,11 +1159,11 @@ export const REAL_VENDORS = [
   {
     "id": "ven-016",
     "vendorCode": "VEN-016",
-    "name": "R & D GROUP (KASHIF GRAMI)",
-    "companyName": "R & D GROUP (KASHIF GRAMI) Enterprises",
+    "name": "R & D GROUP",
+    "companyName": "R & D GROUP Enterprises",
     "contactPerson": "Finance Department",
     "phone": "021-37526834",
-    "email": "accounts@rdgroupkashifgrami.pk",
+    "email": "accounts@rdgroup.pk",
     "address": "Karachi, Pakistan",
     "city": "Karachi",
     "ntn": "1234567-8",
@@ -1182,11 +1182,11 @@ export const REAL_VENDORS = [
   {
     "id": "ven-017",
     "vendorCode": "VEN-017",
-    "name": "R.M Associates / Mr. Zohaib",
-    "companyName": "R.M Associates / Mr. Zohaib Enterprises",
+    "name": "RM ASSOCIATES",
+    "companyName": "RM ASSOCIATES Enterprises",
     "contactPerson": "Finance Department",
     "phone": "021-37526834",
-    "email": "accounts@rmassociatesmrzohaib.pk",
+    "email": "accounts@rmassociates.pk",
     "address": "Karachi, Pakistan",
     "city": "Karachi",
     "ntn": "1234567-8",
@@ -1228,11 +1228,11 @@ export const REAL_VENDORS = [
   {
     "id": "ven-019",
     "vendorCode": "VEN-019",
-    "name": "SA ADVERTISING SERVICES",
-    "companyName": "SA ADVERTISING SERVICES Enterprises",
+    "name": "SA ADVERTISING",
+    "companyName": "SA ADVERTISING Enterprises",
     "contactPerson": "Finance Department",
     "phone": "021-37526834",
-    "email": "accounts@saadvertisingservices.pk",
+    "email": "accounts@saadvertising.pk",
     "address": "Karachi, Pakistan",
     "city": "Karachi",
     "ntn": "1234567-8",
@@ -1274,11 +1274,11 @@ export const REAL_VENDORS = [
   {
     "id": "ven-021",
     "vendorCode": "VEN-021",
-    "name": "TNI COMMUNICATION",
-    "companyName": "TNI COMMUNICATION Enterprises",
+    "name": "TNI",
+    "companyName": "TNI Enterprises",
     "contactPerson": "Finance Department",
     "phone": "021-37526834",
-    "email": "accounts@tnicommunication.pk",
+    "email": "accounts@tni.pk",
     "address": "Karachi, Pakistan",
     "city": "Karachi",
     "ntn": "1234567-8",
@@ -1297,11 +1297,11 @@ export const REAL_VENDORS = [
   {
     "id": "ven-022",
     "vendorCode": "VEN-022",
-    "name": "ZAIB ENTERPRISES - SHAHIDZAIB",
-    "companyName": "ZAIB ENTERPRISES - SHAHIDZAIB Enterprises",
+    "name": "Zaib Enterprises",
+    "companyName": "Zaib Enterprises Enterprises",
     "contactPerson": "Finance Department",
     "phone": "021-37526834",
-    "email": "accounts@zaibenterprisesshahidzaib.pk",
+    "email": "accounts@zaibenterprises.pk",
     "address": "Karachi, Pakistan",
     "city": "Karachi",
     "ntn": "1234567-8",
@@ -1364,15 +1364,15 @@ export const REAL_PROJECTS = [
   {
     "id": "prj-002",
     "projectCode": "PRJ-26-002",
-    "name": "CHASE VALUE CENTER OOH Media & Production Campaign 2026",
-    "client": "CHASE VALUE CENTER",
+    "name": "CHASE VALUE OOH Media & Production Campaign 2026",
+    "client": "CHASE VALUE",
     "clientId": "cli-002",
     "type": "OOH Media Campaign",
     "budget": 15560637.6,
     "startDate": "2026-07-01",
     "endDate": "2026-12-31",
     "status": "In Progress",
-    "description": "Official Integrated Marketing & Outdoor Media Campaign for CHASE VALUE CENTER",
+    "description": "Official Integrated Marketing & Outdoor Media Campaign for CHASE VALUE",
     "hoardings": [
       "Boat Basin 60x30",
       "Shahrah-e-Faisal 90x35",
@@ -1400,15 +1400,15 @@ export const REAL_PROJECTS = [
   {
     "id": "prj-004",
     "projectCode": "PRJ-26-004",
-    "name": "DECENT BUILDERS AND DEVELOPERS OOH Media & Production Campaign 2026",
-    "client": "DECENT BUILDERS AND DEVELOPERS",
+    "name": "DECENT OOH Media & Production Campaign 2026",
+    "client": "DECENT",
     "clientId": "cli-004",
     "type": "OOH Media Campaign",
     "budget": 1059370.8,
     "startDate": "2026-07-01",
     "endDate": "2026-12-31",
     "status": "In Progress",
-    "description": "Official Integrated Marketing & Outdoor Media Campaign for DECENT BUILDERS AND DEVELOPERS",
+    "description": "Official Integrated Marketing & Outdoor Media Campaign for DECENT",
     "hoardings": [
       "Boat Basin 60x30",
       "Shahrah-e-Faisal 90x35",
@@ -1418,15 +1418,15 @@ export const REAL_PROJECTS = [
   {
     "id": "prj-005",
     "projectCode": "PRJ-26-005",
-    "name": "DESIGN MEDIA - Mr. Sajid Channa OOH Media & Production Campaign 2026",
-    "client": "DESIGN MEDIA - Mr. Sajid Channa",
+    "name": "DESIGN MEDIA OOH Media & Production Campaign 2026",
+    "client": "DESIGN MEDIA",
     "clientId": "cli-005",
     "type": "OOH Media Campaign",
     "budget": 9411283.2,
     "startDate": "2026-07-01",
     "endDate": "2026-12-31",
     "status": "In Progress",
-    "description": "Official Integrated Marketing & Outdoor Media Campaign for DESIGN MEDIA - Mr. Sajid Channa",
+    "description": "Official Integrated Marketing & Outdoor Media Campaign for DESIGN MEDIA",
     "hoardings": [
       "Boat Basin 60x30",
       "Shahrah-e-Faisal 90x35",
@@ -1436,15 +1436,15 @@ export const REAL_PROJECTS = [
   {
     "id": "prj-006",
     "projectCode": "PRJ-26-006",
-    "name": "DINERS - CASH OOH Media & Production Campaign 2026",
-    "client": "DINERS - CASH",
+    "name": "DINERS OOH Media & Production Campaign 2026",
+    "client": "DINERS",
     "clientId": "cli-006",
     "type": "OOH Media Campaign",
     "budget": 8939322,
     "startDate": "2026-07-01",
     "endDate": "2026-12-31",
     "status": "In Progress",
-    "description": "Official Integrated Marketing & Outdoor Media Campaign for DINERS - CASH",
+    "description": "Official Integrated Marketing & Outdoor Media Campaign for DINERS",
     "hoardings": [
       "Boat Basin 60x30",
       "Shahrah-e-Faisal 90x35",
@@ -1490,15 +1490,15 @@ export const REAL_PROJECTS = [
   {
     "id": "prj-009",
     "projectCode": "PRJ-26-009",
-    "name": "FALAKNAZ GROUP - ELITE TOWERS OOH Media & Production Campaign 2026",
-    "client": "FALAKNAZ GROUP - ELITE TOWERS",
+    "name": "FALAKNAZ OOH Media & Production Campaign 2026",
+    "client": "FALAKNAZ",
     "clientId": "cli-009",
     "type": "OOH Media Campaign",
     "budget": 33306606,
     "startDate": "2026-07-01",
     "endDate": "2026-12-31",
     "status": "In Progress",
-    "description": "Official Integrated Marketing & Outdoor Media Campaign for FALAKNAZ GROUP - ELITE TOWERS",
+    "description": "Official Integrated Marketing & Outdoor Media Campaign for FALAKNAZ",
     "hoardings": [
       "Boat Basin 60x30",
       "Shahrah-e-Faisal 90x35",
@@ -1598,15 +1598,15 @@ export const REAL_PROJECTS = [
   {
     "id": "prj-015",
     "projectCode": "PRJ-26-015",
-    "name": "HMR WATERFRONT PVT LTD OOH Media & Production Campaign 2026",
-    "client": "HMR WATERFRONT PVT LTD",
+    "name": "HMR OOH Media & Production Campaign 2026",
+    "client": "HMR",
     "clientId": "cli-015",
     "type": "OOH Media Campaign",
     "budget": 16723404,
     "startDate": "2026-07-01",
     "endDate": "2026-12-31",
     "status": "In Progress",
-    "description": "Official Integrated Marketing & Outdoor Media Campaign for HMR WATERFRONT PVT LTD",
+    "description": "Official Integrated Marketing & Outdoor Media Campaign for HMR",
     "hoardings": [
       "Boat Basin 60x30",
       "Shahrah-e-Faisal 90x35",
@@ -1620,7 +1620,7 @@ export const REAL_INVOICES = [
     "id": "inv-1",
     "invoiceNo": "AD/8584/02/25",
     "clientId": "cli-002",
-    "client": "CHASE VALUE CENTER",
+    "client": "CHASE VALUE",
     "projectId": null,
     "description": "Chase Value Festive Collection Site Printing & Installation of Baloch Bridge & Essa Nagri",
     "amount": 86000,
@@ -1646,7 +1646,7 @@ export const REAL_INVOICES = [
     "id": "inv-2",
     "invoiceNo": "AD/8585/02/25",
     "clientId": "cli-002",
-    "client": "CHASE VALUE CENTER",
+    "client": "CHASE VALUE",
     "projectId": null,
     "description": "Chase Value Festive Collection Site Rental of Baloch Bridge & Essa Nagri for 45 Days",
     "amount": 1275000,
@@ -1672,7 +1672,7 @@ export const REAL_INVOICES = [
     "id": "inv-3",
     "invoiceNo": "AD/8586/02/25",
     "clientId": "cli-002",
-    "client": "CHASE VALUE CENTER",
+    "client": "CHASE VALUE",
     "projectId": null,
     "description": "Chase Value Festive Collection Digital Media campaign",
     "amount": 1500000,
@@ -1698,7 +1698,7 @@ export const REAL_INVOICES = [
     "id": "inv-4",
     "invoiceNo": "AD/8615/03/25",
     "clientId": "cli-002",
-    "client": "CHASE VALUE CENTER",
+    "client": "CHASE VALUE",
     "projectId": null,
     "description": "Chase Value Hyderabad Launch Electronic Media Campaign",
     "amount": 740025,
@@ -1724,7 +1724,7 @@ export const REAL_INVOICES = [
     "id": "inv-5",
     "invoiceNo": "AD/8613/03/25",
     "clientId": "cli-002",
-    "client": "CHASE VALUE CENTER",
+    "client": "CHASE VALUE",
     "projectId": null,
     "description": "Chase Value Hyderabad Launch Cable Media campaign",
     "amount": 269500,
@@ -1750,7 +1750,7 @@ export const REAL_INVOICES = [
     "id": "inv-6",
     "invoiceNo": "AD/8614/03/25",
     "clientId": "cli-002",
-    "client": "CHASE VALUE CENTER",
+    "client": "CHASE VALUE",
     "projectId": null,
     "description": "Chase Value Hyderabad Launch FM Radio campaign",
     "amount": 324773,
@@ -1776,7 +1776,7 @@ export const REAL_INVOICES = [
     "id": "inv-7",
     "invoiceNo": "AD/8632/03/25",
     "clientId": "cli-002",
-    "client": "CHASE VALUE CENTER",
+    "client": "CHASE VALUE",
     "projectId": null,
     "description": "Chase Value Media & PR Coverage of Hyderabad Launch",
     "amount": 1000000,
@@ -1802,7 +1802,7 @@ export const REAL_INVOICES = [
     "id": "inv-8",
     "invoiceNo": "AD/9832/08/26",
     "clientId": "cli-002",
-    "client": "CHASE VALUE CENTER",
+    "client": "CHASE VALUE",
     "projectId": null,
     "description": "CHASE VALUE CENTER RENTAL ABL ROUND ABOUT (22 DAYS) &              RJ MALL (17 DAYS)",
     "amount": 276250,
@@ -1828,7 +1828,7 @@ export const REAL_INVOICES = [
     "id": "inv-9",
     "invoiceNo": "AD/9833/08/26",
     "clientId": "cli-002",
-    "client": "CHASE VALUE CENTER",
+    "client": "CHASE VALUE",
     "projectId": null,
     "description": "CHASE VALUE CENTER RENTAL ABL ROUND ABOUT (22 DAYS) &              RJ MALL (17 DAYS)",
     "amount": 276250,
@@ -1854,7 +1854,7 @@ export const REAL_INVOICES = [
     "id": "inv-10",
     "invoiceNo": "AD/9834/08/26",
     "clientId": "cli-002",
-    "client": "CHASE VALUE CENTER",
+    "client": "CHASE VALUE",
     "projectId": null,
     "description": "CHASE VALUE CENTER PRINTING AND INSTALLATION KARACHI                      (AZADI ARTWORK)",
     "amount": 72000,
@@ -1880,7 +1880,7 @@ export const REAL_INVOICES = [
     "id": "inv-11",
     "invoiceNo": "AD/9835/08/26",
     "clientId": "cli-002",
-    "client": "CHASE VALUE CENTER",
+    "client": "CHASE VALUE",
     "projectId": null,
     "description": "CHASE VALUE CENTER PRINTING AND INSTALLATION KARACHI  (CAMPAIGN ARTWORK)",
     "amount": 72000,
@@ -1906,7 +1906,7 @@ export const REAL_INVOICES = [
     "id": "inv-12",
     "invoiceNo": "AD/9836/08/26",
     "clientId": "cli-002",
-    "client": "CHASE VALUE CENTER",
+    "client": "CHASE VALUE",
     "projectId": null,
     "description": "CHASE VALUE CENTER DIGITAL STREAMERS AT AIRPORT (15 DAYS)",
     "amount": 150000,
@@ -1932,7 +1932,7 @@ export const REAL_INVOICES = [
     "id": "inv-13",
     "invoiceNo": "AD/9864/09/26",
     "clientId": "cli-002",
-    "client": "CHASE VALUE CENTER",
+    "client": "CHASE VALUE",
     "projectId": null,
     "description": "CHASE VALUE CENTER RENTAL ABL ROUND ABOUT & RJ MALL                             (1 MONTH)",
     "amount": 425000,
@@ -1958,7 +1958,7 @@ export const REAL_INVOICES = [
     "id": "inv-14",
     "invoiceNo": "AD/9866/09/26",
     "clientId": "cli-002",
-    "client": "CHASE VALUE CENTER",
+    "client": "CHASE VALUE",
     "projectId": null,
     "description": "CHASE VALUE CENTER PRINTING AND INSTALLATION KARACHI",
     "amount": 72000,
@@ -1984,7 +1984,7 @@ export const REAL_INVOICES = [
     "id": "inv-15",
     "invoiceNo": "INV-26-015",
     "clientId": "cli-002",
-    "client": "CHASE VALUE CENTER",
+    "client": "CHASE VALUE",
     "projectId": null,
     "description": "Total Net Amount",
     "amount": 1343500,
@@ -2010,7 +2010,7 @@ export const REAL_INVOICES = [
     "id": "inv-16",
     "invoiceNo": "AD/96233/08/26",
     "clientId": "cli-002",
-    "client": "CHASE VALUE CENTER",
+    "client": "CHASE VALUE",
     "projectId": null,
     "description": "CHASE VALUE CENTER RENTAL ABL ROUND ABOUT (22 DAYS) &              RJ MALL (17 DAYS)",
     "amount": 276250,
@@ -2036,7 +2036,7 @@ export const REAL_INVOICES = [
     "id": "inv-17",
     "invoiceNo": "AD/9865/09/26",
     "clientId": "cli-002",
-    "client": "CHASE VALUE CENTER",
+    "client": "CHASE VALUE",
     "projectId": null,
     "description": "CHASE VALUE CENTER RENTAL ABL ROUND ABOUT & RJ MALL                             (1 MONTH)",
     "amount": 425000,
@@ -2062,7 +2062,7 @@ export const REAL_INVOICES = [
     "id": "inv-18",
     "invoiceNo": "INV-26-018",
     "clientId": "cli-002",
-    "client": "CHASE VALUE CENTER",
+    "client": "CHASE VALUE",
     "projectId": null,
     "description": "Total Net Amount",
     "amount": 701250,
@@ -2088,7 +2088,7 @@ export const REAL_INVOICES = [
     "id": "inv-19",
     "invoiceNo": "AD/9258/02/26",
     "clientId": "cli-002",
-    "client": "CHASE VALUE CENTER",
+    "client": "CHASE VALUE",
     "projectId": null,
     "description": "EMINENT OOH Media Campaign 1 Month",
     "amount": 2600000,
@@ -2114,7 +2114,7 @@ export const REAL_INVOICES = [
     "id": "inv-20",
     "invoiceNo": "AD/9334/02/26",
     "clientId": "cli-002",
-    "client": "CHASE VALUE CENTER",
+    "client": "CHASE VALUE",
     "projectId": null,
     "description": "Printing & Installation (Open Now)",
     "amount": 257400,
@@ -2140,7 +2140,7 @@ export const REAL_INVOICES = [
     "id": "inv-21",
     "invoiceNo": "AD/9362/02/26",
     "clientId": "cli-002",
-    "client": "CHASE VALUE CENTER",
+    "client": "CHASE VALUE",
     "projectId": null,
     "description": "Eminent OOH Digital Media Campaign",
     "amount": 825000,
@@ -2166,7 +2166,7 @@ export const REAL_INVOICES = [
     "id": "inv-22",
     "invoiceNo": "AD/9766/07/26",
     "clientId": "cli-004",
-    "client": "DECENT BUILDERS AND DEVELOPERS",
+    "client": "DECENT",
     "projectId": null,
     "description": "HFA COMMERCIAL ZONE WALL BRANDING",
     "amount": 882809,
@@ -2192,7 +2192,7 @@ export const REAL_INVOICES = [
     "id": "inv-23",
     "invoiceNo": "INV-26-023",
     "clientId": "cli-005",
-    "client": "DESIGN MEDIA - Mr. Sajid Channa",
+    "client": "DESIGN MEDIA",
     "projectId": null,
     "description": "Media Campaign & OOH Production Billing",
     "amount": 3471368,
@@ -2218,7 +2218,7 @@ export const REAL_INVOICES = [
     "id": "inv-24",
     "invoiceNo": "INV-JUNE, 2024",
     "clientId": "cli-005",
-    "client": "DESIGN MEDIA - Mr. Sajid Channa",
+    "client": "DESIGN MEDIA",
     "projectId": null,
     "description": "Media Campaign & OOH Production Billing",
     "amount": 75000,
@@ -2244,7 +2244,7 @@ export const REAL_INVOICES = [
     "id": "inv-25",
     "invoiceNo": "INV-JULY, 2024",
     "clientId": "cli-005",
-    "client": "DESIGN MEDIA - Mr. Sajid Channa",
+    "client": "DESIGN MEDIA",
     "projectId": null,
     "description": "Media Campaign & OOH Production Billing",
     "amount": 75000,
@@ -2270,7 +2270,7 @@ export const REAL_INVOICES = [
     "id": "inv-26",
     "invoiceNo": "INV-AUGUST, 2024",
     "clientId": "cli-005",
-    "client": "DESIGN MEDIA - Mr. Sajid Channa",
+    "client": "DESIGN MEDIA",
     "projectId": null,
     "description": "Media Campaign & OOH Production Billing",
     "amount": 75000,
@@ -2296,7 +2296,7 @@ export const REAL_INVOICES = [
     "id": "inv-27",
     "invoiceNo": "INV-SEP, 2024",
     "clientId": "cli-005",
-    "client": "DESIGN MEDIA - Mr. Sajid Channa",
+    "client": "DESIGN MEDIA",
     "projectId": null,
     "description": "Media Campaign & OOH Production Billing",
     "amount": 75000,
@@ -2322,7 +2322,7 @@ export const REAL_INVOICES = [
     "id": "inv-28",
     "invoiceNo": "INV-OCT, 2024",
     "clientId": "cli-005",
-    "client": "DESIGN MEDIA - Mr. Sajid Channa",
+    "client": "DESIGN MEDIA",
     "projectId": null,
     "description": "Media Campaign & OOH Production Billing",
     "amount": 75000,
@@ -2348,7 +2348,7 @@ export const REAL_INVOICES = [
     "id": "inv-29",
     "invoiceNo": "INV-NOV, 2024",
     "clientId": "cli-005",
-    "client": "DESIGN MEDIA - Mr. Sajid Channa",
+    "client": "DESIGN MEDIA",
     "projectId": null,
     "description": "Media Campaign & OOH Production Billing",
     "amount": 75000,
@@ -2374,7 +2374,7 @@ export const REAL_INVOICES = [
     "id": "inv-30",
     "invoiceNo": "INV-26-030",
     "clientId": "cli-005",
-    "client": "DESIGN MEDIA - Mr. Sajid Channa",
+    "client": "DESIGN MEDIA",
     "projectId": null,
     "description": "Media Campaign & OOH Production Billing",
     "amount": 3921368,
@@ -2400,7 +2400,7 @@ export const REAL_INVOICES = [
     "id": "inv-31",
     "invoiceNo": "AD/9776/08/26",
     "clientId": "cli-006",
-    "client": "DINERS - CASH",
+    "client": "DINERS",
     "projectId": null,
     "description": "AL BARAKA APPAREL OOH STREAMERS CAMPAIGN NATION WIDE",
     "amount": 7257155,
@@ -2426,7 +2426,7 @@ export const REAL_INVOICES = [
     "id": "inv-32",
     "invoiceNo": "AD/9778/08/26",
     "clientId": "cli-006",
-    "client": "DINERS - CASH",
+    "client": "DINERS",
     "projectId": null,
     "description": "AL BARAKA APPAREL OOH STREAMERS CAMPAIGN NATION WIDE",
     "amount": 192280,
@@ -2478,7 +2478,7 @@ export const REAL_INVOICES = [
     "id": "inv-34",
     "invoiceNo": "AD/9009/10/25",
     "clientId": "cli-009",
-    "client": "FALAKNAZ GROUP - ELITE TOWERS",
+    "client": "FALAKNAZ",
     "projectId": null,
     "description": "OOH MEDIA CAMPAIGN 1 MONTH DIFFERENT SITES & DIGITAL (AYESHA BAWANI, LUCKYONE, NATA KHAN & BAHADURABAD - FOC)",
     "amount": 3385680,
@@ -2504,7 +2504,7 @@ export const REAL_INVOICES = [
     "id": "inv-35",
     "invoiceNo": "AD/9010/10/25",
     "clientId": "cli-009",
-    "client": "FALAKNAZ GROUP - ELITE TOWERS",
+    "client": "FALAKNAZ",
     "projectId": null,
     "description": "PRINTING & INSTALLATION CHARGES SHAHRAH-E-FAISAL AIRPORT, NURSURY, NAGAN & SAREENA",
     "amount": 181440,
@@ -2530,7 +2530,7 @@ export const REAL_INVOICES = [
     "id": "inv-36",
     "invoiceNo": "AD/9118/11/25",
     "clientId": "cli-009",
-    "client": "FALAKNAZ GROUP - ELITE TOWERS",
+    "client": "FALAKNAZ",
     "projectId": null,
     "description": "OOH MEDIA CAMPAIGN 1 MONTH DIFFERENT SITES & DIGITAL (FALAK NAZ WINTER FAMILY FESTIVAL & ELITE TOWERS)",
     "amount": 2561520,
@@ -2556,7 +2556,7 @@ export const REAL_INVOICES = [
     "id": "inv-37",
     "invoiceNo": "AD/9119/11/25",
     "clientId": "cli-009",
-    "client": "FALAKNAZ GROUP - ELITE TOWERS",
+    "client": "FALAKNAZ",
     "projectId": null,
     "description": "PRINTING & INSTALLATION CHARGES ELITE TOWERS",
     "amount": 281520,
@@ -2582,7 +2582,7 @@ export const REAL_INVOICES = [
     "id": "inv-38",
     "invoiceNo": "AD/9227/01/26",
     "clientId": "cli-009",
-    "client": "FALAKNAZ GROUP - ELITE TOWERS",
+    "client": "FALAKNAZ",
     "projectId": null,
     "description": "OOH MEDIA CAMPAIGN - ONE BEVERLY BY FALAKNAZ GROUP",
     "amount": 771500,
@@ -2608,7 +2608,7 @@ export const REAL_INVOICES = [
     "id": "inv-39",
     "invoiceNo": "AD/9228/01/26",
     "clientId": "cli-009",
-    "client": "FALAKNAZ GROUP - ELITE TOWERS",
+    "client": "FALAKNAZ",
     "projectId": null,
     "description": "PRINTING & INSTALLATION - ONE BEVERLY BY FALAKNAZ GROUP",
     "amount": 133120,
@@ -2634,7 +2634,7 @@ export const REAL_INVOICES = [
     "id": "inv-40",
     "invoiceNo": "AD/9229/01/26",
     "clientId": "cli-009",
-    "client": "FALAKNAZ GROUP - ELITE TOWERS",
+    "client": "FALAKNAZ",
     "projectId": null,
     "description": "OOH MEDIA CAMPAIGN (LED LIGHTS)",
     "amount": 55000,
@@ -2660,7 +2660,7 @@ export const REAL_INVOICES = [
     "id": "inv-41",
     "invoiceNo": "AD/9784/08/26",
     "clientId": "cli-009",
-    "client": "FALAKNAZ GROUP - ELITE TOWERS",
+    "client": "FALAKNAZ",
     "projectId": null,
     "description": "OOH MEDIA CAMPAIGN ELITE TOWER (15 JULY 2026 TO 09 AUGUST 2026)",
     "amount": 8464000,
@@ -2686,7 +2686,7 @@ export const REAL_INVOICES = [
     "id": "inv-42",
     "invoiceNo": "AD/9785/08/26",
     "clientId": "cli-009",
-    "client": "FALAKNAZ GROUP - ELITE TOWERS",
+    "client": "FALAKNAZ",
     "projectId": null,
     "description": "PRINTING & INSTALLATION CHARGES ELITE TOWERS",
     "amount": 1332185,
@@ -2712,7 +2712,7 @@ export const REAL_INVOICES = [
     "id": "inv-43",
     "invoiceNo": "AD/9787/08/26",
     "clientId": "cli-009",
-    "client": "FALAKNAZ GROUP - ELITE TOWERS",
+    "client": "FALAKNAZ",
     "projectId": null,
     "description": "PRINTING & INSTALLATION CHARGES OF FOC SITES",
     "amount": 155760,
@@ -2738,7 +2738,7 @@ export const REAL_INVOICES = [
     "id": "inv-44",
     "invoiceNo": "AD/9868/09/26",
     "clientId": "cli-009",
-    "client": "FALAKNAZ GROUP - ELITE TOWERS",
+    "client": "FALAKNAZ",
     "projectId": null,
     "description": "OOH MEDIA CAMPAIGN FALAKNAZ ELITE TOWER",
     "amount": 7750000,
@@ -2764,7 +2764,7 @@ export const REAL_INVOICES = [
     "id": "inv-45",
     "invoiceNo": "AD/9871/09/26",
     "clientId": "cli-009",
-    "client": "FALAKNAZ GROUP - ELITE TOWERS",
+    "client": "FALAKNAZ",
     "projectId": null,
     "description": "OOH MEDIA CAMPAIGN FALAKNAZ ELITE TOWER",
     "amount": 515000,
@@ -2790,7 +2790,7 @@ export const REAL_INVOICES = [
     "id": "inv-46",
     "invoiceNo": "AD/9875/09/26",
     "clientId": "cli-009",
-    "client": "FALAKNAZ GROUP - ELITE TOWERS",
+    "client": "FALAKNAZ",
     "projectId": null,
     "description": "OOH MEDIA CAMPAIGN FALAKNAZ ELITE TOWER PRINTING",
     "amount": 1851555,
@@ -2816,7 +2816,7 @@ export const REAL_INVOICES = [
     "id": "inv-47",
     "invoiceNo": "AD/9877/09/26",
     "clientId": "cli-009",
-    "client": "FALAKNAZ GROUP - ELITE TOWERS",
+    "client": "FALAKNAZ",
     "projectId": null,
     "description": "OOH MEDIA CAMPAIGN FALAKNAZ ELITE TOWER PRINTING",
     "amount": 317225,
@@ -2920,7 +2920,7 @@ export const REAL_INVOICES = [
     "id": "inv-51",
     "invoiceNo": "AD/9724/06/26",
     "clientId": "cli-015",
-    "client": "HMR WATERFRONT PVT LTD",
+    "client": "HMR",
     "projectId": null,
     "description": "HMR OOH Media Campaign 30Days",
     "amount": 11890000,
@@ -2946,7 +2946,7 @@ export const REAL_INVOICES = [
     "id": "inv-52",
     "invoiceNo": "AD/9725/06/26",
     "clientId": "cli-015",
-    "client": "HMR WATERFRONT PVT LTD",
+    "client": "HMR",
     "projectId": null,
     "description": "HMR OOH Media Campaign Printing and Installation",
     "amount": 2046170,
@@ -3076,7 +3076,7 @@ export const REAL_INVOICES = [
     "id": "inv-57",
     "invoiceNo": "INV-AD-S359",
     "clientId": "cli-017",
-    "client": "HABITT STORE - CASH",
+    "client": "HABBIT STORE",
     "projectId": null,
     "description": "OOH CAMPAIGN 1 MONTH",
     "amount": 1128481,
@@ -3102,7 +3102,7 @@ export const REAL_INVOICES = [
     "id": "inv-58",
     "invoiceNo": "AD/9742/07/26",
     "clientId": "cli-017",
-    "client": "HABITT STORE - CASH",
+    "client": "HABBIT STORE",
     "projectId": null,
     "description": "OOH MEDIA CAMPAIGN",
     "amount": 2500000,
@@ -3128,7 +3128,7 @@ export const REAL_INVOICES = [
     "id": "inv-59",
     "invoiceNo": "INV-AD-S352",
     "clientId": "cli-017",
-    "client": "HABITT STORE - CASH",
+    "client": "HABBIT STORE",
     "projectId": null,
     "description": "Habitt Store DHA permission (VINYL Branding) 1 Year",
     "amount": 7161869,
@@ -3154,7 +3154,7 @@ export const REAL_INVOICES = [
     "id": "inv-60",
     "invoiceNo": "INV-AD-S353",
     "clientId": "cli-017",
-    "client": "HABITT STORE - CASH",
+    "client": "HABBIT STORE",
     "projectId": null,
     "description": "Habitt Store DHA permission (VINYL Branding) agency comission",
     "amount": 666770,
@@ -3180,7 +3180,7 @@ export const REAL_INVOICES = [
     "id": "inv-61",
     "invoiceNo": "INV-AD-S354",
     "clientId": "cli-017",
-    "client": "HABITT STORE - CASH",
+    "client": "HABBIT STORE",
     "projectId": null,
     "description": "Habitt Store DHA permission (VINYL Branding)",
     "amount": 361790,
@@ -3206,7 +3206,7 @@ export const REAL_INVOICES = [
     "id": "inv-62",
     "invoiceNo": "AD/9742/05/26",
     "clientId": "cli-017",
-    "client": "HABITT STORE - CASH",
+    "client": "HABBIT STORE",
     "projectId": null,
     "description": "OUTDOOR BRANDING WORK",
     "amount": 2000000,
@@ -3232,7 +3232,7 @@ export const REAL_INVOICES = [
     "id": "inv-63",
     "invoiceNo": "INV-AD-S374",
     "clientId": "cli-018",
-    "client": "IMTIAZ GROUP SMC PVT LTD",
+    "client": "IMTIAZ",
     "projectId": null,
     "description": "OOH STREAMERS CAMPAIGN AZADI KA TICKET",
     "amount": 6280558,
@@ -3258,7 +3258,7 @@ export const REAL_INVOICES = [
     "id": "inv-64",
     "invoiceNo": "INV-AD-S375",
     "clientId": "cli-018",
-    "client": "IMTIAZ GROUP SMC PVT LTD",
+    "client": "IMTIAZ",
     "projectId": null,
     "description": "OOH STREAMERS CAMPAIGN AZADI KA TICKET FOC SITES PRINTING",
     "amount": 227148,
@@ -3284,7 +3284,7 @@ export const REAL_INVOICES = [
     "id": "inv-65",
     "invoiceNo": "INV-AD-S324",
     "clientId": "cli-020",
-    "client": "PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO",
+    "client": "IGLOO",
     "projectId": null,
     "description": "OOH MEDIA CAMPAIGN MAR TO ARPIL (30 DAYS)",
     "amount": 1408750,
@@ -3310,7 +3310,7 @@ export const REAL_INVOICES = [
     "id": "inv-66",
     "invoiceNo": "INV-AD-S325",
     "clientId": "cli-020",
-    "client": "PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO",
+    "client": "IGLOO",
     "projectId": null,
     "description": "OOH MEDIA CAMPAIGN PRINTING AND INSTALLATION",
     "amount": 115920,
@@ -3336,7 +3336,7 @@ export const REAL_INVOICES = [
     "id": "inv-67",
     "invoiceNo": "INV-AD-S326",
     "clientId": "cli-020",
-    "client": "PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO",
+    "client": "IGLOO",
     "projectId": null,
     "description": "OOH MEDIA CAMPAIGN (28 April 2026 to 27 May 2026)",
     "amount": 534750,
@@ -3362,7 +3362,7 @@ export const REAL_INVOICES = [
     "id": "inv-68",
     "invoiceNo": "INV-AD-S360",
     "clientId": "cli-020",
-    "client": "PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO",
+    "client": "IGLOO",
     "projectId": null,
     "description": "OOH MEDIA CAMPAIGN BALOCH FLYOVER(12 June 2026 to 11 July 2026)",
     "amount": 534750,
@@ -3388,7 +3388,7 @@ export const REAL_INVOICES = [
     "id": "inv-69",
     "invoiceNo": "INV-26-069",
     "clientId": "cli-020",
-    "client": "PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO",
+    "client": "IGLOO",
     "projectId": null,
     "description": "SWHT 80% WHT ON INVOICE # AD-S324, AD-S325 & AD-S326 Paid by Adpulse",
     "amount": 214896,
@@ -3414,7 +3414,7 @@ export const REAL_INVOICES = [
     "id": "inv-70",
     "invoiceNo": "INV-AD-S377",
     "clientId": "cli-022",
-    "client": "KIA SMART SHEHZORE - WITH TAX",
+    "client": "KIA SHEHZORE",
     "projectId": null,
     "description": "Kia Shehzore - Print Media",
     "amount": 5265836,
@@ -3440,7 +3440,7 @@ export const REAL_INVOICES = [
     "id": "inv-71",
     "invoiceNo": "INV-AD-S378",
     "clientId": "cli-022",
-    "client": "KIA SMART SHEHZORE - WITH TAX",
+    "client": "KIA SHEHZORE",
     "projectId": null,
     "description": "Kia Shehzore - POS Materials",
     "amount": 750408,
@@ -3466,7 +3466,7 @@ export const REAL_INVOICES = [
     "id": "inv-72",
     "invoiceNo": "INV-AD-S379",
     "clientId": "cli-022",
-    "client": "KIA SMART SHEHZORE - WITH TAX",
+    "client": "KIA SHEHZORE",
     "projectId": null,
     "description": "Kia Shehzore - OOH Media Campaign",
     "amount": 11256117,
@@ -3492,7 +3492,7 @@ export const REAL_INVOICES = [
     "id": "inv-73",
     "invoiceNo": "INV-AD-S380",
     "clientId": "cli-022",
-    "client": "KIA SMART SHEHZORE - WITH TAX",
+    "client": "KIA SHEHZORE",
     "projectId": null,
     "description": "Kia Shehzore - Social Media / Digital Campaign",
     "amount": 1972947,
@@ -3518,7 +3518,7 @@ export const REAL_INVOICES = [
     "id": "inv-74",
     "invoiceNo": "AD/9791/08/26",
     "clientId": "cli-023",
-    "client": "KINZA BEVERAGES",
+    "client": "KINZA BEVRAGES",
     "projectId": null,
     "description": "WEBSITE DEVELOPMENT AND DIGITAL MARKETING",
     "amount": 200000,
@@ -3544,7 +3544,7 @@ export const REAL_INVOICES = [
     "id": "inv-75",
     "invoiceNo": "AD/9754/07/26",
     "clientId": "cli-024",
-    "client": "KIFAYAH PHARMACY & SUPER MARKET",
+    "client": "KIFAYAH",
     "projectId": null,
     "description": "OOH SITE PRINTING, INSTALLATION & RENTAL",
     "amount": 60400,
@@ -3570,7 +3570,7 @@ export const REAL_INVOICES = [
     "id": "inv-76",
     "invoiceNo": "INV-26-076",
     "clientId": "cli-024",
-    "client": "KIFAYAH PHARMACY & SUPER MARKET",
+    "client": "KIFAYAH",
     "projectId": null,
     "description": "Media Campaign & OOH Production Billing",
     "amount": 550000,
@@ -3596,7 +3596,7 @@ export const REAL_INVOICES = [
     "id": "inv-77",
     "invoiceNo": "INV-26-077",
     "clientId": "cli-024",
-    "client": "KIFAYAH PHARMACY & SUPER MARKET",
+    "client": "KIFAYAH",
     "projectId": null,
     "description": "Media Campaign & OOH Production Billing",
     "amount": 550000,
@@ -3622,7 +3622,7 @@ export const REAL_INVOICES = [
     "id": "inv-78",
     "invoiceNo": "INV-26-078",
     "clientId": "cli-024",
-    "client": "KIFAYAH PHARMACY & SUPER MARKET",
+    "client": "KIFAYAH",
     "projectId": null,
     "description": "Media Campaign & OOH Production Billing",
     "amount": 550000,
@@ -3648,7 +3648,7 @@ export const REAL_INVOICES = [
     "id": "inv-79",
     "invoiceNo": "INV-26-079",
     "clientId": "cli-024",
-    "client": "KIFAYAH PHARMACY & SUPER MARKET",
+    "client": "KIFAYAH",
     "projectId": null,
     "description": "Media Campaign & OOH Production Billing",
     "amount": 550000,
@@ -3674,7 +3674,7 @@ export const REAL_INVOICES = [
     "id": "inv-80",
     "invoiceNo": "INV-26-080",
     "clientId": "cli-024",
-    "client": "KIFAYAH PHARMACY & SUPER MARKET",
+    "client": "KIFAYAH",
     "projectId": null,
     "description": "Media Campaign & OOH Production Billing",
     "amount": 550000,
@@ -3700,7 +3700,7 @@ export const REAL_INVOICES = [
     "id": "inv-81",
     "invoiceNo": "INV-26-081",
     "clientId": "cli-024",
-    "client": "KIFAYAH PHARMACY & SUPER MARKET",
+    "client": "KIFAYAH",
     "projectId": null,
     "description": "Media Campaign & OOH Production Billing",
     "amount": 550000,
@@ -3726,7 +3726,7 @@ export const REAL_INVOICES = [
     "id": "inv-82",
     "invoiceNo": "INV-26-082",
     "clientId": "cli-024",
-    "client": "KIFAYAH PHARMACY & SUPER MARKET",
+    "client": "KIFAYAH",
     "projectId": null,
     "description": "Media Campaign & OOH Production Billing",
     "amount": 550000,
@@ -3752,7 +3752,7 @@ export const REAL_INVOICES = [
     "id": "inv-83",
     "invoiceNo": "INV-26-083",
     "clientId": "cli-024",
-    "client": "KIFAYAH PHARMACY & SUPER MARKET",
+    "client": "KIFAYAH",
     "projectId": null,
     "description": "Media Campaign & OOH Production Billing",
     "amount": 413616,
@@ -3778,7 +3778,7 @@ export const REAL_INVOICES = [
     "id": "inv-84",
     "invoiceNo": "INV-26-084",
     "clientId": "cli-024",
-    "client": "KIFAYAH PHARMACY & SUPER MARKET",
+    "client": "KIFAYAH",
     "projectId": null,
     "description": "Media Campaign & OOH Production Billing",
     "amount": 4263616,
@@ -3882,7 +3882,7 @@ export const REAL_INVOICES = [
     "id": "inv-88",
     "invoiceNo": "INV-Sold",
     "clientId": "cli-028",
-    "client": "TOYOTA FORTUNER LGN BK-7972",
+    "client": "SALMAN MEO",
     "projectId": null,
     "description": "TOYOTA FORTUNER/BK-7972 Sold to Salman Meow PURCHASED FROM GAGAI'S AUTOMOBILE",
     "amount": 18000000,
@@ -3908,7 +3908,7 @@ export const REAL_INVOICES = [
     "id": "inv-89",
     "invoiceNo": "INV-26-089",
     "clientId": "cli-028",
-    "client": "TOYOTA FORTUNER LGN BK-7972",
+    "client": "SALMAN MEO",
     "projectId": null,
     "description": "BALANCE PAYMENT OF MERCEDEZ BENZ AUF-350",
     "amount": 300000,
@@ -3934,7 +3934,7 @@ export const REAL_INVOICES = [
     "id": "inv-90",
     "invoiceNo": "INV-26-090",
     "clientId": "cli-028",
-    "client": "TOYOTA FORTUNER LGN BK-7972",
+    "client": "SALMAN MEO",
     "projectId": null,
     "description": "TRANSFER FEES OF TOYOTA FORTUNER/BK-7972",
     "amount": 20000,
@@ -3962,7 +3962,7 @@ export const REAL_EXPENSES = [
   {
     "id": "exp-1",
     "expenseNo": "EXP-1",
-    "vendor": "ADMAX ADVERTISING - MR. UMAIR BUKHARI",
+    "vendor": "ADMAX",
     "vendorId": "ven-001",
     "projectId": null,
     "category": "Outdoor Media & Fabrication",
@@ -3979,7 +3979,7 @@ export const REAL_EXPENSES = [
   {
     "id": "exp-2",
     "expenseNo": "EXP-1",
-    "vendor": "ADMAX ADVERTISING - MR. UMAIR BUKHARI",
+    "vendor": "ADMAX",
     "vendorId": "ven-001",
     "projectId": null,
     "category": "Outdoor Media & Fabrication",
@@ -3996,7 +3996,7 @@ export const REAL_EXPENSES = [
   {
     "id": "exp-3",
     "expenseNo": "EXP-26-003",
-    "vendor": "ADCARE  (Mr. Aslam)",
+    "vendor": "AD-CARE",
     "vendorId": "ven-003",
     "projectId": null,
     "category": "Outdoor Media & Fabrication",
@@ -4030,7 +4030,7 @@ export const REAL_EXPENSES = [
   {
     "id": "exp-5",
     "expenseNo": "EXP-9",
-    "vendor": "AZEEM BUKHARI PHOTOGRAPHER (HAKIM SONS)",
+    "vendor": "AZEEM BUKHARI",
     "vendorId": "ven-005",
     "projectId": null,
     "category": "Outdoor Media & Fabrication",
@@ -4047,7 +4047,7 @@ export const REAL_EXPENSES = [
   {
     "id": "exp-6",
     "expenseNo": "EXP-53",
-    "vendor": "AZEEM BUKHARI PHOTOGRAPHER (HAKIM SONS)",
+    "vendor": "AZEEM BUKHARI",
     "vendorId": "ven-005",
     "projectId": null,
     "category": "Outdoor Media & Fabrication",
@@ -4064,7 +4064,7 @@ export const REAL_EXPENSES = [
   {
     "id": "exp-7",
     "expenseNo": "EXP-16",
-    "vendor": "AZEEM BUKHARI PHOTOGRAPHER (HAKIM SONS)",
+    "vendor": "AZEEM BUKHARI",
     "vendorId": "ven-005",
     "projectId": null,
     "category": "Outdoor Media & Fabrication",
@@ -4081,7 +4081,7 @@ export const REAL_EXPENSES = [
   {
     "id": "exp-8",
     "expenseNo": "EXP-25",
-    "vendor": "AZEEM BUKHARI PHOTOGRAPHER (HAKIM SONS)",
+    "vendor": "AZEEM BUKHARI",
     "vendorId": "ven-005",
     "projectId": null,
     "category": "Outdoor Media & Fabrication",
@@ -4098,7 +4098,7 @@ export const REAL_EXPENSES = [
   {
     "id": "exp-9",
     "expenseNo": "EXP-36",
-    "vendor": "AZEEM BUKHARI PHOTOGRAPHER (HAKIM SONS)",
+    "vendor": "AZEEM BUKHARI",
     "vendorId": "ven-005",
     "projectId": null,
     "category": "Outdoor Media & Fabrication",
@@ -4115,7 +4115,7 @@ export const REAL_EXPENSES = [
   {
     "id": "exp-10",
     "expenseNo": "EXP-37",
-    "vendor": "AZEEM BUKHARI PHOTOGRAPHER (HAKIM SONS)",
+    "vendor": "AZEEM BUKHARI",
     "vendorId": "ven-005",
     "projectId": null,
     "category": "Outdoor Media & Fabrication",
@@ -4149,7 +4149,7 @@ export const REAL_EXPENSES = [
   {
     "id": "exp-12",
     "expenseNo": "EXP-18",
-    "vendor": "16-1-2026",
+    "vendor": "DEPLEX INN",
     "vendorId": "ven-007",
     "projectId": null,
     "category": "Outdoor Media & Fabrication",
@@ -4166,7 +4166,7 @@ export const REAL_EXPENSES = [
   {
     "id": "exp-13",
     "expenseNo": "EXP-19",
-    "vendor": "16-1-2026",
+    "vendor": "DEPLEX INN",
     "vendorId": "ven-007",
     "projectId": null,
     "category": "Outdoor Media & Fabrication",
@@ -4183,7 +4183,7 @@ export const REAL_EXPENSES = [
   {
     "id": "exp-14",
     "expenseNo": "EXP-NST2112",
-    "vendor": "GRAVITY MEDIA - HYDERABAD",
+    "vendor": "GRAVITY MEDIA",
     "vendorId": "ven-008",
     "projectId": null,
     "category": "Outdoor Media & Fabrication",
@@ -4200,7 +4200,7 @@ export const REAL_EXPENSES = [
   {
     "id": "exp-15",
     "expenseNo": "EXP-26-015",
-    "vendor": "IMRAN ENTERPRISE - HYDERABAD",
+    "vendor": "IMRAN ENTERPRISE",
     "vendorId": "ven-009",
     "projectId": null,
     "category": "Outdoor Media & Fabrication",
@@ -4217,7 +4217,7 @@ export const REAL_EXPENSES = [
   {
     "id": "exp-16",
     "expenseNo": "EXP-11005793",
-    "vendor": "MR. IBRAHIM ANJARWALA",
+    "vendor": "IBRAHIM ANJARWALA",
     "vendorId": "ven-010",
     "projectId": null,
     "category": "Outdoor Media & Fabrication",
@@ -4234,7 +4234,7 @@ export const REAL_EXPENSES = [
   {
     "id": "exp-17",
     "expenseNo": "EXP-11005794",
-    "vendor": "MR. IBRAHIM ANJARWALA",
+    "vendor": "IBRAHIM ANJARWALA",
     "vendorId": "ven-010",
     "projectId": null,
     "category": "Outdoor Media & Fabrication",
@@ -4251,7 +4251,7 @@ export const REAL_EXPENSES = [
   {
     "id": "exp-18",
     "expenseNo": "EXP-11005795",
-    "vendor": "MR. IBRAHIM ANJARWALA",
+    "vendor": "IBRAHIM ANJARWALA",
     "vendorId": "ven-010",
     "projectId": null,
     "category": "Outdoor Media & Fabrication",
@@ -4268,7 +4268,7 @@ export const REAL_EXPENSES = [
   {
     "id": "exp-19",
     "expenseNo": "EXP-11005796",
-    "vendor": "MR. IBRAHIM ANJARWALA",
+    "vendor": "IBRAHIM ANJARWALA",
     "vendorId": "ven-010",
     "projectId": null,
     "category": "Outdoor Media & Fabrication",
@@ -4285,7 +4285,7 @@ export const REAL_EXPENSES = [
   {
     "id": "exp-20",
     "expenseNo": "EXP-26-020",
-    "vendor": "Kundanz Advertising (K-Group)",
+    "vendor": "K-GROUP",
     "vendorId": "ven-011",
     "projectId": null,
     "category": "Outdoor Media & Fabrication",
@@ -4302,7 +4302,7 @@ export const REAL_EXPENSES = [
   {
     "id": "exp-21",
     "expenseNo": "EXP-471",
-    "vendor": "MILLENNIUM GRAPHIC",
+    "vendor": "MILLENNIUM GRAPHICS",
     "vendorId": "ven-012",
     "projectId": null,
     "category": "Outdoor Media & Fabrication",
@@ -4319,7 +4319,7 @@ export const REAL_EXPENSES = [
   {
     "id": "exp-22",
     "expenseNo": "EXP-1",
-    "vendor": "MNB OOH Advertiisng",
+    "vendor": "MNB",
     "vendorId": "ven-013",
     "projectId": null,
     "category": "Outdoor Media & Fabrication",
@@ -4336,7 +4336,7 @@ export const REAL_EXPENSES = [
   {
     "id": "exp-23",
     "expenseNo": "EXP-2",
-    "vendor": "MNB OOH Advertiisng",
+    "vendor": "MNB",
     "vendorId": "ven-013",
     "projectId": null,
     "category": "Outdoor Media & Fabrication",
@@ -4353,7 +4353,7 @@ export const REAL_EXPENSES = [
   {
     "id": "exp-24",
     "expenseNo": "EXP-6",
-    "vendor": "MNB OOH Advertiisng",
+    "vendor": "MNB",
     "vendorId": "ven-013",
     "projectId": null,
     "category": "Outdoor Media & Fabrication",
@@ -4370,7 +4370,7 @@ export const REAL_EXPENSES = [
   {
     "id": "exp-25",
     "expenseNo": "EXP-11",
-    "vendor": "MNB OOH Advertiisng",
+    "vendor": "MNB",
     "vendorId": "ven-013",
     "projectId": null,
     "category": "Outdoor Media & Fabrication",
@@ -4387,7 +4387,7 @@ export const REAL_EXPENSES = [
   {
     "id": "exp-26",
     "expenseNo": "EXP-1",
-    "vendor": "Media Communication (Imran Sheikh)",
+    "vendor": "MEDIA COMMUNICATION",
     "vendorId": "ven-014",
     "projectId": null,
     "category": "Outdoor Media & Fabrication",
@@ -4404,7 +4404,7 @@ export const REAL_EXPENSES = [
   {
     "id": "exp-27",
     "expenseNo": "EXP-1",
-    "vendor": "MS. KAINAT ZAHEER - NEXTIER",
+    "vendor": "NEXTIER - KAINAT",
     "vendorId": "ven-015",
     "projectId": null,
     "category": "Outdoor Media & Fabrication",
@@ -4421,7 +4421,7 @@ export const REAL_EXPENSES = [
   {
     "id": "exp-28",
     "expenseNo": "EXP-3",
-    "vendor": "MS. KAINAT ZAHEER - NEXTIER",
+    "vendor": "NEXTIER - KAINAT",
     "vendorId": "ven-015",
     "projectId": null,
     "category": "Outdoor Media & Fabrication",
@@ -4438,7 +4438,7 @@ export const REAL_EXPENSES = [
   {
     "id": "exp-29",
     "expenseNo": "EXP-1",
-    "vendor": "R & D GROUP (KASHIF GRAMI)",
+    "vendor": "R & D GROUP",
     "vendorId": "ven-016",
     "projectId": null,
     "category": "Outdoor Media & Fabrication",
@@ -4455,7 +4455,7 @@ export const REAL_EXPENSES = [
   {
     "id": "exp-30",
     "expenseNo": "EXP-3",
-    "vendor": "R & D GROUP (KASHIF GRAMI)",
+    "vendor": "R & D GROUP",
     "vendorId": "ven-016",
     "projectId": null,
     "category": "Outdoor Media & Fabrication",
@@ -4472,7 +4472,7 @@ export const REAL_EXPENSES = [
   {
     "id": "exp-31",
     "expenseNo": "EXP-1",
-    "vendor": "R & D GROUP (KASHIF GRAMI)",
+    "vendor": "R & D GROUP",
     "vendorId": "ven-016",
     "projectId": null,
     "category": "Outdoor Media & Fabrication",
@@ -4489,7 +4489,7 @@ export const REAL_EXPENSES = [
   {
     "id": "exp-32",
     "expenseNo": "EXP-1",
-    "vendor": "R.M Associates / Mr. Zohaib",
+    "vendor": "RM ASSOCIATES",
     "vendorId": "ven-017",
     "projectId": null,
     "category": "Outdoor Media & Fabrication",
@@ -4506,7 +4506,7 @@ export const REAL_EXPENSES = [
   {
     "id": "exp-33",
     "expenseNo": "EXP-2",
-    "vendor": "R.M Associates / Mr. Zohaib",
+    "vendor": "RM ASSOCIATES",
     "vendorId": "ven-017",
     "projectId": null,
     "category": "Outdoor Media & Fabrication",
@@ -4523,7 +4523,7 @@ export const REAL_EXPENSES = [
   {
     "id": "exp-34",
     "expenseNo": "EXP-5",
-    "vendor": "R.M Associates / Mr. Zohaib",
+    "vendor": "RM ASSOCIATES",
     "vendorId": "ven-017",
     "projectId": null,
     "category": "Outdoor Media & Fabrication",
@@ -4557,7 +4557,7 @@ export const REAL_EXPENSES = [
   {
     "id": "exp-36",
     "expenseNo": "EXP-12485",
-    "vendor": "SA ADVERTISING SERVICES",
+    "vendor": "SA ADVERTISING",
     "vendorId": "ven-019",
     "projectId": null,
     "category": "Outdoor Media & Fabrication",
@@ -4574,7 +4574,7 @@ export const REAL_EXPENSES = [
   {
     "id": "exp-37",
     "expenseNo": "EXP-1",
-    "vendor": "ZAIB ENTERPRISES - SHAHIDZAIB",
+    "vendor": "Zaib Enterprises",
     "vendorId": "ven-022",
     "projectId": null,
     "category": "Outdoor Media & Fabrication",
@@ -4591,7 +4591,7 @@ export const REAL_EXPENSES = [
   {
     "id": "exp-38",
     "expenseNo": "EXP-2",
-    "vendor": "ZAIB ENTERPRISES - SHAHIDZAIB",
+    "vendor": "Zaib Enterprises",
     "vendorId": "ven-022",
     "projectId": null,
     "category": "Outdoor Media & Fabrication",
@@ -4608,7 +4608,7 @@ export const REAL_EXPENSES = [
   {
     "id": "exp-39",
     "expenseNo": "EXP-26-039",
-    "vendor": "ZAIB ENTERPRISES - SHAHIDZAIB",
+    "vendor": "Zaib Enterprises",
     "vendorId": "ven-022",
     "projectId": null,
     "category": "Outdoor Media & Fabrication",
@@ -4699,7 +4699,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-004",
     "type": "RV",
     "date": "2026-07-01",
-    "party": "CHASE VALUE CENTER",
+    "party": "CHASE VALUE",
     "clientId": "cli-002",
     "vendorId": null,
     "description": "Chase Value Gift Voucher Recevied",
@@ -4722,7 +4722,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-005",
     "type": "RV",
     "date": "2026-07-01",
-    "party": "CHASE VALUE CENTER",
+    "party": "CHASE VALUE",
     "clientId": "cli-002",
     "vendorId": null,
     "description": "Chase Value Gift Voucher Recevied",
@@ -4745,7 +4745,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-006",
     "type": "RV",
     "date": "2025-03-24",
-    "party": "CHASE VALUE CENTER",
+    "party": "CHASE VALUE",
     "clientId": "cli-002",
     "vendorId": null,
     "description": "Cash Recevied from Chase Value KBR branch against Site rental invoice",
@@ -4768,7 +4768,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-007",
     "type": "RV",
     "date": "2025-03-25",
-    "party": "CHASE VALUE CENTER",
+    "party": "CHASE VALUE",
     "clientId": "cli-002",
     "vendorId": null,
     "description": "Cash Recevied from Chase Value KBR branch against Site rental invoice",
@@ -4791,7 +4791,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-008",
     "type": "RV",
     "date": "2025-03-26",
-    "party": "CHASE VALUE CENTER",
+    "party": "CHASE VALUE",
     "clientId": "cli-002",
     "vendorId": null,
     "description": "Cash Recevied from Chase Value KBR branch against Site rental invoice",
@@ -4814,7 +4814,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-009",
     "type": "RV",
     "date": "2025-03-27",
-    "party": "CHASE VALUE CENTER",
+    "party": "CHASE VALUE",
     "clientId": "cli-002",
     "vendorId": null,
     "description": "Cash Recevied from Chase Value KBR branch against Site rental invoice",
@@ -4837,7 +4837,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-010",
     "type": "RV",
     "date": "2026-07-01",
-    "party": "CHASE VALUE CENTER",
+    "party": "CHASE VALUE",
     "clientId": "cli-002",
     "vendorId": null,
     "description": "Received From Chase Value",
@@ -4860,7 +4860,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-011",
     "type": "RV",
     "date": "2026-07-01",
-    "party": "CHASE VALUE CENTER",
+    "party": "CHASE VALUE",
     "clientId": "cli-002",
     "vendorId": null,
     "description": "Received From Chase Value",
@@ -4883,7 +4883,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-012",
     "type": "RV",
     "date": "2026-07-01",
-    "party": "CHASE VALUE CENTER",
+    "party": "CHASE VALUE",
     "clientId": "cli-002",
     "vendorId": null,
     "description": "Received From Chase Value",
@@ -4906,7 +4906,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-013",
     "type": "RV",
     "date": "2026-07-01",
-    "party": "CHASE VALUE CENTER",
+    "party": "CHASE VALUE",
     "clientId": "cli-002",
     "vendorId": null,
     "description": "Received From Chase Value",
@@ -4929,7 +4929,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-014",
     "type": "RV",
     "date": "2026-07-01",
-    "party": "CHASE VALUE CENTER",
+    "party": "CHASE VALUE",
     "clientId": "cli-002",
     "vendorId": null,
     "description": "Received From Chase Value",
@@ -4952,7 +4952,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-015",
     "type": "RV",
     "date": "2026-07-08",
-    "party": "CHASE VALUE CENTER",
+    "party": "CHASE VALUE",
     "clientId": "cli-002",
     "vendorId": null,
     "description": "CASH RECEIVED FROM CLIENT CHASE VALUE",
@@ -4975,7 +4975,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-016",
     "type": "RV",
     "date": "2026-07-09",
-    "party": "CHASE VALUE CENTER",
+    "party": "CHASE VALUE",
     "clientId": "cli-002",
     "vendorId": null,
     "description": "CASH RECEIVED FROM CLIENT CHASE VALUE",
@@ -4998,7 +4998,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-017",
     "type": "RV",
     "date": "2026-07-01",
-    "party": "CHASE VALUE CENTER",
+    "party": "CHASE VALUE",
     "clientId": "cli-002",
     "vendorId": null,
     "description": "Total Net Amount",
@@ -5021,7 +5021,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-018",
     "type": "RV",
     "date": "2026-08-19",
-    "party": "CHASE VALUE CENTER",
+    "party": "CHASE VALUE",
     "clientId": "cli-002",
     "vendorId": null,
     "description": "CHASE VALUE VOUCHERS RECEIVED Qty: 184  x 5000",
@@ -5044,7 +5044,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-019",
     "type": "RV",
     "date": "2026-07-01",
-    "party": "CHASE VALUE CENTER",
+    "party": "CHASE VALUE",
     "clientId": "cli-002",
     "vendorId": null,
     "description": "Total Net Amount",
@@ -5067,7 +5067,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-020",
     "type": "RV",
     "date": "2026-07-08",
-    "party": "CHASE VALUE CENTER",
+    "party": "CHASE VALUE",
     "clientId": "cli-002",
     "vendorId": null,
     "description": "Cash Received from Chase Value",
@@ -5136,7 +5136,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-023",
     "type": "RV",
     "date": "2026-08-24",
-    "party": "DECENT BUILDERS AND DEVELOPERS",
+    "party": "DECENT",
     "clientId": "cli-004",
     "vendorId": null,
     "description": "CHEQUE RECEIVED FROM DECENT - MALIR TOWN PHASE 4",
@@ -5159,7 +5159,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-024",
     "type": "RV",
     "date": "2026-09-07",
-    "party": "DECENT BUILDERS AND DEVELOPERS",
+    "party": "DECENT",
     "clientId": "cli-004",
     "vendorId": null,
     "description": "CHEQUE RECEIVED FROM DECENT - MALIR TOWN PHASE 4",
@@ -5182,7 +5182,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-025",
     "type": "RV",
     "date": "2026-09-07",
-    "party": "DECENT BUILDERS AND DEVELOPERS",
+    "party": "DECENT",
     "clientId": "cli-004",
     "vendorId": null,
     "description": "CHEQUE RECEIVED FROM DECENT - MALIR TOWN PHASE 4",
@@ -5205,7 +5205,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-026",
     "type": "RV",
     "date": "2026-04-06",
-    "party": "FALAKNAZ GROUP - ELITE TOWERS",
+    "party": "FALAKNAZ",
     "clientId": "cli-009",
     "vendorId": null,
     "description": "CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
@@ -5228,7 +5228,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-027",
     "type": "RV",
     "date": "2026-04-10",
-    "party": "FALAKNAZ GROUP - ELITE TOWERS",
+    "party": "FALAKNAZ",
     "clientId": "cli-009",
     "vendorId": null,
     "description": "CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
@@ -5251,7 +5251,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-028",
     "type": "RV",
     "date": "2026-04-10",
-    "party": "FALAKNAZ GROUP - ELITE TOWERS",
+    "party": "FALAKNAZ",
     "clientId": "cli-009",
     "vendorId": null,
     "description": "CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
@@ -5274,7 +5274,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-029",
     "type": "RV",
     "date": "2026-04-15",
-    "party": "FALAKNAZ GROUP - ELITE TOWERS",
+    "party": "FALAKNAZ",
     "clientId": "cli-009",
     "vendorId": null,
     "description": "CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
@@ -5297,7 +5297,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-030",
     "type": "RV",
     "date": "2026-04-15",
-    "party": "FALAKNAZ GROUP - ELITE TOWERS",
+    "party": "FALAKNAZ",
     "clientId": "cli-009",
     "vendorId": null,
     "description": "CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
@@ -5320,7 +5320,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-031",
     "type": "RV",
     "date": "2026-04-20",
-    "party": "FALAKNAZ GROUP - ELITE TOWERS",
+    "party": "FALAKNAZ",
     "clientId": "cli-009",
     "vendorId": null,
     "description": "CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
@@ -5343,7 +5343,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-032",
     "type": "RV",
     "date": "2026-04-24",
-    "party": "FALAKNAZ GROUP - ELITE TOWERS",
+    "party": "FALAKNAZ",
     "clientId": "cli-009",
     "vendorId": null,
     "description": "CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
@@ -5366,7 +5366,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-033",
     "type": "RV",
     "date": "2026-04-30",
-    "party": "FALAKNAZ GROUP - ELITE TOWERS",
+    "party": "FALAKNAZ",
     "clientId": "cli-009",
     "vendorId": null,
     "description": "CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
@@ -5389,7 +5389,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-034",
     "type": "RV",
     "date": "2026-07-13",
-    "party": "FALAKNAZ GROUP - ELITE TOWERS",
+    "party": "FALAKNAZ",
     "clientId": "cli-009",
     "vendorId": null,
     "description": "CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
@@ -5412,7 +5412,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-035",
     "type": "RV",
     "date": "2026-07-20",
-    "party": "FALAKNAZ GROUP - ELITE TOWERS",
+    "party": "FALAKNAZ",
     "clientId": "cli-009",
     "vendorId": null,
     "description": "CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
@@ -5435,7 +5435,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-036",
     "type": "RV",
     "date": "2026-07-24",
-    "party": "FALAKNAZ GROUP - ELITE TOWERS",
+    "party": "FALAKNAZ",
     "clientId": "cli-009",
     "vendorId": null,
     "description": "CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
@@ -5458,7 +5458,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-037",
     "type": "RV",
     "date": "2026-07-27",
-    "party": "FALAKNAZ GROUP - ELITE TOWERS",
+    "party": "FALAKNAZ",
     "clientId": "cli-009",
     "vendorId": null,
     "description": "CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
@@ -5481,7 +5481,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-038",
     "type": "RV",
     "date": "2026-07-27",
-    "party": "FALAKNAZ GROUP - ELITE TOWERS",
+    "party": "FALAKNAZ",
     "clientId": "cli-009",
     "vendorId": null,
     "description": "CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
@@ -5504,7 +5504,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-039",
     "type": "RV",
     "date": "2026-07-30",
-    "party": "FALAKNAZ GROUP - ELITE TOWERS",
+    "party": "FALAKNAZ",
     "clientId": "cli-009",
     "vendorId": null,
     "description": "CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
@@ -5527,7 +5527,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-040",
     "type": "RV",
     "date": "2026-07-31",
-    "party": "FALAKNAZ GROUP - ELITE TOWERS",
+    "party": "FALAKNAZ",
     "clientId": "cli-009",
     "vendorId": null,
     "description": "CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
@@ -5550,7 +5550,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-041",
     "type": "RV",
     "date": "2026-08-05",
-    "party": "FALAKNAZ GROUP - ELITE TOWERS",
+    "party": "FALAKNAZ",
     "clientId": "cli-009",
     "vendorId": null,
     "description": "CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
@@ -5573,7 +5573,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-042",
     "type": "RV",
     "date": "2026-08-10",
-    "party": "FALAKNAZ GROUP - ELITE TOWERS",
+    "party": "FALAKNAZ",
     "clientId": "cli-009",
     "vendorId": null,
     "description": "CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
@@ -5642,7 +5642,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-045",
     "type": "RV",
     "date": "2026-07-04",
-    "party": "HMR WATERFRONT PVT LTD",
+    "party": "HMR",
     "clientId": "cli-015",
     "vendorId": null,
     "description": "Cash Received HMR Waterfront against inv #AD/9615/05/26",
@@ -5665,7 +5665,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-046",
     "type": "RV",
     "date": "2026-08-28",
-    "party": "HMR WATERFRONT PVT LTD",
+    "party": "HMR",
     "clientId": "cli-015",
     "vendorId": null,
     "description": "Cash/Cheque Received HMR Waterfront (dt 29-8-26)",
@@ -5826,7 +5826,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-053",
     "type": "RV",
     "date": "2026-06-20",
-    "party": "HABITT STORE - CASH",
+    "party": "HABBIT STORE",
     "clientId": "cli-017",
     "vendorId": null,
     "description": "KHURRAM BHAI FURNITURE SHOPPING",
@@ -5849,7 +5849,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-054",
     "type": "RV",
     "date": "2026-08-13",
-    "party": "IMTIAZ GROUP SMC PVT LTD",
+    "party": "IMTIAZ",
     "clientId": "cli-018",
     "vendorId": null,
     "description": "Cheque Received from IMTIAZ STORE against Invoice # AD/S351",
@@ -5872,7 +5872,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-055",
     "type": "RV",
     "date": "2026-08-13",
-    "party": "IMTIAZ GROUP SMC PVT LTD",
+    "party": "IMTIAZ",
     "clientId": "cli-018",
     "vendorId": null,
     "description": "WHT 1.5% on Inv # S351",
@@ -5895,7 +5895,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-056",
     "type": "RV",
     "date": "2026-08-13",
-    "party": "IMTIAZ GROUP SMC PVT LTD",
+    "party": "IMTIAZ",
     "clientId": "cli-018",
     "vendorId": null,
     "description": "SWHT 100% Witheld on S351",
@@ -5918,7 +5918,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-057",
     "type": "RV",
     "date": "2026-07-31",
-    "party": "IDEMITSU LUBE PAKISTAN PVT LTD",
+    "party": "IDEMITSU",
     "clientId": "cli-019",
     "vendorId": null,
     "description": "IBFT RECEIBED IN ADPULSE IMC PVT LTD",
@@ -5941,7 +5941,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-058",
     "type": "RV",
     "date": "2026-07-31",
-    "party": "IDEMITSU LUBE PAKISTAN PVT LTD",
+    "party": "IDEMITSU",
     "clientId": "cli-019",
     "vendorId": null,
     "description": "WHT",
@@ -5964,7 +5964,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-059",
     "type": "RV",
     "date": "2026-07-31",
-    "party": "IDEMITSU LUBE PAKISTAN PVT LTD",
+    "party": "IDEMITSU",
     "clientId": "cli-019",
     "vendorId": null,
     "description": "S.Tax",
@@ -5987,7 +5987,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-060",
     "type": "RV",
     "date": "2025-09-01",
-    "party": "PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO",
+    "party": "IGLOO",
     "clientId": "cli-020",
     "vendorId": null,
     "description": "CHEQUE RECEIVED FROM IGLOO AGAINST INVOICE # AD-S153",
@@ -6010,7 +6010,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-061",
     "type": "RV",
     "date": "2026-07-07",
-    "party": "PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO",
+    "party": "IGLOO",
     "clientId": "cli-020",
     "vendorId": null,
     "description": "CHEQUE RECEIVED FROM IGLOO AGAINST INVOICE # AD-S153",
@@ -6033,7 +6033,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-062",
     "type": "RV",
     "date": "2026-07-01",
-    "party": "PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO",
+    "party": "IGLOO",
     "clientId": "cli-020",
     "vendorId": null,
     "description": "SWHT 100% WHT",
@@ -6056,7 +6056,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-063",
     "type": "RV",
     "date": "2026-07-01",
-    "party": "PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO",
+    "party": "IGLOO",
     "clientId": "cli-020",
     "vendorId": null,
     "description": "WHT 6%",
@@ -6079,7 +6079,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-064",
     "type": "RV",
     "date": "2026-07-29",
-    "party": "PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO",
+    "party": "IGLOO",
     "clientId": "cli-020",
     "vendorId": null,
     "description": "CHEQUE RECEIVED FROM IGLOO AGAINST INVOICE # AD-S324, AD-S325 & AD-S326",
@@ -6102,7 +6102,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-065",
     "type": "RV",
     "date": "2026-07-29",
-    "party": "PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO",
+    "party": "IGLOO",
     "clientId": "cli-020",
     "vendorId": null,
     "description": "SWHT 100% WHT ON INVOICE # AD-S324, AD-S325 & AD-S326",
@@ -6125,7 +6125,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-066",
     "type": "RV",
     "date": "2026-07-29",
-    "party": "PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO",
+    "party": "IGLOO",
     "clientId": "cli-020",
     "vendorId": null,
     "description": "WHT 7% ON INVOICE # AD-S324, AD-S325 & AD-S326",
@@ -6148,7 +6148,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-067",
     "type": "RV",
     "date": "2026-08-28",
-    "party": "PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO",
+    "party": "IGLOO",
     "clientId": "cli-020",
     "vendorId": null,
     "description": "CHEQUE RECEIVED FROM IGLOO AGAINST INVOICE # AD-S360",
@@ -6171,7 +6171,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-068",
     "type": "RV",
     "date": "2026-08-28",
-    "party": "PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO",
+    "party": "IGLOO",
     "clientId": "cli-020",
     "vendorId": null,
     "description": "SWHT 100% WHT ON INVOICE # AD-S360",
@@ -6194,7 +6194,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-069",
     "type": "RV",
     "date": "2026-08-28",
-    "party": "PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO",
+    "party": "IGLOO",
     "clientId": "cli-020",
     "vendorId": null,
     "description": "WHT 7% ON INVOICE # AD-S324, AD-S325 & AD-S326",
@@ -6217,7 +6217,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-070",
     "type": "RV",
     "date": "2026-08-28",
-    "party": "PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO",
+    "party": "IGLOO",
     "clientId": "cli-020",
     "vendorId": null,
     "description": "chq dt 25-8-2026",
@@ -6240,7 +6240,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-071",
     "type": "RV",
     "date": "2026-08-28",
-    "party": "KINZA BEVERAGES",
+    "party": "KINZA BEVRAGES",
     "clientId": "cli-023",
     "vendorId": null,
     "description": "CASH CHEQUE RECEIVED FROM KINZA BAVERAGES (CHQ DT 22-8-26)",
@@ -6263,7 +6263,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-072",
     "type": "RV",
     "date": "2026-08-28",
-    "party": "KINZA BEVERAGES",
+    "party": "KINZA BEVRAGES",
     "clientId": "cli-023",
     "vendorId": null,
     "description": "CASH CHEQUE RECEIVED FROM KINZA BAVERAGES (CHQ DT 28-8-26)",
@@ -6286,10 +6286,10 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-073",
     "type": "RV",
     "date": "2026-07-01",
-    "party": "KIFAYAH PHARMACY & SUPER MARKET",
+    "party": "KIFAYAH",
     "clientId": "cli-024",
     "vendorId": null,
-    "description": "Payment Received from KIFAYAH PHARMACY & SUPER MARKET",
+    "description": "Payment Received from KIFAYAH",
     "amount": 8250,
     "netAmount": 8250,
     "via": "Bank",
@@ -6309,10 +6309,10 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-074",
     "type": "RV",
     "date": "2026-07-01",
-    "party": "KIFAYAH PHARMACY & SUPER MARKET",
+    "party": "KIFAYAH",
     "clientId": "cli-024",
     "vendorId": null,
-    "description": "Payment Received from KIFAYAH PHARMACY & SUPER MARKET",
+    "description": "Payment Received from KIFAYAH",
     "amount": 8250,
     "netAmount": 8250,
     "via": "Bank",
@@ -6332,10 +6332,10 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-075",
     "type": "RV",
     "date": "2026-07-01",
-    "party": "KIFAYAH PHARMACY & SUPER MARKET",
+    "party": "KIFAYAH",
     "clientId": "cli-024",
     "vendorId": null,
-    "description": "Payment Received from KIFAYAH PHARMACY & SUPER MARKET",
+    "description": "Payment Received from KIFAYAH",
     "amount": 8250,
     "netAmount": 8250,
     "via": "Bank",
@@ -6355,10 +6355,10 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-076",
     "type": "RV",
     "date": "2026-07-01",
-    "party": "KIFAYAH PHARMACY & SUPER MARKET",
+    "party": "KIFAYAH",
     "clientId": "cli-024",
     "vendorId": null,
-    "description": "Payment Received from KIFAYAH PHARMACY & SUPER MARKET",
+    "description": "Payment Received from KIFAYAH",
     "amount": 8250,
     "netAmount": 8250,
     "via": "Bank",
@@ -6378,10 +6378,10 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-077",
     "type": "RV",
     "date": "2026-07-01",
-    "party": "KIFAYAH PHARMACY & SUPER MARKET",
+    "party": "KIFAYAH",
     "clientId": "cli-024",
     "vendorId": null,
-    "description": "Payment Received from KIFAYAH PHARMACY & SUPER MARKET",
+    "description": "Payment Received from KIFAYAH",
     "amount": 8250,
     "netAmount": 8250,
     "via": "Bank",
@@ -6401,10 +6401,10 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-078",
     "type": "RV",
     "date": "2026-07-01",
-    "party": "KIFAYAH PHARMACY & SUPER MARKET",
+    "party": "KIFAYAH",
     "clientId": "cli-024",
     "vendorId": null,
-    "description": "Payment Received from KIFAYAH PHARMACY & SUPER MARKET",
+    "description": "Payment Received from KIFAYAH",
     "amount": 8250,
     "netAmount": 8250,
     "via": "Bank",
@@ -6424,10 +6424,10 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-079",
     "type": "RV",
     "date": "2026-07-01",
-    "party": "KIFAYAH PHARMACY & SUPER MARKET",
+    "party": "KIFAYAH",
     "clientId": "cli-024",
     "vendorId": null,
-    "description": "Payment Received from KIFAYAH PHARMACY & SUPER MARKET",
+    "description": "Payment Received from KIFAYAH",
     "amount": 8250,
     "netAmount": 8250,
     "via": "Bank",
@@ -6447,10 +6447,10 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-080",
     "type": "RV",
     "date": "2026-07-01",
-    "party": "KIFAYAH PHARMACY & SUPER MARKET",
+    "party": "KIFAYAH",
     "clientId": "cli-024",
     "vendorId": null,
-    "description": "Payment Received from KIFAYAH PHARMACY & SUPER MARKET",
+    "description": "Payment Received from KIFAYAH",
     "amount": 6204.24,
     "netAmount": 6204.24,
     "via": "Bank",
@@ -6470,10 +6470,10 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-081",
     "type": "RV",
     "date": "2026-07-01",
-    "party": "KIFAYAH PHARMACY & SUPER MARKET",
+    "party": "KIFAYAH",
     "clientId": "cli-024",
     "vendorId": null,
-    "description": "Payment Received from KIFAYAH PHARMACY & SUPER MARKET",
+    "description": "Payment Received from KIFAYAH",
     "amount": 63954.24,
     "netAmount": 63954.24,
     "via": "Bank",
@@ -6700,7 +6700,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-091",
     "type": "RV",
     "date": "2025-09-18",
-    "party": "TOYOTA FORTUNER LGN BK-7972",
+    "party": "SALMAN MEO",
     "clientId": "cli-028",
     "vendorId": null,
     "description": "Jac Car Purchase from Salman Meow SOLD TO TNI KHURRAM",
@@ -6723,7 +6723,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-092",
     "type": "RV",
     "date": "2025-10-15",
-    "party": "TOYOTA FORTUNER LGN BK-7972",
+    "party": "SALMAN MEO",
     "clientId": "cli-028",
     "vendorId": null,
     "description": "CHQ RECEIVED FROM ANSAR BHAI (AKD BUILDERS & DEVELOPERS)",
@@ -6746,7 +6746,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-093",
     "type": "RV",
     "date": "2025-10-15",
-    "party": "TOYOTA FORTUNER LGN BK-7972",
+    "party": "SALMAN MEO",
     "clientId": "cli-028",
     "vendorId": null,
     "description": "CHQ RECEIVED FROM ANSAR BHAI (AKD BUILDERS & DEVELOPERS)",
@@ -6769,7 +6769,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-094",
     "type": "RV",
     "date": "2025-10-15",
-    "party": "TOYOTA FORTUNER LGN BK-7972",
+    "party": "SALMAN MEO",
     "clientId": "cli-028",
     "vendorId": null,
     "description": "CHQ RECEIVED FROM ANSAR BHAI (AKD BUILDERS & DEVELOPERS)",
@@ -6792,7 +6792,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-095",
     "type": "RV",
     "date": "2025-10-15",
-    "party": "TOYOTA FORTUNER LGN BK-7972",
+    "party": "SALMAN MEO",
     "clientId": "cli-028",
     "vendorId": null,
     "description": "CHQ RECEIVED FROM ANSAR BHAI (AKD BUILDERS & DEVELOPERS)",
@@ -6815,7 +6815,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-096",
     "type": "RV",
     "date": "2025-10-15",
-    "party": "TOYOTA FORTUNER LGN BK-7972",
+    "party": "SALMAN MEO",
     "clientId": "cli-028",
     "vendorId": null,
     "description": "CHQ RECEIVED FROM ANSAR BHAI (AKD BUILDERS & DEVELOPERS)",
@@ -6838,7 +6838,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-097",
     "type": "RV",
     "date": "2025-10-15",
-    "party": "TOYOTA FORTUNER LGN BK-7972",
+    "party": "SALMAN MEO",
     "clientId": "cli-028",
     "vendorId": null,
     "description": "CHQ RECEIVED FROM ANSAR BHAI (AKD BUILDERS & DEVELOPERS)",
@@ -6861,7 +6861,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-098",
     "type": "RV",
     "date": "2026-02-09",
-    "party": "TOYOTA FORTUNER LGN BK-7972",
+    "party": "SALMAN MEO",
     "clientId": "cli-028",
     "vendorId": null,
     "description": "DISCOUNT",
@@ -6884,7 +6884,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-099",
     "type": "RV",
     "date": "2026-02-09",
-    "party": "TOYOTA FORTUNER LGN BK-7972",
+    "party": "SALMAN MEO",
     "clientId": "cli-028",
     "vendorId": null,
     "description": "CASH RECEIVED (KHURRAM BHAI DIRECTLY RECEIVED)",
@@ -6907,7 +6907,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-100",
     "type": "RV",
     "date": "2026-08-04",
-    "party": "SUNRIDGE FOODS",
+    "party": "SUNRIDGE",
     "clientId": "cli-031",
     "vendorId": null,
     "description": "IBFT RECEIVED IN IMC FROM SUNRIDGE",
@@ -6930,7 +6930,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-101",
     "type": "RV",
     "date": "2026-08-07",
-    "party": "SUNRIDGE FOODS",
+    "party": "SUNRIDGE",
     "clientId": "cli-031",
     "vendorId": null,
     "description": "IBFT RECEIVED IN IMC FROM SUNRIDGE",
@@ -6953,7 +6953,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-102",
     "type": "RV",
     "date": "2026-08-11",
-    "party": "SUNRIDGE FOODS",
+    "party": "SUNRIDGE",
     "clientId": "cli-031",
     "vendorId": null,
     "description": "IBFT RECEIVED IN IMC FROM SUNRIDGE",
@@ -6976,7 +6976,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-103",
     "type": "RV",
     "date": "2026-08-15",
-    "party": "SUNRIDGE FOODS",
+    "party": "SUNRIDGE",
     "clientId": "cli-031",
     "vendorId": null,
     "description": "IBFT RECEIVED IN IMC FROM SUNRIDGE",
@@ -6999,7 +6999,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-104",
     "type": "RV",
     "date": "2026-08-20",
-    "party": "SUNRIDGE FOODS",
+    "party": "SUNRIDGE",
     "clientId": "cli-031",
     "vendorId": null,
     "description": "IBFT RECEIVED IN IMC FROM SUNRIDGE",
@@ -7022,7 +7022,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-105",
     "type": "RV",
     "date": "2026-08-24",
-    "party": "SUNRIDGE FOODS",
+    "party": "SUNRIDGE",
     "clientId": "cli-031",
     "vendorId": null,
     "description": "IBFT RECEIVED IN IMC FROM SUNRIDGE",
@@ -7045,7 +7045,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-106",
     "type": "RV",
     "date": "2026-08-27",
-    "party": "SUNRIDGE FOODS",
+    "party": "SUNRIDGE",
     "clientId": "cli-031",
     "vendorId": null,
     "description": "IBFT RECEIVED IN IMC FROM SUNRIDGE",
@@ -7068,7 +7068,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-107",
     "type": "RV",
     "date": "2026-02-18",
-    "party": "SUNRIDGE FOODS",
+    "party": "SUNRIDGE",
     "clientId": "cli-031",
     "vendorId": null,
     "description": "IBFT RECEIVED IN IMC FROM SUNRIDGE",
@@ -7091,7 +7091,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-108",
     "type": "RV",
     "date": "2026-02-27",
-    "party": "SUNRIDGE FOODS",
+    "party": "SUNRIDGE",
     "clientId": "cli-031",
     "vendorId": null,
     "description": "IBFT RECEIVED IN IMC FROM SUNRIDGE",
@@ -7114,7 +7114,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-109",
     "type": "RV",
     "date": "2026-03-04",
-    "party": "SUNRIDGE FOODS",
+    "party": "SUNRIDGE",
     "clientId": "cli-031",
     "vendorId": null,
     "description": "IBFT RECEIVED IN IMC FROM SUNRIDGE",
@@ -7137,7 +7137,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-110",
     "type": "RV",
     "date": "2026-04-30",
-    "party": "SUNRIDGE FOODS",
+    "party": "SUNRIDGE",
     "clientId": "cli-031",
     "vendorId": null,
     "description": "IBFT RECEIVED IN IMC FROM SUNRIDGE",
@@ -7160,7 +7160,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-111",
     "type": "RV",
     "date": "2026-06-24",
-    "party": "SUNRIDGE FOODS",
+    "party": "SUNRIDGE",
     "clientId": "cli-031",
     "vendorId": null,
     "description": "IBFT RECEIVED IN IMC FROM SUNRIDGE",
@@ -7183,7 +7183,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-112",
     "type": "RV",
     "date": "2026-08-04",
-    "party": "SUNRIDGE FOODS",
+    "party": "SUNRIDGE",
     "clientId": "cli-031",
     "vendorId": null,
     "description": "IBFT RECEIVED IN IMC FROM SUNRIDGE",
@@ -7206,7 +7206,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-113",
     "type": "RV",
     "date": "2026-08-07",
-    "party": "SUNRIDGE FOODS",
+    "party": "SUNRIDGE",
     "clientId": "cli-031",
     "vendorId": null,
     "description": "IBFT RECEIVED IN IMC FROM SUNRIDGE",
@@ -7229,7 +7229,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-114",
     "type": "RV",
     "date": "2026-08-11",
-    "party": "SUNRIDGE FOODS",
+    "party": "SUNRIDGE",
     "clientId": "cli-031",
     "vendorId": null,
     "description": "IBFT RECEIVED IN IMC FROM SUNRIDGE",
@@ -7252,7 +7252,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-115",
     "type": "RV",
     "date": "2026-08-15",
-    "party": "SUNRIDGE FOODS",
+    "party": "SUNRIDGE",
     "clientId": "cli-031",
     "vendorId": null,
     "description": "IBFT RECEIVED IN IMC FROM SUNRIDGE",
@@ -7275,7 +7275,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-116",
     "type": "RV",
     "date": "2026-08-20",
-    "party": "SUNRIDGE FOODS",
+    "party": "SUNRIDGE",
     "clientId": "cli-031",
     "vendorId": null,
     "description": "IBFT RECEIVED IN IMC FROM SUNRIDGE",
@@ -7298,7 +7298,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-117",
     "type": "RV",
     "date": "2026-08-24",
-    "party": "SUNRIDGE FOODS",
+    "party": "SUNRIDGE",
     "clientId": "cli-031",
     "vendorId": null,
     "description": "IBFT RECEIVED IN IMC FROM SUNRIDGE",
@@ -7321,7 +7321,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-118",
     "type": "RV",
     "date": "2026-08-27",
-    "party": "SUNRIDGE FOODS",
+    "party": "SUNRIDGE",
     "clientId": "cli-031",
     "vendorId": null,
     "description": "IBFT RECEIVED IN IMC FROM SUNRIDGE",
@@ -7344,10 +7344,10 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-119",
     "type": "RV",
     "date": "2026-07-04",
-    "party": "XEFAN - OTEL RESIDENCY - CASH",
+    "party": "XEFAN",
     "clientId": "cli-032",
     "vendorId": null,
-    "description": "Payment Received from XEFAN - OTEL RESIDENCY - CASH",
+    "description": "Payment Received from XEFAN",
     "amount": 395000,
     "netAmount": 395000,
     "via": "Bank",
@@ -7367,10 +7367,10 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-120",
     "type": "RV",
     "date": "2026-07-18",
-    "party": "XEFAN - OTEL RESIDENCY - CASH",
+    "party": "XEFAN",
     "clientId": "cli-032",
     "vendorId": null,
-    "description": "Payment Received from XEFAN - OTEL RESIDENCY - CASH",
+    "description": "Payment Received from XEFAN",
     "amount": 300000,
     "netAmount": 300000,
     "via": "Bank",
@@ -7390,10 +7390,10 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-121",
     "type": "RV",
     "date": "2026-07-21",
-    "party": "XEFAN - OTEL RESIDENCY - CASH",
+    "party": "XEFAN",
     "clientId": "cli-032",
     "vendorId": null,
-    "description": "Payment Received from XEFAN - OTEL RESIDENCY - CASH",
+    "description": "Payment Received from XEFAN",
     "amount": 350000,
     "netAmount": 350000,
     "via": "Bank",
@@ -7413,10 +7413,10 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-122",
     "type": "RV",
     "date": "2026-07-22",
-    "party": "XEFAN - OTEL RESIDENCY - CASH",
+    "party": "XEFAN",
     "clientId": "cli-032",
     "vendorId": null,
-    "description": "Payment Received from XEFAN - OTEL RESIDENCY - CASH",
+    "description": "Payment Received from XEFAN",
     "amount": 300000,
     "netAmount": 300000,
     "via": "Cash",
@@ -7436,10 +7436,10 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-123",
     "type": "RV",
     "date": "2026-07-23",
-    "party": "XEFAN - OTEL RESIDENCY - CASH",
+    "party": "XEFAN",
     "clientId": "cli-032",
     "vendorId": null,
-    "description": "Payment Received from XEFAN - OTEL RESIDENCY - CASH",
+    "description": "Payment Received from XEFAN",
     "amount": 525000,
     "netAmount": 525000,
     "via": "Bank",
@@ -7459,10 +7459,10 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-124",
     "type": "RV",
     "date": "2026-07-25",
-    "party": "XEFAN - OTEL RESIDENCY - CASH",
+    "party": "XEFAN",
     "clientId": "cli-032",
     "vendorId": null,
-    "description": "Payment Received from XEFAN - OTEL RESIDENCY - CASH",
+    "description": "Payment Received from XEFAN",
     "amount": 200000,
     "netAmount": 200000,
     "via": "Bank",
@@ -7482,10 +7482,10 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-125",
     "type": "RV",
     "date": "2026-07-25",
-    "party": "XEFAN - OTEL RESIDENCY - CASH",
+    "party": "XEFAN",
     "clientId": "cli-032",
     "vendorId": null,
-    "description": "Payment Received from XEFAN - OTEL RESIDENCY - CASH",
+    "description": "Payment Received from XEFAN",
     "amount": 350000,
     "netAmount": 350000,
     "via": "Bank",
@@ -7505,10 +7505,10 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-126",
     "type": "RV",
     "date": "2026-07-27",
-    "party": "XEFAN - OTEL RESIDENCY - CASH",
+    "party": "XEFAN",
     "clientId": "cli-032",
     "vendorId": null,
-    "description": "Payment Received from XEFAN - OTEL RESIDENCY - CASH",
+    "description": "Payment Received from XEFAN",
     "amount": 200000,
     "netAmount": 200000,
     "via": "Bank",
@@ -7528,10 +7528,10 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-127",
     "type": "RV",
     "date": "2026-07-28",
-    "party": "XEFAN - OTEL RESIDENCY - CASH",
+    "party": "XEFAN",
     "clientId": "cli-032",
     "vendorId": null,
-    "description": "Payment Received from XEFAN - OTEL RESIDENCY - CASH",
+    "description": "Payment Received from XEFAN",
     "amount": 200000,
     "netAmount": 200000,
     "via": "Bank",
@@ -7551,10 +7551,10 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-128",
     "type": "RV",
     "date": "2026-07-29",
-    "party": "XEFAN - OTEL RESIDENCY - CASH",
+    "party": "XEFAN",
     "clientId": "cli-032",
     "vendorId": null,
-    "description": "Payment Received from XEFAN - OTEL RESIDENCY - CASH",
+    "description": "Payment Received from XEFAN",
     "amount": 200000,
     "netAmount": 200000,
     "via": "Bank",
@@ -7574,10 +7574,10 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-129",
     "type": "RV",
     "date": "2026-07-30",
-    "party": "XEFAN - OTEL RESIDENCY - CASH",
+    "party": "XEFAN",
     "clientId": "cli-032",
     "vendorId": null,
-    "description": "Payment Received from XEFAN - OTEL RESIDENCY - CASH",
+    "description": "Payment Received from XEFAN",
     "amount": 900000,
     "netAmount": 900000,
     "via": "Cash",
@@ -7597,10 +7597,10 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-130",
     "type": "RV",
     "date": "2026-08-07",
-    "party": "XEFAN - OTEL RESIDENCY - CASH",
+    "party": "XEFAN",
     "clientId": "cli-032",
     "vendorId": null,
-    "description": "Payment Received from XEFAN - OTEL RESIDENCY - CASH",
+    "description": "Payment Received from XEFAN",
     "amount": 600000,
     "netAmount": 600000,
     "via": "Cash",
@@ -7620,10 +7620,10 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-131",
     "type": "RV",
     "date": "2026-08-10",
-    "party": "XEFAN - OTEL RESIDENCY - CASH",
+    "party": "XEFAN",
     "clientId": "cli-032",
     "vendorId": null,
-    "description": "Payment Received from XEFAN - OTEL RESIDENCY - CASH",
+    "description": "Payment Received from XEFAN",
     "amount": 100000,
     "netAmount": 100000,
     "via": "Bank",
@@ -7643,10 +7643,10 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-132",
     "type": "RV",
     "date": "2026-08-13",
-    "party": "XEFAN - OTEL RESIDENCY - CASH",
+    "party": "XEFAN",
     "clientId": "cli-032",
     "vendorId": null,
-    "description": "Payment Received from XEFAN - OTEL RESIDENCY - CASH",
+    "description": "Payment Received from XEFAN",
     "amount": 200000,
     "netAmount": 200000,
     "via": "Bank",
@@ -7666,10 +7666,10 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-133",
     "type": "RV",
     "date": "2026-08-15",
-    "party": "XEFAN - OTEL RESIDENCY - CASH",
+    "party": "XEFAN",
     "clientId": "cli-032",
     "vendorId": null,
-    "description": "Payment Received from XEFAN - OTEL RESIDENCY - CASH",
+    "description": "Payment Received from XEFAN",
     "amount": 500000,
     "netAmount": 500000,
     "via": "Bank",
@@ -7689,10 +7689,10 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-134",
     "type": "RV",
     "date": "2026-08-17",
-    "party": "XEFAN - OTEL RESIDENCY - CASH",
+    "party": "XEFAN",
     "clientId": "cli-032",
     "vendorId": null,
-    "description": "Payment Received from XEFAN - OTEL RESIDENCY - CASH",
+    "description": "Payment Received from XEFAN",
     "amount": 350000,
     "netAmount": 350000,
     "via": "Bank",
@@ -7712,10 +7712,10 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-135",
     "type": "RV",
     "date": "2026-08-17",
-    "party": "XEFAN - OTEL RESIDENCY - CASH",
+    "party": "XEFAN",
     "clientId": "cli-032",
     "vendorId": null,
-    "description": "Payment Received from XEFAN - OTEL RESIDENCY - CASH",
+    "description": "Payment Received from XEFAN",
     "amount": 300000,
     "netAmount": 300000,
     "via": "Bank",
@@ -7735,10 +7735,10 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-136",
     "type": "RV",
     "date": "2026-08-21",
-    "party": "XEFAN - OTEL RESIDENCY - CASH",
+    "party": "XEFAN",
     "clientId": "cli-032",
     "vendorId": null,
-    "description": "Payment Received from XEFAN - OTEL RESIDENCY - CASH",
+    "description": "Payment Received from XEFAN",
     "amount": 155000,
     "netAmount": 155000,
     "via": "Bank",
@@ -7758,10 +7758,10 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-137",
     "type": "RV",
     "date": "2026-08-22",
-    "party": "XEFAN - OTEL RESIDENCY - CASH",
+    "party": "XEFAN",
     "clientId": "cli-032",
     "vendorId": null,
-    "description": "Payment Received from XEFAN - OTEL RESIDENCY - CASH",
+    "description": "Payment Received from XEFAN",
     "amount": 200000,
     "netAmount": 200000,
     "via": "Bank",
@@ -7781,10 +7781,10 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-138",
     "type": "RV",
     "date": "2026-09-03",
-    "party": "XEFAN - OTEL RESIDENCY - CASH",
+    "party": "XEFAN",
     "clientId": "cli-032",
     "vendorId": null,
-    "description": "Payment Received from XEFAN - OTEL RESIDENCY - CASH",
+    "description": "Payment Received from XEFAN",
     "amount": 150000,
     "netAmount": 150000,
     "via": "Bank",
@@ -7804,10 +7804,10 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-139",
     "type": "RV",
     "date": "2026-09-04",
-    "party": "XEFAN - OTEL RESIDENCY - CASH",
+    "party": "XEFAN",
     "clientId": "cli-032",
     "vendorId": null,
-    "description": "Payment Received from XEFAN - OTEL RESIDENCY - CASH",
+    "description": "Payment Received from XEFAN",
     "amount": 150000,
     "netAmount": 150000,
     "via": "Bank",
@@ -7827,10 +7827,10 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-140",
     "type": "RV",
     "date": "2026-09-05",
-    "party": "XEFAN - OTEL RESIDENCY - CASH",
+    "party": "XEFAN",
     "clientId": "cli-032",
     "vendorId": null,
-    "description": "Payment Received from XEFAN - OTEL RESIDENCY - CASH",
+    "description": "Payment Received from XEFAN",
     "amount": 150000,
     "netAmount": 150000,
     "via": "Bank",
@@ -7850,10 +7850,10 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-141",
     "type": "RV",
     "date": "2026-09-05",
-    "party": "XEFAN - OTEL RESIDENCY - CASH",
+    "party": "XEFAN",
     "clientId": "cli-032",
     "vendorId": null,
-    "description": "Payment Received from XEFAN - OTEL RESIDENCY - CASH",
+    "description": "Payment Received from XEFAN",
     "amount": 100000,
     "netAmount": 100000,
     "via": "Bank",
@@ -7873,7 +7873,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-142",
     "type": "RV",
     "date": "2026-09-01",
-    "party": "9th FIGURE",
+    "party": "9 FIGURE",
     "clientId": "cli-034",
     "vendorId": null,
     "description": "IBFT received from 9F Lunch advance",
@@ -7896,7 +7896,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BPV-26-001",
     "type": "PV",
     "date": "2026-09-08",
-    "party": "ADMAX ADVERTISING - MR. UMAIR BUKHARI",
+    "party": "ADMAX",
     "clientId": null,
     "vendorId": "ven-001",
     "description": "IBFT TRANSFER AGAINST INVOICE NO 2026-021",
@@ -7953,7 +7953,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BPV-26-004",
     "type": "PV",
     "date": "2026-07-31",
-    "party": "ADCARE  (Mr. Aslam)",
+    "party": "AD-CARE",
     "clientId": null,
     "vendorId": "ven-003",
     "description": "Cheque Deposit in Muhammmad Aslam - ADCARE",
@@ -7972,7 +7972,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BPV-26-005",
     "type": "PV",
     "date": "2026-08-24",
-    "party": "ADCARE  (Mr. Aslam)",
+    "party": "AD-CARE",
     "clientId": null,
     "vendorId": "ven-003",
     "description": "Cheque Issued to Muhammmad Aslam - ADCARE",
@@ -7991,7 +7991,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BPV-26-006",
     "type": "PV",
     "date": "2026-09-17",
-    "party": "ADCARE  (Mr. Aslam)",
+    "party": "AD-CARE",
     "clientId": null,
     "vendorId": "ven-003",
     "description": "Cheque Issued to Muhammmad Aslam - ADCARE",
@@ -8086,7 +8086,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BPV-26-011",
     "type": "PV",
     "date": "2026-07-18",
-    "party": "AZEEM BUKHARI PHOTOGRAPHER (HAKIM SONS)",
+    "party": "AZEEM BUKHARI",
     "clientId": null,
     "vendorId": "ven-005",
     "description": "IBFT from BIPL against Invoice No 09",
@@ -8105,7 +8105,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BPV-26-012",
     "type": "PV",
     "date": "2026-07-28",
-    "party": "AZEEM BUKHARI PHOTOGRAPHER (HAKIM SONS)",
+    "party": "AZEEM BUKHARI",
     "clientId": null,
     "vendorId": "ven-005",
     "description": "IBFT from BIPL against Invoice No 53",
@@ -8124,7 +8124,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BPV-26-013",
     "type": "PV",
     "date": "2026-08-29",
-    "party": "AZEEM BUKHARI PHOTOGRAPHER (HAKIM SONS)",
+    "party": "AZEEM BUKHARI",
     "clientId": null,
     "vendorId": "ven-005",
     "description": "IBFT from BIPL against Invoice No 16",
@@ -8143,7 +8143,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BPV-26-014",
     "type": "PV",
     "date": "2026-09-16",
-    "party": "AZEEM BUKHARI PHOTOGRAPHER (HAKIM SONS)",
+    "party": "AZEEM BUKHARI",
     "clientId": null,
     "vendorId": "ven-005",
     "description": "Cash Paid to Mr. Azeem Bukhari against Invoice No 25 & 36-A",
@@ -8162,7 +8162,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BPV-26-015",
     "type": "PV",
     "date": "2026-09-12",
-    "party": "GRAVITY MEDIA - HYDERABAD",
+    "party": "GRAVITY MEDIA",
     "clientId": null,
     "vendorId": "ven-008",
     "description": "Cheque Issued from IMC",
@@ -8181,7 +8181,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BPV-26-016",
     "type": "PV",
     "date": "2026-09-01",
-    "party": "IMRAN ENTERPRISE - HYDERABAD",
+    "party": "IMRAN ENTERPRISE",
     "clientId": null,
     "vendorId": "ven-009",
     "description": "Cheque Deposit in Imran Ahmed Account (Received from Medicam) Chq dt 15-8-2026",
@@ -8200,7 +8200,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BPV-26-017",
     "type": "PV",
     "date": "2026-09-08",
-    "party": "IMRAN ENTERPRISE - HYDERABAD",
+    "party": "IMRAN ENTERPRISE",
     "clientId": null,
     "vendorId": "ven-009",
     "description": "IBFT Transfer from BIPL",
@@ -8219,7 +8219,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BPV-26-018",
     "type": "PV",
     "date": "2026-09-12",
-    "party": "Kundanz Advertising (K-Group)",
+    "party": "K-GROUP",
     "clientId": null,
     "vendorId": "ven-011",
     "description": "CHEQUE DEPOSIT IN MEDIA SOLUTION ACCOUNT AGAINST INVOIVE NO 'MS/BILL/10015/2026",
@@ -8238,7 +8238,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BPV-26-019",
     "type": "PV",
     "date": "2026-07-15",
-    "party": "MNB OOH Advertiisng",
+    "party": "MNB",
     "clientId": null,
     "vendorId": "ven-013",
     "description": "Cash depoist in Umair Nasim Butt (MNB) Account",
@@ -8257,7 +8257,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BPV-26-020",
     "type": "PV",
     "date": "2026-07-16",
-    "party": "MNB OOH Advertiisng",
+    "party": "MNB",
     "clientId": null,
     "vendorId": "ven-013",
     "description": "Cash depoist in Umair Nasim Butt (MNB) Account",
@@ -8276,7 +8276,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BPV-26-021",
     "type": "PV",
     "date": "2026-07-16",
-    "party": "MNB OOH Advertiisng",
+    "party": "MNB",
     "clientId": null,
     "vendorId": "ven-013",
     "description": "Early Cash Discount",
@@ -8295,7 +8295,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BPV-26-022",
     "type": "PV",
     "date": "2026-08-08",
-    "party": "MNB OOH Advertiisng",
+    "party": "MNB",
     "clientId": null,
     "vendorId": "ven-013",
     "description": "IBFT Transfer to Umair Nasim Butt (mnb) against RG-324/2026",
@@ -8314,7 +8314,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BPV-26-023",
     "type": "PV",
     "date": "2026-08-10",
-    "party": "MNB OOH Advertiisng",
+    "party": "MNB",
     "clientId": null,
     "vendorId": "ven-013",
     "description": "CHEQUE DEPOSIT IN UMAIR NASEEM BUTT ACCOUNT FROM ANSAR BHAI CHEQUE",
@@ -8333,7 +8333,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BPV-26-024",
     "type": "PV",
     "date": "2026-08-12",
-    "party": "MNB OOH Advertiisng",
+    "party": "MNB",
     "clientId": null,
     "vendorId": "ven-013",
     "description": "IBFT Transfer to Umair Nasim Butt (mnb) against RG-324/2026",
@@ -8352,7 +8352,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BPV-26-025",
     "type": "PV",
     "date": "2026-08-12",
-    "party": "MNB OOH Advertiisng",
+    "party": "MNB",
     "clientId": null,
     "vendorId": "ven-013",
     "description": "Discount",
@@ -8371,7 +8371,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BPV-26-026",
     "type": "PV",
     "date": "2026-09-16",
-    "party": "MNB OOH Advertiisng",
+    "party": "MNB",
     "clientId": null,
     "vendorId": "ven-013",
     "description": "Cash/Cheque Given to MNB",
@@ -8390,7 +8390,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BPV-26-027",
     "type": "PV",
     "date": "2026-09-16",
-    "party": "MNB OOH Advertiisng",
+    "party": "MNB",
     "clientId": null,
     "vendorId": "ven-013",
     "description": "Cash/Cheque Given to MNB",
@@ -8409,7 +8409,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BPV-26-028",
     "type": "PV",
     "date": "2026-07-10",
-    "party": "MS. KAINAT ZAHEER - NEXTIER",
+    "party": "NEXTIER - KAINAT",
     "clientId": null,
     "vendorId": "ven-015",
     "description": "Cash paid to Ms. Kainat Zaheer against bridges",
@@ -8428,7 +8428,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BPV-26-029",
     "type": "PV",
     "date": "2026-08-07",
-    "party": "MS. KAINAT ZAHEER - NEXTIER",
+    "party": "NEXTIER - KAINAT",
     "clientId": null,
     "vendorId": "ven-015",
     "description": "Cheque deposit In Kainat Zaheer Account",
@@ -8447,7 +8447,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BPV-26-030",
     "type": "PV",
     "date": "2026-08-07",
-    "party": "MS. KAINAT ZAHEER - NEXTIER",
+    "party": "NEXTIER - KAINAT",
     "clientId": null,
     "vendorId": "ven-015",
     "description": "Cheque deposit In Kainat Zaheer Account",
@@ -8466,7 +8466,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BPV-26-031",
     "type": "PV",
     "date": "2026-08-10",
-    "party": "MS. KAINAT ZAHEER - NEXTIER",
+    "party": "NEXTIER - KAINAT",
     "clientId": null,
     "vendorId": "ven-015",
     "description": "Cash paid to Mr. Imran C/O Ms. Kainat Zaheer (Nextier)",
@@ -8485,7 +8485,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BPV-26-032",
     "type": "PV",
     "date": "2026-09-07",
-    "party": "MS. KAINAT ZAHEER - NEXTIER",
+    "party": "NEXTIER - KAINAT",
     "clientId": null,
     "vendorId": "ven-015",
     "description": "Cheque deposit In Kainat Zaheer Account",
@@ -8504,7 +8504,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BPV-26-033",
     "type": "PV",
     "date": "2026-09-14",
-    "party": "MS. KAINAT ZAHEER - NEXTIER",
+    "party": "NEXTIER - KAINAT",
     "clientId": null,
     "vendorId": "ven-015",
     "description": "Cheque deposit inKainat Zaheer - Nextier against PO No AD/OOH/460/2026",
@@ -8523,7 +8523,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BPV-26-034",
     "type": "PV",
     "date": "2026-09-14",
-    "party": "MS. KAINAT ZAHEER - NEXTIER",
+    "party": "NEXTIER - KAINAT",
     "clientId": null,
     "vendorId": "ven-015",
     "description": "Cheque deposit inKainat Zaheer - Nextier against PO No AD/OOH/460/2026",
@@ -8542,7 +8542,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BPV-26-035",
     "type": "PV",
     "date": "2026-08-22",
-    "party": "R & D GROUP (KASHIF GRAMI)",
+    "party": "R & D GROUP",
     "clientId": null,
     "vendorId": "ven-016",
     "description": "Cheque Issued to R and D Group against Digital streamers",
@@ -8561,7 +8561,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BPV-26-036",
     "type": "PV",
     "date": "2026-09-17",
-    "party": "R & D GROUP (KASHIF GRAMI)",
+    "party": "R & D GROUP",
     "clientId": null,
     "vendorId": "ven-016",
     "description": "Cheque Issued to R and D Group against Digital streamers",
@@ -8580,7 +8580,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BPV-26-037",
     "type": "PV",
     "date": "2026-07-20",
-    "party": "R.M Associates / Mr. Zohaib",
+    "party": "RM ASSOCIATES",
     "clientId": null,
     "vendorId": "ven-017",
     "description": "Cheque Issued to RM Associates against invoice AP 002",
@@ -8599,7 +8599,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BPV-26-038",
     "type": "PV",
     "date": "2026-08-22",
-    "party": "R.M Associates / Mr. Zohaib",
+    "party": "RM ASSOCIATES",
     "clientId": null,
     "vendorId": "ven-017",
     "description": "Cheque Issued to RM Associates against invoice AP 003",
@@ -8618,7 +8618,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BPV-26-039",
     "type": "PV",
     "date": "2026-09-12",
-    "party": "R.M Associates / Mr. Zohaib",
+    "party": "RM ASSOCIATES",
     "clientId": null,
     "vendorId": "ven-017",
     "description": "Cheque Issued to RM Associates against invoice",
@@ -8675,7 +8675,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BPV-26-042",
     "type": "PV",
     "date": "2026-09-10",
-    "party": "ZAIB ENTERPRISES - SHAHIDZAIB",
+    "party": "Zaib Enterprises",
     "clientId": null,
     "vendorId": "ven-022",
     "description": "Cheuqe Given o Zaib Enterprises",
@@ -8694,7 +8694,7 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BPV-26-043",
     "type": "PV",
     "date": "2026-09-16",
-    "party": "ZAIB ENTERPRISES - SHAHIDZAIB",
+    "party": "Zaib Enterprises",
     "clientId": null,
     "vendorId": "ven-022",
     "description": "Cash Paid to Zaib Enterprises",
@@ -8798,19 +8798,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-1",
     "date": "2025-02-17",
     "reference": "AD/8584/02/25",
-    "description": "[Sales Invoice] CHASE VALUE CENTER — Chase Value Festive Collection Site Printing & Installation of Baloch Bridge & Essa Nagri",
+    "description": "[Sales Invoice] CHASE VALUE — Chase Value Festive Collection Site Printing & Installation of Baloch Bridge & Essa Nagri",
     "lines": [
       {
         "account": "ar",
         "debit": 86000,
         "credit": 0,
-        "memo": "Accounts Receivable — CHASE VALUE CENTER"
+        "memo": "Accounts Receivable — CHASE VALUE"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 86000,
-        "memo": "Sales Revenue — CHASE VALUE CENTER"
+        "memo": "Sales Revenue — CHASE VALUE"
       }
     ]
   },
@@ -8818,19 +8818,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-2",
     "date": "2025-02-17",
     "reference": "AD/8585/02/25",
-    "description": "[Sales Invoice] CHASE VALUE CENTER — Chase Value Festive Collection Site Rental of Baloch Bridge & Essa Nagri for 45 Days",
+    "description": "[Sales Invoice] CHASE VALUE — Chase Value Festive Collection Site Rental of Baloch Bridge & Essa Nagri for 45 Days",
     "lines": [
       {
         "account": "ar",
         "debit": 1275000,
         "credit": 0,
-        "memo": "Accounts Receivable — CHASE VALUE CENTER"
+        "memo": "Accounts Receivable — CHASE VALUE"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 1275000,
-        "memo": "Sales Revenue — CHASE VALUE CENTER"
+        "memo": "Sales Revenue — CHASE VALUE"
       }
     ]
   },
@@ -8838,19 +8838,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-3",
     "date": "2025-02-17",
     "reference": "AD/8586/02/25",
-    "description": "[Sales Invoice] CHASE VALUE CENTER — Chase Value Festive Collection Digital Media campaign",
+    "description": "[Sales Invoice] CHASE VALUE — Chase Value Festive Collection Digital Media campaign",
     "lines": [
       {
         "account": "ar",
         "debit": 1500000,
         "credit": 0,
-        "memo": "Accounts Receivable — CHASE VALUE CENTER"
+        "memo": "Accounts Receivable — CHASE VALUE"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 1500000,
-        "memo": "Sales Revenue — CHASE VALUE CENTER"
+        "memo": "Sales Revenue — CHASE VALUE"
       }
     ]
   },
@@ -8858,7 +8858,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-4",
     "date": "2026-07-01",
     "reference": "BRV-26-004",
-    "description": "[Receipt Voucher] CHASE VALUE CENTER — Chase Value Gift Voucher Recevied",
+    "description": "[Receipt Voucher] CHASE VALUE — Chase Value Gift Voucher Recevied",
     "lines": [
       {
         "account": "bank",
@@ -8871,7 +8871,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 500000,
-        "memo": "Accounts Receivable — CHASE VALUE CENTER"
+        "memo": "Accounts Receivable — CHASE VALUE"
       }
     ]
   },
@@ -8879,7 +8879,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-5",
     "date": "2026-07-01",
     "reference": "BRV-26-005",
-    "description": "[Receipt Voucher] CHASE VALUE CENTER — Chase Value Gift Voucher Recevied",
+    "description": "[Receipt Voucher] CHASE VALUE — Chase Value Gift Voucher Recevied",
     "lines": [
       {
         "account": "bank",
@@ -8892,7 +8892,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 930000,
-        "memo": "Accounts Receivable — CHASE VALUE CENTER"
+        "memo": "Accounts Receivable — CHASE VALUE"
       }
     ]
   },
@@ -8900,7 +8900,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-6",
     "date": "2025-03-24",
     "reference": "BRV-26-006",
-    "description": "[Receipt Voucher] CHASE VALUE CENTER — Cash Recevied from Chase Value KBR branch against Site rental invoice",
+    "description": "[Receipt Voucher] CHASE VALUE — Cash Recevied from Chase Value KBR branch against Site rental invoice",
     "lines": [
       {
         "account": "cash",
@@ -8913,7 +8913,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 1000000,
-        "memo": "Accounts Receivable — CHASE VALUE CENTER"
+        "memo": "Accounts Receivable — CHASE VALUE"
       }
     ]
   },
@@ -8921,19 +8921,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-4",
     "date": "2025-03-18",
     "reference": "AD/8615/03/25",
-    "description": "[Sales Invoice] CHASE VALUE CENTER — Chase Value Hyderabad Launch Electronic Media Campaign",
+    "description": "[Sales Invoice] CHASE VALUE — Chase Value Hyderabad Launch Electronic Media Campaign",
     "lines": [
       {
         "account": "ar",
         "debit": 740025,
         "credit": 0,
-        "memo": "Accounts Receivable — CHASE VALUE CENTER"
+        "memo": "Accounts Receivable — CHASE VALUE"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 740025,
-        "memo": "Sales Revenue — CHASE VALUE CENTER"
+        "memo": "Sales Revenue — CHASE VALUE"
       }
     ]
   },
@@ -8941,19 +8941,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-5",
     "date": "2025-03-18",
     "reference": "AD/8613/03/25",
-    "description": "[Sales Invoice] CHASE VALUE CENTER — Chase Value Hyderabad Launch Cable Media campaign",
+    "description": "[Sales Invoice] CHASE VALUE — Chase Value Hyderabad Launch Cable Media campaign",
     "lines": [
       {
         "account": "ar",
         "debit": 269500,
         "credit": 0,
-        "memo": "Accounts Receivable — CHASE VALUE CENTER"
+        "memo": "Accounts Receivable — CHASE VALUE"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 269500,
-        "memo": "Sales Revenue — CHASE VALUE CENTER"
+        "memo": "Sales Revenue — CHASE VALUE"
       }
     ]
   },
@@ -8961,19 +8961,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-6",
     "date": "2025-03-18",
     "reference": "AD/8614/03/25",
-    "description": "[Sales Invoice] CHASE VALUE CENTER — Chase Value Hyderabad Launch FM Radio campaign",
+    "description": "[Sales Invoice] CHASE VALUE — Chase Value Hyderabad Launch FM Radio campaign",
     "lines": [
       {
         "account": "ar",
         "debit": 324773,
         "credit": 0,
-        "memo": "Accounts Receivable — CHASE VALUE CENTER"
+        "memo": "Accounts Receivable — CHASE VALUE"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 324773,
-        "memo": "Sales Revenue — CHASE VALUE CENTER"
+        "memo": "Sales Revenue — CHASE VALUE"
       }
     ]
   },
@@ -8981,19 +8981,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-7",
     "date": "2025-03-21",
     "reference": "AD/8632/03/25",
-    "description": "[Sales Invoice] CHASE VALUE CENTER — Chase Value Media & PR Coverage of Hyderabad Launch",
+    "description": "[Sales Invoice] CHASE VALUE — Chase Value Media & PR Coverage of Hyderabad Launch",
     "lines": [
       {
         "account": "ar",
         "debit": 1000000,
         "credit": 0,
-        "memo": "Accounts Receivable — CHASE VALUE CENTER"
+        "memo": "Accounts Receivable — CHASE VALUE"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 1000000,
-        "memo": "Sales Revenue — CHASE VALUE CENTER"
+        "memo": "Sales Revenue — CHASE VALUE"
       }
     ]
   },
@@ -9001,7 +9001,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-7",
     "date": "2025-03-25",
     "reference": "BRV-26-007",
-    "description": "[Receipt Voucher] CHASE VALUE CENTER — Cash Recevied from Chase Value KBR branch against Site rental invoice",
+    "description": "[Receipt Voucher] CHASE VALUE — Cash Recevied from Chase Value KBR branch against Site rental invoice",
     "lines": [
       {
         "account": "cash",
@@ -9014,7 +9014,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 500000,
-        "memo": "Accounts Receivable — CHASE VALUE CENTER"
+        "memo": "Accounts Receivable — CHASE VALUE"
       }
     ]
   },
@@ -9022,7 +9022,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-8",
     "date": "2025-03-26",
     "reference": "BRV-26-008",
-    "description": "[Receipt Voucher] CHASE VALUE CENTER — Cash Recevied from Chase Value KBR branch against Site rental invoice",
+    "description": "[Receipt Voucher] CHASE VALUE — Cash Recevied from Chase Value KBR branch against Site rental invoice",
     "lines": [
       {
         "account": "cash",
@@ -9035,7 +9035,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 700000,
-        "memo": "Accounts Receivable — CHASE VALUE CENTER"
+        "memo": "Accounts Receivable — CHASE VALUE"
       }
     ]
   },
@@ -9043,7 +9043,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-9",
     "date": "2025-03-27",
     "reference": "BRV-26-009",
-    "description": "[Receipt Voucher] CHASE VALUE CENTER — Cash Recevied from Chase Value KBR branch against Site rental invoice",
+    "description": "[Receipt Voucher] CHASE VALUE — Cash Recevied from Chase Value KBR branch against Site rental invoice",
     "lines": [
       {
         "account": "cash",
@@ -9056,7 +9056,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 800000,
-        "memo": "Accounts Receivable — CHASE VALUE CENTER"
+        "memo": "Accounts Receivable — CHASE VALUE"
       }
     ]
   },
@@ -9064,7 +9064,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-10",
     "date": "2026-07-01",
     "reference": "BRV-26-010",
-    "description": "[Receipt Voucher] CHASE VALUE CENTER — Received From Chase Value",
+    "description": "[Receipt Voucher] CHASE VALUE — Received From Chase Value",
     "lines": [
       {
         "account": "bank",
@@ -9077,7 +9077,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 625747,
-        "memo": "Accounts Receivable — CHASE VALUE CENTER"
+        "memo": "Accounts Receivable — CHASE VALUE"
       }
     ]
   },
@@ -9085,7 +9085,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-11",
     "date": "2026-07-01",
     "reference": "BRV-26-011",
-    "description": "[Receipt Voucher] CHASE VALUE CENTER — Received From Chase Value",
+    "description": "[Receipt Voucher] CHASE VALUE — Received From Chase Value",
     "lines": [
       {
         "account": "bank",
@@ -9098,7 +9098,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 16577,
-        "memo": "Accounts Receivable — CHASE VALUE CENTER"
+        "memo": "Accounts Receivable — CHASE VALUE"
       }
     ]
   },
@@ -9106,7 +9106,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-12",
     "date": "2026-07-01",
     "reference": "BRV-26-012",
-    "description": "[Receipt Voucher] CHASE VALUE CENTER — Received From Chase Value",
+    "description": "[Receipt Voucher] CHASE VALUE — Received From Chase Value",
     "lines": [
       {
         "account": "bank",
@@ -9119,7 +9119,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 34129,
-        "memo": "Accounts Receivable — CHASE VALUE CENTER"
+        "memo": "Accounts Receivable — CHASE VALUE"
       }
     ]
   },
@@ -9127,7 +9127,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-13",
     "date": "2026-07-01",
     "reference": "BRV-26-013",
-    "description": "[Receipt Voucher] CHASE VALUE CENTER — Received From Chase Value",
+    "description": "[Receipt Voucher] CHASE VALUE — Received From Chase Value",
     "lines": [
       {
         "account": "bank",
@@ -9140,7 +9140,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 568845,
-        "memo": "Accounts Receivable — CHASE VALUE CENTER"
+        "memo": "Accounts Receivable — CHASE VALUE"
       }
     ]
   },
@@ -9148,7 +9148,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-14",
     "date": "2026-07-01",
     "reference": "BRV-26-014",
-    "description": "[Receipt Voucher] CHASE VALUE CENTER — Received From Chase Value",
+    "description": "[Receipt Voucher] CHASE VALUE — Received From Chase Value",
     "lines": [
       {
         "account": "bank",
@@ -9161,7 +9161,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 950000,
-        "memo": "Accounts Receivable — CHASE VALUE CENTER"
+        "memo": "Accounts Receivable — CHASE VALUE"
       }
     ]
   },
@@ -9169,7 +9169,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-15",
     "date": "2026-07-08",
     "reference": "BRV-26-015",
-    "description": "[Receipt Voucher] CHASE VALUE CENTER — CASH RECEIVED FROM CLIENT CHASE VALUE",
+    "description": "[Receipt Voucher] CHASE VALUE — CASH RECEIVED FROM CLIENT CHASE VALUE",
     "lines": [
       {
         "account": "cash",
@@ -9182,7 +9182,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 870000,
-        "memo": "Accounts Receivable — CHASE VALUE CENTER"
+        "memo": "Accounts Receivable — CHASE VALUE"
       }
     ]
   },
@@ -9190,7 +9190,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-16",
     "date": "2026-07-09",
     "reference": "BRV-26-016",
-    "description": "[Receipt Voucher] CHASE VALUE CENTER — CASH RECEIVED FROM CLIENT CHASE VALUE",
+    "description": "[Receipt Voucher] CHASE VALUE — CASH RECEIVED FROM CLIENT CHASE VALUE",
     "lines": [
       {
         "account": "cash",
@@ -9203,7 +9203,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 1000000,
-        "memo": "Accounts Receivable — CHASE VALUE CENTER"
+        "memo": "Accounts Receivable — CHASE VALUE"
       }
     ]
   },
@@ -9211,19 +9211,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-8",
     "date": "2026-08-29",
     "reference": "AD/9832/08/26",
-    "description": "[Sales Invoice] CHASE VALUE CENTER — CHASE VALUE CENTER RENTAL ABL ROUND ABOUT (22 DAYS) &              RJ MALL (17 DAYS)",
+    "description": "[Sales Invoice] CHASE VALUE — CHASE VALUE CENTER RENTAL ABL ROUND ABOUT (22 DAYS) &              RJ MALL (17 DAYS)",
     "lines": [
       {
         "account": "ar",
         "debit": 276250,
         "credit": 0,
-        "memo": "Accounts Receivable — CHASE VALUE CENTER"
+        "memo": "Accounts Receivable — CHASE VALUE"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 276250,
-        "memo": "Sales Revenue — CHASE VALUE CENTER"
+        "memo": "Sales Revenue — CHASE VALUE"
       }
     ]
   },
@@ -9231,19 +9231,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-9",
     "date": "2026-08-29",
     "reference": "AD/9833/08/26",
-    "description": "[Sales Invoice] CHASE VALUE CENTER — CHASE VALUE CENTER RENTAL ABL ROUND ABOUT (22 DAYS) &              RJ MALL (17 DAYS)",
+    "description": "[Sales Invoice] CHASE VALUE — CHASE VALUE CENTER RENTAL ABL ROUND ABOUT (22 DAYS) &              RJ MALL (17 DAYS)",
     "lines": [
       {
         "account": "ar",
         "debit": 276250,
         "credit": 0,
-        "memo": "Accounts Receivable — CHASE VALUE CENTER"
+        "memo": "Accounts Receivable — CHASE VALUE"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 276250,
-        "memo": "Sales Revenue — CHASE VALUE CENTER"
+        "memo": "Sales Revenue — CHASE VALUE"
       }
     ]
   },
@@ -9251,19 +9251,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-10",
     "date": "2026-08-29",
     "reference": "AD/9834/08/26",
-    "description": "[Sales Invoice] CHASE VALUE CENTER — CHASE VALUE CENTER PRINTING AND INSTALLATION KARACHI                      (AZADI ARTWORK)",
+    "description": "[Sales Invoice] CHASE VALUE — CHASE VALUE CENTER PRINTING AND INSTALLATION KARACHI                      (AZADI ARTWORK)",
     "lines": [
       {
         "account": "ar",
         "debit": 72000,
         "credit": 0,
-        "memo": "Accounts Receivable — CHASE VALUE CENTER"
+        "memo": "Accounts Receivable — CHASE VALUE"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 72000,
-        "memo": "Sales Revenue — CHASE VALUE CENTER"
+        "memo": "Sales Revenue — CHASE VALUE"
       }
     ]
   },
@@ -9271,19 +9271,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-11",
     "date": "2026-08-29",
     "reference": "AD/9835/08/26",
-    "description": "[Sales Invoice] CHASE VALUE CENTER — CHASE VALUE CENTER PRINTING AND INSTALLATION KARACHI  (CAMPAIGN ARTWORK)",
+    "description": "[Sales Invoice] CHASE VALUE — CHASE VALUE CENTER PRINTING AND INSTALLATION KARACHI  (CAMPAIGN ARTWORK)",
     "lines": [
       {
         "account": "ar",
         "debit": 72000,
         "credit": 0,
-        "memo": "Accounts Receivable — CHASE VALUE CENTER"
+        "memo": "Accounts Receivable — CHASE VALUE"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 72000,
-        "memo": "Sales Revenue — CHASE VALUE CENTER"
+        "memo": "Sales Revenue — CHASE VALUE"
       }
     ]
   },
@@ -9291,19 +9291,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-12",
     "date": "2026-08-29",
     "reference": "AD/9836/08/26",
-    "description": "[Sales Invoice] CHASE VALUE CENTER — CHASE VALUE CENTER DIGITAL STREAMERS AT AIRPORT (15 DAYS)",
+    "description": "[Sales Invoice] CHASE VALUE — CHASE VALUE CENTER DIGITAL STREAMERS AT AIRPORT (15 DAYS)",
     "lines": [
       {
         "account": "ar",
         "debit": 150000,
         "credit": 0,
-        "memo": "Accounts Receivable — CHASE VALUE CENTER"
+        "memo": "Accounts Receivable — CHASE VALUE"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 150000,
-        "memo": "Sales Revenue — CHASE VALUE CENTER"
+        "memo": "Sales Revenue — CHASE VALUE"
       }
     ]
   },
@@ -9311,19 +9311,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-13",
     "date": "2026-09-10",
     "reference": "AD/9864/09/26",
-    "description": "[Sales Invoice] CHASE VALUE CENTER — CHASE VALUE CENTER RENTAL ABL ROUND ABOUT & RJ MALL                             (1 MONTH)",
+    "description": "[Sales Invoice] CHASE VALUE — CHASE VALUE CENTER RENTAL ABL ROUND ABOUT & RJ MALL                             (1 MONTH)",
     "lines": [
       {
         "account": "ar",
         "debit": 425000,
         "credit": 0,
-        "memo": "Accounts Receivable — CHASE VALUE CENTER"
+        "memo": "Accounts Receivable — CHASE VALUE"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 425000,
-        "memo": "Sales Revenue — CHASE VALUE CENTER"
+        "memo": "Sales Revenue — CHASE VALUE"
       }
     ]
   },
@@ -9331,19 +9331,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-14",
     "date": "2026-09-10",
     "reference": "AD/9866/09/26",
-    "description": "[Sales Invoice] CHASE VALUE CENTER — CHASE VALUE CENTER PRINTING AND INSTALLATION KARACHI",
+    "description": "[Sales Invoice] CHASE VALUE — CHASE VALUE CENTER PRINTING AND INSTALLATION KARACHI",
     "lines": [
       {
         "account": "ar",
         "debit": 72000,
         "credit": 0,
-        "memo": "Accounts Receivable — CHASE VALUE CENTER"
+        "memo": "Accounts Receivable — CHASE VALUE"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 72000,
-        "memo": "Sales Revenue — CHASE VALUE CENTER"
+        "memo": "Sales Revenue — CHASE VALUE"
       }
     ]
   },
@@ -9351,19 +9351,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-15",
     "date": "2026-07-01",
     "reference": "INV-26-015",
-    "description": "[Sales Invoice] CHASE VALUE CENTER — Total Net Amount",
+    "description": "[Sales Invoice] CHASE VALUE — Total Net Amount",
     "lines": [
       {
         "account": "ar",
         "debit": 1343500,
         "credit": 0,
-        "memo": "Accounts Receivable — CHASE VALUE CENTER"
+        "memo": "Accounts Receivable — CHASE VALUE"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 1343500,
-        "memo": "Sales Revenue — CHASE VALUE CENTER"
+        "memo": "Sales Revenue — CHASE VALUE"
       }
     ]
   },
@@ -9371,7 +9371,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-17",
     "date": "2026-07-01",
     "reference": "BRV-26-017",
-    "description": "[Receipt Voucher] CHASE VALUE CENTER — Total Net Amount",
+    "description": "[Receipt Voucher] CHASE VALUE — Total Net Amount",
     "lines": [
       {
         "account": "bank",
@@ -9384,7 +9384,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 1870000,
-        "memo": "Accounts Receivable — CHASE VALUE CENTER"
+        "memo": "Accounts Receivable — CHASE VALUE"
       }
     ]
   },
@@ -9392,7 +9392,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-18",
     "date": "2026-08-19",
     "reference": "BRV-26-018",
-    "description": "[Receipt Voucher] CHASE VALUE CENTER — CHASE VALUE VOUCHERS RECEIVED Qty: 184  x 5000",
+    "description": "[Receipt Voucher] CHASE VALUE — CHASE VALUE VOUCHERS RECEIVED Qty: 184  x 5000",
     "lines": [
       {
         "account": "bank",
@@ -9405,7 +9405,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 920000,
-        "memo": "Accounts Receivable — CHASE VALUE CENTER"
+        "memo": "Accounts Receivable — CHASE VALUE"
       }
     ]
   },
@@ -9413,19 +9413,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-16",
     "date": "2026-08-29",
     "reference": "AD/96233/08/26",
-    "description": "[Sales Invoice] CHASE VALUE CENTER — CHASE VALUE CENTER RENTAL ABL ROUND ABOUT (22 DAYS) &              RJ MALL (17 DAYS)",
+    "description": "[Sales Invoice] CHASE VALUE — CHASE VALUE CENTER RENTAL ABL ROUND ABOUT (22 DAYS) &              RJ MALL (17 DAYS)",
     "lines": [
       {
         "account": "ar",
         "debit": 276250,
         "credit": 0,
-        "memo": "Accounts Receivable — CHASE VALUE CENTER"
+        "memo": "Accounts Receivable — CHASE VALUE"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 276250,
-        "memo": "Sales Revenue — CHASE VALUE CENTER"
+        "memo": "Sales Revenue — CHASE VALUE"
       }
     ]
   },
@@ -9433,19 +9433,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-17",
     "date": "2026-09-10",
     "reference": "AD/9865/09/26",
-    "description": "[Sales Invoice] CHASE VALUE CENTER — CHASE VALUE CENTER RENTAL ABL ROUND ABOUT & RJ MALL                             (1 MONTH)",
+    "description": "[Sales Invoice] CHASE VALUE — CHASE VALUE CENTER RENTAL ABL ROUND ABOUT & RJ MALL                             (1 MONTH)",
     "lines": [
       {
         "account": "ar",
         "debit": 425000,
         "credit": 0,
-        "memo": "Accounts Receivable — CHASE VALUE CENTER"
+        "memo": "Accounts Receivable — CHASE VALUE"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 425000,
-        "memo": "Sales Revenue — CHASE VALUE CENTER"
+        "memo": "Sales Revenue — CHASE VALUE"
       }
     ]
   },
@@ -9453,19 +9453,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-18",
     "date": "2026-07-01",
     "reference": "INV-26-018",
-    "description": "[Sales Invoice] CHASE VALUE CENTER — Total Net Amount",
+    "description": "[Sales Invoice] CHASE VALUE — Total Net Amount",
     "lines": [
       {
         "account": "ar",
         "debit": 701250,
         "credit": 0,
-        "memo": "Accounts Receivable — CHASE VALUE CENTER"
+        "memo": "Accounts Receivable — CHASE VALUE"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 701250,
-        "memo": "Sales Revenue — CHASE VALUE CENTER"
+        "memo": "Sales Revenue — CHASE VALUE"
       }
     ]
   },
@@ -9473,7 +9473,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-19",
     "date": "2026-07-01",
     "reference": "BRV-26-019",
-    "description": "[Receipt Voucher] CHASE VALUE CENTER — Total Net Amount",
+    "description": "[Receipt Voucher] CHASE VALUE — Total Net Amount",
     "lines": [
       {
         "account": "bank",
@@ -9486,7 +9486,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 920000,
-        "memo": "Accounts Receivable — CHASE VALUE CENTER"
+        "memo": "Accounts Receivable — CHASE VALUE"
       }
     ]
   },
@@ -9494,19 +9494,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-19",
     "date": "2026-02-20",
     "reference": "AD/9258/02/26",
-    "description": "[Sales Invoice] CHASE VALUE CENTER — EMINENT OOH Media Campaign 1 Month",
+    "description": "[Sales Invoice] CHASE VALUE — EMINENT OOH Media Campaign 1 Month",
     "lines": [
       {
         "account": "ar",
         "debit": 2600000,
         "credit": 0,
-        "memo": "Accounts Receivable — CHASE VALUE CENTER"
+        "memo": "Accounts Receivable — CHASE VALUE"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 2600000,
-        "memo": "Sales Revenue — CHASE VALUE CENTER"
+        "memo": "Sales Revenue — CHASE VALUE"
       }
     ]
   },
@@ -9514,19 +9514,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-20",
     "date": "2026-02-20",
     "reference": "AD/9334/02/26",
-    "description": "[Sales Invoice] CHASE VALUE CENTER — Printing & Installation (Open Now)",
+    "description": "[Sales Invoice] CHASE VALUE — Printing & Installation (Open Now)",
     "lines": [
       {
         "account": "ar",
         "debit": 257400,
         "credit": 0,
-        "memo": "Accounts Receivable — CHASE VALUE CENTER"
+        "memo": "Accounts Receivable — CHASE VALUE"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 257400,
-        "memo": "Sales Revenue — CHASE VALUE CENTER"
+        "memo": "Sales Revenue — CHASE VALUE"
       }
     ]
   },
@@ -9534,19 +9534,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-21",
     "date": "2026-02-20",
     "reference": "AD/9362/02/26",
-    "description": "[Sales Invoice] CHASE VALUE CENTER — Eminent OOH Digital Media Campaign",
+    "description": "[Sales Invoice] CHASE VALUE — Eminent OOH Digital Media Campaign",
     "lines": [
       {
         "account": "ar",
         "debit": 825000,
         "credit": 0,
-        "memo": "Accounts Receivable — CHASE VALUE CENTER"
+        "memo": "Accounts Receivable — CHASE VALUE"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 825000,
-        "memo": "Sales Revenue — CHASE VALUE CENTER"
+        "memo": "Sales Revenue — CHASE VALUE"
       }
     ]
   },
@@ -9554,7 +9554,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-20",
     "date": "2026-07-08",
     "reference": "BRV-26-020",
-    "description": "[Receipt Voucher] CHASE VALUE CENTER — Cash Received from Chase Value",
+    "description": "[Receipt Voucher] CHASE VALUE — Cash Received from Chase Value",
     "lines": [
       {
         "account": "cash",
@@ -9567,7 +9567,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 870000,
-        "memo": "Accounts Receivable — CHASE VALUE CENTER"
+        "memo": "Accounts Receivable — CHASE VALUE"
       }
     ]
   },
@@ -9575,13 +9575,13 @@ export const REAL_JOURNAL = [
     "id": "jnl-ob-cli-002",
     "date": "2026-06-30",
     "reference": "OB-CLI-002",
-    "description": "[Opening Balance] Accounts Receivable — CHASE VALUE CENTER",
+    "description": "[Opening Balance] Accounts Receivable — CHASE VALUE",
     "lines": [
       {
         "account": "ar",
         "debit": 3019800,
         "credit": 0,
-        "memo": "Opening Balance — CHASE VALUE CENTER"
+        "memo": "Opening Balance — CHASE VALUE"
       },
       {
         "account": "equity",
@@ -9657,19 +9657,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-22",
     "date": "2026-07-23",
     "reference": "AD/9766/07/26",
-    "description": "[Sales Invoice] DECENT BUILDERS AND DEVELOPERS — HFA COMMERCIAL ZONE WALL BRANDING",
+    "description": "[Sales Invoice] DECENT — HFA COMMERCIAL ZONE WALL BRANDING",
     "lines": [
       {
         "account": "ar",
         "debit": 882809,
         "credit": 0,
-        "memo": "Accounts Receivable — DECENT BUILDERS AND DEVELOPERS"
+        "memo": "Accounts Receivable — DECENT"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 882809,
-        "memo": "Sales Revenue — DECENT BUILDERS AND DEVELOPERS"
+        "memo": "Sales Revenue — DECENT"
       }
     ]
   },
@@ -9677,7 +9677,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-23",
     "date": "2026-08-24",
     "reference": "BRV-26-023",
-    "description": "[Receipt Voucher] DECENT BUILDERS AND DEVELOPERS — CHEQUE RECEIVED FROM DECENT - MALIR TOWN PHASE 4",
+    "description": "[Receipt Voucher] DECENT — CHEQUE RECEIVED FROM DECENT - MALIR TOWN PHASE 4",
     "lines": [
       {
         "account": "bank",
@@ -9690,7 +9690,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 900000,
-        "memo": "Accounts Receivable — DECENT BUILDERS AND DEVELOPERS"
+        "memo": "Accounts Receivable — DECENT"
       }
     ]
   },
@@ -9698,7 +9698,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-24",
     "date": "2026-09-07",
     "reference": "BRV-26-024",
-    "description": "[Receipt Voucher] DECENT BUILDERS AND DEVELOPERS — CHEQUE RECEIVED FROM DECENT - MALIR TOWN PHASE 4",
+    "description": "[Receipt Voucher] DECENT — CHEQUE RECEIVED FROM DECENT - MALIR TOWN PHASE 4",
     "lines": [
       {
         "account": "bank",
@@ -9711,7 +9711,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 900000,
-        "memo": "Accounts Receivable — DECENT BUILDERS AND DEVELOPERS"
+        "memo": "Accounts Receivable — DECENT"
       }
     ]
   },
@@ -9719,7 +9719,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-25",
     "date": "2026-09-07",
     "reference": "BRV-26-025",
-    "description": "[Receipt Voucher] DECENT BUILDERS AND DEVELOPERS — CHEQUE RECEIVED FROM DECENT - MALIR TOWN PHASE 4",
+    "description": "[Receipt Voucher] DECENT — CHEQUE RECEIVED FROM DECENT - MALIR TOWN PHASE 4",
     "lines": [
       {
         "account": "bank",
@@ -9732,7 +9732,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 900000,
-        "memo": "Accounts Receivable — DECENT BUILDERS AND DEVELOPERS"
+        "memo": "Accounts Receivable — DECENT"
       }
     ]
   },
@@ -9740,13 +9740,13 @@ export const REAL_JOURNAL = [
     "id": "jnl-ob-cli-004",
     "date": "2026-06-30",
     "reference": "OB-CLI-004",
-    "description": "[Opening Balance] Accounts Receivable — DECENT BUILDERS AND DEVELOPERS",
+    "description": "[Opening Balance] Accounts Receivable — DECENT",
     "lines": [
       {
         "account": "ar",
         "debit": 6349675,
         "credit": 0,
-        "memo": "Opening Balance — DECENT BUILDERS AND DEVELOPERS"
+        "memo": "Opening Balance — DECENT"
       },
       {
         "account": "equity",
@@ -9760,19 +9760,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-23",
     "date": "2026-07-01",
     "reference": "INV-26-023",
-    "description": "[Sales Invoice] DESIGN MEDIA - Mr. Sajid Channa — Media Billing",
+    "description": "[Sales Invoice] DESIGN MEDIA — Media Billing",
     "lines": [
       {
         "account": "ar",
         "debit": 3471368,
         "credit": 0,
-        "memo": "Accounts Receivable — DESIGN MEDIA - Mr. Sajid Channa"
+        "memo": "Accounts Receivable — DESIGN MEDIA"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 3471368,
-        "memo": "Sales Revenue — DESIGN MEDIA - Mr. Sajid Channa"
+        "memo": "Sales Revenue — DESIGN MEDIA"
       }
     ]
   },
@@ -9780,19 +9780,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-24",
     "date": "2026-07-01",
     "reference": "INV-JUNE, 2024",
-    "description": "[Sales Invoice] DESIGN MEDIA - Mr. Sajid Channa — Media Billing",
+    "description": "[Sales Invoice] DESIGN MEDIA — Media Billing",
     "lines": [
       {
         "account": "ar",
         "debit": 75000,
         "credit": 0,
-        "memo": "Accounts Receivable — DESIGN MEDIA - Mr. Sajid Channa"
+        "memo": "Accounts Receivable — DESIGN MEDIA"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 75000,
-        "memo": "Sales Revenue — DESIGN MEDIA - Mr. Sajid Channa"
+        "memo": "Sales Revenue — DESIGN MEDIA"
       }
     ]
   },
@@ -9800,19 +9800,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-25",
     "date": "2026-07-01",
     "reference": "INV-JULY, 2024",
-    "description": "[Sales Invoice] DESIGN MEDIA - Mr. Sajid Channa — Media Billing",
+    "description": "[Sales Invoice] DESIGN MEDIA — Media Billing",
     "lines": [
       {
         "account": "ar",
         "debit": 75000,
         "credit": 0,
-        "memo": "Accounts Receivable — DESIGN MEDIA - Mr. Sajid Channa"
+        "memo": "Accounts Receivable — DESIGN MEDIA"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 75000,
-        "memo": "Sales Revenue — DESIGN MEDIA - Mr. Sajid Channa"
+        "memo": "Sales Revenue — DESIGN MEDIA"
       }
     ]
   },
@@ -9820,19 +9820,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-26",
     "date": "2026-07-01",
     "reference": "INV-AUGUST, 2024",
-    "description": "[Sales Invoice] DESIGN MEDIA - Mr. Sajid Channa — Media Billing",
+    "description": "[Sales Invoice] DESIGN MEDIA — Media Billing",
     "lines": [
       {
         "account": "ar",
         "debit": 75000,
         "credit": 0,
-        "memo": "Accounts Receivable — DESIGN MEDIA - Mr. Sajid Channa"
+        "memo": "Accounts Receivable — DESIGN MEDIA"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 75000,
-        "memo": "Sales Revenue — DESIGN MEDIA - Mr. Sajid Channa"
+        "memo": "Sales Revenue — DESIGN MEDIA"
       }
     ]
   },
@@ -9840,19 +9840,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-27",
     "date": "2026-07-01",
     "reference": "INV-SEP, 2024",
-    "description": "[Sales Invoice] DESIGN MEDIA - Mr. Sajid Channa — Media Billing",
+    "description": "[Sales Invoice] DESIGN MEDIA — Media Billing",
     "lines": [
       {
         "account": "ar",
         "debit": 75000,
         "credit": 0,
-        "memo": "Accounts Receivable — DESIGN MEDIA - Mr. Sajid Channa"
+        "memo": "Accounts Receivable — DESIGN MEDIA"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 75000,
-        "memo": "Sales Revenue — DESIGN MEDIA - Mr. Sajid Channa"
+        "memo": "Sales Revenue — DESIGN MEDIA"
       }
     ]
   },
@@ -9860,19 +9860,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-28",
     "date": "2026-07-01",
     "reference": "INV-OCT, 2024",
-    "description": "[Sales Invoice] DESIGN MEDIA - Mr. Sajid Channa — Media Billing",
+    "description": "[Sales Invoice] DESIGN MEDIA — Media Billing",
     "lines": [
       {
         "account": "ar",
         "debit": 75000,
         "credit": 0,
-        "memo": "Accounts Receivable — DESIGN MEDIA - Mr. Sajid Channa"
+        "memo": "Accounts Receivable — DESIGN MEDIA"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 75000,
-        "memo": "Sales Revenue — DESIGN MEDIA - Mr. Sajid Channa"
+        "memo": "Sales Revenue — DESIGN MEDIA"
       }
     ]
   },
@@ -9880,19 +9880,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-29",
     "date": "2026-07-01",
     "reference": "INV-NOV, 2024",
-    "description": "[Sales Invoice] DESIGN MEDIA - Mr. Sajid Channa — Media Billing",
+    "description": "[Sales Invoice] DESIGN MEDIA — Media Billing",
     "lines": [
       {
         "account": "ar",
         "debit": 75000,
         "credit": 0,
-        "memo": "Accounts Receivable — DESIGN MEDIA - Mr. Sajid Channa"
+        "memo": "Accounts Receivable — DESIGN MEDIA"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 75000,
-        "memo": "Sales Revenue — DESIGN MEDIA - Mr. Sajid Channa"
+        "memo": "Sales Revenue — DESIGN MEDIA"
       }
     ]
   },
@@ -9900,19 +9900,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-30",
     "date": "2026-07-01",
     "reference": "INV-26-030",
-    "description": "[Sales Invoice] DESIGN MEDIA - Mr. Sajid Channa — Media Billing",
+    "description": "[Sales Invoice] DESIGN MEDIA — Media Billing",
     "lines": [
       {
         "account": "ar",
         "debit": 3921368,
         "credit": 0,
-        "memo": "Accounts Receivable — DESIGN MEDIA - Mr. Sajid Channa"
+        "memo": "Accounts Receivable — DESIGN MEDIA"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 3921368,
-        "memo": "Sales Revenue — DESIGN MEDIA - Mr. Sajid Channa"
+        "memo": "Sales Revenue — DESIGN MEDIA"
       }
     ]
   },
@@ -9920,19 +9920,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-31",
     "date": "2026-08-04",
     "reference": "AD/9776/08/26",
-    "description": "[Sales Invoice] DINERS - CASH — AL BARAKA APPAREL OOH STREAMERS CAMPAIGN NATION WIDE",
+    "description": "[Sales Invoice] DINERS — AL BARAKA APPAREL OOH STREAMERS CAMPAIGN NATION WIDE",
     "lines": [
       {
         "account": "ar",
         "debit": 7257155,
         "credit": 0,
-        "memo": "Accounts Receivable — DINERS - CASH"
+        "memo": "Accounts Receivable — DINERS"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 7257155,
-        "memo": "Sales Revenue — DINERS - CASH"
+        "memo": "Sales Revenue — DINERS"
       }
     ]
   },
@@ -9940,19 +9940,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-32",
     "date": "2026-08-04",
     "reference": "AD/9778/08/26",
-    "description": "[Sales Invoice] DINERS - CASH — AL BARAKA APPAREL OOH STREAMERS CAMPAIGN NATION WIDE",
+    "description": "[Sales Invoice] DINERS — AL BARAKA APPAREL OOH STREAMERS CAMPAIGN NATION WIDE",
     "lines": [
       {
         "account": "ar",
         "debit": 192280,
         "credit": 0,
-        "memo": "Accounts Receivable — DINERS - CASH"
+        "memo": "Accounts Receivable — DINERS"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 192280,
-        "memo": "Sales Revenue — DINERS - CASH"
+        "memo": "Sales Revenue — DINERS"
       }
     ]
   },
@@ -9960,13 +9960,13 @@ export const REAL_JOURNAL = [
     "id": "jnl-ob-cli-006",
     "date": "2026-06-30",
     "reference": "OB-CLI-006",
-    "description": "[Opening Balance] Accounts Receivable — DINERS - CASH",
+    "description": "[Opening Balance] Accounts Receivable — DINERS",
     "lines": [
       {
         "account": "ar",
         "debit": 1510782,
         "credit": 0,
-        "memo": "Opening Balance — DINERS - CASH"
+        "memo": "Opening Balance — DINERS"
       },
       {
         "account": "equity",
@@ -10020,19 +10020,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-34",
     "date": "2025-09-05",
     "reference": "AD/9009/10/25",
-    "description": "[Sales Invoice] FALAKNAZ GROUP - ELITE TOWERS — OOH MEDIA CAMPAIGN 1 MONTH DIFFERENT SITES & DIGITAL (AYESHA BAWANI, LUCKYONE, NATA KHAN & BAHADURABAD - FOC)",
+    "description": "[Sales Invoice] FALAKNAZ — OOH MEDIA CAMPAIGN 1 MONTH DIFFERENT SITES & DIGITAL (AYESHA BAWANI, LUCKYONE, NATA KHAN & BAHADURABAD - FOC)",
     "lines": [
       {
         "account": "ar",
         "debit": 3385680,
         "credit": 0,
-        "memo": "Accounts Receivable — FALAKNAZ GROUP - ELITE TOWERS"
+        "memo": "Accounts Receivable — FALAKNAZ"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 3385680,
-        "memo": "Sales Revenue — FALAKNAZ GROUP - ELITE TOWERS"
+        "memo": "Sales Revenue — FALAKNAZ"
       }
     ]
   },
@@ -10040,19 +10040,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-35",
     "date": "2025-09-05",
     "reference": "AD/9010/10/25",
-    "description": "[Sales Invoice] FALAKNAZ GROUP - ELITE TOWERS — PRINTING & INSTALLATION CHARGES SHAHRAH-E-FAISAL AIRPORT, NURSURY, NAGAN & SAREENA",
+    "description": "[Sales Invoice] FALAKNAZ — PRINTING & INSTALLATION CHARGES SHAHRAH-E-FAISAL AIRPORT, NURSURY, NAGAN & SAREENA",
     "lines": [
       {
         "account": "ar",
         "debit": 181440,
         "credit": 0,
-        "memo": "Accounts Receivable — FALAKNAZ GROUP - ELITE TOWERS"
+        "memo": "Accounts Receivable — FALAKNAZ"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 181440,
-        "memo": "Sales Revenue — FALAKNAZ GROUP - ELITE TOWERS"
+        "memo": "Sales Revenue — FALAKNAZ"
       }
     ]
   },
@@ -10060,19 +10060,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-36",
     "date": "2025-11-11",
     "reference": "AD/9118/11/25",
-    "description": "[Sales Invoice] FALAKNAZ GROUP - ELITE TOWERS — OOH MEDIA CAMPAIGN 1 MONTH DIFFERENT SITES & DIGITAL (FALAK NAZ WINTER FAMILY FESTIVAL & ELITE TOWERS)",
+    "description": "[Sales Invoice] FALAKNAZ — OOH MEDIA CAMPAIGN 1 MONTH DIFFERENT SITES & DIGITAL (FALAK NAZ WINTER FAMILY FESTIVAL & ELITE TOWERS)",
     "lines": [
       {
         "account": "ar",
         "debit": 2561520,
         "credit": 0,
-        "memo": "Accounts Receivable — FALAKNAZ GROUP - ELITE TOWERS"
+        "memo": "Accounts Receivable — FALAKNAZ"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 2561520,
-        "memo": "Sales Revenue — FALAKNAZ GROUP - ELITE TOWERS"
+        "memo": "Sales Revenue — FALAKNAZ"
       }
     ]
   },
@@ -10080,19 +10080,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-37",
     "date": "2025-11-25",
     "reference": "AD/9119/11/25",
-    "description": "[Sales Invoice] FALAKNAZ GROUP - ELITE TOWERS — PRINTING & INSTALLATION CHARGES ELITE TOWERS",
+    "description": "[Sales Invoice] FALAKNAZ — PRINTING & INSTALLATION CHARGES ELITE TOWERS",
     "lines": [
       {
         "account": "ar",
         "debit": 281520,
         "credit": 0,
-        "memo": "Accounts Receivable — FALAKNAZ GROUP - ELITE TOWERS"
+        "memo": "Accounts Receivable — FALAKNAZ"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 281520,
-        "memo": "Sales Revenue — FALAKNAZ GROUP - ELITE TOWERS"
+        "memo": "Sales Revenue — FALAKNAZ"
       }
     ]
   },
@@ -10100,19 +10100,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-38",
     "date": "2026-01-19",
     "reference": "AD/9227/01/26",
-    "description": "[Sales Invoice] FALAKNAZ GROUP - ELITE TOWERS — OOH MEDIA CAMPAIGN - ONE BEVERLY BY FALAKNAZ GROUP",
+    "description": "[Sales Invoice] FALAKNAZ — OOH MEDIA CAMPAIGN - ONE BEVERLY BY FALAKNAZ GROUP",
     "lines": [
       {
         "account": "ar",
         "debit": 771500,
         "credit": 0,
-        "memo": "Accounts Receivable — FALAKNAZ GROUP - ELITE TOWERS"
+        "memo": "Accounts Receivable — FALAKNAZ"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 771500,
-        "memo": "Sales Revenue — FALAKNAZ GROUP - ELITE TOWERS"
+        "memo": "Sales Revenue — FALAKNAZ"
       }
     ]
   },
@@ -10120,19 +10120,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-39",
     "date": "2026-01-19",
     "reference": "AD/9228/01/26",
-    "description": "[Sales Invoice] FALAKNAZ GROUP - ELITE TOWERS — PRINTING & INSTALLATION - ONE BEVERLY BY FALAKNAZ GROUP",
+    "description": "[Sales Invoice] FALAKNAZ — PRINTING & INSTALLATION - ONE BEVERLY BY FALAKNAZ GROUP",
     "lines": [
       {
         "account": "ar",
         "debit": 133120,
         "credit": 0,
-        "memo": "Accounts Receivable — FALAKNAZ GROUP - ELITE TOWERS"
+        "memo": "Accounts Receivable — FALAKNAZ"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 133120,
-        "memo": "Sales Revenue — FALAKNAZ GROUP - ELITE TOWERS"
+        "memo": "Sales Revenue — FALAKNAZ"
       }
     ]
   },
@@ -10140,19 +10140,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-40",
     "date": "2026-01-19",
     "reference": "AD/9229/01/26",
-    "description": "[Sales Invoice] FALAKNAZ GROUP - ELITE TOWERS — OOH MEDIA CAMPAIGN (LED LIGHTS)",
+    "description": "[Sales Invoice] FALAKNAZ — OOH MEDIA CAMPAIGN (LED LIGHTS)",
     "lines": [
       {
         "account": "ar",
         "debit": 55000,
         "credit": 0,
-        "memo": "Accounts Receivable — FALAKNAZ GROUP - ELITE TOWERS"
+        "memo": "Accounts Receivable — FALAKNAZ"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 55000,
-        "memo": "Sales Revenue — FALAKNAZ GROUP - ELITE TOWERS"
+        "memo": "Sales Revenue — FALAKNAZ"
       }
     ]
   },
@@ -10160,7 +10160,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-26",
     "date": "2026-04-06",
     "reference": "BRV-26-026",
-    "description": "[Receipt Voucher] FALAKNAZ GROUP - ELITE TOWERS — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
+    "description": "[Receipt Voucher] FALAKNAZ — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
     "lines": [
       {
         "account": "bank",
@@ -10173,7 +10173,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 407451,
-        "memo": "Accounts Receivable — FALAKNAZ GROUP - ELITE TOWERS"
+        "memo": "Accounts Receivable — FALAKNAZ"
       }
     ]
   },
@@ -10181,7 +10181,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-27",
     "date": "2026-04-10",
     "reference": "BRV-26-027",
-    "description": "[Receipt Voucher] FALAKNAZ GROUP - ELITE TOWERS — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
+    "description": "[Receipt Voucher] FALAKNAZ — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
     "lines": [
       {
         "account": "bank",
@@ -10194,7 +10194,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 500000,
-        "memo": "Accounts Receivable — FALAKNAZ GROUP - ELITE TOWERS"
+        "memo": "Accounts Receivable — FALAKNAZ"
       }
     ]
   },
@@ -10202,7 +10202,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-28",
     "date": "2026-04-10",
     "reference": "BRV-26-028",
-    "description": "[Receipt Voucher] FALAKNAZ GROUP - ELITE TOWERS — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
+    "description": "[Receipt Voucher] FALAKNAZ — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
     "lines": [
       {
         "account": "bank",
@@ -10215,7 +10215,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 642519,
-        "memo": "Accounts Receivable — FALAKNAZ GROUP - ELITE TOWERS"
+        "memo": "Accounts Receivable — FALAKNAZ"
       }
     ]
   },
@@ -10223,7 +10223,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-29",
     "date": "2026-04-15",
     "reference": "BRV-26-029",
-    "description": "[Receipt Voucher] FALAKNAZ GROUP - ELITE TOWERS — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
+    "description": "[Receipt Voucher] FALAKNAZ — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
     "lines": [
       {
         "account": "bank",
@@ -10236,7 +10236,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 500000,
-        "memo": "Accounts Receivable — FALAKNAZ GROUP - ELITE TOWERS"
+        "memo": "Accounts Receivable — FALAKNAZ"
       }
     ]
   },
@@ -10244,7 +10244,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-30",
     "date": "2026-04-15",
     "reference": "BRV-26-030",
-    "description": "[Receipt Voucher] FALAKNAZ GROUP - ELITE TOWERS — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
+    "description": "[Receipt Voucher] FALAKNAZ — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
     "lines": [
       {
         "account": "bank",
@@ -10257,7 +10257,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 517150,
-        "memo": "Accounts Receivable — FALAKNAZ GROUP - ELITE TOWERS"
+        "memo": "Accounts Receivable — FALAKNAZ"
       }
     ]
   },
@@ -10265,7 +10265,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-31",
     "date": "2026-04-20",
     "reference": "BRV-26-031",
-    "description": "[Receipt Voucher] FALAKNAZ GROUP - ELITE TOWERS — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
+    "description": "[Receipt Voucher] FALAKNAZ — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
     "lines": [
       {
         "account": "bank",
@@ -10278,7 +10278,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 500000,
-        "memo": "Accounts Receivable — FALAKNAZ GROUP - ELITE TOWERS"
+        "memo": "Accounts Receivable — FALAKNAZ"
       }
     ]
   },
@@ -10286,7 +10286,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-32",
     "date": "2026-04-24",
     "reference": "BRV-26-032",
-    "description": "[Receipt Voucher] FALAKNAZ GROUP - ELITE TOWERS — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
+    "description": "[Receipt Voucher] FALAKNAZ — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
     "lines": [
       {
         "account": "bank",
@@ -10299,7 +10299,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 500000,
-        "memo": "Accounts Receivable — FALAKNAZ GROUP - ELITE TOWERS"
+        "memo": "Accounts Receivable — FALAKNAZ"
       }
     ]
   },
@@ -10307,7 +10307,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-33",
     "date": "2026-04-30",
     "reference": "BRV-26-033",
-    "description": "[Receipt Voucher] FALAKNAZ GROUP - ELITE TOWERS — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
+    "description": "[Receipt Voucher] FALAKNAZ — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
     "lines": [
       {
         "account": "bank",
@@ -10320,7 +10320,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 381140,
-        "memo": "Accounts Receivable — FALAKNAZ GROUP - ELITE TOWERS"
+        "memo": "Accounts Receivable — FALAKNAZ"
       }
     ]
   },
@@ -10328,7 +10328,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-34",
     "date": "2026-07-13",
     "reference": "BRV-26-034",
-    "description": "[Receipt Voucher] FALAKNAZ GROUP - ELITE TOWERS — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
+    "description": "[Receipt Voucher] FALAKNAZ — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
     "lines": [
       {
         "account": "bank",
@@ -10341,7 +10341,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 500000,
-        "memo": "Accounts Receivable — FALAKNAZ GROUP - ELITE TOWERS"
+        "memo": "Accounts Receivable — FALAKNAZ"
       }
     ]
   },
@@ -10349,7 +10349,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-35",
     "date": "2026-07-20",
     "reference": "BRV-26-035",
-    "description": "[Receipt Voucher] FALAKNAZ GROUP - ELITE TOWERS — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
+    "description": "[Receipt Voucher] FALAKNAZ — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
     "lines": [
       {
         "account": "bank",
@@ -10362,7 +10362,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 500000,
-        "memo": "Accounts Receivable — FALAKNAZ GROUP - ELITE TOWERS"
+        "memo": "Accounts Receivable — FALAKNAZ"
       }
     ]
   },
@@ -10370,7 +10370,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-36",
     "date": "2026-07-24",
     "reference": "BRV-26-036",
-    "description": "[Receipt Voucher] FALAKNAZ GROUP - ELITE TOWERS — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
+    "description": "[Receipt Voucher] FALAKNAZ — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
     "lines": [
       {
         "account": "bank",
@@ -10383,7 +10383,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 500000,
-        "memo": "Accounts Receivable — FALAKNAZ GROUP - ELITE TOWERS"
+        "memo": "Accounts Receivable — FALAKNAZ"
       }
     ]
   },
@@ -10391,7 +10391,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-37",
     "date": "2026-07-27",
     "reference": "BRV-26-037",
-    "description": "[Receipt Voucher] FALAKNAZ GROUP - ELITE TOWERS — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
+    "description": "[Receipt Voucher] FALAKNAZ — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
     "lines": [
       {
         "account": "bank",
@@ -10404,7 +10404,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 205000,
-        "memo": "Accounts Receivable — FALAKNAZ GROUP - ELITE TOWERS"
+        "memo": "Accounts Receivable — FALAKNAZ"
       }
     ]
   },
@@ -10412,7 +10412,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-38",
     "date": "2026-07-27",
     "reference": "BRV-26-038",
-    "description": "[Receipt Voucher] FALAKNAZ GROUP - ELITE TOWERS — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
+    "description": "[Receipt Voucher] FALAKNAZ — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
     "lines": [
       {
         "account": "bank",
@@ -10425,7 +10425,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 130000,
-        "memo": "Accounts Receivable — FALAKNAZ GROUP - ELITE TOWERS"
+        "memo": "Accounts Receivable — FALAKNAZ"
       }
     ]
   },
@@ -10433,7 +10433,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-39",
     "date": "2026-07-30",
     "reference": "BRV-26-039",
-    "description": "[Receipt Voucher] FALAKNAZ GROUP - ELITE TOWERS — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
+    "description": "[Receipt Voucher] FALAKNAZ — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
     "lines": [
       {
         "account": "bank",
@@ -10446,7 +10446,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 165000,
-        "memo": "Accounts Receivable — FALAKNAZ GROUP - ELITE TOWERS"
+        "memo": "Accounts Receivable — FALAKNAZ"
       }
     ]
   },
@@ -10454,7 +10454,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-40",
     "date": "2026-07-31",
     "reference": "BRV-26-040",
-    "description": "[Receipt Voucher] FALAKNAZ GROUP - ELITE TOWERS — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
+    "description": "[Receipt Voucher] FALAKNAZ — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
     "lines": [
       {
         "account": "bank",
@@ -10467,7 +10467,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 500000,
-        "memo": "Accounts Receivable — FALAKNAZ GROUP - ELITE TOWERS"
+        "memo": "Accounts Receivable — FALAKNAZ"
       }
     ]
   },
@@ -10475,7 +10475,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-41",
     "date": "2026-08-05",
     "reference": "BRV-26-041",
-    "description": "[Receipt Voucher] FALAKNAZ GROUP - ELITE TOWERS — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
+    "description": "[Receipt Voucher] FALAKNAZ — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
     "lines": [
       {
         "account": "bank",
@@ -10488,7 +10488,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 500000,
-        "memo": "Accounts Receivable — FALAKNAZ GROUP - ELITE TOWERS"
+        "memo": "Accounts Receivable — FALAKNAZ"
       }
     ]
   },
@@ -10496,7 +10496,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-42",
     "date": "2026-08-10",
     "reference": "BRV-26-042",
-    "description": "[Receipt Voucher] FALAKNAZ GROUP - ELITE TOWERS — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
+    "description": "[Receipt Voucher] FALAKNAZ — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
     "lines": [
       {
         "account": "bank",
@@ -10509,7 +10509,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 421520,
-        "memo": "Accounts Receivable — FALAKNAZ GROUP - ELITE TOWERS"
+        "memo": "Accounts Receivable — FALAKNAZ"
       }
     ]
   },
@@ -10517,19 +10517,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-41",
     "date": "2026-08-13",
     "reference": "AD/9784/08/26",
-    "description": "[Sales Invoice] FALAKNAZ GROUP - ELITE TOWERS — OOH MEDIA CAMPAIGN ELITE TOWER (15 JULY 2026 TO 09 AUGUST 2026)",
+    "description": "[Sales Invoice] FALAKNAZ — OOH MEDIA CAMPAIGN ELITE TOWER (15 JULY 2026 TO 09 AUGUST 2026)",
     "lines": [
       {
         "account": "ar",
         "debit": 8464000,
         "credit": 0,
-        "memo": "Accounts Receivable — FALAKNAZ GROUP - ELITE TOWERS"
+        "memo": "Accounts Receivable — FALAKNAZ"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 8464000,
-        "memo": "Sales Revenue — FALAKNAZ GROUP - ELITE TOWERS"
+        "memo": "Sales Revenue — FALAKNAZ"
       }
     ]
   },
@@ -10537,19 +10537,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-42",
     "date": "2026-08-13",
     "reference": "AD/9785/08/26",
-    "description": "[Sales Invoice] FALAKNAZ GROUP - ELITE TOWERS — PRINTING & INSTALLATION CHARGES ELITE TOWERS",
+    "description": "[Sales Invoice] FALAKNAZ — PRINTING & INSTALLATION CHARGES ELITE TOWERS",
     "lines": [
       {
         "account": "ar",
         "debit": 1332185,
         "credit": 0,
-        "memo": "Accounts Receivable — FALAKNAZ GROUP - ELITE TOWERS"
+        "memo": "Accounts Receivable — FALAKNAZ"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 1332185,
-        "memo": "Sales Revenue — FALAKNAZ GROUP - ELITE TOWERS"
+        "memo": "Sales Revenue — FALAKNAZ"
       }
     ]
   },
@@ -10557,19 +10557,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-43",
     "date": "2026-08-17",
     "reference": "AD/9787/08/26",
-    "description": "[Sales Invoice] FALAKNAZ GROUP - ELITE TOWERS — PRINTING & INSTALLATION CHARGES OF FOC SITES",
+    "description": "[Sales Invoice] FALAKNAZ — PRINTING & INSTALLATION CHARGES OF FOC SITES",
     "lines": [
       {
         "account": "ar",
         "debit": 155760,
         "credit": 0,
-        "memo": "Accounts Receivable — FALAKNAZ GROUP - ELITE TOWERS"
+        "memo": "Accounts Receivable — FALAKNAZ"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 155760,
-        "memo": "Sales Revenue — FALAKNAZ GROUP - ELITE TOWERS"
+        "memo": "Sales Revenue — FALAKNAZ"
       }
     ]
   },
@@ -10577,19 +10577,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-44",
     "date": "2026-09-16",
     "reference": "AD/9868/09/26",
-    "description": "[Sales Invoice] FALAKNAZ GROUP - ELITE TOWERS — OOH MEDIA CAMPAIGN FALAKNAZ ELITE TOWER",
+    "description": "[Sales Invoice] FALAKNAZ — OOH MEDIA CAMPAIGN FALAKNAZ ELITE TOWER",
     "lines": [
       {
         "account": "ar",
         "debit": 7750000,
         "credit": 0,
-        "memo": "Accounts Receivable — FALAKNAZ GROUP - ELITE TOWERS"
+        "memo": "Accounts Receivable — FALAKNAZ"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 7750000,
-        "memo": "Sales Revenue — FALAKNAZ GROUP - ELITE TOWERS"
+        "memo": "Sales Revenue — FALAKNAZ"
       }
     ]
   },
@@ -10597,19 +10597,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-45",
     "date": "2026-09-16",
     "reference": "AD/9871/09/26",
-    "description": "[Sales Invoice] FALAKNAZ GROUP - ELITE TOWERS — OOH MEDIA CAMPAIGN FALAKNAZ ELITE TOWER",
+    "description": "[Sales Invoice] FALAKNAZ — OOH MEDIA CAMPAIGN FALAKNAZ ELITE TOWER",
     "lines": [
       {
         "account": "ar",
         "debit": 515000,
         "credit": 0,
-        "memo": "Accounts Receivable — FALAKNAZ GROUP - ELITE TOWERS"
+        "memo": "Accounts Receivable — FALAKNAZ"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 515000,
-        "memo": "Sales Revenue — FALAKNAZ GROUP - ELITE TOWERS"
+        "memo": "Sales Revenue — FALAKNAZ"
       }
     ]
   },
@@ -10617,19 +10617,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-46",
     "date": "2026-09-16",
     "reference": "AD/9875/09/26",
-    "description": "[Sales Invoice] FALAKNAZ GROUP - ELITE TOWERS — OOH MEDIA CAMPAIGN FALAKNAZ ELITE TOWER PRINTING",
+    "description": "[Sales Invoice] FALAKNAZ — OOH MEDIA CAMPAIGN FALAKNAZ ELITE TOWER PRINTING",
     "lines": [
       {
         "account": "ar",
         "debit": 1851555,
         "credit": 0,
-        "memo": "Accounts Receivable — FALAKNAZ GROUP - ELITE TOWERS"
+        "memo": "Accounts Receivable — FALAKNAZ"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 1851555,
-        "memo": "Sales Revenue — FALAKNAZ GROUP - ELITE TOWERS"
+        "memo": "Sales Revenue — FALAKNAZ"
       }
     ]
   },
@@ -10637,19 +10637,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-47",
     "date": "2026-09-16",
     "reference": "AD/9877/09/26",
-    "description": "[Sales Invoice] FALAKNAZ GROUP - ELITE TOWERS — OOH MEDIA CAMPAIGN FALAKNAZ ELITE TOWER PRINTING",
+    "description": "[Sales Invoice] FALAKNAZ — OOH MEDIA CAMPAIGN FALAKNAZ ELITE TOWER PRINTING",
     "lines": [
       {
         "account": "ar",
         "debit": 317225,
         "credit": 0,
-        "memo": "Accounts Receivable — FALAKNAZ GROUP - ELITE TOWERS"
+        "memo": "Accounts Receivable — FALAKNAZ"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 317225,
-        "memo": "Sales Revenue — FALAKNAZ GROUP - ELITE TOWERS"
+        "memo": "Sales Revenue — FALAKNAZ"
       }
     ]
   },
@@ -10799,7 +10799,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-45",
     "date": "2026-07-04",
     "reference": "BRV-26-045",
-    "description": "[Receipt Voucher] HMR WATERFRONT PVT LTD — Cash Received HMR Waterfront against inv #AD/9615/05/26",
+    "description": "[Receipt Voucher] HMR — Cash Received HMR Waterfront against inv #AD/9615/05/26",
     "lines": [
       {
         "account": "cash",
@@ -10812,7 +10812,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 1500000,
-        "memo": "Accounts Receivable — HMR WATERFRONT PVT LTD"
+        "memo": "Accounts Receivable — HMR"
       }
     ]
   },
@@ -10820,19 +10820,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-51",
     "date": "2026-07-03",
     "reference": "AD/9724/06/26",
-    "description": "[Sales Invoice] HMR WATERFRONT PVT LTD — HMR OOH Media Campaign 30Days",
+    "description": "[Sales Invoice] HMR — HMR OOH Media Campaign 30Days",
     "lines": [
       {
         "account": "ar",
         "debit": 11890000,
         "credit": 0,
-        "memo": "Accounts Receivable — HMR WATERFRONT PVT LTD"
+        "memo": "Accounts Receivable — HMR"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 11890000,
-        "memo": "Sales Revenue — HMR WATERFRONT PVT LTD"
+        "memo": "Sales Revenue — HMR"
       }
     ]
   },
@@ -10840,19 +10840,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-52",
     "date": "2026-07-03",
     "reference": "AD/9725/06/26",
-    "description": "[Sales Invoice] HMR WATERFRONT PVT LTD — HMR OOH Media Campaign Printing and Installation",
+    "description": "[Sales Invoice] HMR — HMR OOH Media Campaign Printing and Installation",
     "lines": [
       {
         "account": "ar",
         "debit": 2046170,
         "credit": 0,
-        "memo": "Accounts Receivable — HMR WATERFRONT PVT LTD"
+        "memo": "Accounts Receivable — HMR"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 2046170,
-        "memo": "Sales Revenue — HMR WATERFRONT PVT LTD"
+        "memo": "Sales Revenue — HMR"
       }
     ]
   },
@@ -10860,7 +10860,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-46",
     "date": "2026-08-28",
     "reference": "BRV-26-046",
-    "description": "[Receipt Voucher] HMR WATERFRONT PVT LTD — Cash/Cheque Received HMR Waterfront (dt 29-8-26)",
+    "description": "[Receipt Voucher] HMR — Cash/Cheque Received HMR Waterfront (dt 29-8-26)",
     "lines": [
       {
         "account": "cash",
@@ -10873,7 +10873,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 3139500,
-        "memo": "Accounts Receivable — HMR WATERFRONT PVT LTD"
+        "memo": "Accounts Receivable — HMR"
       }
     ]
   },
@@ -10881,13 +10881,13 @@ export const REAL_JOURNAL = [
     "id": "jnl-ob-cli-015",
     "date": "2026-06-30",
     "reference": "OB-CLI-015",
-    "description": "[Opening Balance] Accounts Receivable — HMR WATERFRONT PVT LTD",
+    "description": "[Opening Balance] Accounts Receivable — HMR",
     "lines": [
       {
         "account": "ar",
         "debit": 2500000,
         "credit": 0,
-        "memo": "Opening Balance — HMR WATERFRONT PVT LTD"
+        "memo": "Opening Balance — HMR"
       },
       {
         "account": "equity",
@@ -11107,19 +11107,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-57",
     "date": "2026-08-04",
     "reference": "INV-AD-S359",
-    "description": "[Sales Invoice] HABITT STORE - CASH — OOH CAMPAIGN 1 MONTH",
+    "description": "[Sales Invoice] HABBIT STORE — OOH CAMPAIGN 1 MONTH",
     "lines": [
       {
         "account": "ar",
         "debit": 1128481,
         "credit": 0,
-        "memo": "Accounts Receivable — HABITT STORE - CASH"
+        "memo": "Accounts Receivable — HABBIT STORE"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 1128481,
-        "memo": "Sales Revenue — HABITT STORE - CASH"
+        "memo": "Sales Revenue — HABBIT STORE"
       }
     ]
   },
@@ -11127,7 +11127,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-53",
     "date": "2026-06-20",
     "reference": "BRV-26-053",
-    "description": "[Receipt Voucher] HABITT STORE - CASH — KHURRAM BHAI FURNITURE SHOPPING",
+    "description": "[Receipt Voucher] HABBIT STORE — KHURRAM BHAI FURNITURE SHOPPING",
     "lines": [
       {
         "account": "bank",
@@ -11140,7 +11140,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 1379545,
-        "memo": "Accounts Receivable — HABITT STORE - CASH"
+        "memo": "Accounts Receivable — HABBIT STORE"
       }
     ]
   },
@@ -11148,19 +11148,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-58",
     "date": "2026-07-01",
     "reference": "AD/9742/07/26",
-    "description": "[Sales Invoice] HABITT STORE - CASH — OOH MEDIA CAMPAIGN",
+    "description": "[Sales Invoice] HABBIT STORE — OOH MEDIA CAMPAIGN",
     "lines": [
       {
         "account": "ar",
         "debit": 2500000,
         "credit": 0,
-        "memo": "Accounts Receivable — HABITT STORE - CASH"
+        "memo": "Accounts Receivable — HABBIT STORE"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 2500000,
-        "memo": "Sales Revenue — HABITT STORE - CASH"
+        "memo": "Sales Revenue — HABBIT STORE"
       }
     ]
   },
@@ -11168,19 +11168,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-59",
     "date": "2026-06-16",
     "reference": "INV-AD-S352",
-    "description": "[Sales Invoice] HABITT STORE - CASH — Habitt Store DHA permission (VINYL Branding) 1 Year",
+    "description": "[Sales Invoice] HABBIT STORE — Habitt Store DHA permission (VINYL Branding) 1 Year",
     "lines": [
       {
         "account": "ar",
         "debit": 7161869,
         "credit": 0,
-        "memo": "Accounts Receivable — HABITT STORE - CASH"
+        "memo": "Accounts Receivable — HABBIT STORE"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 7161869,
-        "memo": "Sales Revenue — HABITT STORE - CASH"
+        "memo": "Sales Revenue — HABBIT STORE"
       }
     ]
   },
@@ -11188,19 +11188,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-60",
     "date": "2026-06-16",
     "reference": "INV-AD-S353",
-    "description": "[Sales Invoice] HABITT STORE - CASH — Habitt Store DHA permission (VINYL Branding) agency comission",
+    "description": "[Sales Invoice] HABBIT STORE — Habitt Store DHA permission (VINYL Branding) agency comission",
     "lines": [
       {
         "account": "ar",
         "debit": 666770,
         "credit": 0,
-        "memo": "Accounts Receivable — HABITT STORE - CASH"
+        "memo": "Accounts Receivable — HABBIT STORE"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 666770,
-        "memo": "Sales Revenue — HABITT STORE - CASH"
+        "memo": "Sales Revenue — HABBIT STORE"
       }
     ]
   },
@@ -11208,19 +11208,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-61",
     "date": "2026-06-16",
     "reference": "INV-AD-S354",
-    "description": "[Sales Invoice] HABITT STORE - CASH — Habitt Store DHA permission (VINYL Branding)",
+    "description": "[Sales Invoice] HABBIT STORE — Habitt Store DHA permission (VINYL Branding)",
     "lines": [
       {
         "account": "ar",
         "debit": 361790,
         "credit": 0,
-        "memo": "Accounts Receivable — HABITT STORE - CASH"
+        "memo": "Accounts Receivable — HABBIT STORE"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 361790,
-        "memo": "Sales Revenue — HABITT STORE - CASH"
+        "memo": "Sales Revenue — HABBIT STORE"
       }
     ]
   },
@@ -11228,19 +11228,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-62",
     "date": "2026-06-18",
     "reference": "AD/9742/05/26",
-    "description": "[Sales Invoice] HABITT STORE - CASH — OUTDOOR BRANDING WORK",
+    "description": "[Sales Invoice] HABBIT STORE — OUTDOOR BRANDING WORK",
     "lines": [
       {
         "account": "ar",
         "debit": 2000000,
         "credit": 0,
-        "memo": "Accounts Receivable — HABITT STORE - CASH"
+        "memo": "Accounts Receivable — HABBIT STORE"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 2000000,
-        "memo": "Sales Revenue — HABITT STORE - CASH"
+        "memo": "Sales Revenue — HABBIT STORE"
       }
     ]
   },
@@ -11248,7 +11248,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-54",
     "date": "2026-08-13",
     "reference": "BRV-26-054",
-    "description": "[Receipt Voucher] IMTIAZ GROUP SMC PVT LTD — Cheque Received from IMTIAZ STORE against Invoice # AD/S351",
+    "description": "[Receipt Voucher] IMTIAZ — Cheque Received from IMTIAZ STORE against Invoice # AD/S351",
     "lines": [
       {
         "account": "bank",
@@ -11261,7 +11261,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 2366462,
-        "memo": "Accounts Receivable — IMTIAZ GROUP SMC PVT LTD"
+        "memo": "Accounts Receivable — IMTIAZ"
       }
     ]
   },
@@ -11269,7 +11269,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-55",
     "date": "2026-08-13",
     "reference": "BRV-26-055",
-    "description": "[Receipt Voucher] IMTIAZ GROUP SMC PVT LTD — WHT 1.5% on Inv # S351",
+    "description": "[Receipt Voucher] IMTIAZ — WHT 1.5% on Inv # S351",
     "lines": [
       {
         "account": "bank",
@@ -11282,7 +11282,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 41538,
-        "memo": "Accounts Receivable — IMTIAZ GROUP SMC PVT LTD"
+        "memo": "Accounts Receivable — IMTIAZ"
       }
     ]
   },
@@ -11290,7 +11290,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-56",
     "date": "2026-08-13",
     "reference": "BRV-26-056",
-    "description": "[Receipt Voucher] IMTIAZ GROUP SMC PVT LTD — SWHT 100% Witheld on S351",
+    "description": "[Receipt Voucher] IMTIAZ — SWHT 100% Witheld on S351",
     "lines": [
       {
         "account": "bank",
@@ -11303,7 +11303,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 361200,
-        "memo": "Accounts Receivable — IMTIAZ GROUP SMC PVT LTD"
+        "memo": "Accounts Receivable — IMTIAZ"
       }
     ]
   },
@@ -11311,19 +11311,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-63",
     "date": "2026-08-31",
     "reference": "INV-AD-S374",
-    "description": "[Sales Invoice] IMTIAZ GROUP SMC PVT LTD — OOH STREAMERS CAMPAIGN AZADI KA TICKET",
+    "description": "[Sales Invoice] IMTIAZ — OOH STREAMERS CAMPAIGN AZADI KA TICKET",
     "lines": [
       {
         "account": "ar",
         "debit": 6280558,
         "credit": 0,
-        "memo": "Accounts Receivable — IMTIAZ GROUP SMC PVT LTD"
+        "memo": "Accounts Receivable — IMTIAZ"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 6280558,
-        "memo": "Sales Revenue — IMTIAZ GROUP SMC PVT LTD"
+        "memo": "Sales Revenue — IMTIAZ"
       }
     ]
   },
@@ -11331,19 +11331,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-64",
     "date": "2026-08-31",
     "reference": "INV-AD-S375",
-    "description": "[Sales Invoice] IMTIAZ GROUP SMC PVT LTD — OOH STREAMERS CAMPAIGN AZADI KA TICKET FOC SITES PRINTING",
+    "description": "[Sales Invoice] IMTIAZ — OOH STREAMERS CAMPAIGN AZADI KA TICKET FOC SITES PRINTING",
     "lines": [
       {
         "account": "ar",
         "debit": 227148,
         "credit": 0,
-        "memo": "Accounts Receivable — IMTIAZ GROUP SMC PVT LTD"
+        "memo": "Accounts Receivable — IMTIAZ"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 227148,
-        "memo": "Sales Revenue — IMTIAZ GROUP SMC PVT LTD"
+        "memo": "Sales Revenue — IMTIAZ"
       }
     ]
   },
@@ -11351,13 +11351,13 @@ export const REAL_JOURNAL = [
     "id": "jnl-ob-cli-018",
     "date": "2026-06-30",
     "reference": "OB-CLI-018",
-    "description": "[Opening Balance] Accounts Receivable — IMTIAZ GROUP SMC PVT LTD",
+    "description": "[Opening Balance] Accounts Receivable — IMTIAZ",
     "lines": [
       {
         "account": "ar",
         "debit": 2850761.854999998,
         "credit": 0,
-        "memo": "Opening Balance — IMTIAZ GROUP SMC PVT LTD"
+        "memo": "Opening Balance — IMTIAZ"
       },
       {
         "account": "equity",
@@ -11371,7 +11371,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-57",
     "date": "2026-07-31",
     "reference": "BRV-26-057",
-    "description": "[Receipt Voucher] IDEMITSU LUBE PAKISTAN PVT LTD — IBFT RECEIBED IN ADPULSE IMC PVT LTD",
+    "description": "[Receipt Voucher] IDEMITSU — IBFT RECEIBED IN ADPULSE IMC PVT LTD",
     "lines": [
       {
         "account": "bank",
@@ -11384,7 +11384,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 905269,
-        "memo": "Accounts Receivable — IDEMITSU LUBE PAKISTAN PVT LTD"
+        "memo": "Accounts Receivable — IDEMITSU"
       }
     ]
   },
@@ -11392,7 +11392,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-58",
     "date": "2026-07-31",
     "reference": "BRV-26-058",
-    "description": "[Receipt Voucher] IDEMITSU LUBE PAKISTAN PVT LTD — WHT",
+    "description": "[Receipt Voucher] IDEMITSU — WHT",
     "lines": [
       {
         "account": "bank",
@@ -11405,7 +11405,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 9444,
-        "memo": "Accounts Receivable — IDEMITSU LUBE PAKISTAN PVT LTD"
+        "memo": "Accounts Receivable — IDEMITSU"
       }
     ]
   },
@@ -11413,7 +11413,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-59",
     "date": "2026-07-31",
     "reference": "BRV-26-059",
-    "description": "[Receipt Voucher] IDEMITSU LUBE PAKISTAN PVT LTD — S.Tax",
+    "description": "[Receipt Voucher] IDEMITSU — S.Tax",
     "lines": [
       {
         "account": "bank",
@@ -11426,7 +11426,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 3519,
-        "memo": "Accounts Receivable — IDEMITSU LUBE PAKISTAN PVT LTD"
+        "memo": "Accounts Receivable — IDEMITSU"
       }
     ]
   },
@@ -11434,13 +11434,13 @@ export const REAL_JOURNAL = [
     "id": "jnl-ob-cli-019",
     "date": "2026-06-30",
     "reference": "OB-CLI-019",
-    "description": "[Opening Balance] Accounts Receivable — IDEMITSU LUBE PAKISTAN PVT LTD",
+    "description": "[Opening Balance] Accounts Receivable — IDEMITSU",
     "lines": [
       {
         "account": "ar",
         "debit": 917000,
         "credit": 0,
-        "memo": "Opening Balance — IDEMITSU LUBE PAKISTAN PVT LTD"
+        "memo": "Opening Balance — IDEMITSU"
       },
       {
         "account": "equity",
@@ -11454,7 +11454,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-60",
     "date": "2025-09-01",
     "reference": "BRV-26-060",
-    "description": "[Receipt Voucher] PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO — CHEQUE RECEIVED FROM IGLOO AGAINST INVOICE # AD-S153",
+    "description": "[Receipt Voucher] IGLOO — CHEQUE RECEIVED FROM IGLOO AGAINST INVOICE # AD-S153",
     "lines": [
       {
         "account": "bank",
@@ -11467,7 +11467,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 281562,
-        "memo": "Accounts Receivable — PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO"
+        "memo": "Accounts Receivable — IGLOO"
       }
     ]
   },
@@ -11475,7 +11475,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-61",
     "date": "2026-07-07",
     "reference": "BRV-26-061",
-    "description": "[Receipt Voucher] PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO — CHEQUE RECEIVED FROM IGLOO AGAINST INVOICE # AD-S153",
+    "description": "[Receipt Voucher] IGLOO — CHEQUE RECEIVED FROM IGLOO AGAINST INVOICE # AD-S153",
     "lines": [
       {
         "account": "bank",
@@ -11488,7 +11488,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 9375,
-        "memo": "Accounts Receivable — PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO"
+        "memo": "Accounts Receivable — IGLOO"
       }
     ]
   },
@@ -11496,7 +11496,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-62",
     "date": "2026-07-01",
     "reference": "BRV-26-062",
-    "description": "[Receipt Voucher] PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO — SWHT 100% WHT",
+    "description": "[Receipt Voucher] IGLOO — SWHT 100% WHT",
     "lines": [
       {
         "account": "bank",
@@ -11509,7 +11509,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 46875,
-        "memo": "Accounts Receivable — PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO"
+        "memo": "Accounts Receivable — IGLOO"
       }
     ]
   },
@@ -11517,7 +11517,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-63",
     "date": "2026-07-01",
     "reference": "BRV-26-063",
-    "description": "[Receipt Voucher] PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO — WHT 6%",
+    "description": "[Receipt Voucher] IGLOO — WHT 6%",
     "lines": [
       {
         "account": "bank",
@@ -11530,7 +11530,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 21562.5,
-        "memo": "Accounts Receivable — PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO"
+        "memo": "Accounts Receivable — IGLOO"
       }
     ]
   },
@@ -11538,19 +11538,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-65",
     "date": "2026-04-20",
     "reference": "INV-AD-S324",
-    "description": "[Sales Invoice] PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO — OOH MEDIA CAMPAIGN MAR TO ARPIL (30 DAYS)",
+    "description": "[Sales Invoice] IGLOO — OOH MEDIA CAMPAIGN MAR TO ARPIL (30 DAYS)",
     "lines": [
       {
         "account": "ar",
         "debit": 1408750,
         "credit": 0,
-        "memo": "Accounts Receivable — PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO"
+        "memo": "Accounts Receivable — IGLOO"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 1408750,
-        "memo": "Sales Revenue — PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO"
+        "memo": "Sales Revenue — IGLOO"
       }
     ]
   },
@@ -11558,19 +11558,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-66",
     "date": "2026-04-20",
     "reference": "INV-AD-S325",
-    "description": "[Sales Invoice] PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO — OOH MEDIA CAMPAIGN PRINTING AND INSTALLATION",
+    "description": "[Sales Invoice] IGLOO — OOH MEDIA CAMPAIGN PRINTING AND INSTALLATION",
     "lines": [
       {
         "account": "ar",
         "debit": 115920,
         "credit": 0,
-        "memo": "Accounts Receivable — PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO"
+        "memo": "Accounts Receivable — IGLOO"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 115920,
-        "memo": "Sales Revenue — PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO"
+        "memo": "Sales Revenue — IGLOO"
       }
     ]
   },
@@ -11578,19 +11578,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-67",
     "date": "2026-05-18",
     "reference": "INV-AD-S326",
-    "description": "[Sales Invoice] PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO — OOH MEDIA CAMPAIGN (28 April 2026 to 27 May 2026)",
+    "description": "[Sales Invoice] IGLOO — OOH MEDIA CAMPAIGN (28 April 2026 to 27 May 2026)",
     "lines": [
       {
         "account": "ar",
         "debit": 534750,
         "credit": 0,
-        "memo": "Accounts Receivable — PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO"
+        "memo": "Accounts Receivable — IGLOO"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 534750,
-        "memo": "Sales Revenue — PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO"
+        "memo": "Sales Revenue — IGLOO"
       }
     ]
   },
@@ -11598,7 +11598,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-64",
     "date": "2026-07-29",
     "reference": "BRV-26-064",
-    "description": "[Receipt Voucher] PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO — CHEQUE RECEIVED FROM IGLOO AGAINST INVOICE # AD-S324, AD-S325 & AD-S326",
+    "description": "[Receipt Voucher] IGLOO — CHEQUE RECEIVED FROM IGLOO AGAINST INVOICE # AD-S324, AD-S325 & AD-S326",
     "lines": [
       {
         "account": "bank",
@@ -11611,7 +11611,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 1646641,
-        "memo": "Accounts Receivable — PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO"
+        "memo": "Accounts Receivable — IGLOO"
       }
     ]
   },
@@ -11619,7 +11619,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-65",
     "date": "2026-07-29",
     "reference": "BRV-26-065",
-    "description": "[Receipt Voucher] PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO — SWHT 100% WHT ON INVOICE # AD-S324, AD-S325 & AD-S326",
+    "description": "[Receipt Voucher] IGLOO — SWHT 100% WHT ON INVOICE # AD-S324, AD-S325 & AD-S326",
     "lines": [
       {
         "account": "bank",
@@ -11632,7 +11632,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 268620,
-        "memo": "Accounts Receivable — PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO"
+        "memo": "Accounts Receivable — IGLOO"
       }
     ]
   },
@@ -11640,7 +11640,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-66",
     "date": "2026-07-29",
     "reference": "BRV-26-066",
-    "description": "[Receipt Voucher] PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO — WHT 7% ON INVOICE # AD-S324, AD-S325 & AD-S326",
+    "description": "[Receipt Voucher] IGLOO — WHT 7% ON INVOICE # AD-S324, AD-S325 & AD-S326",
     "lines": [
       {
         "account": "bank",
@@ -11653,7 +11653,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 144159,
-        "memo": "Accounts Receivable — PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO"
+        "memo": "Accounts Receivable — IGLOO"
       }
     ]
   },
@@ -11661,19 +11661,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-68",
     "date": "2026-07-01",
     "reference": "INV-AD-S360",
-    "description": "[Sales Invoice] PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO — OOH MEDIA CAMPAIGN BALOCH FLYOVER(12 June 2026 to 11 July 2026)",
+    "description": "[Sales Invoice] IGLOO — OOH MEDIA CAMPAIGN BALOCH FLYOVER(12 June 2026 to 11 July 2026)",
     "lines": [
       {
         "account": "ar",
         "debit": 534750,
         "credit": 0,
-        "memo": "Accounts Receivable — PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO"
+        "memo": "Accounts Receivable — IGLOO"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 534750,
-        "memo": "Sales Revenue — PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO"
+        "memo": "Sales Revenue — IGLOO"
       }
     ]
   },
@@ -11681,7 +11681,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-67",
     "date": "2026-08-28",
     "reference": "BRV-26-067",
-    "description": "[Receipt Voucher] PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO — CHEQUE RECEIVED FROM IGLOO AGAINST INVOICE # AD-S360",
+    "description": "[Receipt Voucher] IGLOO — CHEQUE RECEIVED FROM IGLOO AGAINST INVOICE # AD-S360",
     "lines": [
       {
         "account": "bank",
@@ -11694,7 +11694,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 427567.5,
-        "memo": "Accounts Receivable — PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO"
+        "memo": "Accounts Receivable — IGLOO"
       }
     ]
   },
@@ -11702,7 +11702,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-68",
     "date": "2026-08-28",
     "reference": "BRV-26-068",
-    "description": "[Receipt Voucher] PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO — SWHT 100% WHT ON INVOICE # AD-S360",
+    "description": "[Receipt Voucher] IGLOO — SWHT 100% WHT ON INVOICE # AD-S360",
     "lines": [
       {
         "account": "bank",
@@ -11715,7 +11715,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 69750,
-        "memo": "Accounts Receivable — PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO"
+        "memo": "Accounts Receivable — IGLOO"
       }
     ]
   },
@@ -11723,7 +11723,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-69",
     "date": "2026-08-28",
     "reference": "BRV-26-069",
-    "description": "[Receipt Voucher] PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO — WHT 7% ON INVOICE # AD-S324, AD-S325 & AD-S326",
+    "description": "[Receipt Voucher] IGLOO — WHT 7% ON INVOICE # AD-S324, AD-S325 & AD-S326",
     "lines": [
       {
         "account": "bank",
@@ -11736,7 +11736,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 37432.5,
-        "memo": "Accounts Receivable — PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO"
+        "memo": "Accounts Receivable — IGLOO"
       }
     ]
   },
@@ -11744,19 +11744,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-69",
     "date": "2026-08-25",
     "reference": "INV-26-069",
-    "description": "[Sales Invoice] PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO — SWHT 80% WHT ON INVOICE # AD-S324, AD-S325 & AD-S326 Paid by Adpulse",
+    "description": "[Sales Invoice] IGLOO — SWHT 80% WHT ON INVOICE # AD-S324, AD-S325 & AD-S326 Paid by Adpulse",
     "lines": [
       {
         "account": "ar",
         "debit": 214896,
         "credit": 0,
-        "memo": "Accounts Receivable — PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO"
+        "memo": "Accounts Receivable — IGLOO"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 214896,
-        "memo": "Sales Revenue — PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO"
+        "memo": "Sales Revenue — IGLOO"
       }
     ]
   },
@@ -11764,7 +11764,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-70",
     "date": "2026-08-28",
     "reference": "BRV-26-070",
-    "description": "[Receipt Voucher] PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO — chq dt 25-8-2026",
+    "description": "[Receipt Voucher] IGLOO — chq dt 25-8-2026",
     "lines": [
       {
         "account": "bank",
@@ -11777,7 +11777,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 37500,
-        "memo": "Accounts Receivable — PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO"
+        "memo": "Accounts Receivable — IGLOO"
       }
     ]
   },
@@ -11785,13 +11785,13 @@ export const REAL_JOURNAL = [
     "id": "jnl-ob-cli-020",
     "date": "2026-06-30",
     "reference": "OB-CLI-020",
-    "description": "[Opening Balance] Accounts Receivable — PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO",
+    "description": "[Opening Balance] Accounts Receivable — IGLOO",
     "lines": [
       {
         "account": "ar",
         "debit": 359375,
         "credit": 0,
-        "memo": "Opening Balance — PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO"
+        "memo": "Opening Balance — IGLOO"
       },
       {
         "account": "equity",
@@ -11805,13 +11805,13 @@ export const REAL_JOURNAL = [
     "id": "jnl-ob-cli-021",
     "date": "2026-06-30",
     "reference": "OB-CLI-021",
-    "description": "[Opening Balance] Accounts Receivable — MR. KAMRAN KARIM",
+    "description": "[Opening Balance] Accounts Receivable — KAMRAN KARIM",
     "lines": [
       {
         "account": "ar",
         "debit": 236000,
         "credit": 0,
-        "memo": "Opening Balance — MR. KAMRAN KARIM"
+        "memo": "Opening Balance — KAMRAN KARIM"
       },
       {
         "account": "equity",
@@ -11825,19 +11825,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-70",
     "date": "2026-09-01",
     "reference": "INV-AD-S377",
-    "description": "[Sales Invoice] KIA SMART SHEHZORE - WITH TAX — Kia Shehzore - Print Media",
+    "description": "[Sales Invoice] KIA SHEHZORE — Kia Shehzore - Print Media",
     "lines": [
       {
         "account": "ar",
         "debit": 5265836,
         "credit": 0,
-        "memo": "Accounts Receivable — KIA SMART SHEHZORE - WITH TAX"
+        "memo": "Accounts Receivable — KIA SHEHZORE"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 5265836,
-        "memo": "Sales Revenue — KIA SMART SHEHZORE - WITH TAX"
+        "memo": "Sales Revenue — KIA SHEHZORE"
       }
     ]
   },
@@ -11845,19 +11845,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-71",
     "date": "2026-09-01",
     "reference": "INV-AD-S378",
-    "description": "[Sales Invoice] KIA SMART SHEHZORE - WITH TAX — Kia Shehzore - POS Materials",
+    "description": "[Sales Invoice] KIA SHEHZORE — Kia Shehzore - POS Materials",
     "lines": [
       {
         "account": "ar",
         "debit": 750408,
         "credit": 0,
-        "memo": "Accounts Receivable — KIA SMART SHEHZORE - WITH TAX"
+        "memo": "Accounts Receivable — KIA SHEHZORE"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 750408,
-        "memo": "Sales Revenue — KIA SMART SHEHZORE - WITH TAX"
+        "memo": "Sales Revenue — KIA SHEHZORE"
       }
     ]
   },
@@ -11865,19 +11865,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-72",
     "date": "2026-09-01",
     "reference": "INV-AD-S379",
-    "description": "[Sales Invoice] KIA SMART SHEHZORE - WITH TAX — Kia Shehzore - OOH Media Campaign",
+    "description": "[Sales Invoice] KIA SHEHZORE — Kia Shehzore - OOH Media Campaign",
     "lines": [
       {
         "account": "ar",
         "debit": 11256117,
         "credit": 0,
-        "memo": "Accounts Receivable — KIA SMART SHEHZORE - WITH TAX"
+        "memo": "Accounts Receivable — KIA SHEHZORE"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 11256117,
-        "memo": "Sales Revenue — KIA SMART SHEHZORE - WITH TAX"
+        "memo": "Sales Revenue — KIA SHEHZORE"
       }
     ]
   },
@@ -11885,19 +11885,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-73",
     "date": "2026-09-01",
     "reference": "INV-AD-S380",
-    "description": "[Sales Invoice] KIA SMART SHEHZORE - WITH TAX — Kia Shehzore - Social Media / Digital Campaign",
+    "description": "[Sales Invoice] KIA SHEHZORE — Kia Shehzore - Social Media / Digital Campaign",
     "lines": [
       {
         "account": "ar",
         "debit": 1972947,
         "credit": 0,
-        "memo": "Accounts Receivable — KIA SMART SHEHZORE - WITH TAX"
+        "memo": "Accounts Receivable — KIA SHEHZORE"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 1972947,
-        "memo": "Sales Revenue — KIA SMART SHEHZORE - WITH TAX"
+        "memo": "Sales Revenue — KIA SHEHZORE"
       }
     ]
   },
@@ -11905,19 +11905,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-74",
     "date": "2026-08-18",
     "reference": "AD/9791/08/26",
-    "description": "[Sales Invoice] KINZA BEVERAGES — WEBSITE DEVELOPMENT AND DIGITAL MARKETING",
+    "description": "[Sales Invoice] KINZA BEVRAGES — WEBSITE DEVELOPMENT AND DIGITAL MARKETING",
     "lines": [
       {
         "account": "ar",
         "debit": 200000,
         "credit": 0,
-        "memo": "Accounts Receivable — KINZA BEVERAGES"
+        "memo": "Accounts Receivable — KINZA BEVRAGES"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 200000,
-        "memo": "Sales Revenue — KINZA BEVERAGES"
+        "memo": "Sales Revenue — KINZA BEVRAGES"
       }
     ]
   },
@@ -11925,7 +11925,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-71",
     "date": "2026-08-28",
     "reference": "BRV-26-071",
-    "description": "[Receipt Voucher] KINZA BEVERAGES — CASH CHEQUE RECEIVED FROM KINZA BAVERAGES (CHQ DT 22-8-26)",
+    "description": "[Receipt Voucher] KINZA BEVRAGES — CASH CHEQUE RECEIVED FROM KINZA BAVERAGES (CHQ DT 22-8-26)",
     "lines": [
       {
         "account": "cash",
@@ -11938,7 +11938,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 100000,
-        "memo": "Accounts Receivable — KINZA BEVERAGES"
+        "memo": "Accounts Receivable — KINZA BEVRAGES"
       }
     ]
   },
@@ -11946,7 +11946,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-72",
     "date": "2026-08-28",
     "reference": "BRV-26-072",
-    "description": "[Receipt Voucher] KINZA BEVERAGES — CASH CHEQUE RECEIVED FROM KINZA BAVERAGES (CHQ DT 28-8-26)",
+    "description": "[Receipt Voucher] KINZA BEVRAGES — CASH CHEQUE RECEIVED FROM KINZA BAVERAGES (CHQ DT 28-8-26)",
     "lines": [
       {
         "account": "cash",
@@ -11959,7 +11959,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 50000,
-        "memo": "Accounts Receivable — KINZA BEVERAGES"
+        "memo": "Accounts Receivable — KINZA BEVRAGES"
       }
     ]
   },
@@ -11967,19 +11967,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-75",
     "date": "2026-07-07",
     "reference": "AD/9754/07/26",
-    "description": "[Sales Invoice] KIFAYAH PHARMACY & SUPER MARKET — OOH SITE PRINTING, INSTALLATION & RENTAL",
+    "description": "[Sales Invoice] KIFAYAH — OOH SITE PRINTING, INSTALLATION & RENTAL",
     "lines": [
       {
         "account": "ar",
         "debit": 60400,
         "credit": 0,
-        "memo": "Accounts Receivable — KIFAYAH PHARMACY & SUPER MARKET"
+        "memo": "Accounts Receivable — KIFAYAH"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 60400,
-        "memo": "Sales Revenue — KIFAYAH PHARMACY & SUPER MARKET"
+        "memo": "Sales Revenue — KIFAYAH"
       }
     ]
   },
@@ -11987,19 +11987,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-76",
     "date": "2026-07-01",
     "reference": "INV-26-076",
-    "description": "[Sales Invoice] KIFAYAH PHARMACY & SUPER MARKET — Media Billing",
+    "description": "[Sales Invoice] KIFAYAH — Media Billing",
     "lines": [
       {
         "account": "ar",
         "debit": 550000,
         "credit": 0,
-        "memo": "Accounts Receivable — KIFAYAH PHARMACY & SUPER MARKET"
+        "memo": "Accounts Receivable — KIFAYAH"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 550000,
-        "memo": "Sales Revenue — KIFAYAH PHARMACY & SUPER MARKET"
+        "memo": "Sales Revenue — KIFAYAH"
       }
     ]
   },
@@ -12007,7 +12007,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-73",
     "date": "2026-07-01",
     "reference": "BRV-26-073",
-    "description": "[Receipt Voucher] KIFAYAH PHARMACY & SUPER MARKET — Payment Received",
+    "description": "[Receipt Voucher] KIFAYAH — Payment Received",
     "lines": [
       {
         "account": "bank",
@@ -12020,7 +12020,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 8250,
-        "memo": "Accounts Receivable — KIFAYAH PHARMACY & SUPER MARKET"
+        "memo": "Accounts Receivable — KIFAYAH"
       }
     ]
   },
@@ -12028,19 +12028,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-77",
     "date": "2026-07-01",
     "reference": "INV-26-077",
-    "description": "[Sales Invoice] KIFAYAH PHARMACY & SUPER MARKET — Media Billing",
+    "description": "[Sales Invoice] KIFAYAH — Media Billing",
     "lines": [
       {
         "account": "ar",
         "debit": 550000,
         "credit": 0,
-        "memo": "Accounts Receivable — KIFAYAH PHARMACY & SUPER MARKET"
+        "memo": "Accounts Receivable — KIFAYAH"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 550000,
-        "memo": "Sales Revenue — KIFAYAH PHARMACY & SUPER MARKET"
+        "memo": "Sales Revenue — KIFAYAH"
       }
     ]
   },
@@ -12048,7 +12048,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-74",
     "date": "2026-07-01",
     "reference": "BRV-26-074",
-    "description": "[Receipt Voucher] KIFAYAH PHARMACY & SUPER MARKET — Payment Received",
+    "description": "[Receipt Voucher] KIFAYAH — Payment Received",
     "lines": [
       {
         "account": "bank",
@@ -12061,7 +12061,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 8250,
-        "memo": "Accounts Receivable — KIFAYAH PHARMACY & SUPER MARKET"
+        "memo": "Accounts Receivable — KIFAYAH"
       }
     ]
   },
@@ -12069,19 +12069,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-78",
     "date": "2026-07-01",
     "reference": "INV-26-078",
-    "description": "[Sales Invoice] KIFAYAH PHARMACY & SUPER MARKET — Media Billing",
+    "description": "[Sales Invoice] KIFAYAH — Media Billing",
     "lines": [
       {
         "account": "ar",
         "debit": 550000,
         "credit": 0,
-        "memo": "Accounts Receivable — KIFAYAH PHARMACY & SUPER MARKET"
+        "memo": "Accounts Receivable — KIFAYAH"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 550000,
-        "memo": "Sales Revenue — KIFAYAH PHARMACY & SUPER MARKET"
+        "memo": "Sales Revenue — KIFAYAH"
       }
     ]
   },
@@ -12089,7 +12089,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-75",
     "date": "2026-07-01",
     "reference": "BRV-26-075",
-    "description": "[Receipt Voucher] KIFAYAH PHARMACY & SUPER MARKET — Payment Received",
+    "description": "[Receipt Voucher] KIFAYAH — Payment Received",
     "lines": [
       {
         "account": "bank",
@@ -12102,7 +12102,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 8250,
-        "memo": "Accounts Receivable — KIFAYAH PHARMACY & SUPER MARKET"
+        "memo": "Accounts Receivable — KIFAYAH"
       }
     ]
   },
@@ -12110,19 +12110,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-79",
     "date": "2026-07-01",
     "reference": "INV-26-079",
-    "description": "[Sales Invoice] KIFAYAH PHARMACY & SUPER MARKET — Media Billing",
+    "description": "[Sales Invoice] KIFAYAH — Media Billing",
     "lines": [
       {
         "account": "ar",
         "debit": 550000,
         "credit": 0,
-        "memo": "Accounts Receivable — KIFAYAH PHARMACY & SUPER MARKET"
+        "memo": "Accounts Receivable — KIFAYAH"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 550000,
-        "memo": "Sales Revenue — KIFAYAH PHARMACY & SUPER MARKET"
+        "memo": "Sales Revenue — KIFAYAH"
       }
     ]
   },
@@ -12130,7 +12130,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-76",
     "date": "2026-07-01",
     "reference": "BRV-26-076",
-    "description": "[Receipt Voucher] KIFAYAH PHARMACY & SUPER MARKET — Payment Received",
+    "description": "[Receipt Voucher] KIFAYAH — Payment Received",
     "lines": [
       {
         "account": "bank",
@@ -12143,7 +12143,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 8250,
-        "memo": "Accounts Receivable — KIFAYAH PHARMACY & SUPER MARKET"
+        "memo": "Accounts Receivable — KIFAYAH"
       }
     ]
   },
@@ -12151,19 +12151,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-80",
     "date": "2026-07-01",
     "reference": "INV-26-080",
-    "description": "[Sales Invoice] KIFAYAH PHARMACY & SUPER MARKET — Media Billing",
+    "description": "[Sales Invoice] KIFAYAH — Media Billing",
     "lines": [
       {
         "account": "ar",
         "debit": 550000,
         "credit": 0,
-        "memo": "Accounts Receivable — KIFAYAH PHARMACY & SUPER MARKET"
+        "memo": "Accounts Receivable — KIFAYAH"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 550000,
-        "memo": "Sales Revenue — KIFAYAH PHARMACY & SUPER MARKET"
+        "memo": "Sales Revenue — KIFAYAH"
       }
     ]
   },
@@ -12171,7 +12171,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-77",
     "date": "2026-07-01",
     "reference": "BRV-26-077",
-    "description": "[Receipt Voucher] KIFAYAH PHARMACY & SUPER MARKET — Payment Received",
+    "description": "[Receipt Voucher] KIFAYAH — Payment Received",
     "lines": [
       {
         "account": "bank",
@@ -12184,7 +12184,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 8250,
-        "memo": "Accounts Receivable — KIFAYAH PHARMACY & SUPER MARKET"
+        "memo": "Accounts Receivable — KIFAYAH"
       }
     ]
   },
@@ -12192,19 +12192,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-81",
     "date": "2026-07-01",
     "reference": "INV-26-081",
-    "description": "[Sales Invoice] KIFAYAH PHARMACY & SUPER MARKET — Media Billing",
+    "description": "[Sales Invoice] KIFAYAH — Media Billing",
     "lines": [
       {
         "account": "ar",
         "debit": 550000,
         "credit": 0,
-        "memo": "Accounts Receivable — KIFAYAH PHARMACY & SUPER MARKET"
+        "memo": "Accounts Receivable — KIFAYAH"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 550000,
-        "memo": "Sales Revenue — KIFAYAH PHARMACY & SUPER MARKET"
+        "memo": "Sales Revenue — KIFAYAH"
       }
     ]
   },
@@ -12212,7 +12212,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-78",
     "date": "2026-07-01",
     "reference": "BRV-26-078",
-    "description": "[Receipt Voucher] KIFAYAH PHARMACY & SUPER MARKET — Payment Received",
+    "description": "[Receipt Voucher] KIFAYAH — Payment Received",
     "lines": [
       {
         "account": "bank",
@@ -12225,7 +12225,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 8250,
-        "memo": "Accounts Receivable — KIFAYAH PHARMACY & SUPER MARKET"
+        "memo": "Accounts Receivable — KIFAYAH"
       }
     ]
   },
@@ -12233,19 +12233,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-82",
     "date": "2026-07-01",
     "reference": "INV-26-082",
-    "description": "[Sales Invoice] KIFAYAH PHARMACY & SUPER MARKET — Media Billing",
+    "description": "[Sales Invoice] KIFAYAH — Media Billing",
     "lines": [
       {
         "account": "ar",
         "debit": 550000,
         "credit": 0,
-        "memo": "Accounts Receivable — KIFAYAH PHARMACY & SUPER MARKET"
+        "memo": "Accounts Receivable — KIFAYAH"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 550000,
-        "memo": "Sales Revenue — KIFAYAH PHARMACY & SUPER MARKET"
+        "memo": "Sales Revenue — KIFAYAH"
       }
     ]
   },
@@ -12253,7 +12253,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-79",
     "date": "2026-07-01",
     "reference": "BRV-26-079",
-    "description": "[Receipt Voucher] KIFAYAH PHARMACY & SUPER MARKET — Payment Received",
+    "description": "[Receipt Voucher] KIFAYAH — Payment Received",
     "lines": [
       {
         "account": "bank",
@@ -12266,7 +12266,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 8250,
-        "memo": "Accounts Receivable — KIFAYAH PHARMACY & SUPER MARKET"
+        "memo": "Accounts Receivable — KIFAYAH"
       }
     ]
   },
@@ -12274,19 +12274,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-83",
     "date": "2026-07-01",
     "reference": "INV-26-083",
-    "description": "[Sales Invoice] KIFAYAH PHARMACY & SUPER MARKET — Media Billing",
+    "description": "[Sales Invoice] KIFAYAH — Media Billing",
     "lines": [
       {
         "account": "ar",
         "debit": 413616,
         "credit": 0,
-        "memo": "Accounts Receivable — KIFAYAH PHARMACY & SUPER MARKET"
+        "memo": "Accounts Receivable — KIFAYAH"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 413616,
-        "memo": "Sales Revenue — KIFAYAH PHARMACY & SUPER MARKET"
+        "memo": "Sales Revenue — KIFAYAH"
       }
     ]
   },
@@ -12294,7 +12294,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-80",
     "date": "2026-07-01",
     "reference": "BRV-26-080",
-    "description": "[Receipt Voucher] KIFAYAH PHARMACY & SUPER MARKET — Payment Received",
+    "description": "[Receipt Voucher] KIFAYAH — Payment Received",
     "lines": [
       {
         "account": "bank",
@@ -12307,7 +12307,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 6204.24,
-        "memo": "Accounts Receivable — KIFAYAH PHARMACY & SUPER MARKET"
+        "memo": "Accounts Receivable — KIFAYAH"
       }
     ]
   },
@@ -12315,19 +12315,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-84",
     "date": "2026-07-01",
     "reference": "INV-26-084",
-    "description": "[Sales Invoice] KIFAYAH PHARMACY & SUPER MARKET — Media Billing",
+    "description": "[Sales Invoice] KIFAYAH — Media Billing",
     "lines": [
       {
         "account": "ar",
         "debit": 4263616,
         "credit": 0,
-        "memo": "Accounts Receivable — KIFAYAH PHARMACY & SUPER MARKET"
+        "memo": "Accounts Receivable — KIFAYAH"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 4263616,
-        "memo": "Sales Revenue — KIFAYAH PHARMACY & SUPER MARKET"
+        "memo": "Sales Revenue — KIFAYAH"
       }
     ]
   },
@@ -12335,7 +12335,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-81",
     "date": "2026-07-01",
     "reference": "BRV-26-081",
-    "description": "[Receipt Voucher] KIFAYAH PHARMACY & SUPER MARKET — Payment Received",
+    "description": "[Receipt Voucher] KIFAYAH — Payment Received",
     "lines": [
       {
         "account": "bank",
@@ -12348,7 +12348,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 63954.24,
-        "memo": "Accounts Receivable — KIFAYAH PHARMACY & SUPER MARKET"
+        "memo": "Accounts Receivable — KIFAYAH"
       }
     ]
   },
@@ -12356,13 +12356,13 @@ export const REAL_JOURNAL = [
     "id": "jnl-ob-cli-024",
     "date": "2026-06-30",
     "reference": "OB-CLI-024",
-    "description": "[Opening Balance] Accounts Receivable — KIFAYAH PHARMACY & SUPER MARKET",
+    "description": "[Opening Balance] Accounts Receivable — KIFAYAH",
     "lines": [
       {
         "account": "ar",
         "debit": 87562,
         "credit": 0,
-        "memo": "Opening Balance — KIFAYAH PHARMACY & SUPER MARKET"
+        "memo": "Opening Balance — KIFAYAH"
       },
       {
         "account": "equity",
@@ -12665,19 +12665,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-88",
     "date": "2025-09-18",
     "reference": "INV-Sold",
-    "description": "[Sales Invoice] TOYOTA FORTUNER LGN BK-7972 — TOYOTA FORTUNER/BK-7972 Sold to Salman Meow PURCHASED FROM GAGAI'S AUTOMOBILE",
+    "description": "[Sales Invoice] SALMAN MEO — TOYOTA FORTUNER/BK-7972 Sold to Salman Meow PURCHASED FROM GAGAI'S AUTOMOBILE",
     "lines": [
       {
         "account": "ar",
         "debit": 18000000,
         "credit": 0,
-        "memo": "Accounts Receivable — TOYOTA FORTUNER LGN BK-7972"
+        "memo": "Accounts Receivable — SALMAN MEO"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 18000000,
-        "memo": "Sales Revenue — TOYOTA FORTUNER LGN BK-7972"
+        "memo": "Sales Revenue — SALMAN MEO"
       }
     ]
   },
@@ -12685,7 +12685,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-91",
     "date": "2025-09-18",
     "reference": "BRV-26-091",
-    "description": "[Receipt Voucher] TOYOTA FORTUNER LGN BK-7972 — Jac Car Purchase from Salman Meow SOLD TO TNI KHURRAM",
+    "description": "[Receipt Voucher] SALMAN MEO — Jac Car Purchase from Salman Meow SOLD TO TNI KHURRAM",
     "lines": [
       {
         "account": "bank",
@@ -12698,7 +12698,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 10800000,
-        "memo": "Accounts Receivable — TOYOTA FORTUNER LGN BK-7972"
+        "memo": "Accounts Receivable — SALMAN MEO"
       }
     ]
   },
@@ -12706,7 +12706,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-92",
     "date": "2025-10-15",
     "reference": "BRV-26-092",
-    "description": "[Receipt Voucher] TOYOTA FORTUNER LGN BK-7972 — CHQ RECEIVED FROM ANSAR BHAI (AKD BUILDERS & DEVELOPERS)",
+    "description": "[Receipt Voucher] SALMAN MEO — CHQ RECEIVED FROM ANSAR BHAI (AKD BUILDERS & DEVELOPERS)",
     "lines": [
       {
         "account": "bank",
@@ -12719,7 +12719,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 900000,
-        "memo": "Accounts Receivable — TOYOTA FORTUNER LGN BK-7972"
+        "memo": "Accounts Receivable — SALMAN MEO"
       }
     ]
   },
@@ -12727,7 +12727,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-93",
     "date": "2025-10-15",
     "reference": "BRV-26-093",
-    "description": "[Receipt Voucher] TOYOTA FORTUNER LGN BK-7972 — CHQ RECEIVED FROM ANSAR BHAI (AKD BUILDERS & DEVELOPERS)",
+    "description": "[Receipt Voucher] SALMAN MEO — CHQ RECEIVED FROM ANSAR BHAI (AKD BUILDERS & DEVELOPERS)",
     "lines": [
       {
         "account": "bank",
@@ -12740,7 +12740,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 900000,
-        "memo": "Accounts Receivable — TOYOTA FORTUNER LGN BK-7972"
+        "memo": "Accounts Receivable — SALMAN MEO"
       }
     ]
   },
@@ -12748,7 +12748,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-94",
     "date": "2025-10-15",
     "reference": "BRV-26-094",
-    "description": "[Receipt Voucher] TOYOTA FORTUNER LGN BK-7972 — CHQ RECEIVED FROM ANSAR BHAI (AKD BUILDERS & DEVELOPERS)",
+    "description": "[Receipt Voucher] SALMAN MEO — CHQ RECEIVED FROM ANSAR BHAI (AKD BUILDERS & DEVELOPERS)",
     "lines": [
       {
         "account": "bank",
@@ -12761,7 +12761,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 900000,
-        "memo": "Accounts Receivable — TOYOTA FORTUNER LGN BK-7972"
+        "memo": "Accounts Receivable — SALMAN MEO"
       }
     ]
   },
@@ -12769,7 +12769,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-95",
     "date": "2025-10-15",
     "reference": "BRV-26-095",
-    "description": "[Receipt Voucher] TOYOTA FORTUNER LGN BK-7972 — CHQ RECEIVED FROM ANSAR BHAI (AKD BUILDERS & DEVELOPERS)",
+    "description": "[Receipt Voucher] SALMAN MEO — CHQ RECEIVED FROM ANSAR BHAI (AKD BUILDERS & DEVELOPERS)",
     "lines": [
       {
         "account": "bank",
@@ -12782,7 +12782,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 900000,
-        "memo": "Accounts Receivable — TOYOTA FORTUNER LGN BK-7972"
+        "memo": "Accounts Receivable — SALMAN MEO"
       }
     ]
   },
@@ -12790,7 +12790,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-96",
     "date": "2025-10-15",
     "reference": "BRV-26-096",
-    "description": "[Receipt Voucher] TOYOTA FORTUNER LGN BK-7972 — CHQ RECEIVED FROM ANSAR BHAI (AKD BUILDERS & DEVELOPERS)",
+    "description": "[Receipt Voucher] SALMAN MEO — CHQ RECEIVED FROM ANSAR BHAI (AKD BUILDERS & DEVELOPERS)",
     "lines": [
       {
         "account": "bank",
@@ -12803,7 +12803,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 900000,
-        "memo": "Accounts Receivable — TOYOTA FORTUNER LGN BK-7972"
+        "memo": "Accounts Receivable — SALMAN MEO"
       }
     ]
   },
@@ -12811,7 +12811,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-97",
     "date": "2025-10-15",
     "reference": "BRV-26-097",
-    "description": "[Receipt Voucher] TOYOTA FORTUNER LGN BK-7972 — CHQ RECEIVED FROM ANSAR BHAI (AKD BUILDERS & DEVELOPERS)",
+    "description": "[Receipt Voucher] SALMAN MEO — CHQ RECEIVED FROM ANSAR BHAI (AKD BUILDERS & DEVELOPERS)",
     "lines": [
       {
         "account": "bank",
@@ -12824,7 +12824,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 500000,
-        "memo": "Accounts Receivable — TOYOTA FORTUNER LGN BK-7972"
+        "memo": "Accounts Receivable — SALMAN MEO"
       }
     ]
   },
@@ -12832,19 +12832,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-89",
     "date": "2025-11-13",
     "reference": "INV-26-089",
-    "description": "[Sales Invoice] TOYOTA FORTUNER LGN BK-7972 — BALANCE PAYMENT OF MERCEDEZ BENZ AUF-350",
+    "description": "[Sales Invoice] SALMAN MEO — BALANCE PAYMENT OF MERCEDEZ BENZ AUF-350",
     "lines": [
       {
         "account": "ar",
         "debit": 300000,
         "credit": 0,
-        "memo": "Accounts Receivable — TOYOTA FORTUNER LGN BK-7972"
+        "memo": "Accounts Receivable — SALMAN MEO"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 300000,
-        "memo": "Sales Revenue — TOYOTA FORTUNER LGN BK-7972"
+        "memo": "Sales Revenue — SALMAN MEO"
       }
     ]
   },
@@ -12852,19 +12852,19 @@ export const REAL_JOURNAL = [
     "id": "jnl-inv-90",
     "date": "2025-12-04",
     "reference": "INV-26-090",
-    "description": "[Sales Invoice] TOYOTA FORTUNER LGN BK-7972 — TRANSFER FEES OF TOYOTA FORTUNER/BK-7972",
+    "description": "[Sales Invoice] SALMAN MEO — TRANSFER FEES OF TOYOTA FORTUNER/BK-7972",
     "lines": [
       {
         "account": "ar",
         "debit": 20000,
         "credit": 0,
-        "memo": "Accounts Receivable — TOYOTA FORTUNER LGN BK-7972"
+        "memo": "Accounts Receivable — SALMAN MEO"
       },
       {
         "account": "revenue",
         "debit": 0,
         "credit": 20000,
-        "memo": "Sales Revenue — TOYOTA FORTUNER LGN BK-7972"
+        "memo": "Sales Revenue — SALMAN MEO"
       }
     ]
   },
@@ -12872,7 +12872,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-98",
     "date": "2026-02-09",
     "reference": "BRV-26-098",
-    "description": "[Receipt Voucher] TOYOTA FORTUNER LGN BK-7972 — DISCOUNT",
+    "description": "[Receipt Voucher] SALMAN MEO — DISCOUNT",
     "lines": [
       {
         "account": "bank",
@@ -12885,7 +12885,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 20000,
-        "memo": "Accounts Receivable — TOYOTA FORTUNER LGN BK-7972"
+        "memo": "Accounts Receivable — SALMAN MEO"
       }
     ]
   },
@@ -12893,7 +12893,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-99",
     "date": "2026-02-09",
     "reference": "BRV-26-099",
-    "description": "[Receipt Voucher] TOYOTA FORTUNER LGN BK-7972 — CASH RECEIVED (KHURRAM BHAI DIRECTLY RECEIVED)",
+    "description": "[Receipt Voucher] SALMAN MEO — CASH RECEIVED (KHURRAM BHAI DIRECTLY RECEIVED)",
     "lines": [
       {
         "account": "cash",
@@ -12906,7 +12906,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 2500000,
-        "memo": "Accounts Receivable — TOYOTA FORTUNER LGN BK-7972"
+        "memo": "Accounts Receivable — SALMAN MEO"
       }
     ]
   },
@@ -12954,7 +12954,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-100",
     "date": "2026-08-04",
     "reference": "BRV-26-100",
-    "description": "[Receipt Voucher] SUNRIDGE FOODS — IBFT RECEIVED IN IMC FROM SUNRIDGE",
+    "description": "[Receipt Voucher] SUNRIDGE — IBFT RECEIVED IN IMC FROM SUNRIDGE",
     "lines": [
       {
         "account": "bank",
@@ -12967,7 +12967,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 500000,
-        "memo": "Accounts Receivable — SUNRIDGE FOODS"
+        "memo": "Accounts Receivable — SUNRIDGE"
       }
     ]
   },
@@ -12975,7 +12975,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-101",
     "date": "2026-08-07",
     "reference": "BRV-26-101",
-    "description": "[Receipt Voucher] SUNRIDGE FOODS — IBFT RECEIVED IN IMC FROM SUNRIDGE",
+    "description": "[Receipt Voucher] SUNRIDGE — IBFT RECEIVED IN IMC FROM SUNRIDGE",
     "lines": [
       {
         "account": "bank",
@@ -12988,7 +12988,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 500000,
-        "memo": "Accounts Receivable — SUNRIDGE FOODS"
+        "memo": "Accounts Receivable — SUNRIDGE"
       }
     ]
   },
@@ -12996,7 +12996,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-102",
     "date": "2026-08-11",
     "reference": "BRV-26-102",
-    "description": "[Receipt Voucher] SUNRIDGE FOODS — IBFT RECEIVED IN IMC FROM SUNRIDGE",
+    "description": "[Receipt Voucher] SUNRIDGE — IBFT RECEIVED IN IMC FROM SUNRIDGE",
     "lines": [
       {
         "account": "bank",
@@ -13009,7 +13009,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 500000,
-        "memo": "Accounts Receivable — SUNRIDGE FOODS"
+        "memo": "Accounts Receivable — SUNRIDGE"
       }
     ]
   },
@@ -13017,7 +13017,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-103",
     "date": "2026-08-15",
     "reference": "BRV-26-103",
-    "description": "[Receipt Voucher] SUNRIDGE FOODS — IBFT RECEIVED IN IMC FROM SUNRIDGE",
+    "description": "[Receipt Voucher] SUNRIDGE — IBFT RECEIVED IN IMC FROM SUNRIDGE",
     "lines": [
       {
         "account": "bank",
@@ -13030,7 +13030,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 500000,
-        "memo": "Accounts Receivable — SUNRIDGE FOODS"
+        "memo": "Accounts Receivable — SUNRIDGE"
       }
     ]
   },
@@ -13038,7 +13038,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-104",
     "date": "2026-08-20",
     "reference": "BRV-26-104",
-    "description": "[Receipt Voucher] SUNRIDGE FOODS — IBFT RECEIVED IN IMC FROM SUNRIDGE",
+    "description": "[Receipt Voucher] SUNRIDGE — IBFT RECEIVED IN IMC FROM SUNRIDGE",
     "lines": [
       {
         "account": "bank",
@@ -13051,7 +13051,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 500000,
-        "memo": "Accounts Receivable — SUNRIDGE FOODS"
+        "memo": "Accounts Receivable — SUNRIDGE"
       }
     ]
   },
@@ -13059,7 +13059,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-105",
     "date": "2026-08-24",
     "reference": "BRV-26-105",
-    "description": "[Receipt Voucher] SUNRIDGE FOODS — IBFT RECEIVED IN IMC FROM SUNRIDGE",
+    "description": "[Receipt Voucher] SUNRIDGE — IBFT RECEIVED IN IMC FROM SUNRIDGE",
     "lines": [
       {
         "account": "bank",
@@ -13072,7 +13072,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 500000,
-        "memo": "Accounts Receivable — SUNRIDGE FOODS"
+        "memo": "Accounts Receivable — SUNRIDGE"
       }
     ]
   },
@@ -13080,7 +13080,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-106",
     "date": "2026-08-27",
     "reference": "BRV-26-106",
-    "description": "[Receipt Voucher] SUNRIDGE FOODS — IBFT RECEIVED IN IMC FROM SUNRIDGE",
+    "description": "[Receipt Voucher] SUNRIDGE — IBFT RECEIVED IN IMC FROM SUNRIDGE",
     "lines": [
       {
         "account": "bank",
@@ -13093,7 +13093,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 500000,
-        "memo": "Accounts Receivable — SUNRIDGE FOODS"
+        "memo": "Accounts Receivable — SUNRIDGE"
       }
     ]
   },
@@ -13101,7 +13101,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-107",
     "date": "2026-02-18",
     "reference": "BRV-26-107",
-    "description": "[Receipt Voucher] SUNRIDGE FOODS — IBFT RECEIVED IN IMC FROM SUNRIDGE",
+    "description": "[Receipt Voucher] SUNRIDGE — IBFT RECEIVED IN IMC FROM SUNRIDGE",
     "lines": [
       {
         "account": "bank",
@@ -13114,7 +13114,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 500000,
-        "memo": "Accounts Receivable — SUNRIDGE FOODS"
+        "memo": "Accounts Receivable — SUNRIDGE"
       }
     ]
   },
@@ -13122,7 +13122,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-108",
     "date": "2026-02-27",
     "reference": "BRV-26-108",
-    "description": "[Receipt Voucher] SUNRIDGE FOODS — IBFT RECEIVED IN IMC FROM SUNRIDGE",
+    "description": "[Receipt Voucher] SUNRIDGE — IBFT RECEIVED IN IMC FROM SUNRIDGE",
     "lines": [
       {
         "account": "bank",
@@ -13135,7 +13135,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 500000,
-        "memo": "Accounts Receivable — SUNRIDGE FOODS"
+        "memo": "Accounts Receivable — SUNRIDGE"
       }
     ]
   },
@@ -13143,7 +13143,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-109",
     "date": "2026-03-04",
     "reference": "BRV-26-109",
-    "description": "[Receipt Voucher] SUNRIDGE FOODS — IBFT RECEIVED IN IMC FROM SUNRIDGE",
+    "description": "[Receipt Voucher] SUNRIDGE — IBFT RECEIVED IN IMC FROM SUNRIDGE",
     "lines": [
       {
         "account": "bank",
@@ -13156,7 +13156,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 500000,
-        "memo": "Accounts Receivable — SUNRIDGE FOODS"
+        "memo": "Accounts Receivable — SUNRIDGE"
       }
     ]
   },
@@ -13164,7 +13164,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-110",
     "date": "2026-04-30",
     "reference": "BRV-26-110",
-    "description": "[Receipt Voucher] SUNRIDGE FOODS — IBFT RECEIVED IN IMC FROM SUNRIDGE",
+    "description": "[Receipt Voucher] SUNRIDGE — IBFT RECEIVED IN IMC FROM SUNRIDGE",
     "lines": [
       {
         "account": "bank",
@@ -13177,7 +13177,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 804073.05,
-        "memo": "Accounts Receivable — SUNRIDGE FOODS"
+        "memo": "Accounts Receivable — SUNRIDGE"
       }
     ]
   },
@@ -13185,7 +13185,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-111",
     "date": "2026-06-24",
     "reference": "BRV-26-111",
-    "description": "[Receipt Voucher] SUNRIDGE FOODS — IBFT RECEIVED IN IMC FROM SUNRIDGE",
+    "description": "[Receipt Voucher] SUNRIDGE — IBFT RECEIVED IN IMC FROM SUNRIDGE",
     "lines": [
       {
         "account": "bank",
@@ -13198,7 +13198,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 500000,
-        "memo": "Accounts Receivable — SUNRIDGE FOODS"
+        "memo": "Accounts Receivable — SUNRIDGE"
       }
     ]
   },
@@ -13206,7 +13206,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-112",
     "date": "2026-08-04",
     "reference": "BRV-26-112",
-    "description": "[Receipt Voucher] SUNRIDGE FOODS — IBFT RECEIVED IN IMC FROM SUNRIDGE",
+    "description": "[Receipt Voucher] SUNRIDGE — IBFT RECEIVED IN IMC FROM SUNRIDGE",
     "lines": [
       {
         "account": "bank",
@@ -13219,7 +13219,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 500000,
-        "memo": "Accounts Receivable — SUNRIDGE FOODS"
+        "memo": "Accounts Receivable — SUNRIDGE"
       }
     ]
   },
@@ -13227,7 +13227,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-113",
     "date": "2026-08-07",
     "reference": "BRV-26-113",
-    "description": "[Receipt Voucher] SUNRIDGE FOODS — IBFT RECEIVED IN IMC FROM SUNRIDGE",
+    "description": "[Receipt Voucher] SUNRIDGE — IBFT RECEIVED IN IMC FROM SUNRIDGE",
     "lines": [
       {
         "account": "bank",
@@ -13240,7 +13240,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 500000,
-        "memo": "Accounts Receivable — SUNRIDGE FOODS"
+        "memo": "Accounts Receivable — SUNRIDGE"
       }
     ]
   },
@@ -13248,7 +13248,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-114",
     "date": "2026-08-11",
     "reference": "BRV-26-114",
-    "description": "[Receipt Voucher] SUNRIDGE FOODS — IBFT RECEIVED IN IMC FROM SUNRIDGE",
+    "description": "[Receipt Voucher] SUNRIDGE — IBFT RECEIVED IN IMC FROM SUNRIDGE",
     "lines": [
       {
         "account": "bank",
@@ -13261,7 +13261,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 500000,
-        "memo": "Accounts Receivable — SUNRIDGE FOODS"
+        "memo": "Accounts Receivable — SUNRIDGE"
       }
     ]
   },
@@ -13269,7 +13269,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-115",
     "date": "2026-08-15",
     "reference": "BRV-26-115",
-    "description": "[Receipt Voucher] SUNRIDGE FOODS — IBFT RECEIVED IN IMC FROM SUNRIDGE",
+    "description": "[Receipt Voucher] SUNRIDGE — IBFT RECEIVED IN IMC FROM SUNRIDGE",
     "lines": [
       {
         "account": "bank",
@@ -13282,7 +13282,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 500000,
-        "memo": "Accounts Receivable — SUNRIDGE FOODS"
+        "memo": "Accounts Receivable — SUNRIDGE"
       }
     ]
   },
@@ -13290,7 +13290,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-116",
     "date": "2026-08-20",
     "reference": "BRV-26-116",
-    "description": "[Receipt Voucher] SUNRIDGE FOODS — IBFT RECEIVED IN IMC FROM SUNRIDGE",
+    "description": "[Receipt Voucher] SUNRIDGE — IBFT RECEIVED IN IMC FROM SUNRIDGE",
     "lines": [
       {
         "account": "bank",
@@ -13303,7 +13303,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 500000,
-        "memo": "Accounts Receivable — SUNRIDGE FOODS"
+        "memo": "Accounts Receivable — SUNRIDGE"
       }
     ]
   },
@@ -13311,7 +13311,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-117",
     "date": "2026-08-24",
     "reference": "BRV-26-117",
-    "description": "[Receipt Voucher] SUNRIDGE FOODS — IBFT RECEIVED IN IMC FROM SUNRIDGE",
+    "description": "[Receipt Voucher] SUNRIDGE — IBFT RECEIVED IN IMC FROM SUNRIDGE",
     "lines": [
       {
         "account": "bank",
@@ -13324,7 +13324,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 500000,
-        "memo": "Accounts Receivable — SUNRIDGE FOODS"
+        "memo": "Accounts Receivable — SUNRIDGE"
       }
     ]
   },
@@ -13332,7 +13332,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-118",
     "date": "2026-08-27",
     "reference": "BRV-26-118",
-    "description": "[Receipt Voucher] SUNRIDGE FOODS — IBFT RECEIVED IN IMC FROM SUNRIDGE",
+    "description": "[Receipt Voucher] SUNRIDGE — IBFT RECEIVED IN IMC FROM SUNRIDGE",
     "lines": [
       {
         "account": "bank",
@@ -13345,7 +13345,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 500000,
-        "memo": "Accounts Receivable — SUNRIDGE FOODS"
+        "memo": "Accounts Receivable — SUNRIDGE"
       }
     ]
   },
@@ -13353,13 +13353,13 @@ export const REAL_JOURNAL = [
     "id": "jnl-ob-cli-031",
     "date": "2026-06-30",
     "reference": "OB-CLI-031",
-    "description": "[Opening Balance] Accounts Receivable — SUNRIDGE FOODS",
+    "description": "[Opening Balance] Accounts Receivable — SUNRIDGE",
     "lines": [
       {
         "account": "ar",
         "debit": 5401182.7,
         "credit": 0,
-        "memo": "Opening Balance — SUNRIDGE FOODS"
+        "memo": "Opening Balance — SUNRIDGE"
       },
       {
         "account": "equity",
@@ -13373,7 +13373,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-119",
     "date": "2026-07-04",
     "reference": "BRV-26-119",
-    "description": "[Receipt Voucher] XEFAN - OTEL RESIDENCY - CASH — Payment Received",
+    "description": "[Receipt Voucher] XEFAN — Payment Received",
     "lines": [
       {
         "account": "bank",
@@ -13386,7 +13386,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 395000,
-        "memo": "Accounts Receivable — XEFAN - OTEL RESIDENCY - CASH"
+        "memo": "Accounts Receivable — XEFAN"
       }
     ]
   },
@@ -13394,7 +13394,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-120",
     "date": "2026-07-18",
     "reference": "BRV-26-120",
-    "description": "[Receipt Voucher] XEFAN - OTEL RESIDENCY - CASH — Payment Received",
+    "description": "[Receipt Voucher] XEFAN — Payment Received",
     "lines": [
       {
         "account": "bank",
@@ -13407,7 +13407,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 300000,
-        "memo": "Accounts Receivable — XEFAN - OTEL RESIDENCY - CASH"
+        "memo": "Accounts Receivable — XEFAN"
       }
     ]
   },
@@ -13415,7 +13415,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-121",
     "date": "2026-07-21",
     "reference": "BRV-26-121",
-    "description": "[Receipt Voucher] XEFAN - OTEL RESIDENCY - CASH — Payment Received",
+    "description": "[Receipt Voucher] XEFAN — Payment Received",
     "lines": [
       {
         "account": "bank",
@@ -13428,7 +13428,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 350000,
-        "memo": "Accounts Receivable — XEFAN - OTEL RESIDENCY - CASH"
+        "memo": "Accounts Receivable — XEFAN"
       }
     ]
   },
@@ -13436,7 +13436,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-122",
     "date": "2026-07-22",
     "reference": "BRV-26-122",
-    "description": "[Receipt Voucher] XEFAN - OTEL RESIDENCY - CASH — Payment Received",
+    "description": "[Receipt Voucher] XEFAN — Payment Received",
     "lines": [
       {
         "account": "cash",
@@ -13449,7 +13449,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 300000,
-        "memo": "Accounts Receivable — XEFAN - OTEL RESIDENCY - CASH"
+        "memo": "Accounts Receivable — XEFAN"
       }
     ]
   },
@@ -13457,7 +13457,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-123",
     "date": "2026-07-23",
     "reference": "BRV-26-123",
-    "description": "[Receipt Voucher] XEFAN - OTEL RESIDENCY - CASH — Payment Received",
+    "description": "[Receipt Voucher] XEFAN — Payment Received",
     "lines": [
       {
         "account": "bank",
@@ -13470,7 +13470,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 525000,
-        "memo": "Accounts Receivable — XEFAN - OTEL RESIDENCY - CASH"
+        "memo": "Accounts Receivable — XEFAN"
       }
     ]
   },
@@ -13478,7 +13478,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-124",
     "date": "2026-07-25",
     "reference": "BRV-26-124",
-    "description": "[Receipt Voucher] XEFAN - OTEL RESIDENCY - CASH — Payment Received",
+    "description": "[Receipt Voucher] XEFAN — Payment Received",
     "lines": [
       {
         "account": "bank",
@@ -13491,7 +13491,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 200000,
-        "memo": "Accounts Receivable — XEFAN - OTEL RESIDENCY - CASH"
+        "memo": "Accounts Receivable — XEFAN"
       }
     ]
   },
@@ -13499,7 +13499,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-125",
     "date": "2026-07-25",
     "reference": "BRV-26-125",
-    "description": "[Receipt Voucher] XEFAN - OTEL RESIDENCY - CASH — Payment Received",
+    "description": "[Receipt Voucher] XEFAN — Payment Received",
     "lines": [
       {
         "account": "bank",
@@ -13512,7 +13512,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 350000,
-        "memo": "Accounts Receivable — XEFAN - OTEL RESIDENCY - CASH"
+        "memo": "Accounts Receivable — XEFAN"
       }
     ]
   },
@@ -13520,7 +13520,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-126",
     "date": "2026-07-27",
     "reference": "BRV-26-126",
-    "description": "[Receipt Voucher] XEFAN - OTEL RESIDENCY - CASH — Payment Received",
+    "description": "[Receipt Voucher] XEFAN — Payment Received",
     "lines": [
       {
         "account": "bank",
@@ -13533,7 +13533,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 200000,
-        "memo": "Accounts Receivable — XEFAN - OTEL RESIDENCY - CASH"
+        "memo": "Accounts Receivable — XEFAN"
       }
     ]
   },
@@ -13541,7 +13541,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-127",
     "date": "2026-07-28",
     "reference": "BRV-26-127",
-    "description": "[Receipt Voucher] XEFAN - OTEL RESIDENCY - CASH — Payment Received",
+    "description": "[Receipt Voucher] XEFAN — Payment Received",
     "lines": [
       {
         "account": "bank",
@@ -13554,7 +13554,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 200000,
-        "memo": "Accounts Receivable — XEFAN - OTEL RESIDENCY - CASH"
+        "memo": "Accounts Receivable — XEFAN"
       }
     ]
   },
@@ -13562,7 +13562,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-128",
     "date": "2026-07-29",
     "reference": "BRV-26-128",
-    "description": "[Receipt Voucher] XEFAN - OTEL RESIDENCY - CASH — Payment Received",
+    "description": "[Receipt Voucher] XEFAN — Payment Received",
     "lines": [
       {
         "account": "bank",
@@ -13575,7 +13575,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 200000,
-        "memo": "Accounts Receivable — XEFAN - OTEL RESIDENCY - CASH"
+        "memo": "Accounts Receivable — XEFAN"
       }
     ]
   },
@@ -13583,7 +13583,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-129",
     "date": "2026-07-30",
     "reference": "BRV-26-129",
-    "description": "[Receipt Voucher] XEFAN - OTEL RESIDENCY - CASH — Payment Received",
+    "description": "[Receipt Voucher] XEFAN — Payment Received",
     "lines": [
       {
         "account": "cash",
@@ -13596,7 +13596,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 900000,
-        "memo": "Accounts Receivable — XEFAN - OTEL RESIDENCY - CASH"
+        "memo": "Accounts Receivable — XEFAN"
       }
     ]
   },
@@ -13604,7 +13604,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-130",
     "date": "2026-08-07",
     "reference": "BRV-26-130",
-    "description": "[Receipt Voucher] XEFAN - OTEL RESIDENCY - CASH — Payment Received",
+    "description": "[Receipt Voucher] XEFAN — Payment Received",
     "lines": [
       {
         "account": "cash",
@@ -13617,7 +13617,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 600000,
-        "memo": "Accounts Receivable — XEFAN - OTEL RESIDENCY - CASH"
+        "memo": "Accounts Receivable — XEFAN"
       }
     ]
   },
@@ -13625,7 +13625,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-131",
     "date": "2026-08-10",
     "reference": "BRV-26-131",
-    "description": "[Receipt Voucher] XEFAN - OTEL RESIDENCY - CASH — Payment Received",
+    "description": "[Receipt Voucher] XEFAN — Payment Received",
     "lines": [
       {
         "account": "bank",
@@ -13638,7 +13638,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 100000,
-        "memo": "Accounts Receivable — XEFAN - OTEL RESIDENCY - CASH"
+        "memo": "Accounts Receivable — XEFAN"
       }
     ]
   },
@@ -13646,7 +13646,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-132",
     "date": "2026-08-13",
     "reference": "BRV-26-132",
-    "description": "[Receipt Voucher] XEFAN - OTEL RESIDENCY - CASH — Payment Received",
+    "description": "[Receipt Voucher] XEFAN — Payment Received",
     "lines": [
       {
         "account": "bank",
@@ -13659,7 +13659,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 200000,
-        "memo": "Accounts Receivable — XEFAN - OTEL RESIDENCY - CASH"
+        "memo": "Accounts Receivable — XEFAN"
       }
     ]
   },
@@ -13667,7 +13667,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-133",
     "date": "2026-08-15",
     "reference": "BRV-26-133",
-    "description": "[Receipt Voucher] XEFAN - OTEL RESIDENCY - CASH — Payment Received",
+    "description": "[Receipt Voucher] XEFAN — Payment Received",
     "lines": [
       {
         "account": "bank",
@@ -13680,7 +13680,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 500000,
-        "memo": "Accounts Receivable — XEFAN - OTEL RESIDENCY - CASH"
+        "memo": "Accounts Receivable — XEFAN"
       }
     ]
   },
@@ -13688,7 +13688,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-134",
     "date": "2026-08-17",
     "reference": "BRV-26-134",
-    "description": "[Receipt Voucher] XEFAN - OTEL RESIDENCY - CASH — Payment Received",
+    "description": "[Receipt Voucher] XEFAN — Payment Received",
     "lines": [
       {
         "account": "bank",
@@ -13701,7 +13701,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 350000,
-        "memo": "Accounts Receivable — XEFAN - OTEL RESIDENCY - CASH"
+        "memo": "Accounts Receivable — XEFAN"
       }
     ]
   },
@@ -13709,7 +13709,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-135",
     "date": "2026-08-17",
     "reference": "BRV-26-135",
-    "description": "[Receipt Voucher] XEFAN - OTEL RESIDENCY - CASH — Payment Received",
+    "description": "[Receipt Voucher] XEFAN — Payment Received",
     "lines": [
       {
         "account": "bank",
@@ -13722,7 +13722,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 300000,
-        "memo": "Accounts Receivable — XEFAN - OTEL RESIDENCY - CASH"
+        "memo": "Accounts Receivable — XEFAN"
       }
     ]
   },
@@ -13730,7 +13730,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-136",
     "date": "2026-08-21",
     "reference": "BRV-26-136",
-    "description": "[Receipt Voucher] XEFAN - OTEL RESIDENCY - CASH — Payment Received",
+    "description": "[Receipt Voucher] XEFAN — Payment Received",
     "lines": [
       {
         "account": "bank",
@@ -13743,7 +13743,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 155000,
-        "memo": "Accounts Receivable — XEFAN - OTEL RESIDENCY - CASH"
+        "memo": "Accounts Receivable — XEFAN"
       }
     ]
   },
@@ -13751,7 +13751,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-137",
     "date": "2026-08-22",
     "reference": "BRV-26-137",
-    "description": "[Receipt Voucher] XEFAN - OTEL RESIDENCY - CASH — Payment Received",
+    "description": "[Receipt Voucher] XEFAN — Payment Received",
     "lines": [
       {
         "account": "bank",
@@ -13764,7 +13764,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 200000,
-        "memo": "Accounts Receivable — XEFAN - OTEL RESIDENCY - CASH"
+        "memo": "Accounts Receivable — XEFAN"
       }
     ]
   },
@@ -13772,7 +13772,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-138",
     "date": "2026-09-03",
     "reference": "BRV-26-138",
-    "description": "[Receipt Voucher] XEFAN - OTEL RESIDENCY - CASH — Payment Received",
+    "description": "[Receipt Voucher] XEFAN — Payment Received",
     "lines": [
       {
         "account": "bank",
@@ -13785,7 +13785,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 150000,
-        "memo": "Accounts Receivable — XEFAN - OTEL RESIDENCY - CASH"
+        "memo": "Accounts Receivable — XEFAN"
       }
     ]
   },
@@ -13793,7 +13793,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-139",
     "date": "2026-09-04",
     "reference": "BRV-26-139",
-    "description": "[Receipt Voucher] XEFAN - OTEL RESIDENCY - CASH — Payment Received",
+    "description": "[Receipt Voucher] XEFAN — Payment Received",
     "lines": [
       {
         "account": "bank",
@@ -13806,7 +13806,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 150000,
-        "memo": "Accounts Receivable — XEFAN - OTEL RESIDENCY - CASH"
+        "memo": "Accounts Receivable — XEFAN"
       }
     ]
   },
@@ -13814,7 +13814,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-140",
     "date": "2026-09-05",
     "reference": "BRV-26-140",
-    "description": "[Receipt Voucher] XEFAN - OTEL RESIDENCY - CASH — Payment Received",
+    "description": "[Receipt Voucher] XEFAN — Payment Received",
     "lines": [
       {
         "account": "bank",
@@ -13827,7 +13827,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 150000,
-        "memo": "Accounts Receivable — XEFAN - OTEL RESIDENCY - CASH"
+        "memo": "Accounts Receivable — XEFAN"
       }
     ]
   },
@@ -13835,7 +13835,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-141",
     "date": "2026-09-05",
     "reference": "BRV-26-141",
-    "description": "[Receipt Voucher] XEFAN - OTEL RESIDENCY - CASH — Payment Received",
+    "description": "[Receipt Voucher] XEFAN — Payment Received",
     "lines": [
       {
         "account": "bank",
@@ -13848,7 +13848,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 100000,
-        "memo": "Accounts Receivable — XEFAN - OTEL RESIDENCY - CASH"
+        "memo": "Accounts Receivable — XEFAN"
       }
     ]
   },
@@ -13856,13 +13856,13 @@ export const REAL_JOURNAL = [
     "id": "jnl-ob-cli-033",
     "date": "2026-06-30",
     "reference": "OB-CLI-033",
-    "description": "[Opening Balance] Accounts Receivable — Z GROUP OF COMPANIES",
+    "description": "[Opening Balance] Accounts Receivable — Z-GROUP",
     "lines": [
       {
         "account": "ar",
         "debit": 3630000,
         "credit": 0,
-        "memo": "Opening Balance — Z GROUP OF COMPANIES"
+        "memo": "Opening Balance — Z-GROUP"
       },
       {
         "account": "equity",
@@ -13876,7 +13876,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-rv-142",
     "date": "2026-09-01",
     "reference": "BRV-26-142",
-    "description": "[Receipt Voucher] 9th FIGURE — IBFT received from 9F Lunch advance",
+    "description": "[Receipt Voucher] 9 FIGURE — IBFT received from 9F Lunch advance",
     "lines": [
       {
         "account": "bank",
@@ -13889,7 +13889,7 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 500000,
-        "memo": "Accounts Receivable — 9th FIGURE"
+        "memo": "Accounts Receivable — 9 FIGURE"
       }
     ]
   },
@@ -13897,13 +13897,13 @@ export const REAL_JOURNAL = [
     "id": "jnl-ob-cli-035",
     "date": "2026-06-30",
     "reference": "OB-CLI-035",
-    "description": "[Opening Balance] Accounts Receivable — 9th Avenue - CASH",
+    "description": "[Opening Balance] Accounts Receivable — 9th AVENUE",
     "lines": [
       {
         "account": "ar",
         "debit": 4543907,
         "credit": 0,
-        "memo": "Opening Balance — 9th Avenue - CASH"
+        "memo": "Opening Balance — 9th AVENUE"
       },
       {
         "account": "equity",
@@ -13917,7 +13917,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-exp-1",
     "date": "2026-09-28",
     "reference": "EXP-1",
-    "description": "[Vendor Bill] ADMAX ADVERTISING - MR. UMAIR BUKHARI — SHAHEED-E-MILLAT HOARDING 60X30  (23-June-2026   to   22-July-2026)",
+    "description": "[Vendor Bill] ADMAX — SHAHEED-E-MILLAT HOARDING 60X30  (23-June-2026   to   22-July-2026)",
     "lines": [
       {
         "account": "expense",
@@ -13929,7 +13929,7 @@ export const REAL_JOURNAL = [
         "account": "ap",
         "debit": 0,
         "credit": 650000,
-        "memo": "Accounts Payable — ADMAX ADVERTISING - MR. UMAIR BUKHARI"
+        "memo": "Accounts Payable — ADMAX"
       }
     ]
   },
@@ -13937,13 +13937,13 @@ export const REAL_JOURNAL = [
     "id": "jnl-pv-1",
     "date": "2026-09-08",
     "reference": "BPV-26-001",
-    "description": "[Payment Voucher] ADMAX ADVERTISING - MR. UMAIR BUKHARI — IBFT TRANSFER AGAINST INVOICE NO 2026-021",
+    "description": "[Payment Voucher] ADMAX — IBFT TRANSFER AGAINST INVOICE NO 2026-021",
     "lines": [
       {
         "account": "ap",
         "debit": 650000,
         "credit": 0,
-        "memo": "Accounts Payable — ADMAX ADVERTISING - MR. UMAIR BUKHARI"
+        "memo": "Accounts Payable — ADMAX"
       },
       {
         "account": "bank",
@@ -13958,7 +13958,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-exp-2",
     "date": "2026-06-20",
     "reference": "EXP-1",
-    "description": "[Vendor Bill] ADMAX ADVERTISING - MR. UMAIR BUKHARI — SHAHEED-E-MILLAT HOARDING 60X30 (23-6-26 TO 23-9-26) EXT",
+    "description": "[Vendor Bill] ADMAX — SHAHEED-E-MILLAT HOARDING 60X30 (23-6-26 TO 23-9-26) EXT",
     "lines": [
       {
         "account": "expense",
@@ -13970,7 +13970,7 @@ export const REAL_JOURNAL = [
         "account": "ap",
         "debit": 0,
         "credit": 1950000,
-        "memo": "Accounts Payable — ADMAX ADVERTISING - MR. UMAIR BUKHARI"
+        "memo": "Accounts Payable — ADMAX"
       }
     ]
   },
@@ -14040,13 +14040,13 @@ export const REAL_JOURNAL = [
     "id": "jnl-pv-4",
     "date": "2026-07-31",
     "reference": "BPV-26-004",
-    "description": "[Payment Voucher] ADCARE  (Mr. Aslam) — Cheque Deposit in Muhammmad Aslam - ADCARE",
+    "description": "[Payment Voucher] AD-CARE — Cheque Deposit in Muhammmad Aslam - ADCARE",
     "lines": [
       {
         "account": "ap",
         "debit": 800000,
         "credit": 0,
-        "memo": "Accounts Payable — ADCARE  (Mr. Aslam)"
+        "memo": "Accounts Payable — AD-CARE"
       },
       {
         "account": "bank",
@@ -14061,7 +14061,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-exp-3",
     "date": "2026-08-11",
     "reference": "EXP-26-003",
-    "description": "[Vendor Bill] ADCARE  (Mr. Aslam) — STREMERS, PRINTING & FABRICATION PUNJAB (DINERS)",
+    "description": "[Vendor Bill] AD-CARE — STREMERS, PRINTING & FABRICATION PUNJAB (DINERS)",
     "lines": [
       {
         "account": "expense",
@@ -14073,7 +14073,7 @@ export const REAL_JOURNAL = [
         "account": "ap",
         "debit": 0,
         "credit": 2952850,
-        "memo": "Accounts Payable — ADCARE  (Mr. Aslam)"
+        "memo": "Accounts Payable — AD-CARE"
       }
     ]
   },
@@ -14081,13 +14081,13 @@ export const REAL_JOURNAL = [
     "id": "jnl-pv-5",
     "date": "2026-08-24",
     "reference": "BPV-26-005",
-    "description": "[Payment Voucher] ADCARE  (Mr. Aslam) — Cheque Issued to Muhammmad Aslam - ADCARE",
+    "description": "[Payment Voucher] AD-CARE — Cheque Issued to Muhammmad Aslam - ADCARE",
     "lines": [
       {
         "account": "ap",
         "debit": 500000,
         "credit": 0,
-        "memo": "Accounts Payable — ADCARE  (Mr. Aslam)"
+        "memo": "Accounts Payable — AD-CARE"
       },
       {
         "account": "bank",
@@ -14102,13 +14102,13 @@ export const REAL_JOURNAL = [
     "id": "jnl-pv-6",
     "date": "2026-09-17",
     "reference": "BPV-26-006",
-    "description": "[Payment Voucher] ADCARE  (Mr. Aslam) — Cheque Issued to Muhammmad Aslam - ADCARE",
+    "description": "[Payment Voucher] AD-CARE — Cheque Issued to Muhammmad Aslam - ADCARE",
     "lines": [
       {
         "account": "ap",
         "debit": 500000,
         "credit": 0,
-        "memo": "Accounts Payable — ADCARE  (Mr. Aslam)"
+        "memo": "Accounts Payable — AD-CARE"
       },
       {
         "account": "bank",
@@ -14247,7 +14247,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-exp-5",
     "date": "2026-07-11",
     "reference": "EXP-9",
-    "description": "[Vendor Bill] AZEEM BUKHARI PHOTOGRAPHER (HAKIM SONS) — HMR Drone Shoot (11-07-2026)",
+    "description": "[Vendor Bill] AZEEM BUKHARI — HMR Drone Shoot (11-07-2026)",
     "lines": [
       {
         "account": "expense",
@@ -14259,7 +14259,7 @@ export const REAL_JOURNAL = [
         "account": "ap",
         "debit": 0,
         "credit": 15000,
-        "memo": "Accounts Payable — AZEEM BUKHARI PHOTOGRAPHER (HAKIM SONS)"
+        "memo": "Accounts Payable — AZEEM BUKHARI"
       }
     ]
   },
@@ -14267,13 +14267,13 @@ export const REAL_JOURNAL = [
     "id": "jnl-pv-11",
     "date": "2026-07-18",
     "reference": "BPV-26-011",
-    "description": "[Payment Voucher] AZEEM BUKHARI PHOTOGRAPHER (HAKIM SONS) — IBFT from BIPL against Invoice No 09",
+    "description": "[Payment Voucher] AZEEM BUKHARI — IBFT from BIPL against Invoice No 09",
     "lines": [
       {
         "account": "ap",
         "debit": 15000,
         "credit": 0,
-        "memo": "Accounts Payable — AZEEM BUKHARI PHOTOGRAPHER (HAKIM SONS)"
+        "memo": "Accounts Payable — AZEEM BUKHARI"
       },
       {
         "account": "bank",
@@ -14288,7 +14288,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-exp-6",
     "date": "2026-07-20",
     "reference": "EXP-53",
-    "description": "[Vendor Bill] AZEEM BUKHARI PHOTOGRAPHER (HAKIM SONS) — Outdoor Drone shoot",
+    "description": "[Vendor Bill] AZEEM BUKHARI — Outdoor Drone shoot",
     "lines": [
       {
         "account": "expense",
@@ -14300,7 +14300,7 @@ export const REAL_JOURNAL = [
         "account": "ap",
         "debit": 0,
         "credit": 20000,
-        "memo": "Accounts Payable — AZEEM BUKHARI PHOTOGRAPHER (HAKIM SONS)"
+        "memo": "Accounts Payable — AZEEM BUKHARI"
       }
     ]
   },
@@ -14308,13 +14308,13 @@ export const REAL_JOURNAL = [
     "id": "jnl-pv-12",
     "date": "2026-07-28",
     "reference": "BPV-26-012",
-    "description": "[Payment Voucher] AZEEM BUKHARI PHOTOGRAPHER (HAKIM SONS) — IBFT from BIPL against Invoice No 53",
+    "description": "[Payment Voucher] AZEEM BUKHARI — IBFT from BIPL against Invoice No 53",
     "lines": [
       {
         "account": "ap",
         "debit": 20000,
         "credit": 0,
-        "memo": "Accounts Payable — AZEEM BUKHARI PHOTOGRAPHER (HAKIM SONS)"
+        "memo": "Accounts Payable — AZEEM BUKHARI"
       },
       {
         "account": "bank",
@@ -14329,7 +14329,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-exp-7",
     "date": "2026-08-24",
     "reference": "EXP-16",
-    "description": "[Vendor Bill] AZEEM BUKHARI PHOTOGRAPHER (HAKIM SONS) — Rafiq Juloos Video & Drone Shoot",
+    "description": "[Vendor Bill] AZEEM BUKHARI — Rafiq Juloos Video & Drone Shoot",
     "lines": [
       {
         "account": "expense",
@@ -14341,7 +14341,7 @@ export const REAL_JOURNAL = [
         "account": "ap",
         "debit": 0,
         "credit": 35000,
-        "memo": "Accounts Payable — AZEEM BUKHARI PHOTOGRAPHER (HAKIM SONS)"
+        "memo": "Accounts Payable — AZEEM BUKHARI"
       }
     ]
   },
@@ -14349,13 +14349,13 @@ export const REAL_JOURNAL = [
     "id": "jnl-pv-13",
     "date": "2026-08-29",
     "reference": "BPV-26-013",
-    "description": "[Payment Voucher] AZEEM BUKHARI PHOTOGRAPHER (HAKIM SONS) — IBFT from BIPL against Invoice No 16",
+    "description": "[Payment Voucher] AZEEM BUKHARI — IBFT from BIPL against Invoice No 16",
     "lines": [
       {
         "account": "ap",
         "debit": 35000,
         "credit": 0,
-        "memo": "Accounts Payable — AZEEM BUKHARI PHOTOGRAPHER (HAKIM SONS)"
+        "memo": "Accounts Payable — AZEEM BUKHARI"
       },
       {
         "account": "bank",
@@ -14370,7 +14370,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-exp-8",
     "date": "2026-09-09",
     "reference": "EXP-25",
-    "description": "[Vendor Bill] AZEEM BUKHARI PHOTOGRAPHER (HAKIM SONS) — GFS dealers Convention Video Graphy with Gimble and photography",
+    "description": "[Vendor Bill] AZEEM BUKHARI — GFS dealers Convention Video Graphy with Gimble and photography",
     "lines": [
       {
         "account": "expense",
@@ -14382,7 +14382,7 @@ export const REAL_JOURNAL = [
         "account": "ap",
         "debit": 0,
         "credit": 25000,
-        "memo": "Accounts Payable — AZEEM BUKHARI PHOTOGRAPHER (HAKIM SONS)"
+        "memo": "Accounts Payable — AZEEM BUKHARI"
       }
     ]
   },
@@ -14390,7 +14390,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-exp-9",
     "date": "2026-09-09",
     "reference": "EXP-36",
-    "description": "[Vendor Bill] AZEEM BUKHARI PHOTOGRAPHER (HAKIM SONS) — Adpulse sign Board sites coverage approimate (75 to 90) drone shoot 2 days",
+    "description": "[Vendor Bill] AZEEM BUKHARI — Adpulse sign Board sites coverage approimate (75 to 90) drone shoot 2 days",
     "lines": [
       {
         "account": "expense",
@@ -14402,7 +14402,7 @@ export const REAL_JOURNAL = [
         "account": "ap",
         "debit": 0,
         "credit": 40000,
-        "memo": "Accounts Payable — AZEEM BUKHARI PHOTOGRAPHER (HAKIM SONS)"
+        "memo": "Accounts Payable — AZEEM BUKHARI"
       }
     ]
   },
@@ -14410,7 +14410,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-exp-10",
     "date": "2026-09-14",
     "reference": "EXP-37",
-    "description": "[Vendor Bill] AZEEM BUKHARI PHOTOGRAPHER (HAKIM SONS) — Video and photography Dewan and lakhmir Sign Marriott Hotel",
+    "description": "[Vendor Bill] AZEEM BUKHARI — Video and photography Dewan and lakhmir Sign Marriott Hotel",
     "lines": [
       {
         "account": "expense",
@@ -14422,7 +14422,7 @@ export const REAL_JOURNAL = [
         "account": "ap",
         "debit": 0,
         "credit": 35000,
-        "memo": "Accounts Payable — AZEEM BUKHARI PHOTOGRAPHER (HAKIM SONS)"
+        "memo": "Accounts Payable — AZEEM BUKHARI"
       }
     ]
   },
@@ -14430,13 +14430,13 @@ export const REAL_JOURNAL = [
     "id": "jnl-pv-14",
     "date": "2026-09-16",
     "reference": "BPV-26-014",
-    "description": "[Payment Voucher] AZEEM BUKHARI PHOTOGRAPHER (HAKIM SONS) — Cash Paid to Mr. Azeem Bukhari against Invoice No 25 & 36-A",
+    "description": "[Payment Voucher] AZEEM BUKHARI — Cash Paid to Mr. Azeem Bukhari against Invoice No 25 & 36-A",
     "lines": [
       {
         "account": "ap",
         "debit": 65000,
         "credit": 0,
-        "memo": "Accounts Payable — AZEEM BUKHARI PHOTOGRAPHER (HAKIM SONS)"
+        "memo": "Accounts Payable — AZEEM BUKHARI"
       },
       {
         "account": "cash",
@@ -14471,7 +14471,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-exp-12",
     "date": "2026-08-24",
     "reference": "EXP-18",
-    "description": "[Vendor Bill] 16-1-2026 — Bridge panel at Nazimabad Board Office (22-07-2026 to 10-08-2026) Falaknaz",
+    "description": "[Vendor Bill] DEPLEX INN — Bridge panel at Nazimabad Board Office (22-07-2026 to 10-08-2026) Falaknaz",
     "lines": [
       {
         "account": "expense",
@@ -14483,7 +14483,7 @@ export const REAL_JOURNAL = [
         "account": "ap",
         "debit": 0,
         "credit": 183000,
-        "memo": "Accounts Payable — 16-1-2026"
+        "memo": "Accounts Payable — DEPLEX INN"
       }
     ]
   },
@@ -14491,7 +14491,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-exp-13",
     "date": "2026-08-24",
     "reference": "EXP-19",
-    "description": "[Vendor Bill] 16-1-2026 — Billboard at Bukhari Commercial (15-07-2026 to 30-07-2026) H&H Home",
+    "description": "[Vendor Bill] DEPLEX INN — Billboard at Bukhari Commercial (15-07-2026 to 30-07-2026) H&H Home",
     "lines": [
       {
         "account": "expense",
@@ -14503,7 +14503,7 @@ export const REAL_JOURNAL = [
         "account": "ap",
         "debit": 0,
         "credit": 250000,
-        "memo": "Accounts Payable — 16-1-2026"
+        "memo": "Accounts Payable — DEPLEX INN"
       }
     ]
   },
@@ -14511,7 +14511,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-exp-14",
     "date": "2026-07-31",
     "reference": "EXP-NST2112",
-    "description": "[Vendor Bill] GRAVITY MEDIA - HYDERABAD — HOARDING AT AGRICULTURE COMPLEX GUUD CHOWK 60X20 (15-7-26 TO 31-7-26) 15 DAYS @ 220,000",
+    "description": "[Vendor Bill] GRAVITY MEDIA — HOARDING AT AGRICULTURE COMPLEX GUUD CHOWK 60X20 (15-7-26 TO 31-7-26) 15 DAYS @ 220,000",
     "lines": [
       {
         "account": "expense",
@@ -14523,7 +14523,7 @@ export const REAL_JOURNAL = [
         "account": "ap",
         "debit": 0,
         "credit": 110000,
-        "memo": "Accounts Payable — GRAVITY MEDIA - HYDERABAD"
+        "memo": "Accounts Payable — GRAVITY MEDIA"
       }
     ]
   },
@@ -14531,13 +14531,13 @@ export const REAL_JOURNAL = [
     "id": "jnl-pv-15",
     "date": "2026-09-12",
     "reference": "BPV-26-015",
-    "description": "[Payment Voucher] GRAVITY MEDIA - HYDERABAD — Cheque Issued from IMC",
+    "description": "[Payment Voucher] GRAVITY MEDIA — Cheque Issued from IMC",
     "lines": [
       {
         "account": "ap",
         "debit": 110000,
         "credit": 0,
-        "memo": "Accounts Payable — GRAVITY MEDIA - HYDERABAD"
+        "memo": "Accounts Payable — GRAVITY MEDIA"
       },
       {
         "account": "bank",
@@ -14552,7 +14552,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-exp-15",
     "date": "2026-07-31",
     "reference": "EXP-26-015",
-    "description": "[Vendor Bill] IMRAN ENTERPRISE - HYDERABAD — HOARDING AT AKBAR CNG 45X40 (15 DAYS), AUTO BHAN ROAD OPP RIDHAN 60X20 (15 DAYS) & AUTO BHAN ASKARI BANK 60X20 (10 DAYS)",
+    "description": "[Vendor Bill] IMRAN ENTERPRISE — HOARDING AT AKBAR CNG 45X40 (15 DAYS), AUTO BHAN ROAD OPP RIDHAN 60X20 (15 DAYS) & AUTO BHAN ASKARI BANK 60X20 (10 DAYS)",
     "lines": [
       {
         "account": "expense",
@@ -14564,7 +14564,7 @@ export const REAL_JOURNAL = [
         "account": "ap",
         "debit": 0,
         "credit": 285000,
-        "memo": "Accounts Payable — IMRAN ENTERPRISE - HYDERABAD"
+        "memo": "Accounts Payable — IMRAN ENTERPRISE"
       }
     ]
   },
@@ -14572,13 +14572,13 @@ export const REAL_JOURNAL = [
     "id": "jnl-pv-16",
     "date": "2026-09-01",
     "reference": "BPV-26-016",
-    "description": "[Payment Voucher] IMRAN ENTERPRISE - HYDERABAD — Cheque Deposit in Imran Ahmed Account (Received from Medicam) Chq dt 15-8-2026",
+    "description": "[Payment Voucher] IMRAN ENTERPRISE — Cheque Deposit in Imran Ahmed Account (Received from Medicam) Chq dt 15-8-2026",
     "lines": [
       {
         "account": "ap",
         "debit": 270000,
         "credit": 0,
-        "memo": "Accounts Payable — IMRAN ENTERPRISE - HYDERABAD"
+        "memo": "Accounts Payable — IMRAN ENTERPRISE"
       },
       {
         "account": "bank",
@@ -14593,13 +14593,13 @@ export const REAL_JOURNAL = [
     "id": "jnl-pv-17",
     "date": "2026-09-08",
     "reference": "BPV-26-017",
-    "description": "[Payment Voucher] IMRAN ENTERPRISE - HYDERABAD — IBFT Transfer from BIPL",
+    "description": "[Payment Voucher] IMRAN ENTERPRISE — IBFT Transfer from BIPL",
     "lines": [
       {
         "account": "ap",
         "debit": 15000,
         "credit": 0,
-        "memo": "Accounts Payable — IMRAN ENTERPRISE - HYDERABAD"
+        "memo": "Accounts Payable — IMRAN ENTERPRISE"
       },
       {
         "account": "bank",
@@ -14614,7 +14614,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-exp-16",
     "date": "2026-07-25",
     "reference": "EXP-11005793",
-    "description": "[Vendor Bill] MR. IBRAHIM ANJARWALA — PDC Received from Mr. Ibrahim Anjarwala against Loan",
+    "description": "[Vendor Bill] IBRAHIM ANJARWALA — PDC Received from Mr. Ibrahim Anjarwala against Loan",
     "lines": [
       {
         "account": "expense",
@@ -14626,7 +14626,7 @@ export const REAL_JOURNAL = [
         "account": "ap",
         "debit": 0,
         "credit": 2500000,
-        "memo": "Accounts Payable — MR. IBRAHIM ANJARWALA"
+        "memo": "Accounts Payable — IBRAHIM ANJARWALA"
       }
     ]
   },
@@ -14634,7 +14634,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-exp-17",
     "date": "2026-07-30",
     "reference": "EXP-11005794",
-    "description": "[Vendor Bill] MR. IBRAHIM ANJARWALA — PDC Received from Mr. Ibrahim Anjarwala against Loan",
+    "description": "[Vendor Bill] IBRAHIM ANJARWALA — PDC Received from Mr. Ibrahim Anjarwala against Loan",
     "lines": [
       {
         "account": "expense",
@@ -14646,7 +14646,7 @@ export const REAL_JOURNAL = [
         "account": "ap",
         "debit": 0,
         "credit": 2500000,
-        "memo": "Accounts Payable — MR. IBRAHIM ANJARWALA"
+        "memo": "Accounts Payable — IBRAHIM ANJARWALA"
       }
     ]
   },
@@ -14654,7 +14654,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-exp-18",
     "date": "2026-08-25",
     "reference": "EXP-11005795",
-    "description": "[Vendor Bill] MR. IBRAHIM ANJARWALA — PDC Received from Mr. Ibrahim Anjarwala against Loan",
+    "description": "[Vendor Bill] IBRAHIM ANJARWALA — PDC Received from Mr. Ibrahim Anjarwala against Loan",
     "lines": [
       {
         "account": "expense",
@@ -14666,7 +14666,7 @@ export const REAL_JOURNAL = [
         "account": "ap",
         "debit": 0,
         "credit": 2500000,
-        "memo": "Accounts Payable — MR. IBRAHIM ANJARWALA"
+        "memo": "Accounts Payable — IBRAHIM ANJARWALA"
       }
     ]
   },
@@ -14674,7 +14674,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-exp-19",
     "date": "2026-08-30",
     "reference": "EXP-11005796",
-    "description": "[Vendor Bill] MR. IBRAHIM ANJARWALA — PDC Received from Mr. Ibrahim Anjarwala against Loan",
+    "description": "[Vendor Bill] IBRAHIM ANJARWALA — PDC Received from Mr. Ibrahim Anjarwala against Loan",
     "lines": [
       {
         "account": "expense",
@@ -14686,7 +14686,7 @@ export const REAL_JOURNAL = [
         "account": "ap",
         "debit": 0,
         "credit": 2500000,
-        "memo": "Accounts Payable — MR. IBRAHIM ANJARWALA"
+        "memo": "Accounts Payable — IBRAHIM ANJARWALA"
       }
     ]
   },
@@ -14694,7 +14694,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-exp-20",
     "date": "2026-08-17",
     "reference": "EXP-26-020",
-    "description": "[Vendor Bill] Kundanz Advertising (K-Group) — Invoice Recevied from Media Solution against Diners",
+    "description": "[Vendor Bill] K-GROUP — Invoice Recevied from Media Solution against Diners",
     "lines": [
       {
         "account": "expense",
@@ -14706,7 +14706,7 @@ export const REAL_JOURNAL = [
         "account": "ap",
         "debit": 0,
         "credit": 35000,
-        "memo": "Accounts Payable — Kundanz Advertising (K-Group)"
+        "memo": "Accounts Payable — K-GROUP"
       }
     ]
   },
@@ -14714,13 +14714,13 @@ export const REAL_JOURNAL = [
     "id": "jnl-pv-18",
     "date": "2026-09-12",
     "reference": "BPV-26-018",
-    "description": "[Payment Voucher] Kundanz Advertising (K-Group) — CHEQUE DEPOSIT IN MEDIA SOLUTION ACCOUNT AGAINST INVOIVE NO 'MS/BILL/10015/2026",
+    "description": "[Payment Voucher] K-GROUP — CHEQUE DEPOSIT IN MEDIA SOLUTION ACCOUNT AGAINST INVOIVE NO 'MS/BILL/10015/2026",
     "lines": [
       {
         "account": "ap",
         "debit": 35000,
         "credit": 0,
-        "memo": "Accounts Payable — Kundanz Advertising (K-Group)"
+        "memo": "Accounts Payable — K-GROUP"
       },
       {
         "account": "bank",
@@ -14735,7 +14735,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-exp-21",
     "date": "2026-08-18",
     "reference": "EXP-471",
-    "description": "[Vendor Bill] MILLENNIUM GRAPHIC — Shehbaz Flyover Panel, Hilltop Chari, Qasim Chowk, Naseem Nagar (17-July-25 to 31-July-25) 15 Days",
+    "description": "[Vendor Bill] MILLENNIUM GRAPHICS — Shehbaz Flyover Panel, Hilltop Chari, Qasim Chowk, Naseem Nagar (17-July-25 to 31-July-25) 15 Days",
     "lines": [
       {
         "account": "expense",
@@ -14747,7 +14747,7 @@ export const REAL_JOURNAL = [
         "account": "ap",
         "debit": 0,
         "credit": 650000,
-        "memo": "Accounts Payable — MILLENNIUM GRAPHIC"
+        "memo": "Accounts Payable — MILLENNIUM GRAPHICS"
       }
     ]
   },
@@ -14755,7 +14755,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-exp-22",
     "date": "2026-06-30",
     "reference": "EXP-1",
-    "description": "[Vendor Bill] MNB OOH Advertiisng — Bridge Panel at Drig Road, Shahra-e-Faisal, Karachi 80x12 (15-5-26 to 12-6-26)",
+    "description": "[Vendor Bill] MNB — Bridge Panel at Drig Road, Shahra-e-Faisal, Karachi 80x12 (15-5-26 to 12-6-26)",
     "lines": [
       {
         "account": "expense",
@@ -14767,7 +14767,7 @@ export const REAL_JOURNAL = [
         "account": "ap",
         "debit": 0,
         "credit": 500000,
-        "memo": "Accounts Payable — MNB OOH Advertiisng"
+        "memo": "Accounts Payable — MNB"
       }
     ]
   },
@@ -14775,7 +14775,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-exp-23",
     "date": "2026-07-08",
     "reference": "EXP-2",
-    "description": "[Vendor Bill] MNB OOH Advertiisng — Bridge Panel at Drig Road, Shahra-e-Faisal, Karachi 80X12  (13-6-26 to 12-7-26), Bridge Panel at RJ Mall, Karachi 80x15 (6-6-26 to 5-7-26) & Bridge Panel at Millennium Mall, Karachi  80X12 For 30  Days (1-1-6-26 to 30-6-26)",
+    "description": "[Vendor Bill] MNB — Bridge Panel at Drig Road, Shahra-e-Faisal, Karachi 80X12  (13-6-26 to 12-7-26), Bridge Panel at RJ Mall, Karachi 80x15 (6-6-26 to 5-7-26) & Bridge Panel at Millennium Mall, Karachi  80X12 For 30  Days (1-1-6-26 to 30-6-26)",
     "lines": [
       {
         "account": "expense",
@@ -14787,7 +14787,7 @@ export const REAL_JOURNAL = [
         "account": "ap",
         "debit": 0,
         "credit": 1225000,
-        "memo": "Accounts Payable — MNB OOH Advertiisng"
+        "memo": "Accounts Payable — MNB"
       }
     ]
   },
@@ -14795,13 +14795,13 @@ export const REAL_JOURNAL = [
     "id": "jnl-pv-19",
     "date": "2026-07-15",
     "reference": "BPV-26-019",
-    "description": "[Payment Voucher] MNB OOH Advertiisng — Cash depoist in Umair Nasim Butt (MNB) Account",
+    "description": "[Payment Voucher] MNB — Cash depoist in Umair Nasim Butt (MNB) Account",
     "lines": [
       {
         "account": "ap",
         "debit": 1000000,
         "credit": 0,
-        "memo": "Accounts Payable — MNB OOH Advertiisng"
+        "memo": "Accounts Payable — MNB"
       },
       {
         "account": "cash",
@@ -14816,13 +14816,13 @@ export const REAL_JOURNAL = [
     "id": "jnl-pv-20",
     "date": "2026-07-16",
     "reference": "BPV-26-020",
-    "description": "[Payment Voucher] MNB OOH Advertiisng — Cash depoist in Umair Nasim Butt (MNB) Account",
+    "description": "[Payment Voucher] MNB — Cash depoist in Umair Nasim Butt (MNB) Account",
     "lines": [
       {
         "account": "ap",
         "debit": 600000,
         "credit": 0,
-        "memo": "Accounts Payable — MNB OOH Advertiisng"
+        "memo": "Accounts Payable — MNB"
       },
       {
         "account": "cash",
@@ -14837,13 +14837,13 @@ export const REAL_JOURNAL = [
     "id": "jnl-pv-21",
     "date": "2026-07-16",
     "reference": "BPV-26-021",
-    "description": "[Payment Voucher] MNB OOH Advertiisng — Early Cash Discount",
+    "description": "[Payment Voucher] MNB — Early Cash Discount",
     "lines": [
       {
         "account": "ap",
         "debit": 125000,
         "credit": 0,
-        "memo": "Accounts Payable — MNB OOH Advertiisng"
+        "memo": "Accounts Payable — MNB"
       },
       {
         "account": "cash",
@@ -14858,7 +14858,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-exp-24",
     "date": "2026-07-31",
     "reference": "EXP-6",
-    "description": "[Vendor Bill] MNB OOH Advertiisng — Bridge Panel at Drig Road, Shahra-e-Faisal, Karachi 80X12  (13-7-26 to 30-7-26), Bridge Panel at RJ Mall Side 1 Karachi 80x15 (6-7-26 to 30-7-26), Bridge Panel at RJ Mall Side 2 Karachi 80x15 (16-7-26 to 30-7-26 & Bridge Panel at Millennium Mall, Karachi  80X12 For 30  Days (1-7-26 to 30-7-26)",
+    "description": "[Vendor Bill] MNB — Bridge Panel at Drig Road, Shahra-e-Faisal, Karachi 80X12  (13-7-26 to 30-7-26), Bridge Panel at RJ Mall Side 1 Karachi 80x15 (6-7-26 to 30-7-26), Bridge Panel at RJ Mall Side 2 Karachi 80x15 (16-7-26 to 30-7-26 & Bridge Panel at Millennium Mall, Karachi  80X12 For 30  Days (1-7-26 to 30-7-26)",
     "lines": [
       {
         "account": "expense",
@@ -14870,7 +14870,7 @@ export const REAL_JOURNAL = [
         "account": "ap",
         "debit": 0,
         "credit": 1150000,
-        "memo": "Accounts Payable — MNB OOH Advertiisng"
+        "memo": "Accounts Payable — MNB"
       }
     ]
   },
@@ -14878,13 +14878,13 @@ export const REAL_JOURNAL = [
     "id": "jnl-pv-22",
     "date": "2026-08-08",
     "reference": "BPV-26-022",
-    "description": "[Payment Voucher] MNB OOH Advertiisng — IBFT Transfer to Umair Nasim Butt (mnb) against RG-324/2026",
+    "description": "[Payment Voucher] MNB — IBFT Transfer to Umair Nasim Butt (mnb) against RG-324/2026",
     "lines": [
       {
         "account": "ap",
         "debit": 300000,
         "credit": 0,
-        "memo": "Accounts Payable — MNB OOH Advertiisng"
+        "memo": "Accounts Payable — MNB"
       },
       {
         "account": "bank",
@@ -14899,13 +14899,13 @@ export const REAL_JOURNAL = [
     "id": "jnl-pv-23",
     "date": "2026-08-10",
     "reference": "BPV-26-023",
-    "description": "[Payment Voucher] MNB OOH Advertiisng — CHEQUE DEPOSIT IN UMAIR NASEEM BUTT ACCOUNT FROM ANSAR BHAI CHEQUE",
+    "description": "[Payment Voucher] MNB — CHEQUE DEPOSIT IN UMAIR NASEEM BUTT ACCOUNT FROM ANSAR BHAI CHEQUE",
     "lines": [
       {
         "account": "ap",
         "debit": 500000,
         "credit": 0,
-        "memo": "Accounts Payable — MNB OOH Advertiisng"
+        "memo": "Accounts Payable — MNB"
       },
       {
         "account": "bank",
@@ -14920,13 +14920,13 @@ export const REAL_JOURNAL = [
     "id": "jnl-pv-24",
     "date": "2026-08-12",
     "reference": "BPV-26-024",
-    "description": "[Payment Voucher] MNB OOH Advertiisng — IBFT Transfer to Umair Nasim Butt (mnb) against RG-324/2026",
+    "description": "[Payment Voucher] MNB — IBFT Transfer to Umair Nasim Butt (mnb) against RG-324/2026",
     "lines": [
       {
         "account": "ap",
         "debit": 300000,
         "credit": 0,
-        "memo": "Accounts Payable — MNB OOH Advertiisng"
+        "memo": "Accounts Payable — MNB"
       },
       {
         "account": "bank",
@@ -14941,13 +14941,13 @@ export const REAL_JOURNAL = [
     "id": "jnl-pv-25",
     "date": "2026-08-12",
     "reference": "BPV-26-025",
-    "description": "[Payment Voucher] MNB OOH Advertiisng — Discount",
+    "description": "[Payment Voucher] MNB — Discount",
     "lines": [
       {
         "account": "ap",
         "debit": 100000,
         "credit": 0,
-        "memo": "Accounts Payable — MNB OOH Advertiisng"
+        "memo": "Accounts Payable — MNB"
       },
       {
         "account": "bank",
@@ -14962,7 +14962,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-exp-25",
     "date": "2026-09-08",
     "reference": "EXP-11",
-    "description": "[Vendor Bill] MNB OOH Advertiisng — Bridge Panel at Drig Road, Shahra-e-Faisal, Karachi 80X12  (1-8-26 to 30-8-26), Bridge Panel at RJ Mall Side 1 Karachi 80x15 (1-8-26 to 30-8-26), Bridge Panel at RJ Mall Side 2 Karachi 80x15 (1-8-26 to 30-8-26 & Bridge Panel at Millennium Mall, Karachi  80X12 For 30  Days (1-8-26 to 30-8-26)",
+    "description": "[Vendor Bill] MNB — Bridge Panel at Drig Road, Shahra-e-Faisal, Karachi 80X12  (1-8-26 to 30-8-26), Bridge Panel at RJ Mall Side 1 Karachi 80x15 (1-8-26 to 30-8-26), Bridge Panel at RJ Mall Side 2 Karachi 80x15 (1-8-26 to 30-8-26 & Bridge Panel at Millennium Mall, Karachi  80X12 For 30  Days (1-8-26 to 30-8-26)",
     "lines": [
       {
         "account": "expense",
@@ -14974,7 +14974,7 @@ export const REAL_JOURNAL = [
         "account": "ap",
         "debit": 0,
         "credit": 1600000,
-        "memo": "Accounts Payable — MNB OOH Advertiisng"
+        "memo": "Accounts Payable — MNB"
       }
     ]
   },
@@ -14982,13 +14982,13 @@ export const REAL_JOURNAL = [
     "id": "jnl-pv-26",
     "date": "2026-09-16",
     "reference": "BPV-26-026",
-    "description": "[Payment Voucher] MNB OOH Advertiisng — Cash/Cheque Given to MNB",
+    "description": "[Payment Voucher] MNB — Cash/Cheque Given to MNB",
     "lines": [
       {
         "account": "ap",
         "debit": 766021,
         "credit": 0,
-        "memo": "Accounts Payable — MNB OOH Advertiisng"
+        "memo": "Accounts Payable — MNB"
       },
       {
         "account": "cash",
@@ -15003,13 +15003,13 @@ export const REAL_JOURNAL = [
     "id": "jnl-pv-27",
     "date": "2026-09-16",
     "reference": "BPV-26-027",
-    "description": "[Payment Voucher] MNB OOH Advertiisng — Cash/Cheque Given to MNB",
+    "description": "[Payment Voucher] MNB — Cash/Cheque Given to MNB",
     "lines": [
       {
         "account": "ap",
         "debit": 383979,
         "credit": 0,
-        "memo": "Accounts Payable — MNB OOH Advertiisng"
+        "memo": "Accounts Payable — MNB"
       },
       {
         "account": "cash",
@@ -15024,7 +15024,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-exp-26",
     "date": "2026-06-30",
     "reference": "EXP-1",
-    "description": "[Vendor Bill] Media Communication (Imran Sheikh) — Bahadurabad Site 33x55 (17-4-26 to 16-5-26)",
+    "description": "[Vendor Bill] MEDIA COMMUNICATION — Bahadurabad Site 33x55 (17-4-26 to 16-5-26)",
     "lines": [
       {
         "account": "expense",
@@ -15036,7 +15036,7 @@ export const REAL_JOURNAL = [
         "account": "ap",
         "debit": 0,
         "credit": 775000,
-        "memo": "Accounts Payable — Media Communication (Imran Sheikh)"
+        "memo": "Accounts Payable — MEDIA COMMUNICATION"
       }
     ]
   },
@@ -15044,7 +15044,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-exp-27",
     "date": "2026-06-30",
     "reference": "EXP-1",
-    "description": "[Vendor Bill] MS. KAINAT ZAHEER - NEXTIER — COMBINED PO Shahrah e Faisal 11-7-2026 to 10-10-26, Karsaz 11-7-2026 to 10-10-2026, Bahira Bridges 16-7-26 to 16-10-2026",
+    "description": "[Vendor Bill] NEXTIER - KAINAT — COMBINED PO Shahrah e Faisal 11-7-2026 to 10-10-26, Karsaz 11-7-2026 to 10-10-2026, Bahira Bridges 16-7-26 to 16-10-2026",
     "lines": [
       {
         "account": "expense",
@@ -15056,7 +15056,7 @@ export const REAL_JOURNAL = [
         "account": "ap",
         "debit": 0,
         "credit": 6000000,
-        "memo": "Accounts Payable — MS. KAINAT ZAHEER - NEXTIER"
+        "memo": "Accounts Payable — NEXTIER - KAINAT"
       }
     ]
   },
@@ -15064,13 +15064,13 @@ export const REAL_JOURNAL = [
     "id": "jnl-pv-28",
     "date": "2026-07-10",
     "reference": "BPV-26-028",
-    "description": "[Payment Voucher] MS. KAINAT ZAHEER - NEXTIER — Cash paid to Ms. Kainat Zaheer against bridges",
+    "description": "[Payment Voucher] NEXTIER - KAINAT — Cash paid to Ms. Kainat Zaheer against bridges",
     "lines": [
       {
         "account": "ap",
         "debit": 2000000,
         "credit": 0,
-        "memo": "Accounts Payable — MS. KAINAT ZAHEER - NEXTIER"
+        "memo": "Accounts Payable — NEXTIER - KAINAT"
       },
       {
         "account": "cash",
@@ -15085,7 +15085,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-exp-28",
     "date": "2026-07-01",
     "reference": "EXP-3",
-    "description": "[Vendor Bill] MS. KAINAT ZAHEER - NEXTIER — KARSAZ FOR MEDICAM 20-07-26 to 20-8-26",
+    "description": "[Vendor Bill] NEXTIER - KAINAT — KARSAZ FOR MEDICAM 20-07-26 to 20-8-26",
     "lines": [
       {
         "account": "expense",
@@ -15097,7 +15097,7 @@ export const REAL_JOURNAL = [
         "account": "ap",
         "debit": 0,
         "credit": 400000,
-        "memo": "Accounts Payable — MS. KAINAT ZAHEER - NEXTIER"
+        "memo": "Accounts Payable — NEXTIER - KAINAT"
       }
     ]
   },
@@ -15105,13 +15105,13 @@ export const REAL_JOURNAL = [
     "id": "jnl-pv-29",
     "date": "2026-08-07",
     "reference": "BPV-26-029",
-    "description": "[Payment Voucher] MS. KAINAT ZAHEER - NEXTIER — Cheque deposit In Kainat Zaheer Account",
+    "description": "[Payment Voucher] NEXTIER - KAINAT — Cheque deposit In Kainat Zaheer Account",
     "lines": [
       {
         "account": "ap",
         "debit": 500000,
         "credit": 0,
-        "memo": "Accounts Payable — MS. KAINAT ZAHEER - NEXTIER"
+        "memo": "Accounts Payable — NEXTIER - KAINAT"
       },
       {
         "account": "bank",
@@ -15126,13 +15126,13 @@ export const REAL_JOURNAL = [
     "id": "jnl-pv-30",
     "date": "2026-08-07",
     "reference": "BPV-26-030",
-    "description": "[Payment Voucher] MS. KAINAT ZAHEER - NEXTIER — Cheque deposit In Kainat Zaheer Account",
+    "description": "[Payment Voucher] NEXTIER - KAINAT — Cheque deposit In Kainat Zaheer Account",
     "lines": [
       {
         "account": "ap",
         "debit": 500000,
         "credit": 0,
-        "memo": "Accounts Payable — MS. KAINAT ZAHEER - NEXTIER"
+        "memo": "Accounts Payable — NEXTIER - KAINAT"
       },
       {
         "account": "bank",
@@ -15147,13 +15147,13 @@ export const REAL_JOURNAL = [
     "id": "jnl-pv-31",
     "date": "2026-08-10",
     "reference": "BPV-26-031",
-    "description": "[Payment Voucher] MS. KAINAT ZAHEER - NEXTIER — Cash paid to Mr. Imran C/O Ms. Kainat Zaheer (Nextier)",
+    "description": "[Payment Voucher] NEXTIER - KAINAT — Cash paid to Mr. Imran C/O Ms. Kainat Zaheer (Nextier)",
     "lines": [
       {
         "account": "ap",
         "debit": 1400000,
         "credit": 0,
-        "memo": "Accounts Payable — MS. KAINAT ZAHEER - NEXTIER"
+        "memo": "Accounts Payable — NEXTIER - KAINAT"
       },
       {
         "account": "cash",
@@ -15168,13 +15168,13 @@ export const REAL_JOURNAL = [
     "id": "jnl-pv-32",
     "date": "2026-09-07",
     "reference": "BPV-26-032",
-    "description": "[Payment Voucher] MS. KAINAT ZAHEER - NEXTIER — Cheque deposit In Kainat Zaheer Account",
+    "description": "[Payment Voucher] NEXTIER - KAINAT — Cheque deposit In Kainat Zaheer Account",
     "lines": [
       {
         "account": "ap",
         "debit": 900000,
         "credit": 0,
-        "memo": "Accounts Payable — MS. KAINAT ZAHEER - NEXTIER"
+        "memo": "Accounts Payable — NEXTIER - KAINAT"
       },
       {
         "account": "bank",
@@ -15189,13 +15189,13 @@ export const REAL_JOURNAL = [
     "id": "jnl-pv-33",
     "date": "2026-09-14",
     "reference": "BPV-26-033",
-    "description": "[Payment Voucher] MS. KAINAT ZAHEER - NEXTIER — Cheque deposit inKainat Zaheer - Nextier against PO No AD/OOH/460/2026",
+    "description": "[Payment Voucher] NEXTIER - KAINAT — Cheque deposit inKainat Zaheer - Nextier against PO No AD/OOH/460/2026",
     "lines": [
       {
         "account": "ap",
         "debit": 600000,
         "credit": 0,
-        "memo": "Accounts Payable — MS. KAINAT ZAHEER - NEXTIER"
+        "memo": "Accounts Payable — NEXTIER - KAINAT"
       },
       {
         "account": "bank",
@@ -15210,13 +15210,13 @@ export const REAL_JOURNAL = [
     "id": "jnl-pv-34",
     "date": "2026-09-14",
     "reference": "BPV-26-034",
-    "description": "[Payment Voucher] MS. KAINAT ZAHEER - NEXTIER — Cheque deposit inKainat Zaheer - Nextier against PO No AD/OOH/460/2026",
+    "description": "[Payment Voucher] NEXTIER - KAINAT — Cheque deposit inKainat Zaheer - Nextier against PO No AD/OOH/460/2026",
     "lines": [
       {
         "account": "ap",
         "debit": 500000,
         "credit": 0,
-        "memo": "Accounts Payable — MS. KAINAT ZAHEER - NEXTIER"
+        "memo": "Accounts Payable — NEXTIER - KAINAT"
       },
       {
         "account": "bank",
@@ -15231,7 +15231,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-exp-29",
     "date": "2026-08-10",
     "reference": "EXP-1",
-    "description": "[Vendor Bill] R & D GROUP (KASHIF GRAMI) — 2x Spots, Digital streamers at Zulfiqar Avenue Creek Walk, Phase 8, DHA, (13 July – 12 Aug 2026)",
+    "description": "[Vendor Bill] R & D GROUP — 2x Spots, Digital streamers at Zulfiqar Avenue Creek Walk, Phase 8, DHA, (13 July – 12 Aug 2026)",
     "lines": [
       {
         "account": "expense",
@@ -15243,7 +15243,7 @@ export const REAL_JOURNAL = [
         "account": "ap",
         "debit": 0,
         "credit": 200000,
-        "memo": "Accounts Payable — R & D GROUP (KASHIF GRAMI)"
+        "memo": "Accounts Payable — R & D GROUP"
       }
     ]
   },
@@ -15251,13 +15251,13 @@ export const REAL_JOURNAL = [
     "id": "jnl-pv-35",
     "date": "2026-08-22",
     "reference": "BPV-26-035",
-    "description": "[Payment Voucher] R & D GROUP (KASHIF GRAMI) — Cheque Issued to R and D Group against Digital streamers",
+    "description": "[Payment Voucher] R & D GROUP — Cheque Issued to R and D Group against Digital streamers",
     "lines": [
       {
         "account": "ap",
         "debit": 200000,
         "credit": 0,
-        "memo": "Accounts Payable — R & D GROUP (KASHIF GRAMI)"
+        "memo": "Accounts Payable — R & D GROUP"
       },
       {
         "account": "bank",
@@ -15272,7 +15272,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-exp-30",
     "date": "2026-09-10",
     "reference": "EXP-3",
-    "description": "[Vendor Bill] R & D GROUP (KASHIF GRAMI) — 2x Spots, Digital streamers at Zulfiqar Avenue Creek Walk, Phase 8, DHA, (13 Aug– 12 Sep 2026)",
+    "description": "[Vendor Bill] R & D GROUP — 2x Spots, Digital streamers at Zulfiqar Avenue Creek Walk, Phase 8, DHA, (13 Aug– 12 Sep 2026)",
     "lines": [
       {
         "account": "expense",
@@ -15284,7 +15284,7 @@ export const REAL_JOURNAL = [
         "account": "ap",
         "debit": 0,
         "credit": 200000,
-        "memo": "Accounts Payable — R & D GROUP (KASHIF GRAMI)"
+        "memo": "Accounts Payable — R & D GROUP"
       }
     ]
   },
@@ -15292,13 +15292,13 @@ export const REAL_JOURNAL = [
     "id": "jnl-pv-36",
     "date": "2026-09-17",
     "reference": "BPV-26-036",
-    "description": "[Payment Voucher] R & D GROUP (KASHIF GRAMI) — Cheque Issued to R and D Group against Digital streamers",
+    "description": "[Payment Voucher] R & D GROUP — Cheque Issued to R and D Group against Digital streamers",
     "lines": [
       {
         "account": "ap",
         "debit": 200000,
         "credit": 0,
-        "memo": "Accounts Payable — R & D GROUP (KASHIF GRAMI)"
+        "memo": "Accounts Payable — R & D GROUP"
       },
       {
         "account": "bank",
@@ -15313,7 +15313,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-exp-31",
     "date": "2026-07-13",
     "reference": "EXP-1",
-    "description": "[Vendor Bill] R & D GROUP (KASHIF GRAMI) — DHA Creek Walk Digital Streamers  3x6, (QTY 10) &  2X3 (QTY 16) 13-July-26 to 13-Jan-27",
+    "description": "[Vendor Bill] R & D GROUP — DHA Creek Walk Digital Streamers  3x6, (QTY 10) &  2X3 (QTY 16) 13-July-26 to 13-Jan-27",
     "lines": [
       {
         "account": "expense",
@@ -15325,7 +15325,7 @@ export const REAL_JOURNAL = [
         "account": "ap",
         "debit": 0,
         "credit": 1200000,
-        "memo": "Accounts Payable — R & D GROUP (KASHIF GRAMI)"
+        "memo": "Accounts Payable — R & D GROUP"
       }
     ]
   },
@@ -15333,7 +15333,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-exp-32",
     "date": "2026-07-16",
     "reference": "EXP-1",
-    "description": "[Vendor Bill] R.M Associates / Mr. Zohaib — OOH Campaign 16 May To 16 June One Month (Digital Streamers Shahrah e faisal and CSD road)",
+    "description": "[Vendor Bill] RM ASSOCIATES — OOH Campaign 16 May To 16 June One Month (Digital Streamers Shahrah e faisal and CSD road)",
     "lines": [
       {
         "account": "expense",
@@ -15345,7 +15345,7 @@ export const REAL_JOURNAL = [
         "account": "ap",
         "debit": 0,
         "credit": 200000,
-        "memo": "Accounts Payable — R.M Associates / Mr. Zohaib"
+        "memo": "Accounts Payable — RM ASSOCIATES"
       }
     ]
   },
@@ -15353,7 +15353,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-exp-33",
     "date": "2026-07-16",
     "reference": "EXP-2",
-    "description": "[Vendor Bill] R.M Associates / Mr. Zohaib — OOH Campaign 16 June To 16 July One Month (Digital Streamers Shahrah e faisal and CSD road)",
+    "description": "[Vendor Bill] RM ASSOCIATES — OOH Campaign 16 June To 16 July One Month (Digital Streamers Shahrah e faisal and CSD road)",
     "lines": [
       {
         "account": "expense",
@@ -15365,7 +15365,7 @@ export const REAL_JOURNAL = [
         "account": "ap",
         "debit": 0,
         "credit": 200000,
-        "memo": "Accounts Payable — R.M Associates / Mr. Zohaib"
+        "memo": "Accounts Payable — RM ASSOCIATES"
       }
     ]
   },
@@ -15373,13 +15373,13 @@ export const REAL_JOURNAL = [
     "id": "jnl-pv-37",
     "date": "2026-07-20",
     "reference": "BPV-26-037",
-    "description": "[Payment Voucher] R.M Associates / Mr. Zohaib — Cheque Issued to RM Associates against invoice AP 002",
+    "description": "[Payment Voucher] RM ASSOCIATES — Cheque Issued to RM Associates against invoice AP 002",
     "lines": [
       {
         "account": "ap",
         "debit": 200000,
         "credit": 0,
-        "memo": "Accounts Payable — R.M Associates / Mr. Zohaib"
+        "memo": "Accounts Payable — RM ASSOCIATES"
       },
       {
         "account": "bank",
@@ -15394,13 +15394,13 @@ export const REAL_JOURNAL = [
     "id": "jnl-pv-38",
     "date": "2026-08-22",
     "reference": "BPV-26-038",
-    "description": "[Payment Voucher] R.M Associates / Mr. Zohaib — Cheque Issued to RM Associates against invoice AP 003",
+    "description": "[Payment Voucher] RM ASSOCIATES — Cheque Issued to RM Associates against invoice AP 003",
     "lines": [
       {
         "account": "ap",
         "debit": 200000,
         "credit": 0,
-        "memo": "Accounts Payable — R.M Associates / Mr. Zohaib"
+        "memo": "Accounts Payable — RM ASSOCIATES"
       },
       {
         "account": "bank",
@@ -15415,7 +15415,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-exp-34",
     "date": "2026-07-01",
     "reference": "EXP-5",
-    "description": "[Vendor Bill] R.M Associates / Mr. Zohaib — Media Expense",
+    "description": "[Vendor Bill] RM ASSOCIATES — Media Expense",
     "lines": [
       {
         "account": "expense",
@@ -15427,7 +15427,7 @@ export const REAL_JOURNAL = [
         "account": "ap",
         "debit": 0,
         "credit": 200000,
-        "memo": "Accounts Payable — R.M Associates / Mr. Zohaib"
+        "memo": "Accounts Payable — RM ASSOCIATES"
       }
     ]
   },
@@ -15435,13 +15435,13 @@ export const REAL_JOURNAL = [
     "id": "jnl-pv-39",
     "date": "2026-09-12",
     "reference": "BPV-26-039",
-    "description": "[Payment Voucher] R.M Associates / Mr. Zohaib — Cheque Issued to RM Associates against invoice",
+    "description": "[Payment Voucher] RM ASSOCIATES — Cheque Issued to RM Associates against invoice",
     "lines": [
       {
         "account": "ap",
         "debit": 200000,
         "credit": 0,
-        "memo": "Accounts Payable — R.M Associates / Mr. Zohaib"
+        "memo": "Accounts Payable — RM ASSOCIATES"
       },
       {
         "account": "bank",
@@ -15518,7 +15518,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-exp-36",
     "date": "2026-09-16",
     "reference": "EXP-12485",
-    "description": "[Vendor Bill] SA ADVERTISING SERVICES — Hoding For Chase-Up Fasialabad Sites City Heart Plaza 60x20 (26-8-26 to 9-9-26), D-Ground 60x20 (30-8-26 to 13-9-26), Abdullah Pur Chowk 60x20 (30-8-26 to 13-9-26) & Opp Misaqul Mall 60x20 (30-8-26 to 13-9-26)",
+    "description": "[Vendor Bill] SA ADVERTISING — Hoding For Chase-Up Fasialabad Sites City Heart Plaza 60x20 (26-8-26 to 9-9-26), D-Ground 60x20 (30-8-26 to 13-9-26), Abdullah Pur Chowk 60x20 (30-8-26 to 13-9-26) & Opp Misaqul Mall 60x20 (30-8-26 to 13-9-26)",
     "lines": [
       {
         "account": "expense",
@@ -15530,7 +15530,7 @@ export const REAL_JOURNAL = [
         "account": "ap",
         "debit": 0,
         "credit": 665000,
-        "memo": "Accounts Payable — SA ADVERTISING SERVICES"
+        "memo": "Accounts Payable — SA ADVERTISING"
       }
     ]
   },
@@ -15538,7 +15538,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-ob-ven-021",
     "date": "2026-06-30",
     "reference": "OB-VEN-021",
-    "description": "[Opening Balance] Accounts Payable — TNI COMMUNICATION",
+    "description": "[Opening Balance] Accounts Payable — TNI",
     "lines": [
       {
         "account": "equity",
@@ -15550,7 +15550,7 @@ export const REAL_JOURNAL = [
         "account": "ap",
         "debit": 166284,
         "credit": 0,
-        "memo": "Opening Accounts Payable — TNI COMMUNICATION"
+        "memo": "Opening Accounts Payable — TNI"
       }
     ]
   },
@@ -15558,7 +15558,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-exp-37",
     "date": "2026-07-18",
     "reference": "EXP-1",
-    "description": "[Vendor Bill] ZAIB ENTERPRISES - SHAHIDZAIB — Hoarding at Boat Basin 60x30 (9 Days) , Shahrah-e-Faisal 90x35 (7 Days) & Shahrah-e-Qaideen 55x30 (8 Days) for HMR",
+    "description": "[Vendor Bill] Zaib Enterprises — Hoarding at Boat Basin 60x30 (9 Days) , Shahrah-e-Faisal 90x35 (7 Days) & Shahrah-e-Qaideen 55x30 (8 Days) for HMR",
     "lines": [
       {
         "account": "expense",
@@ -15570,7 +15570,7 @@ export const REAL_JOURNAL = [
         "account": "ap",
         "debit": 0,
         "credit": 463000,
-        "memo": "Accounts Payable — ZAIB ENTERPRISES - SHAHIDZAIB"
+        "memo": "Accounts Payable — Zaib Enterprises"
       }
     ]
   },
@@ -15578,7 +15578,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-exp-38",
     "date": "2026-09-01",
     "reference": "EXP-2",
-    "description": "[Vendor Bill] ZAIB ENTERPRISES - SHAHIDZAIB — DHA NMC BRIDGE",
+    "description": "[Vendor Bill] Zaib Enterprises — DHA NMC BRIDGE",
     "lines": [
       {
         "account": "expense",
@@ -15590,7 +15590,7 @@ export const REAL_JOURNAL = [
         "account": "ap",
         "debit": 0,
         "credit": 900000,
-        "memo": "Accounts Payable — ZAIB ENTERPRISES - SHAHIDZAIB"
+        "memo": "Accounts Payable — Zaib Enterprises"
       }
     ]
   },
@@ -15598,13 +15598,13 @@ export const REAL_JOURNAL = [
     "id": "jnl-pv-42",
     "date": "2026-09-10",
     "reference": "BPV-26-042",
-    "description": "[Payment Voucher] ZAIB ENTERPRISES - SHAHIDZAIB — Cheuqe Given o Zaib Enterprises",
+    "description": "[Payment Voucher] Zaib Enterprises — Cheuqe Given o Zaib Enterprises",
     "lines": [
       {
         "account": "ap",
         "debit": 900000,
         "credit": 0,
-        "memo": "Accounts Payable — ZAIB ENTERPRISES - SHAHIDZAIB"
+        "memo": "Accounts Payable — Zaib Enterprises"
       },
       {
         "account": "bank",
@@ -15619,13 +15619,13 @@ export const REAL_JOURNAL = [
     "id": "jnl-pv-43",
     "date": "2026-09-16",
     "reference": "BPV-26-043",
-    "description": "[Payment Voucher] ZAIB ENTERPRISES - SHAHIDZAIB — Cash Paid to Zaib Enterprises",
+    "description": "[Payment Voucher] Zaib Enterprises — Cash Paid to Zaib Enterprises",
     "lines": [
       {
         "account": "ap",
         "debit": 463000,
         "credit": 0,
-        "memo": "Accounts Payable — ZAIB ENTERPRISES - SHAHIDZAIB"
+        "memo": "Accounts Payable — Zaib Enterprises"
       },
       {
         "account": "cash",
@@ -15640,7 +15640,7 @@ export const REAL_JOURNAL = [
     "id": "jnl-exp-39",
     "date": "2026-06-29",
     "reference": "EXP-26-039",
-    "description": "[Vendor Bill] ZAIB ENTERPRISES - SHAHIDZAIB — DHA NMC BRIDGE 01 AND NMC BRIDGE 02 FOR 3 MONTHS",
+    "description": "[Vendor Bill] Zaib Enterprises — DHA NMC BRIDGE 01 AND NMC BRIDGE 02 FOR 3 MONTHS",
     "lines": [
       {
         "account": "expense",
@@ -15652,7 +15652,7 @@ export const REAL_JOURNAL = [
         "account": "ap",
         "debit": 0,
         "credit": 2700000,
-        "memo": "Accounts Payable — ZAIB ENTERPRISES - SHAHIDZAIB"
+        "memo": "Accounts Payable — Zaib Enterprises"
       }
     ]
   },

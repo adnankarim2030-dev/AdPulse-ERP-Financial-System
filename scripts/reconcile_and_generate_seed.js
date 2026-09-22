@@ -19,16 +19,12 @@ function excelDateToISODate(serial, fallback = '2026-07-01') {
   return fallback;
 }
 
-function uid() {
-  return Math.random().toString(36).substring(2, 9) + Date.now().toString(36);
-}
-
 console.log("==================================================");
-console.log("  DEEP RECONCILIATION OF CLIENT & VENDOR LEDGERS  ");
+console.log("  PRECISION RECONCILIATION OF CLIENTS & VENDORS   ");
 console.log("==================================================");
 
 // ==========================================
-// 1. PROCESS CLIENT WORKBOOK
+// 1. PROCESS CLIENT WORKBOOK (35 SHEETS)
 // ==========================================
 const clientWb = XLSX.readFile('./CLIENT BALANCE PAYMENT AND LEDGERS  (1).xlsx');
 const clients = [];
@@ -44,19 +40,10 @@ for (const sheetName of clientWb.SheetNames) {
   
   let headerRowIdx = -1;
   let headers = [];
-  let clientDisplayName = sheetName.trim();
+  const clientDisplayName = sheetName.trim();
 
-  // Inspect first 8 rows for title & header
   for (let i = 0; i < Math.min(8, rows.length); i++) {
     const r = rows[i] || [];
-    const nonNulls = r.filter(c => c !== null && String(c).trim().length > 0);
-    if (nonNulls.length === 1 && headerRowIdx === -1 && i < 3) {
-      const t = String(nonNulls[0]).trim();
-      if (!t.toUpperCase().includes('DATE:') && !t.toUpperCase().includes('STATEMENT') && !t.toUpperCase().includes('LEDGER')) {
-        clientDisplayName = t.replace(/^Client\s*:\s*/i, '').trim();
-      }
-    }
-
     const rStr = r.filter(c => c !== null).map(c => String(c).trim().toLowerCase());
     if (rStr.some(c => c.includes('date') || c.includes('description') || c.includes('amount') || c.includes('received') || c.includes('recevied') || c.includes('balance'))) {
       headerRowIdx = i;
@@ -72,7 +59,6 @@ for (const sheetName of clientWb.SheetNames) {
   let openingBalance = 0;
   let totalBilled = 0;
   let totalReceived = 0;
-  let rawTransactions = [];
 
   if (headerRowIdx !== -1) {
     let colDate = -1, colRef = -1, colDesc = -1, colAmount = -1, colReceived = -1, colBalance = -1;
@@ -102,7 +88,6 @@ for (const sheetName of clientWb.SheetNames) {
       const rec = colReceived !== -1 && r[colReceived] !== null && !isNaN(Number(r[colReceived])) ? Number(r[colReceived]) : 0;
       const bal = colBalance !== -1 && r[colBalance] !== null && !isNaN(Number(r[colBalance])) ? Number(r[colBalance]) : null;
 
-      // Check if B/F opening balance
       if (desc.toUpperCase().includes('B/F') || desc.toUpperCase().includes('OPENING') || desc.toUpperCase().includes('BALANCE B/F')) {
         const obVal = bal !== null ? bal : (amt || 0);
         openingBalance = obVal;
@@ -144,7 +129,6 @@ for (const sheetName of clientWb.SheetNames) {
         };
         clientInvoices.push(inv);
 
-        // General Ledger entry for Invoice: Debit AR, Credit Revenue
         clientJournal.push({
           id: `jnl-inv-${clientInvoices.length}`,
           date,
@@ -188,7 +172,6 @@ for (const sheetName of clientWb.SheetNames) {
         };
         clientVouchers.push(vch);
 
-        // General Ledger entry for Receipt: Debit Bank/Cash, Credit AR
         clientJournal.push({
           id: `jnl-rv-${clientVouchers.length}`,
           date,
@@ -205,7 +188,6 @@ for (const sheetName of clientWb.SheetNames) {
 
   const netClosing = openingBalance + totalBilled - totalReceived;
 
-  // If opening balance > 0, post an OB Journal line to establish Trial Balance integrity
   if (openingBalance !== 0) {
     clientJournal.push({
       id: `jnl-ob-${clientId}`,
@@ -223,7 +205,7 @@ for (const sheetName of clientWb.SheetNames) {
     id: clientId,
     clientCode,
     name: clientDisplayName,
-    companyName: `${clientDisplayName} Private Ltd`,
+    companyName: `${clientDisplayName} (Pvt) Ltd`,
     contactPerson: "Finance & Accounts Department",
     phone: "021-37526834",
     email: `accounts@${clientDisplayName.toLowerCase().replace(/[^a-z0-9]/g, '')}.pk`,
@@ -247,7 +229,7 @@ for (const sheetName of clientWb.SheetNames) {
 }
 
 // ==========================================
-// 2. PROCESS VENDOR WORKBOOK
+// 2. PROCESS VENDOR WORKBOOK (23 SHEETS)
 // ==========================================
 const vendorWb = XLSX.readFile('./VENDOR BALANCE STATEMENTS .xlsx');
 const vendors = [];
@@ -263,18 +245,10 @@ for (const sheetName of vendorWb.SheetNames) {
   
   let headerRowIdx = -1;
   let headers = [];
-  let vendorDisplayName = sheetName.trim();
+  const vendorDisplayName = sheetName.trim();
 
   for (let i = 0; i < Math.min(8, rows.length); i++) {
     const r = rows[i] || [];
-    const nonNulls = r.filter(c => c !== null && String(c).trim().length > 0);
-    if (nonNulls.length === 1 && headerRowIdx === -1 && i < 3) {
-      const t = String(nonNulls[0]).trim();
-      if (!t.toUpperCase().includes('DATE:') && !t.toUpperCase().includes('STATEMENT') && !t.toUpperCase().includes('LEDGER') && !t.toUpperCase().includes('CASH LEDGER')) {
-        vendorDisplayName = t.replace(/^Vendor\s*:\s*/i, '').trim();
-      }
-    }
-
     const rStr = r.filter(c => c !== null).map(c => String(c).trim().toLowerCase());
     if (rStr.some(c => c.includes('date') || c.includes('description') || c.includes('amount') || c.includes('paid') || c.includes('balance'))) {
       headerRowIdx = i;
@@ -321,7 +295,6 @@ for (const sheetName of vendorWb.SheetNames) {
       const bal = colBalance !== -1 && r[colBalance] !== null && !isNaN(Number(r[colBalance])) ? Number(r[colBalance]) : null;
       const notes = colNotes !== -1 && r[colNotes] !== null ? String(r[colNotes]).trim() : '';
 
-      // Check if B/F opening balance
       if (desc.toUpperCase().includes('B/F') || desc.toUpperCase().includes('OPENING') || desc.toUpperCase().includes('BALANCE B/F')) {
         const obVal = bal !== null ? bal : (amt || 0);
         openingBalance = obVal;
@@ -354,7 +327,6 @@ for (const sheetName of vendorWb.SheetNames) {
         };
         vendorExpenses.push(exp);
 
-        // General Ledger entry for Expense: Debit Expense, Credit AP
         vendorJournal.push({
           id: `jnl-exp-${vendorExpenses.length}`,
           date,
@@ -393,7 +365,6 @@ for (const sheetName of vendorWb.SheetNames) {
         };
         vendorVouchers.push(vch);
 
-        // General Ledger entry for Payment: Debit AP, Credit Bank/Cash
         vendorJournal.push({
           id: `jnl-pv-${vendorVouchers.length}`,
           date,
@@ -450,13 +421,11 @@ for (const sheetName of vendorWb.SheetNames) {
   console.log(`✓ VENDOR [${vendorCode}] ${vendorDisplayName.padEnd(25)} | OB: ${openingBalance.toLocaleString().padStart(12)} | Bills: ${totalBilled.toLocaleString().padStart(12)} | Paid: ${totalPaid.toLocaleString().padStart(12)} | Net Balance: ${netClosing.toLocaleString().padStart(12)}`);
 }
 
-// Combine all entities into realLedgerSeedData format
 const allInvoices = [...clientInvoices];
 const allExpenses = [...vendorExpenses];
 const allVouchers = [...clientVouchers, ...vendorVouchers];
 const allJournal = [...clientJournal, ...vendorJournal];
 
-// Generate Projects
 const projects = clients.slice(0, 15).map((c, i) => ({
   id: `prj-${String(i + 1).padStart(3, '0')}`,
   projectCode: `PRJ-26-${String(i + 1).padStart(3, '0')}`,
@@ -471,30 +440,6 @@ const projects = clients.slice(0, 15).map((c, i) => ({
   description: `Official Integrated Marketing & Outdoor Media Campaign for ${c.name}`,
   hoardings: ["Boat Basin 60x30", "Shahrah-e-Faisal 90x35", "Shahrah-e-Qaideen 55x30"]
 }));
-
-console.log("\n==================================================");
-console.log(`SUMMARY:`);
-console.log(`Total Master Clients: ${clients.length}`);
-console.log(`Total Master Vendors: ${vendors.length}`);
-console.log(`Total Invoices Generated: ${allInvoices.length}`);
-console.log(`Total Expenses Generated: ${allExpenses.length}`);
-console.log(`Total Vouchers Generated: ${allVouchers.length} (Receipts: ${clientVouchers.length}, Payments: ${vendorVouchers.length})`);
-console.log(`Total General Ledger Entries: ${allJournal.length}`);
-
-// Verify Trial Balance: Sum(Debits) == Sum(Credits)
-let totalDebits = 0;
-let totalCredits = 0;
-
-for (const j of allJournal) {
-  for (const l of j.lines) {
-    totalDebits += Number(l.debit || 0);
-    totalCredits += Number(l.credit || 0);
-  }
-}
-
-console.log(`Trial Balance: Total Debits = PKR ${totalDebits.toLocaleString()} | Total Credits = PKR ${totalCredits.toLocaleString()}`);
-console.log(`Trial Balance Discrepancy = PKR ${(totalDebits - totalCredits).toFixed(2)}`);
-console.log("==================================================");
 
 // Write to src/data/realLedgerSeedData.js
 const seedContent = `// Real Master Seed Data imported from official Excel Workbooks
@@ -517,4 +462,5 @@ export const REAL_JOURNAL = ${JSON.stringify(allJournal, null, 2)};
 `;
 
 fs.writeFileSync('./src/data/realLedgerSeedData.js', seedContent);
-console.log("Successfully wrote pristine reconciled dataset to src/data/realLedgerSeedData.js!");
+console.log("\n==================================================");
+console.log("Successfully generated src/data/realLedgerSeedData.js with matching sheet names!");
