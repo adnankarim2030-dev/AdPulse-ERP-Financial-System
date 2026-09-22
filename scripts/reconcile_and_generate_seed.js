@@ -307,7 +307,7 @@ for (const sheetName of vendorWb.SheetNames) {
       else if ((h === 'p/r' || h === 'pr' || h === 'p / r' || h.includes('reference') || h.includes('ref') || h === 's.no' || h === 'sr' || h === 's/no.') && colRef === -1) colRef = c;
       else if (h.includes('description') || h.includes('particular')) colDesc = c;
       else if ((h === 'amount' || h.includes('bill') || h.includes('credit')) && colAmount === -1) colAmount = c;
-      else if ((h.includes('paid') || h.includes('payment') || h.includes('debit')) && colPaid === -1) colPaid = c;
+      else if ((h.includes('paid') || h.includes('payment') || h.includes('debit') || h.includes('received') || h.includes('recevied')) && colPaid === -1) colPaid = c;
       else if (h.includes('balance') && colBalance === -1) colBalance = c;
       else if (h.includes('status') || h.includes('bank') || h.includes('remarks') || h.includes('notes')) colNotes = c;
     }

@@ -4,7 +4,7 @@ import App from './App.jsx'
 import './index.css'
 
 // Force immediate cache-purge of all stale legacy local data
-const CURRENT_BUILD_VERSION = "v20_verified_real_excel_ledger_final";
+const CURRENT_BUILD_VERSION = "v21_ibrahim_anjarwala_reconciled";
 try {
   const activeVer = localStorage.getItem("adpulse_app_build_version");
   if (activeVer !== CURRENT_BUILD_VERSION) {

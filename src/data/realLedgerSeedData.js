@@ -1034,10 +1034,10 @@ export const REAL_VENDORS = [
     "creditLimit": 50000000,
     "openingBalance": 0,
     "totalBilled": 10000000,
-    "totalPaid": 0,
-    "currentBalance": 10000000,
+    "totalPaid": 8000000,
+    "currentBalance": 2000000,
     "status": "Active",
-    "notes": "Official Vendor Account - Ledger imported from Excel (Closing Balance: PKR 10,000,000)",
+    "notes": "Official Vendor Account - Ledger imported from Excel (Closing Balance: PKR 2,000,000)",
     "createdAt": "2026-06-01",
     "createdBy": "AdpulseCEO"
   },
@@ -1080,10 +1080,10 @@ export const REAL_VENDORS = [
     "creditLimit": 50000000,
     "openingBalance": 0,
     "totalBilled": 650000,
-    "totalPaid": 0,
-    "currentBalance": 650000,
+    "totalPaid": 650000,
+    "currentBalance": 0,
     "status": "Active",
-    "notes": "Official Vendor Account - Ledger imported from Excel (Closing Balance: PKR 650,000)",
+    "notes": "Official Vendor Account - Ledger imported from Excel (Closing Balance: PKR 0)",
     "createdAt": "2026-06-01",
     "createdBy": "AdpulseCEO"
   },
@@ -7797,6 +7797,215 @@ export const REAL_VOUCHERS = [
     "id": "vch-pv-18",
     "voucherNo": "BPV-26-018",
     "type": "PV",
+    "date": "2026-07-24",
+    "party": "IBRAHIM ANJARWALA",
+    "clientId": null,
+    "vendorId": "ven-010",
+    "description": "Cheque Deposit in Call Advertiser Account",
+    "amount": 800000,
+    "netAmount": 800000,
+    "via": "Bank",
+    "paymentMode": "Online Bank Transfer",
+    "instrumentNo": "",
+    "instrumentDate": "2026-07-24",
+    "bankAccountId": "bank-hbl",
+    "status": "Posted",
+    "notes": ""
+  },
+  {
+    "id": "vch-pv-19",
+    "voucherNo": "BPV-26-019",
+    "type": "PV",
+    "date": "2026-07-28",
+    "party": "IBRAHIM ANJARWALA",
+    "clientId": null,
+    "vendorId": "ven-010",
+    "description": "Cash Deposit in Call Advertiser Account",
+    "amount": 700000,
+    "netAmount": 700000,
+    "via": "Cash",
+    "paymentMode": "Petty Cash",
+    "instrumentNo": "",
+    "instrumentDate": "2026-07-28",
+    "bankAccountId": "bank-cash",
+    "status": "Posted",
+    "notes": ""
+  },
+  {
+    "id": "vch-pv-20",
+    "voucherNo": "BPV-26-020",
+    "type": "PV",
+    "date": "2026-08-03",
+    "party": "IBRAHIM ANJARWALA",
+    "clientId": null,
+    "vendorId": "ven-010",
+    "description": "IBFT Transfer in Call Acct",
+    "amount": 1500000,
+    "netAmount": 1500000,
+    "via": "Bank",
+    "paymentMode": "Online Bank Transfer",
+    "instrumentNo": "",
+    "instrumentDate": "2026-08-03",
+    "bankAccountId": "bank-hbl",
+    "status": "Posted",
+    "notes": ""
+  },
+  {
+    "id": "vch-pv-21",
+    "voucherNo": "BPV-26-021",
+    "type": "PV",
+    "date": "2026-08-11",
+    "party": "IBRAHIM ANJARWALA",
+    "clientId": null,
+    "vendorId": "ven-010",
+    "description": "Cash Deposit in Call Advertiser Account",
+    "amount": 900000,
+    "netAmount": 900000,
+    "via": "Cash",
+    "paymentMode": "Petty Cash",
+    "instrumentNo": "",
+    "instrumentDate": "2026-08-11",
+    "bankAccountId": "bank-cash",
+    "status": "Posted",
+    "notes": ""
+  },
+  {
+    "id": "vch-pv-22",
+    "voucherNo": "BPV-26-022",
+    "type": "PV",
+    "date": "2026-08-28",
+    "party": "IBRAHIM ANJARWALA",
+    "clientId": null,
+    "vendorId": "ven-010",
+    "description": "Cash Received from Mr. Ibrahim Anjarwala against Loan",
+    "amount": 900000,
+    "netAmount": 900000,
+    "via": "Cash",
+    "paymentMode": "Petty Cash",
+    "instrumentNo": "",
+    "instrumentDate": "2026-08-28",
+    "bankAccountId": "bank-cash",
+    "status": "Posted",
+    "notes": ""
+  },
+  {
+    "id": "vch-pv-23",
+    "voucherNo": "BPV-26-023",
+    "type": "PV",
+    "date": "2026-08-30",
+    "party": "IBRAHIM ANJARWALA",
+    "clientId": null,
+    "vendorId": "ven-010",
+    "description": "Cash/Cheque Received from Mr. Ibrahim Anjarwala against Loan",
+    "amount": 400000,
+    "netAmount": 400000,
+    "via": "Cash",
+    "paymentMode": "Petty Cash",
+    "instrumentNo": "A-43515978",
+    "instrumentDate": "2026-08-30",
+    "bankAccountId": "bank-cash",
+    "status": "Posted",
+    "notes": ""
+  },
+  {
+    "id": "vch-pv-24",
+    "voucherNo": "BPV-26-024",
+    "type": "PV",
+    "date": "2026-08-31",
+    "party": "IBRAHIM ANJARWALA",
+    "clientId": null,
+    "vendorId": "ven-010",
+    "description": "Cash/Cheque Received from Mr. Ibrahim Anjarwala against Loan",
+    "amount": 500000,
+    "netAmount": 500000,
+    "via": "Cash",
+    "paymentMode": "Petty Cash",
+    "instrumentNo": "A-43515979",
+    "instrumentDate": "2026-08-31",
+    "bankAccountId": "bank-cash",
+    "status": "Posted",
+    "notes": ""
+  },
+  {
+    "id": "vch-pv-25",
+    "voucherNo": "BPV-26-025",
+    "type": "PV",
+    "date": "2026-09-04",
+    "party": "IBRAHIM ANJARWALA",
+    "clientId": null,
+    "vendorId": "ven-010",
+    "description": "Cheque Received from Mr. Ibrahim Anjarwala against Loan",
+    "amount": 500000,
+    "netAmount": 500000,
+    "via": "Bank",
+    "paymentMode": "Online Bank Transfer",
+    "instrumentNo": "CA0000000176",
+    "instrumentDate": "2026-09-04",
+    "bankAccountId": "bank-hbl",
+    "status": "Posted",
+    "notes": ""
+  },
+  {
+    "id": "vch-pv-26",
+    "voucherNo": "BPV-26-026",
+    "type": "PV",
+    "date": "2026-09-05",
+    "party": "IBRAHIM ANJARWALA",
+    "clientId": null,
+    "vendorId": "ven-010",
+    "description": "Cheque Received from Mr. Ibrahim Anjarwala against Loan",
+    "amount": 200000,
+    "netAmount": 200000,
+    "via": "Bank",
+    "paymentMode": "Online Bank Transfer",
+    "instrumentNo": "CA0000000179",
+    "instrumentDate": "2026-09-05",
+    "bankAccountId": "bank-hbl",
+    "status": "Posted",
+    "notes": ""
+  },
+  {
+    "id": "vch-pv-27",
+    "voucherNo": "BPV-26-027",
+    "type": "PV",
+    "date": "2026-09-06",
+    "party": "IBRAHIM ANJARWALA",
+    "clientId": null,
+    "vendorId": "ven-010",
+    "description": "Cheque Received from Mr. Ibrahim Anjarwala against Loan",
+    "amount": 900000,
+    "netAmount": 900000,
+    "via": "Bank",
+    "paymentMode": "Online Bank Transfer",
+    "instrumentNo": "CA0000000177",
+    "instrumentDate": "2026-09-06",
+    "bankAccountId": "bank-hbl",
+    "status": "Posted",
+    "notes": ""
+  },
+  {
+    "id": "vch-pv-28",
+    "voucherNo": "BPV-26-028",
+    "type": "PV",
+    "date": "2026-09-07",
+    "party": "IBRAHIM ANJARWALA",
+    "clientId": null,
+    "vendorId": "ven-010",
+    "description": "Cheque Received from Mr. Ibrahim Anjarwala against Loan",
+    "amount": 700000,
+    "netAmount": 700000,
+    "via": "Bank",
+    "paymentMode": "Online Bank Transfer",
+    "instrumentNo": "CA0000000178",
+    "instrumentDate": "2026-09-07",
+    "bankAccountId": "bank-hbl",
+    "status": "Posted",
+    "notes": ""
+  },
+  {
+    "id": "vch-pv-29",
+    "voucherNo": "BPV-26-029",
+    "type": "PV",
     "date": "2026-09-12",
     "party": "K-GROUP",
     "clientId": null,
@@ -7813,8 +8022,65 @@ export const REAL_VOUCHERS = [
     "notes": ""
   },
   {
-    "id": "vch-pv-19",
-    "voucherNo": "BPV-26-019",
+    "id": "vch-pv-30",
+    "voucherNo": "BPV-26-030",
+    "type": "PV",
+    "date": "2026-09-07",
+    "party": "MILLENNIUM GRAPHICS",
+    "clientId": null,
+    "vendorId": "ven-012",
+    "description": "CHEQUE DEPSOIT IN MILLENNIUM GRAPHICS ACCOUNT (RECEIVED FROM ANSAR BHAI AGAINST CREEK GOLD)",
+    "amount": 500000,
+    "netAmount": 500000,
+    "via": "Bank",
+    "paymentMode": "Online Bank Transfer",
+    "instrumentNo": "12548704",
+    "instrumentDate": "2026-09-07",
+    "bankAccountId": "bank-hbl",
+    "status": "Posted",
+    "notes": ""
+  },
+  {
+    "id": "vch-pv-31",
+    "voucherNo": "BPV-26-031",
+    "type": "PV",
+    "date": "2026-07-01",
+    "party": "MILLENNIUM GRAPHICS",
+    "clientId": null,
+    "vendorId": "ven-012",
+    "description": "IBFT TRANSFER FROM ADPULSE 1241 AGAINST INVOICE # 471",
+    "amount": 125000,
+    "netAmount": 125000,
+    "via": "Bank",
+    "paymentMode": "Online Bank Transfer",
+    "instrumentNo": "",
+    "instrumentDate": "2026-07-01",
+    "bankAccountId": "bank-hbl",
+    "status": "Posted",
+    "notes": ""
+  },
+  {
+    "id": "vch-pv-32",
+    "voucherNo": "BPV-26-032",
+    "type": "PV",
+    "date": "2026-07-01",
+    "party": "MILLENNIUM GRAPHICS",
+    "clientId": null,
+    "vendorId": "ven-012",
+    "description": "Discount",
+    "amount": 25000,
+    "netAmount": 25000,
+    "via": "Bank",
+    "paymentMode": "Online Bank Transfer",
+    "instrumentNo": "",
+    "instrumentDate": "2026-07-01",
+    "bankAccountId": "bank-hbl",
+    "status": "Posted",
+    "notes": ""
+  },
+  {
+    "id": "vch-pv-33",
+    "voucherNo": "BPV-26-033",
     "type": "PV",
     "date": "2026-07-15",
     "party": "MNB",
@@ -7832,8 +8098,8 @@ export const REAL_VOUCHERS = [
     "notes": ""
   },
   {
-    "id": "vch-pv-20",
-    "voucherNo": "BPV-26-020",
+    "id": "vch-pv-34",
+    "voucherNo": "BPV-26-034",
     "type": "PV",
     "date": "2026-07-16",
     "party": "MNB",
@@ -7851,8 +8117,8 @@ export const REAL_VOUCHERS = [
     "notes": ""
   },
   {
-    "id": "vch-pv-21",
-    "voucherNo": "BPV-26-021",
+    "id": "vch-pv-35",
+    "voucherNo": "BPV-26-035",
     "type": "PV",
     "date": "2026-07-16",
     "party": "MNB",
@@ -7870,8 +8136,8 @@ export const REAL_VOUCHERS = [
     "notes": ""
   },
   {
-    "id": "vch-pv-22",
-    "voucherNo": "BPV-26-022",
+    "id": "vch-pv-36",
+    "voucherNo": "BPV-26-036",
     "type": "PV",
     "date": "2026-08-08",
     "party": "MNB",
@@ -7889,8 +8155,8 @@ export const REAL_VOUCHERS = [
     "notes": ""
   },
   {
-    "id": "vch-pv-23",
-    "voucherNo": "BPV-26-023",
+    "id": "vch-pv-37",
+    "voucherNo": "BPV-26-037",
     "type": "PV",
     "date": "2026-08-10",
     "party": "MNB",
@@ -7908,8 +8174,8 @@ export const REAL_VOUCHERS = [
     "notes": ""
   },
   {
-    "id": "vch-pv-24",
-    "voucherNo": "BPV-26-024",
+    "id": "vch-pv-38",
+    "voucherNo": "BPV-26-038",
     "type": "PV",
     "date": "2026-08-12",
     "party": "MNB",
@@ -7927,8 +8193,8 @@ export const REAL_VOUCHERS = [
     "notes": ""
   },
   {
-    "id": "vch-pv-25",
-    "voucherNo": "BPV-26-025",
+    "id": "vch-pv-39",
+    "voucherNo": "BPV-26-039",
     "type": "PV",
     "date": "2026-08-12",
     "party": "MNB",
@@ -7946,8 +8212,8 @@ export const REAL_VOUCHERS = [
     "notes": ""
   },
   {
-    "id": "vch-pv-26",
-    "voucherNo": "BPV-26-026",
+    "id": "vch-pv-40",
+    "voucherNo": "BPV-26-040",
     "type": "PV",
     "date": "2026-09-16",
     "party": "MNB",
@@ -7965,8 +8231,8 @@ export const REAL_VOUCHERS = [
     "notes": ""
   },
   {
-    "id": "vch-pv-27",
-    "voucherNo": "BPV-26-027",
+    "id": "vch-pv-41",
+    "voucherNo": "BPV-26-041",
     "type": "PV",
     "date": "2026-09-16",
     "party": "MNB",
@@ -7984,8 +8250,8 @@ export const REAL_VOUCHERS = [
     "notes": ""
   },
   {
-    "id": "vch-pv-28",
-    "voucherNo": "BPV-26-028",
+    "id": "vch-pv-42",
+    "voucherNo": "BPV-26-042",
     "type": "PV",
     "date": "2026-07-10",
     "party": "NEXTIER - KAINAT",
@@ -8003,8 +8269,8 @@ export const REAL_VOUCHERS = [
     "notes": ""
   },
   {
-    "id": "vch-pv-29",
-    "voucherNo": "BPV-26-029",
+    "id": "vch-pv-43",
+    "voucherNo": "BPV-26-043",
     "type": "PV",
     "date": "2026-08-07",
     "party": "NEXTIER - KAINAT",
@@ -8022,8 +8288,8 @@ export const REAL_VOUCHERS = [
     "notes": ""
   },
   {
-    "id": "vch-pv-30",
-    "voucherNo": "BPV-26-030",
+    "id": "vch-pv-44",
+    "voucherNo": "BPV-26-044",
     "type": "PV",
     "date": "2026-08-07",
     "party": "NEXTIER - KAINAT",
@@ -8041,8 +8307,8 @@ export const REAL_VOUCHERS = [
     "notes": ""
   },
   {
-    "id": "vch-pv-31",
-    "voucherNo": "BPV-26-031",
+    "id": "vch-pv-45",
+    "voucherNo": "BPV-26-045",
     "type": "PV",
     "date": "2026-08-10",
     "party": "NEXTIER - KAINAT",
@@ -8060,8 +8326,8 @@ export const REAL_VOUCHERS = [
     "notes": ""
   },
   {
-    "id": "vch-pv-32",
-    "voucherNo": "BPV-26-032",
+    "id": "vch-pv-46",
+    "voucherNo": "BPV-26-046",
     "type": "PV",
     "date": "2026-09-07",
     "party": "NEXTIER - KAINAT",
@@ -8079,8 +8345,8 @@ export const REAL_VOUCHERS = [
     "notes": ""
   },
   {
-    "id": "vch-pv-33",
-    "voucherNo": "BPV-26-033",
+    "id": "vch-pv-47",
+    "voucherNo": "BPV-26-047",
     "type": "PV",
     "date": "2026-09-14",
     "party": "NEXTIER - KAINAT",
@@ -8098,8 +8364,8 @@ export const REAL_VOUCHERS = [
     "notes": ""
   },
   {
-    "id": "vch-pv-34",
-    "voucherNo": "BPV-26-034",
+    "id": "vch-pv-48",
+    "voucherNo": "BPV-26-048",
     "type": "PV",
     "date": "2026-09-14",
     "party": "NEXTIER - KAINAT",
@@ -8117,8 +8383,8 @@ export const REAL_VOUCHERS = [
     "notes": ""
   },
   {
-    "id": "vch-pv-35",
-    "voucherNo": "BPV-26-035",
+    "id": "vch-pv-49",
+    "voucherNo": "BPV-26-049",
     "type": "PV",
     "date": "2026-08-22",
     "party": "R & D GROUP",
@@ -8136,8 +8402,8 @@ export const REAL_VOUCHERS = [
     "notes": ""
   },
   {
-    "id": "vch-pv-36",
-    "voucherNo": "BPV-26-036",
+    "id": "vch-pv-50",
+    "voucherNo": "BPV-26-050",
     "type": "PV",
     "date": "2026-09-17",
     "party": "R & D GROUP",
@@ -8155,8 +8421,8 @@ export const REAL_VOUCHERS = [
     "notes": ""
   },
   {
-    "id": "vch-pv-37",
-    "voucherNo": "BPV-26-037",
+    "id": "vch-pv-51",
+    "voucherNo": "BPV-26-051",
     "type": "PV",
     "date": "2026-07-20",
     "party": "RM ASSOCIATES",
@@ -8174,8 +8440,8 @@ export const REAL_VOUCHERS = [
     "notes": ""
   },
   {
-    "id": "vch-pv-38",
-    "voucherNo": "BPV-26-038",
+    "id": "vch-pv-52",
+    "voucherNo": "BPV-26-052",
     "type": "PV",
     "date": "2026-08-22",
     "party": "RM ASSOCIATES",
@@ -8193,8 +8459,8 @@ export const REAL_VOUCHERS = [
     "notes": ""
   },
   {
-    "id": "vch-pv-39",
-    "voucherNo": "BPV-26-039",
+    "id": "vch-pv-53",
+    "voucherNo": "BPV-26-053",
     "type": "PV",
     "date": "2026-09-12",
     "party": "RM ASSOCIATES",
@@ -8212,8 +8478,8 @@ export const REAL_VOUCHERS = [
     "notes": ""
   },
   {
-    "id": "vch-pv-40",
-    "voucherNo": "BPV-26-040",
+    "id": "vch-pv-54",
+    "voucherNo": "BPV-26-054",
     "type": "PV",
     "date": "2026-07-20",
     "party": "RING ADVERTISING",
@@ -8231,8 +8497,8 @@ export const REAL_VOUCHERS = [
     "notes": ""
   },
   {
-    "id": "vch-pv-41",
-    "voucherNo": "BPV-26-041",
+    "id": "vch-pv-55",
+    "voucherNo": "BPV-26-055",
     "type": "PV",
     "date": "2026-07-20",
     "party": "RING ADVERTISING",
@@ -8250,8 +8516,8 @@ export const REAL_VOUCHERS = [
     "notes": ""
   },
   {
-    "id": "vch-pv-42",
-    "voucherNo": "BPV-26-042",
+    "id": "vch-pv-56",
+    "voucherNo": "BPV-26-056",
     "type": "PV",
     "date": "2026-09-10",
     "party": "Zaib Enterprises",
@@ -8269,8 +8535,8 @@ export const REAL_VOUCHERS = [
     "notes": ""
   },
   {
-    "id": "vch-pv-43",
-    "voucherNo": "BPV-26-043",
+    "id": "vch-pv-57",
+    "voucherNo": "BPV-26-057",
     "type": "PV",
     "date": "2026-09-16",
     "party": "Zaib Enterprises",
@@ -14102,6 +14368,237 @@ export const REAL_JOURNAL = [
     ]
   },
   {
+    "id": "jnl-pv-18",
+    "date": "2026-07-24",
+    "reference": "BPV-26-018",
+    "description": "[Payment Voucher] IBRAHIM ANJARWALA — Cheque Deposit in Call Advertiser Account",
+    "lines": [
+      {
+        "account": "ap",
+        "debit": 800000,
+        "credit": 0,
+        "memo": "Accounts Payable — IBRAHIM ANJARWALA"
+      },
+      {
+        "account": "bank",
+        "bankAccountId": "bank-hbl",
+        "debit": 0,
+        "credit": 800000,
+        "memo": "HBL Operations"
+      }
+    ]
+  },
+  {
+    "id": "jnl-pv-19",
+    "date": "2026-07-28",
+    "reference": "BPV-26-019",
+    "description": "[Payment Voucher] IBRAHIM ANJARWALA — Cash Deposit in Call Advertiser Account",
+    "lines": [
+      {
+        "account": "ap",
+        "debit": 700000,
+        "credit": 0,
+        "memo": "Accounts Payable — IBRAHIM ANJARWALA"
+      },
+      {
+        "account": "cash",
+        "bankAccountId": "bank-cash",
+        "debit": 0,
+        "credit": 700000,
+        "memo": "Petty Cash Vault"
+      }
+    ]
+  },
+  {
+    "id": "jnl-pv-20",
+    "date": "2026-08-03",
+    "reference": "BPV-26-020",
+    "description": "[Payment Voucher] IBRAHIM ANJARWALA — IBFT Transfer in Call Acct",
+    "lines": [
+      {
+        "account": "ap",
+        "debit": 1500000,
+        "credit": 0,
+        "memo": "Accounts Payable — IBRAHIM ANJARWALA"
+      },
+      {
+        "account": "bank",
+        "bankAccountId": "bank-hbl",
+        "debit": 0,
+        "credit": 1500000,
+        "memo": "HBL Operations"
+      }
+    ]
+  },
+  {
+    "id": "jnl-pv-21",
+    "date": "2026-08-11",
+    "reference": "BPV-26-021",
+    "description": "[Payment Voucher] IBRAHIM ANJARWALA — Cash Deposit in Call Advertiser Account",
+    "lines": [
+      {
+        "account": "ap",
+        "debit": 900000,
+        "credit": 0,
+        "memo": "Accounts Payable — IBRAHIM ANJARWALA"
+      },
+      {
+        "account": "cash",
+        "bankAccountId": "bank-cash",
+        "debit": 0,
+        "credit": 900000,
+        "memo": "Petty Cash Vault"
+      }
+    ]
+  },
+  {
+    "id": "jnl-pv-22",
+    "date": "2026-08-28",
+    "reference": "BPV-26-022",
+    "description": "[Payment Voucher] IBRAHIM ANJARWALA — Cash Received from Mr. Ibrahim Anjarwala against Loan",
+    "lines": [
+      {
+        "account": "ap",
+        "debit": 900000,
+        "credit": 0,
+        "memo": "Accounts Payable — IBRAHIM ANJARWALA"
+      },
+      {
+        "account": "cash",
+        "bankAccountId": "bank-cash",
+        "debit": 0,
+        "credit": 900000,
+        "memo": "Petty Cash Vault"
+      }
+    ]
+  },
+  {
+    "id": "jnl-pv-23",
+    "date": "2026-08-30",
+    "reference": "BPV-26-023",
+    "description": "[Payment Voucher] IBRAHIM ANJARWALA — Cash/Cheque Received from Mr. Ibrahim Anjarwala against Loan",
+    "lines": [
+      {
+        "account": "ap",
+        "debit": 400000,
+        "credit": 0,
+        "memo": "Accounts Payable — IBRAHIM ANJARWALA"
+      },
+      {
+        "account": "cash",
+        "bankAccountId": "bank-cash",
+        "debit": 0,
+        "credit": 400000,
+        "memo": "Petty Cash Vault"
+      }
+    ]
+  },
+  {
+    "id": "jnl-pv-24",
+    "date": "2026-08-31",
+    "reference": "BPV-26-024",
+    "description": "[Payment Voucher] IBRAHIM ANJARWALA — Cash/Cheque Received from Mr. Ibrahim Anjarwala against Loan",
+    "lines": [
+      {
+        "account": "ap",
+        "debit": 500000,
+        "credit": 0,
+        "memo": "Accounts Payable — IBRAHIM ANJARWALA"
+      },
+      {
+        "account": "cash",
+        "bankAccountId": "bank-cash",
+        "debit": 0,
+        "credit": 500000,
+        "memo": "Petty Cash Vault"
+      }
+    ]
+  },
+  {
+    "id": "jnl-pv-25",
+    "date": "2026-09-04",
+    "reference": "BPV-26-025",
+    "description": "[Payment Voucher] IBRAHIM ANJARWALA — Cheque Received from Mr. Ibrahim Anjarwala against Loan",
+    "lines": [
+      {
+        "account": "ap",
+        "debit": 500000,
+        "credit": 0,
+        "memo": "Accounts Payable — IBRAHIM ANJARWALA"
+      },
+      {
+        "account": "bank",
+        "bankAccountId": "bank-hbl",
+        "debit": 0,
+        "credit": 500000,
+        "memo": "HBL Operations"
+      }
+    ]
+  },
+  {
+    "id": "jnl-pv-26",
+    "date": "2026-09-05",
+    "reference": "BPV-26-026",
+    "description": "[Payment Voucher] IBRAHIM ANJARWALA — Cheque Received from Mr. Ibrahim Anjarwala against Loan",
+    "lines": [
+      {
+        "account": "ap",
+        "debit": 200000,
+        "credit": 0,
+        "memo": "Accounts Payable — IBRAHIM ANJARWALA"
+      },
+      {
+        "account": "bank",
+        "bankAccountId": "bank-hbl",
+        "debit": 0,
+        "credit": 200000,
+        "memo": "HBL Operations"
+      }
+    ]
+  },
+  {
+    "id": "jnl-pv-27",
+    "date": "2026-09-06",
+    "reference": "BPV-26-027",
+    "description": "[Payment Voucher] IBRAHIM ANJARWALA — Cheque Received from Mr. Ibrahim Anjarwala against Loan",
+    "lines": [
+      {
+        "account": "ap",
+        "debit": 900000,
+        "credit": 0,
+        "memo": "Accounts Payable — IBRAHIM ANJARWALA"
+      },
+      {
+        "account": "bank",
+        "bankAccountId": "bank-hbl",
+        "debit": 0,
+        "credit": 900000,
+        "memo": "HBL Operations"
+      }
+    ]
+  },
+  {
+    "id": "jnl-pv-28",
+    "date": "2026-09-07",
+    "reference": "BPV-26-028",
+    "description": "[Payment Voucher] IBRAHIM ANJARWALA — Cheque Received from Mr. Ibrahim Anjarwala against Loan",
+    "lines": [
+      {
+        "account": "ap",
+        "debit": 700000,
+        "credit": 0,
+        "memo": "Accounts Payable — IBRAHIM ANJARWALA"
+      },
+      {
+        "account": "bank",
+        "bankAccountId": "bank-hbl",
+        "debit": 0,
+        "credit": 700000,
+        "memo": "HBL Operations"
+      }
+    ]
+  },
+  {
     "id": "jnl-exp-19",
     "date": "2026-08-17",
     "reference": "EXP-26-019",
@@ -14122,9 +14619,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-pv-18",
+    "id": "jnl-pv-29",
     "date": "2026-09-12",
-    "reference": "BPV-26-018",
+    "reference": "BPV-26-029",
     "description": "[Payment Voucher] K-GROUP — CHEQUE DEPOSIT IN MEDIA SOLUTION ACCOUNT AGAINST INVOIVE NO 'MS/BILL/10015/2026",
     "lines": [
       {
@@ -14159,6 +14656,69 @@ export const REAL_JOURNAL = [
         "debit": 0,
         "credit": 650000,
         "memo": "Accounts Payable — MILLENNIUM GRAPHICS"
+      }
+    ]
+  },
+  {
+    "id": "jnl-pv-30",
+    "date": "2026-09-07",
+    "reference": "BPV-26-030",
+    "description": "[Payment Voucher] MILLENNIUM GRAPHICS — CHEQUE DEPSOIT IN MILLENNIUM GRAPHICS ACCOUNT (RECEIVED FROM ANSAR BHAI AGAINST CREEK GOLD)",
+    "lines": [
+      {
+        "account": "ap",
+        "debit": 500000,
+        "credit": 0,
+        "memo": "Accounts Payable — MILLENNIUM GRAPHICS"
+      },
+      {
+        "account": "bank",
+        "bankAccountId": "bank-hbl",
+        "debit": 0,
+        "credit": 500000,
+        "memo": "HBL Operations"
+      }
+    ]
+  },
+  {
+    "id": "jnl-pv-31",
+    "date": "2026-07-01",
+    "reference": "BPV-26-031",
+    "description": "[Payment Voucher] MILLENNIUM GRAPHICS — IBFT TRANSFER FROM ADPULSE 1241 AGAINST INVOICE # 471",
+    "lines": [
+      {
+        "account": "ap",
+        "debit": 125000,
+        "credit": 0,
+        "memo": "Accounts Payable — MILLENNIUM GRAPHICS"
+      },
+      {
+        "account": "bank",
+        "bankAccountId": "bank-hbl",
+        "debit": 0,
+        "credit": 125000,
+        "memo": "HBL Operations"
+      }
+    ]
+  },
+  {
+    "id": "jnl-pv-32",
+    "date": "2026-07-01",
+    "reference": "BPV-26-032",
+    "description": "[Payment Voucher] MILLENNIUM GRAPHICS — Discount",
+    "lines": [
+      {
+        "account": "ap",
+        "debit": 25000,
+        "credit": 0,
+        "memo": "Accounts Payable — MILLENNIUM GRAPHICS"
+      },
+      {
+        "account": "bank",
+        "bankAccountId": "bank-hbl",
+        "debit": 0,
+        "credit": 25000,
+        "memo": "HBL Operations"
       }
     ]
   },
@@ -14203,9 +14763,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-pv-19",
+    "id": "jnl-pv-33",
     "date": "2026-07-15",
-    "reference": "BPV-26-019",
+    "reference": "BPV-26-033",
     "description": "[Payment Voucher] MNB — Cash depoist in Umair Nasim Butt (MNB) Account",
     "lines": [
       {
@@ -14224,9 +14784,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-pv-20",
+    "id": "jnl-pv-34",
     "date": "2026-07-16",
-    "reference": "BPV-26-020",
+    "reference": "BPV-26-034",
     "description": "[Payment Voucher] MNB — Cash depoist in Umair Nasim Butt (MNB) Account",
     "lines": [
       {
@@ -14245,9 +14805,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-pv-21",
+    "id": "jnl-pv-35",
     "date": "2026-07-16",
-    "reference": "BPV-26-021",
+    "reference": "BPV-26-035",
     "description": "[Payment Voucher] MNB — Early Cash Discount",
     "lines": [
       {
@@ -14286,9 +14846,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-pv-22",
+    "id": "jnl-pv-36",
     "date": "2026-08-08",
-    "reference": "BPV-26-022",
+    "reference": "BPV-26-036",
     "description": "[Payment Voucher] MNB — IBFT Transfer to Umair Nasim Butt (mnb) against RG-324/2026",
     "lines": [
       {
@@ -14307,9 +14867,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-pv-23",
+    "id": "jnl-pv-37",
     "date": "2026-08-10",
-    "reference": "BPV-26-023",
+    "reference": "BPV-26-037",
     "description": "[Payment Voucher] MNB — CHEQUE DEPOSIT IN UMAIR NASEEM BUTT ACCOUNT FROM ANSAR BHAI CHEQUE",
     "lines": [
       {
@@ -14328,9 +14888,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-pv-24",
+    "id": "jnl-pv-38",
     "date": "2026-08-12",
-    "reference": "BPV-26-024",
+    "reference": "BPV-26-038",
     "description": "[Payment Voucher] MNB — IBFT Transfer to Umair Nasim Butt (mnb) against RG-324/2026",
     "lines": [
       {
@@ -14349,9 +14909,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-pv-25",
+    "id": "jnl-pv-39",
     "date": "2026-08-12",
-    "reference": "BPV-26-025",
+    "reference": "BPV-26-039",
     "description": "[Payment Voucher] MNB — Discount",
     "lines": [
       {
@@ -14390,9 +14950,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-pv-26",
+    "id": "jnl-pv-40",
     "date": "2026-09-16",
-    "reference": "BPV-26-026",
+    "reference": "BPV-26-040",
     "description": "[Payment Voucher] MNB — Cash/Cheque Given to MNB",
     "lines": [
       {
@@ -14411,9 +14971,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-pv-27",
+    "id": "jnl-pv-41",
     "date": "2026-09-16",
-    "reference": "BPV-26-027",
+    "reference": "BPV-26-041",
     "description": "[Payment Voucher] MNB — Cash/Cheque Given to MNB",
     "lines": [
       {
@@ -14472,9 +15032,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-pv-28",
+    "id": "jnl-pv-42",
     "date": "2026-07-10",
-    "reference": "BPV-26-028",
+    "reference": "BPV-26-042",
     "description": "[Payment Voucher] NEXTIER - KAINAT — Cash paid to Ms. Kainat Zaheer against bridges",
     "lines": [
       {
@@ -14513,9 +15073,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-pv-29",
+    "id": "jnl-pv-43",
     "date": "2026-08-07",
-    "reference": "BPV-26-029",
+    "reference": "BPV-26-043",
     "description": "[Payment Voucher] NEXTIER - KAINAT — Cheque deposit In Kainat Zaheer Account",
     "lines": [
       {
@@ -14534,9 +15094,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-pv-30",
+    "id": "jnl-pv-44",
     "date": "2026-08-07",
-    "reference": "BPV-26-030",
+    "reference": "BPV-26-044",
     "description": "[Payment Voucher] NEXTIER - KAINAT — Cheque deposit In Kainat Zaheer Account",
     "lines": [
       {
@@ -14555,9 +15115,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-pv-31",
+    "id": "jnl-pv-45",
     "date": "2026-08-10",
-    "reference": "BPV-26-031",
+    "reference": "BPV-26-045",
     "description": "[Payment Voucher] NEXTIER - KAINAT — Cash paid to Mr. Imran C/O Ms. Kainat Zaheer (Nextier)",
     "lines": [
       {
@@ -14576,9 +15136,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-pv-32",
+    "id": "jnl-pv-46",
     "date": "2026-09-07",
-    "reference": "BPV-26-032",
+    "reference": "BPV-26-046",
     "description": "[Payment Voucher] NEXTIER - KAINAT — Cheque deposit In Kainat Zaheer Account",
     "lines": [
       {
@@ -14597,9 +15157,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-pv-33",
+    "id": "jnl-pv-47",
     "date": "2026-09-14",
-    "reference": "BPV-26-033",
+    "reference": "BPV-26-047",
     "description": "[Payment Voucher] NEXTIER - KAINAT — Cheque deposit inKainat Zaheer - Nextier against PO No AD/OOH/460/2026",
     "lines": [
       {
@@ -14618,9 +15178,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-pv-34",
+    "id": "jnl-pv-48",
     "date": "2026-09-14",
-    "reference": "BPV-26-034",
+    "reference": "BPV-26-048",
     "description": "[Payment Voucher] NEXTIER - KAINAT — Cheque deposit inKainat Zaheer - Nextier against PO No AD/OOH/460/2026",
     "lines": [
       {
@@ -14659,9 +15219,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-pv-35",
+    "id": "jnl-pv-49",
     "date": "2026-08-22",
-    "reference": "BPV-26-035",
+    "reference": "BPV-26-049",
     "description": "[Payment Voucher] R & D GROUP — Cheque Issued to R and D Group against Digital streamers",
     "lines": [
       {
@@ -14700,9 +15260,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-pv-36",
+    "id": "jnl-pv-50",
     "date": "2026-09-17",
-    "reference": "BPV-26-036",
+    "reference": "BPV-26-050",
     "description": "[Payment Voucher] R & D GROUP — Cheque Issued to R and D Group against Digital streamers",
     "lines": [
       {
@@ -14761,9 +15321,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-pv-37",
+    "id": "jnl-pv-51",
     "date": "2026-07-20",
-    "reference": "BPV-26-037",
+    "reference": "BPV-26-051",
     "description": "[Payment Voucher] RM ASSOCIATES — Cheque Issued to RM Associates against invoice AP 002",
     "lines": [
       {
@@ -14782,9 +15342,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-pv-38",
+    "id": "jnl-pv-52",
     "date": "2026-08-22",
-    "reference": "BPV-26-038",
+    "reference": "BPV-26-052",
     "description": "[Payment Voucher] RM ASSOCIATES — Cheque Issued to RM Associates against invoice AP 003",
     "lines": [
       {
@@ -14823,9 +15383,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-pv-39",
+    "id": "jnl-pv-53",
     "date": "2026-09-12",
-    "reference": "BPV-26-039",
+    "reference": "BPV-26-053",
     "description": "[Payment Voucher] RM ASSOCIATES — Cheque Issued to RM Associates against invoice",
     "lines": [
       {
@@ -14864,9 +15424,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-pv-40",
+    "id": "jnl-pv-54",
     "date": "2026-07-20",
-    "reference": "BPV-26-040",
+    "reference": "BPV-26-054",
     "description": "[Payment Voucher] RING ADVERTISING — Cheque issued to Ring Adversitings against Invoice 01",
     "lines": [
       {
@@ -14885,9 +15445,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-pv-41",
+    "id": "jnl-pv-55",
     "date": "2026-07-20",
-    "reference": "BPV-26-041",
+    "reference": "BPV-26-055",
     "description": "[Payment Voucher] RING ADVERTISING — IBFT Transfer in Ring Advertising account",
     "lines": [
       {
@@ -14986,9 +15546,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-pv-42",
+    "id": "jnl-pv-56",
     "date": "2026-09-10",
-    "reference": "BPV-26-042",
+    "reference": "BPV-26-056",
     "description": "[Payment Voucher] Zaib Enterprises — Cheuqe Given o Zaib Enterprises",
     "lines": [
       {
@@ -15007,9 +15567,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-pv-43",
+    "id": "jnl-pv-57",
     "date": "2026-09-16",
-    "reference": "BPV-26-043",
+    "reference": "BPV-26-057",
     "description": "[Payment Voucher] Zaib Enterprises — Cash Paid to Zaib Enterprises",
     "lines": [
       {
