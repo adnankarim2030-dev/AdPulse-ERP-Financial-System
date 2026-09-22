@@ -1,18 +1,30 @@
 import XLSX from 'xlsx';
 import {
-  REAL_CLIENTS, REAL_VENDORS, REAL_INVOICES,
-  REAL_EXPENSES, REAL_VOUCHERS, REAL_JOURNAL
+  REAL_CLIENTS,
+  REAL_VENDORS,
+  REAL_INVOICES,
+  REAL_EXPENSES,
+  REAL_VOUCHERS,
+  REAL_JOURNAL
 } from '../src/data/realLedgerSeedData.js';
 
+function cleanNum(val) {
+  if (val === null || val === undefined) return 0;
+  const s = String(val).replace(/,/g, '').replace(/\s+/g, '').replace(/\(/g, '-').replace(/\)/g, '');
+  if (!s || s === '-' || s === '—') return 0;
+  const n = Number(s);
+  return isNaN(n) ? 0 : n;
+}
+
 console.log("===============================================================================");
-console.log("             COMPREHENSIVE AUDIT TEST: SYSTEM vs EXCEL WORKBOOKS              ");
+console.log("             COMPREHENSIVE FINANCIAL AUDIT TEST: EXCEL VS ERP                  ");
 console.log("===============================================================================");
 
 // ---------------------------------------------------------
 // 1. AUDIT ALL 35 CLIENTS
 // ---------------------------------------------------------
 const clientWb = XLSX.readFile('./CLIENT BALANCE PAYMENT AND LEDGERS  (1).xlsx');
-console.log(`\n>>> AUDITING CLIENTS (${clientWb.SheetNames.length} Excel Sheets vs ${REAL_CLIENTS.length} ERP Clients)...`);
+console.log(`\n>>> AUDITING CLIENTS (${clientWb.SheetNames.length} Excel Sheets vs ${REAL_CLIENTS.length} ERP Clients)...\n`);
 
 let clientPassCount = 0;
 let clientFailCount = 0;
@@ -22,62 +34,87 @@ for (const sheetName of clientWb.SheetNames) {
   const sheet = clientWb.Sheets[sheetName];
   const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: null });
 
-  let headerRowIdx = -1;
-  let headers = [];
+  let tables = [];
+  let curTable = null;
 
-  for (let i = 0; i < Math.min(8, rows.length); i++) {
+  for (let i = 0; i < rows.length; i++) {
     const r = rows[i] || [];
-    const rStr = r.filter(c => c !== null).map(c => String(c).trim().toLowerCase());
-    if (rStr.some(c => c.includes('date') || c.includes('description') || c.includes('amount') || c.includes('received') || c.includes('recevied') || c.includes('balance'))) {
-      headerRowIdx = i;
-      headers = r.map(c => c !== null ? String(c).trim() : '');
-      break;
+    const rStr = r.map(c => c ? String(c).trim().toLowerCase() : '');
+    const isHeader = rStr.some(c => c.includes('date')) && (rStr.some(c => c.includes('amount') || c.includes('recevied') || c.includes('received') || c.includes('paid') || c.includes('adjustment') || c.includes('balance')));
+    
+    if (isHeader) {
+      if (curTable) tables.push(curTable);
+      curTable = { headerIdx: i, headerRow: r, rows: [] };
+      continue;
     }
+
+    if (curTable) {
+      const isTotal = rStr.some(c => c === 'total' || c === 'total amount' || c.includes('grand total') || c === 'total balance amount' || c === 'total vouchers');
+      if (isTotal) {
+        curTable.totalRow = r;
+        tables.push(curTable);
+        curTable = null;
+        continue;
+      }
+      if (r.some(c => c && String(c).trim())) {
+        curTable.rows.push(r);
+      }
+    }
+  }
+  if (curTable) tables.push(curTable);
+
+  if (sheetName === 'SUNRIDGE' && tables.length >= 2) {
+    tables = [tables[1]]; // Full consolidated table
   }
 
   let excelOB = 0;
   let excelBilled = 0;
   let excelReceived = 0;
 
-  if (headerRowIdx !== -1) {
-    let colDate = -1, colRef = -1, colDesc = -1, colAmount = -1, colReceived = -1, colBalance = -1;
-    for (let c = 0; c < headers.length; c++) {
-      const h = headers[c].toLowerCase();
-      if (h.includes('date') && colDate === -1) colDate = c;
-      else if ((h === 'p/r' || h === 'pr' || h === 'p / r' || h.includes('reference') || h.includes('ref') || h === 's.no' || h === 'sr') && colRef === -1) colRef = c;
-      else if (h.includes('description') || h.includes('particular')) colDesc = c;
-      else if ((h === 'amount' || h.includes('billed') || h.includes('debit')) && colAmount === -1) colAmount = c;
-      else if ((h.includes('recevied') || h.includes('received') || h.includes('paid') || h.includes('credit')) && colReceived === -1) colReceived = c;
-      else if (h.includes('balance') && colBalance === -1) colBalance = c;
+
+
+  for (const t of tables) {
+    const h = (t.headerRow || []).map(c => c ? String(c).trim().toLowerCase() : '');
+    let colDate = -1, colRef = -1, colDesc = -1, colAmt = -1, colRec = -1, colBal = -1;
+
+    for (let c = 0; c < h.length; c++) {
+      const hc = h[c] || '';
+      if (hc.includes('date') && colDate === -1) colDate = c;
+      else if ((hc === 'p/r' || hc === 'pr' || hc === 'p / r' || hc.includes('inv') || hc.includes('reference') || hc.includes('ref') || hc === 's/no.' || hc === 'sr') && colRef === -1) colRef = c;
+      else if (hc.includes('desc') || hc.includes('particular') || hc.includes('disc')) colDesc = c;
+      else if ((hc.includes('amount') || hc.includes('bill') || hc.includes('inv amount')) && !hc.includes('recevied') && !hc.includes('received') && colAmt === -1) colAmt = c;
+      else if ((hc.includes('recevied') || hc.includes('received') || hc.includes('paid') || hc.includes('adjustment')) && colRec === -1) colRec = c;
+      else if (hc.includes('balance') && colBal === -1) colBal = c;
     }
 
-    for (let i = headerRowIdx + 1; i < rows.length; i++) {
-      const r = rows[i];
-      if (!r || r.every(c => c === null || String(c).trim() === '')) continue;
-      
-      const rStr = r.filter(c => c !== null).map(c => String(c).trim().toUpperCase());
-      if (rStr.some(s => s === 'TOTAL' || s === 'TOTAL AMOUNT' || s.includes('GRAND TOTAL') || s.startsWith('TOTAL AMOUNT CASH'))) {
-        continue;
-      }
-
+    for (const r of t.rows) {
       const desc = colDesc !== -1 && r[colDesc] !== null ? String(r[colDesc]).trim() : '';
-      const amt = colAmount !== -1 && r[colAmount] !== null && !isNaN(Number(r[colAmount])) ? Number(r[colAmount]) : 0;
-      const rec = colReceived !== -1 && r[colReceived] !== null && !isNaN(Number(r[colReceived])) ? Number(r[colReceived]) : 0;
-      const bal = colBalance !== -1 && r[colBalance] !== null && !isNaN(Number(r[colBalance])) ? Number(r[colBalance]) : null;
+      const ref = colRef !== -1 && r[colRef] !== null ? String(r[colRef]).trim() : '';
+      const rawAmt = colAmt !== -1 ? r[colAmt] : null;
+      const rawRec = colRec !== -1 ? r[colRec] : null;
+      const rawBal = colBal !== -1 ? r[colBal] : null;
 
-      if (desc.toUpperCase().includes('B/F') || desc.toUpperCase().includes('OPENING') || desc.toUpperCase().includes('BALANCE B/F')) {
-        excelOB = bal !== null ? bal : (amt || 0);
+      const numAmt = cleanNum(rawAmt);
+      const numRec = cleanNum(rawRec);
+      const numBal = cleanNum(rawBal);
+
+      if (desc.toUpperCase().includes('B/F') || ref.toUpperCase().includes('B/F') || desc.toUpperCase().includes('OPENING') || ref.toUpperCase().includes('OPENING')) {
+        const obVal = rawBal !== null && rawBal !== undefined && String(rawBal).trim() !== '' ? numBal : (rawAmt !== null && rawAmt !== undefined && String(rawAmt).trim() !== '' ? numAmt : numBal);
+        excelOB += obVal;
         continue;
       }
 
-      if (amt > 0) excelBilled += amt;
-      if (rec > 0) excelReceived += rec;
+      if (r.some(c => c && String(c).toUpperCase().includes('CANCELLED'))) continue;
+      if (numAmt === 0 && numRec === 0) continue;
+
+      if (numAmt > 0) excelBilled += numAmt;
+      if (numRec > 0) excelReceived += numRec;
     }
   }
 
   const excelClosing = excelOB + excelBilled - excelReceived;
 
-  // Exact Match by sheetName
+  // Find matching ERP client
   const erpClient = REAL_CLIENTS.find(c => c.name.trim().toLowerCase() === sheetName.trim().toLowerCase());
 
   if (!erpClient) {
@@ -127,13 +164,14 @@ for (const sheetName of clientWb.SheetNames) {
     excelClosing,
     erpClosing,
     diff,
-    status: isMatch ? "✓ 100% MATCH" : "✕ MISMATCH"
+    status: isMatch ? "✓ 100% MATCH" : `MISMATCH (${diff.toLocaleString()})`
   });
 }
 
-console.log("\n----------------------------------------------------------------------------------------------------------------------------------");
+// Print Client Table
+console.log("-".repeat(130));
 console.log(
-  "CODE".padEnd(9) +
+  "CODE".padEnd(8) +
   "CLIENT NAME".padEnd(28) +
   "EXCEL OB".padStart(14) +
   "BILLED".padStart(15) +
@@ -142,11 +180,11 @@ console.log(
   "ERP NET".padStart(16) +
   "   AUDIT STATUS"
 );
-console.log("----------------------------------------------------------------------------------------------------------------------------------");
+console.log("-".repeat(130));
 
 for (const r of clientAuditResults) {
   console.log(
-    (r.clientCode || "—").padEnd(9) +
+    (r.clientCode || "—").padEnd(8) +
     (r.name || r.sheetName || "").slice(0, 26).padEnd(28) +
     r.excelOB.toLocaleString().padStart(14) +
     r.excelBilled.toLocaleString().padStart(15) +
@@ -206,15 +244,16 @@ for (const sheetName of vendorWb.SheetNames) {
       
       const rStr = r.filter(c => c !== null).map(c => String(c).trim().toUpperCase());
       if (rStr.some(s => s === 'TOTAL' || s === 'TOTAL AMOUNT' || s.includes('GRAND TOTAL') || s === 'TOTAL AMOUNT CASH')) {
-        break;
+        break; // Stop parsing right at TOTAL row to ignore trailing PO references
       }
 
       const desc = colDesc !== -1 && r[colDesc] !== null ? String(r[colDesc]).trim() : '';
+      const ref = colRef !== -1 && r[colRef] !== null ? String(r[colRef]).trim() : '';
       const amt = colAmount !== -1 && r[colAmount] !== null && !isNaN(Number(r[colAmount])) ? Number(r[colAmount]) : 0;
       const paid = colPaid !== -1 && r[colPaid] !== null && !isNaN(Number(r[colPaid])) ? Number(r[colPaid]) : 0;
       const bal = colBalance !== -1 && r[colBalance] !== null && !isNaN(Number(r[colBalance])) ? Number(r[colBalance]) : null;
 
-      if (desc.toUpperCase().includes('B/F') || desc.toUpperCase().includes('OPENING') || desc.toUpperCase().includes('BALANCE B/F')) {
+      if (desc.toUpperCase().includes('B/F') || ref.toUpperCase().includes('B/F') || desc.toUpperCase().includes('OPENING') || desc.toUpperCase().includes('BALANCE B/F')) {
         excelOB = bal !== null ? bal : (amt || 0);
         continue;
       }
@@ -276,13 +315,14 @@ for (const sheetName of vendorWb.SheetNames) {
     excelClosing,
     erpClosing,
     diff,
-    status: isMatch ? "✓ 100% MATCH" : "✕ MISMATCH"
+    status: isMatch ? "✓ 100% MATCH" : `MISMATCH (${diff.toLocaleString()})`
   });
 }
 
-console.log("\n----------------------------------------------------------------------------------------------------------------------------------");
+// Print Vendor Table
+console.log("-".repeat(130));
 console.log(
-  "CODE".padEnd(9) +
+  "CODE".padEnd(8) +
   "VENDOR NAME".padEnd(28) +
   "EXCEL OB".padStart(14) +
   "BILLS".padStart(15) +
@@ -291,11 +331,11 @@ console.log(
   "ERP NET".padStart(16) +
   "   AUDIT STATUS"
 );
-console.log("----------------------------------------------------------------------------------------------------------------------------------");
+console.log("-".repeat(130));
 
 for (const r of vendorAuditResults) {
   console.log(
-    (r.vendorCode || "—").padEnd(9) +
+    (r.vendorCode || "—").padEnd(8) +
     (r.name || r.sheetName || "").slice(0, 26).padEnd(28) +
     r.excelOB.toLocaleString().padStart(14) +
     r.excelBilled.toLocaleString().padStart(15) +
@@ -307,23 +347,26 @@ for (const r of vendorAuditResults) {
 }
 
 // ---------------------------------------------------------
-// 3. AUDIT TRIAL BALANCE INTEGRITY
+// 3. TRIAL BALANCE & DOUBLE-ENTRY GL AUDIT
 // ---------------------------------------------------------
-let totalGLDebits = 0;
-let totalGLCredits = 0;
-for (const j of REAL_JOURNAL) {
-  for (const l of j.lines) {
-    totalGLDebits += Number(l.debit || 0);
-    totalGLCredits += Number(l.credit || 0);
+let totalDebits = 0;
+let totalCredits = 0;
+
+for (const entry of REAL_JOURNAL) {
+  for (const line of entry.lines) {
+    totalDebits += Number(line.debit || 0);
+    totalCredits += Number(line.credit || 0);
   }
 }
-const trialBalanceDiscrepancy = Math.abs(totalGLDebits - totalGLCredits);
 
-console.log("\n===============================================================================");
+const glDiff = Math.abs(totalDebits - totalCredits);
+const glBalanced = glDiff < 0.01;
+
+console.log("\n" + "=".repeat(79));
 console.log("                           FINAL AUDIT TEST RESULTS                            ");
-console.log("===============================================================================");
-console.log(`Clients Audited : ${clientAuditResults.length} / 35  | Passed: ${clientPassCount} (100.0%) | Failed: ${clientFailCount}`);
-console.log(`Vendors Audited : ${vendorAuditResults.length} / 23  | Passed: ${vendorPassCount} (100.0%) | Failed: ${vendorFailCount}`);
-console.log(`Trial Balance   : Debits = PKR ${totalGLDebits.toLocaleString()} | Credits = PKR ${totalGLCredits.toLocaleString()}`);
-console.log(`GL Discrepancy  : PKR ${trialBalanceDiscrepancy.toFixed(2)} (${trialBalanceDiscrepancy < 0.01 ? "100% PERFECT BALANCE" : "UNBALANCED"})`);
-console.log("===============================================================================");
+console.log("=".repeat(79));
+console.log(`Clients Audited : ${clientAuditResults.length} / ${clientWb.SheetNames.length}  | Passed: ${clientPassCount} (${((clientPassCount/clientAuditResults.length)*100).toFixed(1)}%) | Failed: ${clientFailCount}`);
+console.log(`Vendors Audited : ${vendorAuditResults.length} / ${vendorWb.SheetNames.length}  | Passed: ${vendorPassCount} (${((vendorPassCount/vendorAuditResults.length)*100).toFixed(1)}%) | Failed: ${vendorFailCount}`);
+console.log(`Trial Balance   : Debits = PKR ${totalDebits.toLocaleString()} | Credits = PKR ${totalCredits.toLocaleString()}`);
+console.log(`GL Discrepancy  : PKR ${glDiff.toFixed(2)} (${glBalanced ? "100% PERFECT BALANCE" : "UNBALANCED"})`);
+console.log("=".repeat(79) + "\n");

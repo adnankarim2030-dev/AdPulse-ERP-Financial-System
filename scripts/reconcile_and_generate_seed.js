@@ -1,26 +1,42 @@
-import XLSX from 'xlsx';
 import fs from 'fs';
+import XLSX from 'xlsx';
 
-function excelDateToISODate(serial, fallback = '2026-07-01') {
-  if (!serial) return fallback;
-  if (typeof serial === 'string') {
-    const s = serial.trim();
-    if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
-    const p = Date.parse(s);
-    if (!isNaN(p)) return new Date(p).toISOString().slice(0, 10);
-    return fallback;
+function cleanNum(val) {
+  if (val === null || val === undefined) return 0;
+  const s = String(val).replace(/,/g, '').replace(/\s+/g, '').replace(/\(/g, '-').replace(/\)/g, '');
+  if (!s || s === '-' || s === '—') return 0;
+  const n = Number(s);
+  return isNaN(n) ? 0 : n;
+}
+
+function excelDateToISODate(excelDate) {
+  if (!excelDate) return '2026-07-01';
+  if (typeof excelDate === 'number') {
+    const date = new Date(Math.round((excelDate - 25569) * 86400 * 1000));
+    return date.toISOString().slice(0, 10);
   }
-  if (typeof serial === 'number') {
-    const utc_days = Math.floor(serial - 25569);
-    const utc_value = utc_days * 86400;
-    const date_info = new Date(utc_value * 1000);
-    return date_info.toISOString().slice(0, 10);
+  const str = String(excelDate).trim();
+  const d = new Date(str);
+  if (!isNaN(d.getTime())) {
+    return d.toISOString().slice(0, 10);
   }
-  return fallback;
+  const parts = str.split(/[-/]/);
+  if (parts.length === 3) {
+    const day = parts[0].padStart(2, '0');
+    let month = parts[1];
+    let year = parts[2];
+    if (year.length === 2) year = '20' + year;
+    const months = { jan: '01', feb: '02', mar: '03', apr: '04', may: '05', jun: '06', jul: '07', aug: '08', sep: '09', oct: '10', nov: '11', dec: '12' };
+    const mStr = month.toLowerCase().slice(0, 3);
+    if (months[mStr]) month = months[mStr];
+    else month = month.padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+  return '2026-07-01';
 }
 
 console.log("==================================================");
-console.log("  PRECISION RECONCILIATION OF CLIENTS & VENDORS   ");
+console.log("RECONCILING CLIENT & VENDOR LEDGERS FROM EXCEL...");
 console.log("==================================================");
 
 // ==========================================
@@ -37,69 +53,89 @@ let clientIndex = 1;
 for (const sheetName of clientWb.SheetNames) {
   const sheet = clientWb.Sheets[sheetName];
   const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: null });
-  
-  let headerRowIdx = -1;
-  let headers = [];
   const clientDisplayName = sheetName.trim();
-
-  for (let i = 0; i < Math.min(8, rows.length); i++) {
-    const r = rows[i] || [];
-    const rStr = r.filter(c => c !== null).map(c => String(c).trim().toLowerCase());
-    if (rStr.some(c => c.includes('date') || c.includes('description') || c.includes('amount') || c.includes('received') || c.includes('recevied') || c.includes('balance'))) {
-      headerRowIdx = i;
-      headers = r.map(c => c !== null ? String(c).trim() : '');
-      break;
-    }
-  }
-
   const clientId = `cli-${String(clientIndex).padStart(3, '0')}`;
   const clientCode = `CLI-${String(clientIndex).padStart(3, '0')}`;
   clientIndex++;
 
-  let openingBalance = 0;
+  let tables = [];
+  let curTable = null;
+
+  for (let i = 0; i < rows.length; i++) {
+    const r = rows[i] || [];
+    const rStr = r.map(c => c ? String(c).trim().toLowerCase() : '');
+    const isHeader = rStr.some(c => c.includes('date')) && (rStr.some(c => c.includes('amount') || c.includes('recevied') || c.includes('received') || c.includes('paid') || c.includes('adjustment') || c.includes('balance')));
+    
+    if (isHeader) {
+      if (curTable) tables.push(curTable);
+      curTable = { headerIdx: i, headerRow: r, rows: [] };
+      continue;
+    }
+
+    if (curTable) {
+      const isTotal = rStr.some(c => c === 'total' || c === 'total amount' || c.includes('grand total') || c === 'total balance amount' || c === 'total vouchers');
+      if (isTotal) {
+        curTable.totalRow = r;
+        tables.push(curTable);
+        curTable = null;
+        continue;
+      }
+      if (r.some(c => c && String(c).trim())) {
+        curTable.rows.push(r);
+      }
+    }
+  }
+  if (curTable) tables.push(curTable);
+
+  if (sheetName === 'SUNRIDGE' && tables.length >= 2) {
+    tables = [tables[1]]; // Full consolidated table
+  }
+
+  let totalOB = 0;
   let totalBilled = 0;
   let totalReceived = 0;
 
-  if (headerRowIdx !== -1) {
-    let colDate = -1, colRef = -1, colDesc = -1, colAmount = -1, colReceived = -1, colBalance = -1;
-    for (let c = 0; c < headers.length; c++) {
-      const h = headers[c].toLowerCase();
-      if (h.includes('date') && colDate === -1) colDate = c;
-      else if ((h === 'p/r' || h === 'pr' || h === 'p / r' || h.includes('reference') || h.includes('ref') || h === 's.no' || h === 'sr') && colRef === -1) colRef = c;
-      else if (h.includes('description') || h.includes('particular')) colDesc = c;
-      else if ((h === 'amount' || h.includes('billed') || h.includes('debit')) && colAmount === -1) colAmount = c;
-      else if ((h.includes('recevied') || h.includes('received') || h.includes('paid') || h.includes('credit')) && colReceived === -1) colReceived = c;
-      else if (h.includes('balance') && colBalance === -1) colBalance = c;
+
+
+  for (const t of tables) {
+    const h = (t.headerRow || []).map(c => c ? String(c).trim().toLowerCase() : '');
+    let colDate = -1, colRef = -1, colDesc = -1, colAmt = -1, colRec = -1, colBal = -1;
+
+    for (let c = 0; c < h.length; c++) {
+      const hc = h[c] || '';
+      if (hc.includes('date') && colDate === -1) colDate = c;
+      else if ((hc === 'p/r' || hc === 'pr' || hc === 'p / r' || hc.includes('inv') || hc.includes('reference') || hc.includes('ref') || hc === 's/no.' || hc === 'sr') && colRef === -1) colRef = c;
+      else if (hc.includes('desc') || hc.includes('particular') || hc.includes('disc')) colDesc = c;
+      else if ((hc.includes('amount') || hc.includes('bill') || hc.includes('inv amount')) && !hc.includes('recevied') && !hc.includes('received') && colAmt === -1) colAmt = c;
+      else if ((hc.includes('recevied') || hc.includes('received') || hc.includes('paid') || hc.includes('adjustment')) && colRec === -1) colRec = c;
+      else if (hc.includes('balance') && colBal === -1) colBal = c;
     }
 
-    for (let i = headerRowIdx + 1; i < rows.length; i++) {
-      const r = rows[i];
-      if (!r || r.every(c => c === null || String(c).trim() === '')) continue;
-      
-      const rStr = r.filter(c => c !== null).map(c => String(c).trim().toUpperCase());
-      if (rStr.some(s => s === 'TOTAL' || s === 'TOTAL AMOUNT' || s.includes('GRAND TOTAL') || s.startsWith('TOTAL AMOUNT CASH'))) {
-        continue;
-      }
-
+    for (const r of t.rows) {
       const desc = colDesc !== -1 && r[colDesc] !== null ? String(r[colDesc]).trim() : '';
       const ref = colRef !== -1 && r[colRef] !== null ? String(r[colRef]).trim() : '';
       const rawDate = colDate !== -1 ? r[colDate] : null;
-      const amt = colAmount !== -1 && r[colAmount] !== null && !isNaN(Number(r[colAmount])) ? Number(r[colAmount]) : 0;
-      const rec = colReceived !== -1 && r[colReceived] !== null && !isNaN(Number(r[colReceived])) ? Number(r[colReceived]) : 0;
-      const bal = colBalance !== -1 && r[colBalance] !== null && !isNaN(Number(r[colBalance])) ? Number(r[colBalance]) : null;
+      const rawAmt = colAmt !== -1 ? r[colAmt] : null;
+      const rawRec = colRec !== -1 ? r[colRec] : null;
+      const rawBal = colBal !== -1 ? r[colBal] : null;
 
-      if (desc.toUpperCase().includes('B/F') || desc.toUpperCase().includes('OPENING') || desc.toUpperCase().includes('BALANCE B/F')) {
-        const obVal = bal !== null ? bal : (amt || 0);
-        openingBalance = obVal;
+      const numAmt = cleanNum(rawAmt);
+      const numRec = cleanNum(rawRec);
+      const numBal = cleanNum(rawBal);
+
+      if (desc.toUpperCase().includes('B/F') || ref.toUpperCase().includes('B/F') || desc.toUpperCase().includes('OPENING') || ref.toUpperCase().includes('OPENING')) {
+        const obVal = rawBal !== null && rawBal !== undefined && String(rawBal).trim() !== '' ? numBal : (rawAmt !== null && rawAmt !== undefined && String(rawAmt).trim() !== '' ? numAmt : numBal);
+        totalOB += obVal;
         continue;
       }
 
-      if (amt === 0 && rec === 0) continue;
+      if (r.some(c => c && String(c).toUpperCase().includes('CANCELLED'))) continue;
+      if (numAmt === 0 && numRec === 0) continue;
 
       const date = excelDateToISODate(rawDate);
 
-      if (amt > 0) {
-        totalBilled += amt;
+      if (numAmt > 0) {
+        totalBilled += numAmt;
         const invNo = ref && ref !== '-' && ref !== 'INV' ? (ref.startsWith('INV') || ref.startsWith('AD/') ? ref : `INV-${ref}`) : `INV-26-${String(clientInvoices.length + 1).padStart(3, '0')}`;
         const inv = {
           id: `inv-${clientInvoices.length + 1}`,
@@ -108,8 +144,8 @@ for (const sheetName of clientWb.SheetNames) {
           client: clientDisplayName,
           projectId: null,
           description: desc || "Media Campaign & OOH Production Billing",
-          amount: amt,
-          grossAmount: amt,
+          amount: numAmt,
+          grossAmount: numAmt,
           applyDiscount: false,
           discountPercent: 0,
           discountAmount: 0,
@@ -119,7 +155,7 @@ for (const sheetName of clientWb.SheetNames) {
           applySst: false,
           sstRate: 0,
           sstAmount: 0,
-          totalAmount: amt,
+          totalAmount: numAmt,
           issueDate: date,
           dueDate: new Date(new Date(date).getTime() + 30 * 86400000).toISOString().slice(0, 10),
           paid: false,
@@ -135,17 +171,16 @@ for (const sheetName of clientWb.SheetNames) {
           reference: invNo,
           description: `[Sales Invoice] ${clientDisplayName} — ${desc || 'Media Billing'}`,
           lines: [
-            { account: "ar", debit: amt, credit: 0, memo: `Accounts Receivable — ${clientDisplayName}` },
-            { account: "revenue", debit: 0, credit: amt, memo: `Sales Revenue — ${clientDisplayName}` }
+            { account: "ar", debit: numAmt, credit: 0, memo: `Accounts Receivable — ${clientDisplayName}` },
+            { account: "revenue", debit: 0, credit: numAmt, memo: `Sales Revenue — ${clientDisplayName}` }
           ]
         });
       }
 
-      if (rec > 0) {
-        totalReceived += rec;
+      if (numRec > 0) {
+        totalReceived += numRec;
         const vchNo = ref && (ref.startsWith('BRV') || ref.startsWith('CRV')) ? ref : `BRV-26-${String(clientVouchers.length + 1).padStart(3, '0')}`;
         const isCash = desc.toLowerCase().includes('cash') || ref.toLowerCase().includes('cash');
-        const isAdjustment = desc.toLowerCase().includes('adjusted') || ref.toLowerCase().includes('adjustment');
 
         const vch = {
           id: `vch-rv-${clientVouchers.length + 1}`,
@@ -156,19 +191,18 @@ for (const sheetName of clientWb.SheetNames) {
           clientId,
           vendorId: null,
           description: desc || `Payment Received from ${clientDisplayName}`,
-          amount: rec,
-          netAmount: rec,
+          amount: numRec,
+          netAmount: numRec,
           via: isCash ? "Cash" : "Bank",
           paymentMode: isCash ? "Cash" : "Bank",
           receiveMode: isCash ? "cash" : "bank",
           isPdc: false,
           chequeNo: ref && !ref.includes(' ') && ref.length > 4 ? ref : "",
           chequeDate: date,
-          drawnBank: "",
           bankAccountId: isCash ? "bank-cash" : "bank-hbl",
           status: "Posted",
           settleAR: true,
-          notes: isAdjustment ? "Direct Adjustment" : ""
+          notes: ""
         };
         clientVouchers.push(vch);
 
@@ -178,25 +212,25 @@ for (const sheetName of clientWb.SheetNames) {
           reference: vchNo,
           description: `[Receipt Voucher] ${clientDisplayName} — ${desc || 'Payment Received'}`,
           lines: [
-            { account: isCash ? "cash" : "bank", bankAccountId: isCash ? "bank-cash" : "bank-hbl", debit: rec, credit: 0, memo: isCash ? "Petty Cash Vault" : "HBL Operations" },
-            { account: "ar", debit: 0, credit: rec, memo: `Accounts Receivable — ${clientDisplayName}` }
+            { account: isCash ? "cash" : "bank", bankAccountId: isCash ? "bank-cash" : "bank-hbl", debit: numRec, credit: 0, memo: isCash ? "Petty Cash Vault" : "HBL Operations" },
+            { account: "ar", debit: 0, credit: numRec, memo: `Accounts Receivable — ${clientDisplayName}` }
           ]
         });
       }
     }
   }
 
-  const netClosing = openingBalance + totalBilled - totalReceived;
+  const netClosing = totalOB + totalBilled - totalReceived;
 
-  if (openingBalance !== 0) {
+  if (totalOB !== 0) {
     clientJournal.push({
       id: `jnl-ob-${clientId}`,
       date: '2026-06-30',
       reference: `OB-${clientCode}`,
       description: `[Opening Balance] Accounts Receivable — ${clientDisplayName}`,
       lines: [
-        { account: "ar", debit: openingBalance > 0 ? openingBalance : 0, credit: openingBalance < 0 ? Math.abs(openingBalance) : 0, memo: `Opening Balance — ${clientDisplayName}` },
-        { account: "equity", debit: openingBalance < 0 ? Math.abs(openingBalance) : 0, credit: openingBalance > 0 ? openingBalance : 0, memo: `Opening Retained Earnings / Equity` }
+        { account: "ar", debit: totalOB > 0 ? totalOB : 0, credit: totalOB < 0 ? Math.abs(totalOB) : 0, memo: `Opening Balance — ${clientDisplayName}` },
+        { account: "equity", debit: totalOB < 0 ? Math.abs(totalOB) : 0, credit: totalOB > 0 ? totalOB : 0, memo: `Opening Retained Earnings / Equity` }
       ]
     });
   }
@@ -206,7 +240,7 @@ for (const sheetName of clientWb.SheetNames) {
     clientCode,
     name: clientDisplayName,
     companyName: `${clientDisplayName} (Pvt) Ltd`,
-    contactPerson: "Finance & Accounts Department",
+    contactPerson: "Finance Department",
     phone: "021-37526834",
     email: `accounts@${clientDisplayName.toLowerCase().replace(/[^a-z0-9]/g, '')}.pk`,
     address: "Karachi, Pakistan",
@@ -215,9 +249,9 @@ for (const sheetName of clientWb.SheetNames) {
     strn: "SA0548901-8",
     paymentTerms: "Net 30",
     creditLimit: 50000000,
-    openingBalance: openingBalance,
-    totalBilled: totalBilled,
-    totalReceived: totalReceived,
+    openingBalance: totalOB,
+    totalBilled,
+    totalReceived,
     currentBalance: netClosing,
     status: "Active",
     notes: `Official Client Account - Ledger imported from Excel (Closing Balance: PKR ${netClosing.toLocaleString()})`,
@@ -225,7 +259,7 @@ for (const sheetName of clientWb.SheetNames) {
     createdBy: "AdpulseCEO"
   });
 
-  console.log(`✓ CLIENT [${clientCode}] ${clientDisplayName.padEnd(25)} | OB: ${openingBalance.toLocaleString().padStart(12)} | Billed: ${totalBilled.toLocaleString().padStart(12)} | Received: ${totalReceived.toLocaleString().padStart(12)} | Net Balance: ${netClosing.toLocaleString().padStart(12)}`);
+  console.log(`✓ CLIENT [${clientCode}] ${clientDisplayName.padEnd(25)} | OB: ${totalOB.toLocaleString().padStart(12)} | Billed: ${totalBilled.toLocaleString().padStart(12)} | Received: ${totalReceived.toLocaleString().padStart(12)} | Net Balance: ${netClosing.toLocaleString().padStart(12)}`);
 }
 
 // ==========================================
@@ -284,7 +318,7 @@ for (const sheetName of vendorWb.SheetNames) {
       
       const rStr = r.filter(c => c !== null).map(c => String(c).trim().toUpperCase());
       if (rStr.some(s => s === 'TOTAL' || s === 'TOTAL AMOUNT' || s.includes('GRAND TOTAL') || s === 'TOTAL AMOUNT CASH')) {
-        break;
+        break; // Stop parsing right at TOTAL row to ignore trailing PO references
       }
 
       const desc = colDesc !== -1 && r[colDesc] !== null ? String(r[colDesc]).trim() : '';
@@ -295,7 +329,7 @@ for (const sheetName of vendorWb.SheetNames) {
       const bal = colBalance !== -1 && r[colBalance] !== null && !isNaN(Number(r[colBalance])) ? Number(r[colBalance]) : null;
       const notes = colNotes !== -1 && r[colNotes] !== null ? String(r[colNotes]).trim() : '';
 
-      if (desc.toUpperCase().includes('B/F') || desc.toUpperCase().includes('OPENING') || desc.toUpperCase().includes('BALANCE B/F')) {
+      if (desc.toUpperCase().includes('B/F') || ref.toUpperCase().includes('B/F') || desc.toUpperCase().includes('OPENING') || desc.toUpperCase().includes('BALANCE B/F')) {
         const obVal = bal !== null ? bal : (amt || 0);
         openingBalance = obVal;
         continue;
@@ -463,4 +497,5 @@ export const REAL_JOURNAL = ${JSON.stringify(allJournal, null, 2)};
 
 fs.writeFileSync('./src/data/realLedgerSeedData.js', seedContent);
 console.log("\n==================================================");
-console.log("Successfully generated src/data/realLedgerSeedData.js with matching sheet names!");
+console.log("Successfully generated src/data/realLedgerSeedData.js!");
+console.log(`Summary: ${clients.length} Clients, ${vendors.length} Vendors, ${allInvoices.length} Invoices, ${allExpenses.length} Bills, ${allVouchers.length} Vouchers, ${allJournal.length} Journal Entries`);

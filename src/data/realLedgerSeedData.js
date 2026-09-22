@@ -8,7 +8,7 @@ export const REAL_CLIENTS = [
     "clientCode": "CLI-001",
     "name": "CHASE UP",
     "companyName": "CHASE UP (Pvt) Ltd",
-    "contactPerson": "Finance & Accounts Department",
+    "contactPerson": "Finance Department",
     "phone": "021-37526834",
     "email": "accounts@chaseup.pk",
     "address": "Karachi, Pakistan",
@@ -17,12 +17,12 @@ export const REAL_CLIENTS = [
     "strn": "SA0548901-8",
     "paymentTerms": "Net 30",
     "creditLimit": 50000000,
-    "openingBalance": -6417266,
-    "totalBilled": 0,
-    "totalReceived": 9670499,
-    "currentBalance": -16087765,
+    "openingBalance": 14319.359999999404,
+    "totalBilled": 26402040,
+    "totalReceived": 19340998,
+    "currentBalance": 7075361.359999999,
     "status": "Active",
-    "notes": "Official Client Account - Ledger imported from Excel (Closing Balance: PKR -16,087,765)",
+    "notes": "Official Client Account - Ledger imported from Excel (Closing Balance: PKR 7,075,361.36)",
     "createdAt": "2026-06-01",
     "createdBy": "AdpulseCEO"
   },
@@ -31,7 +31,7 @@ export const REAL_CLIENTS = [
     "clientCode": "CLI-002",
     "name": "CHASE VALUE",
     "companyName": "CHASE VALUE (Pvt) Ltd",
-    "contactPerson": "Finance & Accounts Department",
+    "contactPerson": "Finance Department",
     "phone": "021-37526834",
     "email": "accounts@chasevalue.pk",
     "address": "Karachi, Pakistan",
@@ -40,12 +40,12 @@ export const REAL_CLIENTS = [
     "strn": "SA0548901-8",
     "paymentTerms": "Net 30",
     "creditLimit": 50000000,
-    "openingBalance": 3019800,
-    "totalBilled": 12967198,
+    "openingBalance": 6316314,
+    "totalBilled": 17069398,
     "totalReceived": 13075298,
-    "currentBalance": 2911700,
+    "currentBalance": 10310414,
     "status": "Active",
-    "notes": "Official Client Account - Ledger imported from Excel (Closing Balance: PKR 2,911,700)",
+    "notes": "Official Client Account - Ledger imported from Excel (Closing Balance: PKR 10,310,414)",
     "createdAt": "2026-06-01",
     "createdBy": "AdpulseCEO"
   },
@@ -54,7 +54,7 @@ export const REAL_CLIENTS = [
     "clientCode": "CLI-003",
     "name": "DEBS",
     "companyName": "DEBS (Pvt) Ltd",
-    "contactPerson": "Finance & Accounts Department",
+    "contactPerson": "Finance Department",
     "phone": "021-37526834",
     "email": "accounts@debs.pk",
     "address": "Karachi, Pakistan",
@@ -77,7 +77,7 @@ export const REAL_CLIENTS = [
     "clientCode": "CLI-004",
     "name": "DECENT",
     "companyName": "DECENT (Pvt) Ltd",
-    "contactPerson": "Finance & Accounts Department",
+    "contactPerson": "Finance Department",
     "phone": "021-37526834",
     "email": "accounts@decent.pk",
     "address": "Karachi, Pakistan",
@@ -100,7 +100,7 @@ export const REAL_CLIENTS = [
     "clientCode": "CLI-005",
     "name": "DESIGN MEDIA",
     "companyName": "DESIGN MEDIA (Pvt) Ltd",
-    "contactPerson": "Finance & Accounts Department",
+    "contactPerson": "Finance Department",
     "phone": "021-37526834",
     "email": "accounts@designmedia.pk",
     "address": "Karachi, Pakistan",
@@ -109,12 +109,12 @@ export const REAL_CLIENTS = [
     "strn": "SA0548901-8",
     "paymentTerms": "Net 30",
     "creditLimit": 50000000,
-    "openingBalance": 0,
-    "totalBilled": 7842736,
+    "openingBalance": 752951,
+    "totalBilled": 0,
     "totalReceived": 0,
-    "currentBalance": 7842736,
+    "currentBalance": 752951,
     "status": "Active",
-    "notes": "Official Client Account - Ledger imported from Excel (Closing Balance: PKR 7,842,736)",
+    "notes": "Official Client Account - Ledger imported from Excel (Closing Balance: PKR 752,951)",
     "createdAt": "2026-06-01",
     "createdBy": "AdpulseCEO"
   },
@@ -123,7 +123,7 @@ export const REAL_CLIENTS = [
     "clientCode": "CLI-006",
     "name": "DINERS",
     "companyName": "DINERS (Pvt) Ltd",
-    "contactPerson": "Finance & Accounts Department",
+    "contactPerson": "Finance Department",
     "phone": "021-37526834",
     "email": "accounts@diners.pk",
     "address": "Karachi, Pakistan",
@@ -132,12 +132,12 @@ export const REAL_CLIENTS = [
     "strn": "SA0548901-8",
     "paymentTerms": "Net 30",
     "creditLimit": 50000000,
-    "openingBalance": 1510782,
+    "openingBalance": 3495782,
     "totalBilled": 7449435,
     "totalReceived": 0,
-    "currentBalance": 8960217,
+    "currentBalance": 10945217,
     "status": "Active",
-    "notes": "Official Client Account - Ledger imported from Excel (Closing Balance: PKR 8,960,217)",
+    "notes": "Official Client Account - Ledger imported from Excel (Closing Balance: PKR 10,945,217)",
     "createdAt": "2026-06-01",
     "createdBy": "AdpulseCEO"
   },
@@ -146,7 +146,7 @@ export const REAL_CLIENTS = [
     "clientCode": "CLI-007",
     "name": "DVAGO",
     "companyName": "DVAGO (Pvt) Ltd",
-    "contactPerson": "Finance & Accounts Department",
+    "contactPerson": "Finance Department",
     "phone": "021-37526834",
     "email": "accounts@dvago.pk",
     "address": "Karachi, Pakistan",
@@ -169,7 +169,7 @@ export const REAL_CLIENTS = [
     "clientCode": "CLI-008",
     "name": "ESSANI GROUP",
     "companyName": "ESSANI GROUP (Pvt) Ltd",
-    "contactPerson": "Finance & Accounts Department",
+    "contactPerson": "Finance Department",
     "phone": "021-37526834",
     "email": "accounts@essanigroup.pk",
     "address": "Karachi, Pakistan",
@@ -192,7 +192,7 @@ export const REAL_CLIENTS = [
     "clientCode": "CLI-009",
     "name": "FALAKNAZ",
     "companyName": "FALAKNAZ (Pvt) Ltd",
-    "contactPerson": "Finance & Accounts Department",
+    "contactPerson": "Finance Department",
     "phone": "021-37526834",
     "email": "accounts@falaknaz.pk",
     "address": "Karachi, Pakistan",
@@ -215,7 +215,7 @@ export const REAL_CLIENTS = [
     "clientCode": "CLI-010",
     "name": "FALAKNAZ SKYVIEW",
     "companyName": "FALAKNAZ SKYVIEW (Pvt) Ltd",
-    "contactPerson": "Finance & Accounts Department",
+    "contactPerson": "Finance Department",
     "phone": "021-37526834",
     "email": "accounts@falaknazskyview.pk",
     "address": "Karachi, Pakistan",
@@ -224,12 +224,12 @@ export const REAL_CLIENTS = [
     "strn": "SA0548901-8",
     "paymentTerms": "Net 30",
     "creditLimit": 50000000,
-    "openingBalance": 0,
-    "totalBilled": 0,
-    "totalReceived": 0,
-    "currentBalance": 0,
+    "openingBalance": 11362154,
+    "totalBilled": 4261007,
+    "totalReceived": 4025000,
+    "currentBalance": 11598161,
     "status": "Active",
-    "notes": "Official Client Account - Ledger imported from Excel (Closing Balance: PKR 0)",
+    "notes": "Official Client Account - Ledger imported from Excel (Closing Balance: PKR 11,598,161)",
     "createdAt": "2026-06-01",
     "createdBy": "AdpulseCEO"
   },
@@ -238,7 +238,7 @@ export const REAL_CLIENTS = [
     "clientCode": "CLI-011",
     "name": "FALAKNAZ GRANDE",
     "companyName": "FALAKNAZ GRANDE (Pvt) Ltd",
-    "contactPerson": "Finance & Accounts Department",
+    "contactPerson": "Finance Department",
     "phone": "021-37526834",
     "email": "accounts@falaknazgrande.pk",
     "address": "Karachi, Pakistan",
@@ -261,7 +261,7 @@ export const REAL_CLIENTS = [
     "clientCode": "CLI-012",
     "name": "FPCCI",
     "companyName": "FPCCI (Pvt) Ltd",
-    "contactPerson": "Finance & Accounts Department",
+    "contactPerson": "Finance Department",
     "phone": "021-37526834",
     "email": "accounts@fpcci.pk",
     "address": "Karachi, Pakistan",
@@ -284,7 +284,7 @@ export const REAL_CLIENTS = [
     "clientCode": "CLI-013",
     "name": "GOVERNOR HOUSE",
     "companyName": "GOVERNOR HOUSE (Pvt) Ltd",
-    "contactPerson": "Finance & Accounts Department",
+    "contactPerson": "Finance Department",
     "phone": "021-37526834",
     "email": "accounts@governorhouse.pk",
     "address": "Karachi, Pakistan",
@@ -293,12 +293,12 @@ export const REAL_CLIENTS = [
     "strn": "SA0548901-8",
     "paymentTerms": "Net 30",
     "creditLimit": 50000000,
-    "openingBalance": 0,
+    "openingBalance": 5000000,
     "totalBilled": 0,
     "totalReceived": 0,
-    "currentBalance": 0,
+    "currentBalance": 5000000,
     "status": "Active",
-    "notes": "Official Client Account - Ledger imported from Excel (Closing Balance: PKR 0)",
+    "notes": "Official Client Account - Ledger imported from Excel (Closing Balance: PKR 5,000,000)",
     "createdAt": "2026-06-01",
     "createdBy": "AdpulseCEO"
   },
@@ -307,7 +307,7 @@ export const REAL_CLIENTS = [
     "clientCode": "CLI-014",
     "name": "GREENWICH UNIVERSITY",
     "companyName": "GREENWICH UNIVERSITY (Pvt) Ltd",
-    "contactPerson": "Finance & Accounts Department",
+    "contactPerson": "Finance Department",
     "phone": "021-37526834",
     "email": "accounts@greenwichuniversity.pk",
     "address": "Karachi, Pakistan",
@@ -317,11 +317,11 @@ export const REAL_CLIENTS = [
     "paymentTerms": "Net 30",
     "creditLimit": 50000000,
     "openingBalance": -325000,
-    "totalBilled": 0,
+    "totalBilled": 5450000,
     "totalReceived": 0,
-    "currentBalance": -325000,
+    "currentBalance": 5125000,
     "status": "Active",
-    "notes": "Official Client Account - Ledger imported from Excel (Closing Balance: PKR -325,000)",
+    "notes": "Official Client Account - Ledger imported from Excel (Closing Balance: PKR 5,125,000)",
     "createdAt": "2026-06-01",
     "createdBy": "AdpulseCEO"
   },
@@ -330,7 +330,7 @@ export const REAL_CLIENTS = [
     "clientCode": "CLI-015",
     "name": "HMR",
     "companyName": "HMR (Pvt) Ltd",
-    "contactPerson": "Finance & Accounts Department",
+    "contactPerson": "Finance Department",
     "phone": "021-37526834",
     "email": "accounts@hmr.pk",
     "address": "Karachi, Pakistan",
@@ -353,7 +353,7 @@ export const REAL_CLIENTS = [
     "clientCode": "CLI-016",
     "name": "H&H",
     "companyName": "H&H (Pvt) Ltd",
-    "contactPerson": "Finance & Accounts Department",
+    "contactPerson": "Finance Department",
     "phone": "021-37526834",
     "email": "accounts@hh.pk",
     "address": "Karachi, Pakistan",
@@ -376,7 +376,7 @@ export const REAL_CLIENTS = [
     "clientCode": "CLI-017",
     "name": "HABBIT STORE",
     "companyName": "HABBIT STORE (Pvt) Ltd",
-    "contactPerson": "Finance & Accounts Department",
+    "contactPerson": "Finance Department",
     "phone": "021-37526834",
     "email": "accounts@habbitstore.pk",
     "address": "Karachi, Pakistan",
@@ -386,11 +386,11 @@ export const REAL_CLIENTS = [
     "paymentTerms": "Net 30",
     "creditLimit": 50000000,
     "openingBalance": 0,
-    "totalBilled": 13818910,
+    "totalBilled": 3628481,
     "totalReceived": 1379545,
-    "currentBalance": 12439365,
+    "currentBalance": 2248936,
     "status": "Active",
-    "notes": "Official Client Account - Ledger imported from Excel (Closing Balance: PKR 12,439,365)",
+    "notes": "Official Client Account - Ledger imported from Excel (Closing Balance: PKR 2,248,936)",
     "createdAt": "2026-06-01",
     "createdBy": "AdpulseCEO"
   },
@@ -399,7 +399,7 @@ export const REAL_CLIENTS = [
     "clientCode": "CLI-018",
     "name": "IMTIAZ",
     "companyName": "IMTIAZ (Pvt) Ltd",
-    "contactPerson": "Finance & Accounts Department",
+    "contactPerson": "Finance Department",
     "phone": "021-37526834",
     "email": "accounts@imtiaz.pk",
     "address": "Karachi, Pakistan",
@@ -422,7 +422,7 @@ export const REAL_CLIENTS = [
     "clientCode": "CLI-019",
     "name": "IDEMITSU",
     "companyName": "IDEMITSU (Pvt) Ltd",
-    "contactPerson": "Finance & Accounts Department",
+    "contactPerson": "Finance Department",
     "phone": "021-37526834",
     "email": "accounts@idemitsu.pk",
     "address": "Karachi, Pakistan",
@@ -445,7 +445,7 @@ export const REAL_CLIENTS = [
     "clientCode": "CLI-020",
     "name": "IGLOO",
     "companyName": "IGLOO (Pvt) Ltd",
-    "contactPerson": "Finance & Accounts Department",
+    "contactPerson": "Finance Department",
     "phone": "021-37526834",
     "email": "accounts@igloo.pk",
     "address": "Karachi, Pakistan",
@@ -468,7 +468,7 @@ export const REAL_CLIENTS = [
     "clientCode": "CLI-021",
     "name": "KAMRAN KARIM",
     "companyName": "KAMRAN KARIM (Pvt) Ltd",
-    "contactPerson": "Finance & Accounts Department",
+    "contactPerson": "Finance Department",
     "phone": "021-37526834",
     "email": "accounts@kamrankarim.pk",
     "address": "Karachi, Pakistan",
@@ -491,7 +491,7 @@ export const REAL_CLIENTS = [
     "clientCode": "CLI-022",
     "name": "KIA SHEHZORE",
     "companyName": "KIA SHEHZORE (Pvt) Ltd",
-    "contactPerson": "Finance & Accounts Department",
+    "contactPerson": "Finance Department",
     "phone": "021-37526834",
     "email": "accounts@kiashehzore.pk",
     "address": "Karachi, Pakistan",
@@ -514,7 +514,7 @@ export const REAL_CLIENTS = [
     "clientCode": "CLI-023",
     "name": "KINZA BEVRAGES",
     "companyName": "KINZA BEVRAGES (Pvt) Ltd",
-    "contactPerson": "Finance & Accounts Department",
+    "contactPerson": "Finance Department",
     "phone": "021-37526834",
     "email": "accounts@kinzabevrages.pk",
     "address": "Karachi, Pakistan",
@@ -537,7 +537,7 @@ export const REAL_CLIENTS = [
     "clientCode": "CLI-024",
     "name": "KIFAYAH",
     "companyName": "KIFAYAH (Pvt) Ltd",
-    "contactPerson": "Finance & Accounts Department",
+    "contactPerson": "Finance Department",
     "phone": "021-37526834",
     "email": "accounts@kifayah.pk",
     "address": "Karachi, Pakistan",
@@ -547,11 +547,11 @@ export const REAL_CLIENTS = [
     "paymentTerms": "Net 30",
     "creditLimit": 50000000,
     "openingBalance": 87562,
-    "totalBilled": 8587632,
-    "totalReceived": 127908.48,
-    "currentBalance": 8547285.52,
+    "totalBilled": 60400,
+    "totalReceived": 0,
+    "currentBalance": 147962,
     "status": "Active",
-    "notes": "Official Client Account - Ledger imported from Excel (Closing Balance: PKR 8,547,285.52)",
+    "notes": "Official Client Account - Ledger imported from Excel (Closing Balance: PKR 147,962)",
     "createdAt": "2026-06-01",
     "createdBy": "AdpulseCEO"
   },
@@ -560,7 +560,7 @@ export const REAL_CLIENTS = [
     "clientCode": "CLI-025",
     "name": "MEDICAM",
     "companyName": "MEDICAM (Pvt) Ltd",
-    "contactPerson": "Finance & Accounts Department",
+    "contactPerson": "Finance Department",
     "phone": "021-37526834",
     "email": "accounts@medicam.pk",
     "address": "Karachi, Pakistan",
@@ -583,7 +583,7 @@ export const REAL_CLIENTS = [
     "clientCode": "CLI-026",
     "name": "MATEEN SONS",
     "companyName": "MATEEN SONS (Pvt) Ltd",
-    "contactPerson": "Finance & Accounts Department",
+    "contactPerson": "Finance Department",
     "phone": "021-37526834",
     "email": "accounts@mateensons.pk",
     "address": "Karachi, Pakistan",
@@ -606,7 +606,7 @@ export const REAL_CLIENTS = [
     "clientCode": "CLI-027",
     "name": "NAJEEB FAROOQUI",
     "companyName": "NAJEEB FAROOQUI (Pvt) Ltd",
-    "contactPerson": "Finance & Accounts Department",
+    "contactPerson": "Finance Department",
     "phone": "021-37526834",
     "email": "accounts@najeebfarooqui.pk",
     "address": "Karachi, Pakistan",
@@ -629,7 +629,7 @@ export const REAL_CLIENTS = [
     "clientCode": "CLI-028",
     "name": "SALMAN MEO",
     "companyName": "SALMAN MEO (Pvt) Ltd",
-    "contactPerson": "Finance & Accounts Department",
+    "contactPerson": "Finance Department",
     "phone": "021-37526834",
     "email": "accounts@salmanmeo.pk",
     "address": "Karachi, Pakistan",
@@ -652,7 +652,7 @@ export const REAL_CLIENTS = [
     "clientCode": "CLI-029",
     "name": "SHUJA AHMED",
     "companyName": "SHUJA AHMED (Pvt) Ltd",
-    "contactPerson": "Finance & Accounts Department",
+    "contactPerson": "Finance Department",
     "phone": "021-37526834",
     "email": "accounts@shujaahmed.pk",
     "address": "Karachi, Pakistan",
@@ -675,7 +675,7 @@ export const REAL_CLIENTS = [
     "clientCode": "CLI-030",
     "name": "SUMSUM",
     "companyName": "SUMSUM (Pvt) Ltd",
-    "contactPerson": "Finance & Accounts Department",
+    "contactPerson": "Finance Department",
     "phone": "021-37526834",
     "email": "accounts@sumsum.pk",
     "address": "Karachi, Pakistan",
@@ -698,7 +698,7 @@ export const REAL_CLIENTS = [
     "clientCode": "CLI-031",
     "name": "SUNRIDGE",
     "companyName": "SUNRIDGE (Pvt) Ltd",
-    "contactPerson": "Finance & Accounts Department",
+    "contactPerson": "Finance Department",
     "phone": "021-37526834",
     "email": "accounts@sunridge.pk",
     "address": "Karachi, Pakistan",
@@ -707,12 +707,12 @@ export const REAL_CLIENTS = [
     "strn": "SA0548901-8",
     "paymentTerms": "Net 30",
     "creditLimit": 50000000,
-    "openingBalance": 5401182.7,
-    "totalBilled": 0,
-    "totalReceived": 9804073.05,
-    "currentBalance": -4402890.350000001,
+    "openingBalance": 0,
+    "totalBilled": 8281399.45,
+    "totalReceived": 6304073.05,
+    "currentBalance": 1977326.4000000004,
     "status": "Active",
-    "notes": "Official Client Account - Ledger imported from Excel (Closing Balance: PKR -4,402,890.35)",
+    "notes": "Official Client Account - Ledger imported from Excel (Closing Balance: PKR 1,977,326.4)",
     "createdAt": "2026-06-01",
     "createdBy": "AdpulseCEO"
   },
@@ -721,7 +721,7 @@ export const REAL_CLIENTS = [
     "clientCode": "CLI-032",
     "name": "XEFAN",
     "companyName": "XEFAN (Pvt) Ltd",
-    "contactPerson": "Finance & Accounts Department",
+    "contactPerson": "Finance Department",
     "phone": "021-37526834",
     "email": "accounts@xefan.pk",
     "address": "Karachi, Pakistan",
@@ -730,12 +730,12 @@ export const REAL_CLIENTS = [
     "strn": "SA0548901-8",
     "paymentTerms": "Net 30",
     "creditLimit": 50000000,
-    "openingBalance": 0,
+    "openingBalance": 8334750,
     "totalBilled": 0,
     "totalReceived": 6875000,
-    "currentBalance": -6875000,
+    "currentBalance": 1459750,
     "status": "Active",
-    "notes": "Official Client Account - Ledger imported from Excel (Closing Balance: PKR -6,875,000)",
+    "notes": "Official Client Account - Ledger imported from Excel (Closing Balance: PKR 1,459,750)",
     "createdAt": "2026-06-01",
     "createdBy": "AdpulseCEO"
   },
@@ -744,7 +744,7 @@ export const REAL_CLIENTS = [
     "clientCode": "CLI-033",
     "name": "Z-GROUP",
     "companyName": "Z-GROUP (Pvt) Ltd",
-    "contactPerson": "Finance & Accounts Department",
+    "contactPerson": "Finance Department",
     "phone": "021-37526834",
     "email": "accounts@zgroup.pk",
     "address": "Karachi, Pakistan",
@@ -767,7 +767,7 @@ export const REAL_CLIENTS = [
     "clientCode": "CLI-034",
     "name": "9 FIGURE",
     "companyName": "9 FIGURE (Pvt) Ltd",
-    "contactPerson": "Finance & Accounts Department",
+    "contactPerson": "Finance Department",
     "phone": "021-37526834",
     "email": "accounts@9figure.pk",
     "address": "Karachi, Pakistan",
@@ -790,7 +790,7 @@ export const REAL_CLIENTS = [
     "clientCode": "CLI-035",
     "name": "9th AVENUE",
     "companyName": "9th AVENUE (Pvt) Ltd",
-    "contactPerson": "Finance & Accounts Department",
+    "contactPerson": "Finance Department",
     "phone": "021-37526834",
     "email": "accounts@9thavenue.pk",
     "address": "Karachi, Pakistan",
@@ -1350,7 +1350,7 @@ export const REAL_PROJECTS = [
     "client": "CHASE UP",
     "clientId": "cli-001",
     "type": "OOH Media Campaign",
-    "budget": 6000000,
+    "budget": 31682448,
     "startDate": "2026-07-01",
     "endDate": "2026-12-31",
     "status": "In Progress",
@@ -1368,7 +1368,7 @@ export const REAL_PROJECTS = [
     "client": "CHASE VALUE",
     "clientId": "cli-002",
     "type": "OOH Media Campaign",
-    "budget": 15560637.6,
+    "budget": 20483277.599999998,
     "startDate": "2026-07-01",
     "endDate": "2026-12-31",
     "status": "In Progress",
@@ -1422,7 +1422,7 @@ export const REAL_PROJECTS = [
     "client": "DESIGN MEDIA",
     "clientId": "cli-005",
     "type": "OOH Media Campaign",
-    "budget": 9411283.2,
+    "budget": 6000000,
     "startDate": "2026-07-01",
     "endDate": "2026-12-31",
     "status": "In Progress",
@@ -1512,7 +1512,7 @@ export const REAL_PROJECTS = [
     "client": "FALAKNAZ SKYVIEW",
     "clientId": "cli-010",
     "type": "OOH Media Campaign",
-    "budget": 6000000,
+    "budget": 5113208.399999999,
     "startDate": "2026-07-01",
     "endDate": "2026-12-31",
     "status": "In Progress",
@@ -1584,7 +1584,7 @@ export const REAL_PROJECTS = [
     "client": "GREENWICH UNIVERSITY",
     "clientId": "cli-014",
     "type": "OOH Media Campaign",
-    "budget": 6000000,
+    "budget": 6540000,
     "startDate": "2026-07-01",
     "endDate": "2026-12-31",
     "status": "In Progress",
@@ -1618,6 +1618,136 @@ export const REAL_PROJECTS = [
 export const REAL_INVOICES = [
   {
     "id": "inv-1",
+    "invoiceNo": "AD/9774/06/26",
+    "clientId": "cli-001",
+    "client": "CHASE UP",
+    "projectId": null,
+    "description": "OOH MEDIA CAMPAIGN KARACHI AND HYDERABAD",
+    "amount": 7000000,
+    "grossAmount": 7000000,
+    "applyDiscount": false,
+    "discountPercent": 0,
+    "discountAmount": 0,
+    "applyAgencyCommission": false,
+    "agencyCommissionRate": 0,
+    "agencyCommissionAmount": 0,
+    "applySst": false,
+    "sstRate": 0,
+    "sstAmount": 0,
+    "totalAmount": 7000000,
+    "issueDate": "2026-07-30",
+    "dueDate": "2026-08-29",
+    "paid": false,
+    "paidVia": null,
+    "status": "Unpaid",
+    "template": "GENERAL"
+  },
+  {
+    "id": "inv-2",
+    "invoiceNo": "AD/9775/06/26",
+    "clientId": "cli-001",
+    "client": "CHASE UP",
+    "projectId": null,
+    "description": "OOH MEDIA CAMPAIGN KARACHI AND HYDERABAD PRINTING AND INSTALLATION",
+    "amount": 2323570,
+    "grossAmount": 2323570,
+    "applyDiscount": false,
+    "discountPercent": 0,
+    "discountAmount": 0,
+    "applyAgencyCommission": false,
+    "agencyCommissionRate": 0,
+    "agencyCommissionAmount": 0,
+    "applySst": false,
+    "sstRate": 0,
+    "sstAmount": 0,
+    "totalAmount": 2323570,
+    "issueDate": "2026-07-30",
+    "dueDate": "2026-08-29",
+    "paid": false,
+    "paidVia": null,
+    "status": "Unpaid",
+    "template": "GENERAL"
+  },
+  {
+    "id": "inv-3",
+    "invoiceNo": "AD/9777/06/26",
+    "clientId": "cli-001",
+    "client": "CHASE UP",
+    "projectId": null,
+    "description": "MARDAN AND FAISALABAD VENDOR PAYMENT",
+    "amount": 668817,
+    "grossAmount": 668817,
+    "applyDiscount": false,
+    "discountPercent": 0,
+    "discountAmount": 0,
+    "applyAgencyCommission": false,
+    "agencyCommissionRate": 0,
+    "agencyCommissionAmount": 0,
+    "applySst": false,
+    "sstRate": 0,
+    "sstAmount": 0,
+    "totalAmount": 668817,
+    "issueDate": "2026-07-30",
+    "dueDate": "2026-08-29",
+    "paid": false,
+    "paidVia": null,
+    "status": "Unpaid",
+    "template": "GENERAL"
+  },
+  {
+    "id": "inv-4",
+    "invoiceNo": "INV-26-004",
+    "clientId": "cli-001",
+    "client": "CHASE UP",
+    "projectId": null,
+    "description": "Media Campaign & OOH Production Billing",
+    "amount": 9992387,
+    "grossAmount": 9992387,
+    "applyDiscount": false,
+    "discountPercent": 0,
+    "discountAmount": 0,
+    "applyAgencyCommission": false,
+    "agencyCommissionRate": 0,
+    "agencyCommissionAmount": 0,
+    "applySst": false,
+    "sstRate": 0,
+    "sstAmount": 0,
+    "totalAmount": 9992387,
+    "issueDate": "2026-07-01",
+    "dueDate": "2026-07-31",
+    "paid": false,
+    "paidVia": null,
+    "status": "Unpaid",
+    "template": "GENERAL"
+  },
+  {
+    "id": "inv-5",
+    "invoiceNo": "INV-Adjustment",
+    "clientId": "cli-001",
+    "client": "CHASE UP",
+    "projectId": null,
+    "description": "Adjustment In Cash Ledger",
+    "amount": 6417266,
+    "grossAmount": 6417266,
+    "applyDiscount": false,
+    "discountPercent": 0,
+    "discountAmount": 0,
+    "applyAgencyCommission": false,
+    "agencyCommissionRate": 0,
+    "agencyCommissionAmount": 0,
+    "applySst": false,
+    "sstRate": 0,
+    "sstAmount": 0,
+    "totalAmount": 6417266,
+    "issueDate": "2026-08-20",
+    "dueDate": "2026-09-19",
+    "paid": false,
+    "paidVia": null,
+    "status": "Unpaid",
+    "template": "GENERAL"
+  },
+  {
+    "id": "inv-6",
     "invoiceNo": "AD/8584/02/25",
     "clientId": "cli-002",
     "client": "CHASE VALUE",
@@ -1643,7 +1773,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-2",
+    "id": "inv-7",
     "invoiceNo": "AD/8585/02/25",
     "clientId": "cli-002",
     "client": "CHASE VALUE",
@@ -1669,7 +1799,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-3",
+    "id": "inv-8",
     "invoiceNo": "AD/8586/02/25",
     "clientId": "cli-002",
     "client": "CHASE VALUE",
@@ -1695,7 +1825,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-4",
+    "id": "inv-9",
     "invoiceNo": "AD/8615/03/25",
     "clientId": "cli-002",
     "client": "CHASE VALUE",
@@ -1721,7 +1851,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-5",
+    "id": "inv-10",
     "invoiceNo": "AD/8613/03/25",
     "clientId": "cli-002",
     "client": "CHASE VALUE",
@@ -1747,7 +1877,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-6",
+    "id": "inv-11",
     "invoiceNo": "AD/8614/03/25",
     "clientId": "cli-002",
     "client": "CHASE VALUE",
@@ -1773,7 +1903,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-7",
+    "id": "inv-12",
     "invoiceNo": "AD/8632/03/25",
     "clientId": "cli-002",
     "client": "CHASE VALUE",
@@ -1799,7 +1929,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-8",
+    "id": "inv-13",
     "invoiceNo": "AD/9832/08/26",
     "clientId": "cli-002",
     "client": "CHASE VALUE",
@@ -1825,7 +1955,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-9",
+    "id": "inv-14",
     "invoiceNo": "AD/9833/08/26",
     "clientId": "cli-002",
     "client": "CHASE VALUE",
@@ -1851,7 +1981,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-10",
+    "id": "inv-15",
     "invoiceNo": "AD/9834/08/26",
     "clientId": "cli-002",
     "client": "CHASE VALUE",
@@ -1877,7 +2007,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-11",
+    "id": "inv-16",
     "invoiceNo": "AD/9835/08/26",
     "clientId": "cli-002",
     "client": "CHASE VALUE",
@@ -1903,7 +2033,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-12",
+    "id": "inv-17",
     "invoiceNo": "AD/9836/08/26",
     "clientId": "cli-002",
     "client": "CHASE VALUE",
@@ -1929,7 +2059,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-13",
+    "id": "inv-18",
     "invoiceNo": "AD/9864/09/26",
     "clientId": "cli-002",
     "client": "CHASE VALUE",
@@ -1955,7 +2085,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-14",
+    "id": "inv-19",
     "invoiceNo": "AD/9866/09/26",
     "clientId": "cli-002",
     "client": "CHASE VALUE",
@@ -1981,8 +2111,8 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-15",
-    "invoiceNo": "INV-26-015",
+    "id": "inv-20",
+    "invoiceNo": "INV-26-020",
     "clientId": "cli-002",
     "client": "CHASE VALUE",
     "projectId": null,
@@ -2007,7 +2137,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-16",
+    "id": "inv-21",
     "invoiceNo": "AD/96233/08/26",
     "clientId": "cli-002",
     "client": "CHASE VALUE",
@@ -2033,7 +2163,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-17",
+    "id": "inv-22",
     "invoiceNo": "AD/9865/09/26",
     "clientId": "cli-002",
     "client": "CHASE VALUE",
@@ -2059,8 +2189,8 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-18",
-    "invoiceNo": "INV-26-018",
+    "id": "inv-23",
+    "invoiceNo": "INV-26-023",
     "clientId": "cli-002",
     "client": "CHASE VALUE",
     "projectId": null,
@@ -2085,7 +2215,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-19",
+    "id": "inv-24",
     "invoiceNo": "AD/9258/02/26",
     "clientId": "cli-002",
     "client": "CHASE VALUE",
@@ -2111,7 +2241,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-20",
+    "id": "inv-25",
     "invoiceNo": "AD/9334/02/26",
     "clientId": "cli-002",
     "client": "CHASE VALUE",
@@ -2137,7 +2267,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-21",
+    "id": "inv-26",
     "invoiceNo": "AD/9362/02/26",
     "clientId": "cli-002",
     "client": "CHASE VALUE",
@@ -2163,7 +2293,33 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-22",
+    "id": "inv-27",
+    "invoiceNo": "INV-26-027",
+    "clientId": "cli-002",
+    "client": "CHASE VALUE",
+    "projectId": null,
+    "description": "Media Campaign & OOH Production Billing",
+    "amount": 4102200,
+    "grossAmount": 4102200,
+    "applyDiscount": false,
+    "discountPercent": 0,
+    "discountAmount": 0,
+    "applyAgencyCommission": false,
+    "agencyCommissionRate": 0,
+    "agencyCommissionAmount": 0,
+    "applySst": false,
+    "sstRate": 0,
+    "sstAmount": 0,
+    "totalAmount": 4102200,
+    "issueDate": "2026-07-01",
+    "dueDate": "2026-07-31",
+    "paid": false,
+    "paidVia": null,
+    "status": "Unpaid",
+    "template": "GENERAL"
+  },
+  {
+    "id": "inv-28",
     "invoiceNo": "AD/9766/07/26",
     "clientId": "cli-004",
     "client": "DECENT",
@@ -2189,215 +2345,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-23",
-    "invoiceNo": "INV-26-023",
-    "clientId": "cli-005",
-    "client": "DESIGN MEDIA",
-    "projectId": null,
-    "description": "Media Campaign & OOH Production Billing",
-    "amount": 3471368,
-    "grossAmount": 3471368,
-    "applyDiscount": false,
-    "discountPercent": 0,
-    "discountAmount": 0,
-    "applyAgencyCommission": false,
-    "agencyCommissionRate": 0,
-    "agencyCommissionAmount": 0,
-    "applySst": false,
-    "sstRate": 0,
-    "sstAmount": 0,
-    "totalAmount": 3471368,
-    "issueDate": "2026-07-01",
-    "dueDate": "2026-07-31",
-    "paid": false,
-    "paidVia": null,
-    "status": "Unpaid",
-    "template": "GENERAL"
-  },
-  {
-    "id": "inv-24",
-    "invoiceNo": "INV-JUNE, 2024",
-    "clientId": "cli-005",
-    "client": "DESIGN MEDIA",
-    "projectId": null,
-    "description": "Media Campaign & OOH Production Billing",
-    "amount": 75000,
-    "grossAmount": 75000,
-    "applyDiscount": false,
-    "discountPercent": 0,
-    "discountAmount": 0,
-    "applyAgencyCommission": false,
-    "agencyCommissionRate": 0,
-    "agencyCommissionAmount": 0,
-    "applySst": false,
-    "sstRate": 0,
-    "sstAmount": 0,
-    "totalAmount": 75000,
-    "issueDate": "2026-07-01",
-    "dueDate": "2026-07-31",
-    "paid": false,
-    "paidVia": null,
-    "status": "Unpaid",
-    "template": "GENERAL"
-  },
-  {
-    "id": "inv-25",
-    "invoiceNo": "INV-JULY, 2024",
-    "clientId": "cli-005",
-    "client": "DESIGN MEDIA",
-    "projectId": null,
-    "description": "Media Campaign & OOH Production Billing",
-    "amount": 75000,
-    "grossAmount": 75000,
-    "applyDiscount": false,
-    "discountPercent": 0,
-    "discountAmount": 0,
-    "applyAgencyCommission": false,
-    "agencyCommissionRate": 0,
-    "agencyCommissionAmount": 0,
-    "applySst": false,
-    "sstRate": 0,
-    "sstAmount": 0,
-    "totalAmount": 75000,
-    "issueDate": "2026-07-01",
-    "dueDate": "2026-07-31",
-    "paid": false,
-    "paidVia": null,
-    "status": "Unpaid",
-    "template": "GENERAL"
-  },
-  {
-    "id": "inv-26",
-    "invoiceNo": "INV-AUGUST, 2024",
-    "clientId": "cli-005",
-    "client": "DESIGN MEDIA",
-    "projectId": null,
-    "description": "Media Campaign & OOH Production Billing",
-    "amount": 75000,
-    "grossAmount": 75000,
-    "applyDiscount": false,
-    "discountPercent": 0,
-    "discountAmount": 0,
-    "applyAgencyCommission": false,
-    "agencyCommissionRate": 0,
-    "agencyCommissionAmount": 0,
-    "applySst": false,
-    "sstRate": 0,
-    "sstAmount": 0,
-    "totalAmount": 75000,
-    "issueDate": "2026-07-01",
-    "dueDate": "2026-07-31",
-    "paid": false,
-    "paidVia": null,
-    "status": "Unpaid",
-    "template": "GENERAL"
-  },
-  {
-    "id": "inv-27",
-    "invoiceNo": "INV-SEP, 2024",
-    "clientId": "cli-005",
-    "client": "DESIGN MEDIA",
-    "projectId": null,
-    "description": "Media Campaign & OOH Production Billing",
-    "amount": 75000,
-    "grossAmount": 75000,
-    "applyDiscount": false,
-    "discountPercent": 0,
-    "discountAmount": 0,
-    "applyAgencyCommission": false,
-    "agencyCommissionRate": 0,
-    "agencyCommissionAmount": 0,
-    "applySst": false,
-    "sstRate": 0,
-    "sstAmount": 0,
-    "totalAmount": 75000,
-    "issueDate": "2026-07-01",
-    "dueDate": "2026-07-31",
-    "paid": false,
-    "paidVia": null,
-    "status": "Unpaid",
-    "template": "GENERAL"
-  },
-  {
-    "id": "inv-28",
-    "invoiceNo": "INV-OCT, 2024",
-    "clientId": "cli-005",
-    "client": "DESIGN MEDIA",
-    "projectId": null,
-    "description": "Media Campaign & OOH Production Billing",
-    "amount": 75000,
-    "grossAmount": 75000,
-    "applyDiscount": false,
-    "discountPercent": 0,
-    "discountAmount": 0,
-    "applyAgencyCommission": false,
-    "agencyCommissionRate": 0,
-    "agencyCommissionAmount": 0,
-    "applySst": false,
-    "sstRate": 0,
-    "sstAmount": 0,
-    "totalAmount": 75000,
-    "issueDate": "2026-07-01",
-    "dueDate": "2026-07-31",
-    "paid": false,
-    "paidVia": null,
-    "status": "Unpaid",
-    "template": "GENERAL"
-  },
-  {
     "id": "inv-29",
-    "invoiceNo": "INV-NOV, 2024",
-    "clientId": "cli-005",
-    "client": "DESIGN MEDIA",
-    "projectId": null,
-    "description": "Media Campaign & OOH Production Billing",
-    "amount": 75000,
-    "grossAmount": 75000,
-    "applyDiscount": false,
-    "discountPercent": 0,
-    "discountAmount": 0,
-    "applyAgencyCommission": false,
-    "agencyCommissionRate": 0,
-    "agencyCommissionAmount": 0,
-    "applySst": false,
-    "sstRate": 0,
-    "sstAmount": 0,
-    "totalAmount": 75000,
-    "issueDate": "2026-07-01",
-    "dueDate": "2026-07-31",
-    "paid": false,
-    "paidVia": null,
-    "status": "Unpaid",
-    "template": "GENERAL"
-  },
-  {
-    "id": "inv-30",
-    "invoiceNo": "INV-26-030",
-    "clientId": "cli-005",
-    "client": "DESIGN MEDIA",
-    "projectId": null,
-    "description": "Media Campaign & OOH Production Billing",
-    "amount": 3921368,
-    "grossAmount": 3921368,
-    "applyDiscount": false,
-    "discountPercent": 0,
-    "discountAmount": 0,
-    "applyAgencyCommission": false,
-    "agencyCommissionRate": 0,
-    "agencyCommissionAmount": 0,
-    "applySst": false,
-    "sstRate": 0,
-    "sstAmount": 0,
-    "totalAmount": 3921368,
-    "issueDate": "2026-07-01",
-    "dueDate": "2026-07-31",
-    "paid": false,
-    "paidVia": null,
-    "status": "Unpaid",
-    "template": "GENERAL"
-  },
-  {
-    "id": "inv-31",
     "invoiceNo": "AD/9776/08/26",
     "clientId": "cli-006",
     "client": "DINERS",
@@ -2423,7 +2371,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-32",
+    "id": "inv-30",
     "invoiceNo": "AD/9778/08/26",
     "clientId": "cli-006",
     "client": "DINERS",
@@ -2449,7 +2397,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-33",
+    "id": "inv-31",
     "invoiceNo": "INV-AD-S376",
     "clientId": "cli-007",
     "client": "DVAGO",
@@ -2475,7 +2423,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-34",
+    "id": "inv-32",
     "invoiceNo": "AD/9009/10/25",
     "clientId": "cli-009",
     "client": "FALAKNAZ",
@@ -2501,7 +2449,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-35",
+    "id": "inv-33",
     "invoiceNo": "AD/9010/10/25",
     "clientId": "cli-009",
     "client": "FALAKNAZ",
@@ -2527,7 +2475,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-36",
+    "id": "inv-34",
     "invoiceNo": "AD/9118/11/25",
     "clientId": "cli-009",
     "client": "FALAKNAZ",
@@ -2553,7 +2501,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-37",
+    "id": "inv-35",
     "invoiceNo": "AD/9119/11/25",
     "clientId": "cli-009",
     "client": "FALAKNAZ",
@@ -2579,7 +2527,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-38",
+    "id": "inv-36",
     "invoiceNo": "AD/9227/01/26",
     "clientId": "cli-009",
     "client": "FALAKNAZ",
@@ -2605,7 +2553,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-39",
+    "id": "inv-37",
     "invoiceNo": "AD/9228/01/26",
     "clientId": "cli-009",
     "client": "FALAKNAZ",
@@ -2631,7 +2579,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-40",
+    "id": "inv-38",
     "invoiceNo": "AD/9229/01/26",
     "clientId": "cli-009",
     "client": "FALAKNAZ",
@@ -2657,7 +2605,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-41",
+    "id": "inv-39",
     "invoiceNo": "AD/9784/08/26",
     "clientId": "cli-009",
     "client": "FALAKNAZ",
@@ -2683,7 +2631,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-42",
+    "id": "inv-40",
     "invoiceNo": "AD/9785/08/26",
     "clientId": "cli-009",
     "client": "FALAKNAZ",
@@ -2709,7 +2657,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-43",
+    "id": "inv-41",
     "invoiceNo": "AD/9787/08/26",
     "clientId": "cli-009",
     "client": "FALAKNAZ",
@@ -2735,7 +2683,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-44",
+    "id": "inv-42",
     "invoiceNo": "AD/9868/09/26",
     "clientId": "cli-009",
     "client": "FALAKNAZ",
@@ -2761,7 +2709,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-45",
+    "id": "inv-43",
     "invoiceNo": "AD/9871/09/26",
     "clientId": "cli-009",
     "client": "FALAKNAZ",
@@ -2787,7 +2735,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-46",
+    "id": "inv-44",
     "invoiceNo": "AD/9875/09/26",
     "clientId": "cli-009",
     "client": "FALAKNAZ",
@@ -2813,7 +2761,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-47",
+    "id": "inv-45",
     "invoiceNo": "AD/9877/09/26",
     "clientId": "cli-009",
     "client": "FALAKNAZ",
@@ -2839,7 +2787,163 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
+    "id": "inv-46",
+    "invoiceNo": "AD/9762/07/26",
+    "clientId": "cli-010",
+    "client": "FALAKNAZ SKYVIEW",
+    "projectId": null,
+    "description": "FALAKNAZ SKYVIEW OOH MEDIA CAMPAIGN RENTAL(30 DAYS 1 JUNE 2026 TO 30 JUNE 2026)  EXPRESSWAY DHA ITEHAD",
+    "amount": 1236000,
+    "grossAmount": 1236000,
+    "applyDiscount": false,
+    "discountPercent": 0,
+    "discountAmount": 0,
+    "applyAgencyCommission": false,
+    "agencyCommissionRate": 0,
+    "agencyCommissionAmount": 0,
+    "applySst": false,
+    "sstRate": 0,
+    "sstAmount": 0,
+    "totalAmount": 1236000,
+    "issueDate": "2026-07-02",
+    "dueDate": "2026-08-01",
+    "paid": false,
+    "paidVia": null,
+    "status": "Unpaid",
+    "template": "GENERAL"
+  },
+  {
+    "id": "inv-47",
+    "invoiceNo": "AD/9763/07/26",
+    "clientId": "cli-010",
+    "client": "FALAKNAZ SKYVIEW",
+    "projectId": null,
+    "description": "FALAKNAZ SKYVIEW OOH MEDIA CAMPAIGN RENTAL(31 DAYS 1 JULY 2026 TO 31 JULY 2026)  EXPRESSWAY DHA ITEHAD",
+    "amount": 1236000,
+    "grossAmount": 1236000,
+    "applyDiscount": false,
+    "discountPercent": 0,
+    "discountAmount": 0,
+    "applyAgencyCommission": false,
+    "agencyCommissionRate": 0,
+    "agencyCommissionAmount": 0,
+    "applySst": false,
+    "sstRate": 0,
+    "sstAmount": 0,
+    "totalAmount": 1236000,
+    "issueDate": "2026-07-21",
+    "dueDate": "2026-08-20",
+    "paid": false,
+    "paidVia": null,
+    "status": "Unpaid",
+    "template": "GENERAL"
+  },
+  {
     "id": "inv-48",
+    "invoiceNo": "AD/9764/07/26",
+    "clientId": "cli-010",
+    "client": "FALAKNAZ SKYVIEW",
+    "projectId": null,
+    "description": "FALAKNAZ SKYVIEW OOH MEDIA CAMPAIGN PRINTING AND INSTALLATION",
+    "amount": 388825,
+    "grossAmount": 388825,
+    "applyDiscount": false,
+    "discountPercent": 0,
+    "discountAmount": 0,
+    "applyAgencyCommission": false,
+    "agencyCommissionRate": 0,
+    "agencyCommissionAmount": 0,
+    "applySst": false,
+    "sstRate": 0,
+    "sstAmount": 0,
+    "totalAmount": 388825,
+    "issueDate": "2026-07-02",
+    "dueDate": "2026-08-01",
+    "paid": false,
+    "paidVia": null,
+    "status": "Unpaid",
+    "template": "GENERAL"
+  },
+  {
+    "id": "inv-49",
+    "invoiceNo": "AD/9793/08/26",
+    "clientId": "cli-010",
+    "client": "FALAKNAZ SKYVIEW",
+    "projectId": null,
+    "description": "FALAKNAZ SKYVIEW OOH MEDIA CAMPAIGN RENTAL(31 DAYS 1 AUGUST 2026 TO 31 AUGUST 2026)  EXPRESSWAY DHA ITEHAD",
+    "amount": 1236000,
+    "grossAmount": 1236000,
+    "applyDiscount": false,
+    "discountPercent": 0,
+    "discountAmount": 0,
+    "applyAgencyCommission": false,
+    "agencyCommissionRate": 0,
+    "agencyCommissionAmount": 0,
+    "applySst": false,
+    "sstRate": 0,
+    "sstAmount": 0,
+    "totalAmount": 1236000,
+    "issueDate": "2026-08-19",
+    "dueDate": "2026-09-18",
+    "paid": false,
+    "paidVia": null,
+    "status": "Unpaid",
+    "template": "GENERAL"
+  },
+  {
+    "id": "inv-50",
+    "invoiceNo": "AD/9794/08/26",
+    "clientId": "cli-010",
+    "client": "FALAKNAZ SKYVIEW",
+    "projectId": null,
+    "description": "FALAKNAZ SKYVIEW OOH MEDIA CAMPAIGN PRINTING AND INSTALLATION",
+    "amount": 149350,
+    "grossAmount": 149350,
+    "applyDiscount": false,
+    "discountPercent": 0,
+    "discountAmount": 0,
+    "applyAgencyCommission": false,
+    "agencyCommissionRate": 0,
+    "agencyCommissionAmount": 0,
+    "applySst": false,
+    "sstRate": 0,
+    "sstAmount": 0,
+    "totalAmount": 149350,
+    "issueDate": "2026-08-19",
+    "dueDate": "2026-09-18",
+    "paid": false,
+    "paidVia": null,
+    "status": "Unpaid",
+    "template": "GENERAL"
+  },
+  {
+    "id": "inv-51",
+    "invoiceNo": "AD/9829/08/26",
+    "clientId": "cli-010",
+    "client": "FALAKNAZ SKYVIEW",
+    "projectId": null,
+    "description": "FALAKNAZ GRANDE BRANDING WALL PRINITING",
+    "amount": 14832,
+    "grossAmount": 14832,
+    "applyDiscount": false,
+    "discountPercent": 0,
+    "discountAmount": 0,
+    "applyAgencyCommission": false,
+    "agencyCommissionRate": 0,
+    "agencyCommissionAmount": 0,
+    "applySst": false,
+    "sstRate": 0,
+    "sstAmount": 0,
+    "totalAmount": 14832,
+    "issueDate": "2026-08-31",
+    "dueDate": "2026-09-30",
+    "paid": false,
+    "paidVia": null,
+    "status": "Unpaid",
+    "template": "GENERAL"
+  },
+  {
+    "id": "inv-52",
     "invoiceNo": "AD/9792/08/26",
     "clientId": "cli-011",
     "client": "FALAKNAZ GRANDE",
@@ -2865,7 +2969,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-49",
+    "id": "inv-53",
     "invoiceNo": "AD/9786/08/26",
     "clientId": "cli-011",
     "client": "FALAKNAZ GRANDE",
@@ -2891,7 +2995,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-50",
+    "id": "inv-54",
     "invoiceNo": "INV-AD-S361",
     "clientId": "cli-012",
     "client": "FPCCI",
@@ -2917,7 +3021,85 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-51",
+    "id": "inv-55",
+    "invoiceNo": "AD/9755/07/2025",
+    "clientId": "cli-014",
+    "client": "GREENWICH UNIVERSITY",
+    "projectId": null,
+    "description": "EDVIA OOH CAMPAIGN (STATICS SITES, DIGITAL MEDIA AND OOG BUS BRANDING)",
+    "amount": 2390000,
+    "grossAmount": 2390000,
+    "applyDiscount": false,
+    "discountPercent": 0,
+    "discountAmount": 0,
+    "applyAgencyCommission": false,
+    "agencyCommissionRate": 0,
+    "agencyCommissionAmount": 0,
+    "applySst": false,
+    "sstRate": 0,
+    "sstAmount": 0,
+    "totalAmount": 2390000,
+    "issueDate": "2026-07-02",
+    "dueDate": "2026-08-01",
+    "paid": false,
+    "paidVia": null,
+    "status": "Unpaid",
+    "template": "GENERAL"
+  },
+  {
+    "id": "inv-56",
+    "invoiceNo": "AD/9756/07/2025",
+    "clientId": "cli-014",
+    "client": "GREENWICH UNIVERSITY",
+    "projectId": null,
+    "description": "GREENWICH OOH CAMPAIGN (STATICS SITES, DIGITAL MEDIA AND OOG BUS BRANDING)",
+    "amount": 2850000,
+    "grossAmount": 2850000,
+    "applyDiscount": false,
+    "discountPercent": 0,
+    "discountAmount": 0,
+    "applyAgencyCommission": false,
+    "agencyCommissionRate": 0,
+    "agencyCommissionAmount": 0,
+    "applySst": false,
+    "sstRate": 0,
+    "sstAmount": 0,
+    "totalAmount": 2850000,
+    "issueDate": "2026-07-15",
+    "dueDate": "2026-08-14",
+    "paid": false,
+    "paidVia": null,
+    "status": "Unpaid",
+    "template": "GENERAL"
+  },
+  {
+    "id": "inv-57",
+    "invoiceNo": "AD/9757/07/2025",
+    "clientId": "cli-014",
+    "client": "GREENWICH UNIVERSITY",
+    "projectId": null,
+    "description": "OOH CAMPAIGN ADDITIONAL PRINTING AND INSTALLATION",
+    "amount": 210000,
+    "grossAmount": 210000,
+    "applyDiscount": false,
+    "discountPercent": 0,
+    "discountAmount": 0,
+    "applyAgencyCommission": false,
+    "agencyCommissionRate": 0,
+    "agencyCommissionAmount": 0,
+    "applySst": false,
+    "sstRate": 0,
+    "sstAmount": 0,
+    "totalAmount": 210000,
+    "issueDate": "2026-07-15",
+    "dueDate": "2026-08-14",
+    "paid": false,
+    "paidVia": null,
+    "status": "Unpaid",
+    "template": "GENERAL"
+  },
+  {
+    "id": "inv-58",
     "invoiceNo": "AD/9724/06/26",
     "clientId": "cli-015",
     "client": "HMR",
@@ -2943,7 +3125,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-52",
+    "id": "inv-59",
     "invoiceNo": "AD/9725/06/26",
     "clientId": "cli-015",
     "client": "HMR",
@@ -2969,7 +3151,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-53",
+    "id": "inv-60",
     "invoiceNo": "AD/9768/06/26",
     "clientId": "cli-016",
     "client": "H&H",
@@ -2995,7 +3177,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-54",
+    "id": "inv-61",
     "invoiceNo": "AD/9769/06/26",
     "clientId": "cli-016",
     "client": "H&H",
@@ -3021,7 +3203,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-55",
+    "id": "inv-62",
     "invoiceNo": "AD/9770/06/26",
     "clientId": "cli-016",
     "client": "H&H",
@@ -3047,7 +3229,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-56",
+    "id": "inv-63",
     "invoiceNo": "AD/9771/06/26",
     "clientId": "cli-016",
     "client": "H&H",
@@ -3073,7 +3255,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-57",
+    "id": "inv-64",
     "invoiceNo": "INV-AD-S359",
     "clientId": "cli-017",
     "client": "HABBIT STORE",
@@ -3099,7 +3281,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-58",
+    "id": "inv-65",
     "invoiceNo": "AD/9742/07/26",
     "clientId": "cli-017",
     "client": "HABBIT STORE",
@@ -3125,111 +3307,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-59",
-    "invoiceNo": "INV-AD-S352",
-    "clientId": "cli-017",
-    "client": "HABBIT STORE",
-    "projectId": null,
-    "description": "Habitt Store DHA permission (VINYL Branding) 1 Year",
-    "amount": 7161869,
-    "grossAmount": 7161869,
-    "applyDiscount": false,
-    "discountPercent": 0,
-    "discountAmount": 0,
-    "applyAgencyCommission": false,
-    "agencyCommissionRate": 0,
-    "agencyCommissionAmount": 0,
-    "applySst": false,
-    "sstRate": 0,
-    "sstAmount": 0,
-    "totalAmount": 7161869,
-    "issueDate": "2026-06-16",
-    "dueDate": "2026-07-16",
-    "paid": false,
-    "paidVia": null,
-    "status": "Unpaid",
-    "template": "GENERAL"
-  },
-  {
-    "id": "inv-60",
-    "invoiceNo": "INV-AD-S353",
-    "clientId": "cli-017",
-    "client": "HABBIT STORE",
-    "projectId": null,
-    "description": "Habitt Store DHA permission (VINYL Branding) agency comission",
-    "amount": 666770,
-    "grossAmount": 666770,
-    "applyDiscount": false,
-    "discountPercent": 0,
-    "discountAmount": 0,
-    "applyAgencyCommission": false,
-    "agencyCommissionRate": 0,
-    "agencyCommissionAmount": 0,
-    "applySst": false,
-    "sstRate": 0,
-    "sstAmount": 0,
-    "totalAmount": 666770,
-    "issueDate": "2026-06-16",
-    "dueDate": "2026-07-16",
-    "paid": false,
-    "paidVia": null,
-    "status": "Unpaid",
-    "template": "GENERAL"
-  },
-  {
-    "id": "inv-61",
-    "invoiceNo": "INV-AD-S354",
-    "clientId": "cli-017",
-    "client": "HABBIT STORE",
-    "projectId": null,
-    "description": "Habitt Store DHA permission (VINYL Branding)",
-    "amount": 361790,
-    "grossAmount": 361790,
-    "applyDiscount": false,
-    "discountPercent": 0,
-    "discountAmount": 0,
-    "applyAgencyCommission": false,
-    "agencyCommissionRate": 0,
-    "agencyCommissionAmount": 0,
-    "applySst": false,
-    "sstRate": 0,
-    "sstAmount": 0,
-    "totalAmount": 361790,
-    "issueDate": "2026-06-16",
-    "dueDate": "2026-07-16",
-    "paid": false,
-    "paidVia": null,
-    "status": "Unpaid",
-    "template": "GENERAL"
-  },
-  {
-    "id": "inv-62",
-    "invoiceNo": "AD/9742/05/26",
-    "clientId": "cli-017",
-    "client": "HABBIT STORE",
-    "projectId": null,
-    "description": "OUTDOOR BRANDING WORK",
-    "amount": 2000000,
-    "grossAmount": 2000000,
-    "applyDiscount": false,
-    "discountPercent": 0,
-    "discountAmount": 0,
-    "applyAgencyCommission": false,
-    "agencyCommissionRate": 0,
-    "agencyCommissionAmount": 0,
-    "applySst": false,
-    "sstRate": 0,
-    "sstAmount": 0,
-    "totalAmount": 2000000,
-    "issueDate": "2026-06-18",
-    "dueDate": "2026-07-18",
-    "paid": false,
-    "paidVia": null,
-    "status": "Unpaid",
-    "template": "GENERAL"
-  },
-  {
-    "id": "inv-63",
+    "id": "inv-66",
     "invoiceNo": "INV-AD-S374",
     "clientId": "cli-018",
     "client": "IMTIAZ",
@@ -3255,7 +3333,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-64",
+    "id": "inv-67",
     "invoiceNo": "INV-AD-S375",
     "clientId": "cli-018",
     "client": "IMTIAZ",
@@ -3281,7 +3359,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-65",
+    "id": "inv-68",
     "invoiceNo": "INV-AD-S324",
     "clientId": "cli-020",
     "client": "IGLOO",
@@ -3307,7 +3385,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-66",
+    "id": "inv-69",
     "invoiceNo": "INV-AD-S325",
     "clientId": "cli-020",
     "client": "IGLOO",
@@ -3333,7 +3411,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-67",
+    "id": "inv-70",
     "invoiceNo": "INV-AD-S326",
     "clientId": "cli-020",
     "client": "IGLOO",
@@ -3359,7 +3437,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-68",
+    "id": "inv-71",
     "invoiceNo": "INV-AD-S360",
     "clientId": "cli-020",
     "client": "IGLOO",
@@ -3385,8 +3463,8 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-69",
-    "invoiceNo": "INV-26-069",
+    "id": "inv-72",
+    "invoiceNo": "INV-26-072",
     "clientId": "cli-020",
     "client": "IGLOO",
     "projectId": null,
@@ -3411,7 +3489,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-70",
+    "id": "inv-73",
     "invoiceNo": "INV-AD-S377",
     "clientId": "cli-022",
     "client": "KIA SHEHZORE",
@@ -3437,7 +3515,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-71",
+    "id": "inv-74",
     "invoiceNo": "INV-AD-S378",
     "clientId": "cli-022",
     "client": "KIA SHEHZORE",
@@ -3463,7 +3541,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-72",
+    "id": "inv-75",
     "invoiceNo": "INV-AD-S379",
     "clientId": "cli-022",
     "client": "KIA SHEHZORE",
@@ -3489,7 +3567,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-73",
+    "id": "inv-76",
     "invoiceNo": "INV-AD-S380",
     "clientId": "cli-022",
     "client": "KIA SHEHZORE",
@@ -3515,7 +3593,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-74",
+    "id": "inv-77",
     "invoiceNo": "AD/9791/08/26",
     "clientId": "cli-023",
     "client": "KINZA BEVRAGES",
@@ -3541,7 +3619,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-75",
+    "id": "inv-78",
     "invoiceNo": "AD/9754/07/26",
     "clientId": "cli-024",
     "client": "KIFAYAH",
@@ -3567,241 +3645,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-76",
-    "invoiceNo": "INV-26-076",
-    "clientId": "cli-024",
-    "client": "KIFAYAH",
-    "projectId": null,
-    "description": "Media Campaign & OOH Production Billing",
-    "amount": 550000,
-    "grossAmount": 550000,
-    "applyDiscount": false,
-    "discountPercent": 0,
-    "discountAmount": 0,
-    "applyAgencyCommission": false,
-    "agencyCommissionRate": 0,
-    "agencyCommissionAmount": 0,
-    "applySst": false,
-    "sstRate": 0,
-    "sstAmount": 0,
-    "totalAmount": 550000,
-    "issueDate": "2026-07-01",
-    "dueDate": "2026-07-31",
-    "paid": false,
-    "paidVia": null,
-    "status": "Unpaid",
-    "template": "GENERAL"
-  },
-  {
-    "id": "inv-77",
-    "invoiceNo": "INV-26-077",
-    "clientId": "cli-024",
-    "client": "KIFAYAH",
-    "projectId": null,
-    "description": "Media Campaign & OOH Production Billing",
-    "amount": 550000,
-    "grossAmount": 550000,
-    "applyDiscount": false,
-    "discountPercent": 0,
-    "discountAmount": 0,
-    "applyAgencyCommission": false,
-    "agencyCommissionRate": 0,
-    "agencyCommissionAmount": 0,
-    "applySst": false,
-    "sstRate": 0,
-    "sstAmount": 0,
-    "totalAmount": 550000,
-    "issueDate": "2026-07-01",
-    "dueDate": "2026-07-31",
-    "paid": false,
-    "paidVia": null,
-    "status": "Unpaid",
-    "template": "GENERAL"
-  },
-  {
-    "id": "inv-78",
-    "invoiceNo": "INV-26-078",
-    "clientId": "cli-024",
-    "client": "KIFAYAH",
-    "projectId": null,
-    "description": "Media Campaign & OOH Production Billing",
-    "amount": 550000,
-    "grossAmount": 550000,
-    "applyDiscount": false,
-    "discountPercent": 0,
-    "discountAmount": 0,
-    "applyAgencyCommission": false,
-    "agencyCommissionRate": 0,
-    "agencyCommissionAmount": 0,
-    "applySst": false,
-    "sstRate": 0,
-    "sstAmount": 0,
-    "totalAmount": 550000,
-    "issueDate": "2026-07-01",
-    "dueDate": "2026-07-31",
-    "paid": false,
-    "paidVia": null,
-    "status": "Unpaid",
-    "template": "GENERAL"
-  },
-  {
     "id": "inv-79",
-    "invoiceNo": "INV-26-079",
-    "clientId": "cli-024",
-    "client": "KIFAYAH",
-    "projectId": null,
-    "description": "Media Campaign & OOH Production Billing",
-    "amount": 550000,
-    "grossAmount": 550000,
-    "applyDiscount": false,
-    "discountPercent": 0,
-    "discountAmount": 0,
-    "applyAgencyCommission": false,
-    "agencyCommissionRate": 0,
-    "agencyCommissionAmount": 0,
-    "applySst": false,
-    "sstRate": 0,
-    "sstAmount": 0,
-    "totalAmount": 550000,
-    "issueDate": "2026-07-01",
-    "dueDate": "2026-07-31",
-    "paid": false,
-    "paidVia": null,
-    "status": "Unpaid",
-    "template": "GENERAL"
-  },
-  {
-    "id": "inv-80",
-    "invoiceNo": "INV-26-080",
-    "clientId": "cli-024",
-    "client": "KIFAYAH",
-    "projectId": null,
-    "description": "Media Campaign & OOH Production Billing",
-    "amount": 550000,
-    "grossAmount": 550000,
-    "applyDiscount": false,
-    "discountPercent": 0,
-    "discountAmount": 0,
-    "applyAgencyCommission": false,
-    "agencyCommissionRate": 0,
-    "agencyCommissionAmount": 0,
-    "applySst": false,
-    "sstRate": 0,
-    "sstAmount": 0,
-    "totalAmount": 550000,
-    "issueDate": "2026-07-01",
-    "dueDate": "2026-07-31",
-    "paid": false,
-    "paidVia": null,
-    "status": "Unpaid",
-    "template": "GENERAL"
-  },
-  {
-    "id": "inv-81",
-    "invoiceNo": "INV-26-081",
-    "clientId": "cli-024",
-    "client": "KIFAYAH",
-    "projectId": null,
-    "description": "Media Campaign & OOH Production Billing",
-    "amount": 550000,
-    "grossAmount": 550000,
-    "applyDiscount": false,
-    "discountPercent": 0,
-    "discountAmount": 0,
-    "applyAgencyCommission": false,
-    "agencyCommissionRate": 0,
-    "agencyCommissionAmount": 0,
-    "applySst": false,
-    "sstRate": 0,
-    "sstAmount": 0,
-    "totalAmount": 550000,
-    "issueDate": "2026-07-01",
-    "dueDate": "2026-07-31",
-    "paid": false,
-    "paidVia": null,
-    "status": "Unpaid",
-    "template": "GENERAL"
-  },
-  {
-    "id": "inv-82",
-    "invoiceNo": "INV-26-082",
-    "clientId": "cli-024",
-    "client": "KIFAYAH",
-    "projectId": null,
-    "description": "Media Campaign & OOH Production Billing",
-    "amount": 550000,
-    "grossAmount": 550000,
-    "applyDiscount": false,
-    "discountPercent": 0,
-    "discountAmount": 0,
-    "applyAgencyCommission": false,
-    "agencyCommissionRate": 0,
-    "agencyCommissionAmount": 0,
-    "applySst": false,
-    "sstRate": 0,
-    "sstAmount": 0,
-    "totalAmount": 550000,
-    "issueDate": "2026-07-01",
-    "dueDate": "2026-07-31",
-    "paid": false,
-    "paidVia": null,
-    "status": "Unpaid",
-    "template": "GENERAL"
-  },
-  {
-    "id": "inv-83",
-    "invoiceNo": "INV-26-083",
-    "clientId": "cli-024",
-    "client": "KIFAYAH",
-    "projectId": null,
-    "description": "Media Campaign & OOH Production Billing",
-    "amount": 413616,
-    "grossAmount": 413616,
-    "applyDiscount": false,
-    "discountPercent": 0,
-    "discountAmount": 0,
-    "applyAgencyCommission": false,
-    "agencyCommissionRate": 0,
-    "agencyCommissionAmount": 0,
-    "applySst": false,
-    "sstRate": 0,
-    "sstAmount": 0,
-    "totalAmount": 413616,
-    "issueDate": "2026-07-01",
-    "dueDate": "2026-07-31",
-    "paid": false,
-    "paidVia": null,
-    "status": "Unpaid",
-    "template": "GENERAL"
-  },
-  {
-    "id": "inv-84",
-    "invoiceNo": "INV-26-084",
-    "clientId": "cli-024",
-    "client": "KIFAYAH",
-    "projectId": null,
-    "description": "Media Campaign & OOH Production Billing",
-    "amount": 4263616,
-    "grossAmount": 4263616,
-    "applyDiscount": false,
-    "discountPercent": 0,
-    "discountAmount": 0,
-    "applyAgencyCommission": false,
-    "agencyCommissionRate": 0,
-    "agencyCommissionAmount": 0,
-    "applySst": false,
-    "sstRate": 0,
-    "sstAmount": 0,
-    "totalAmount": 4263616,
-    "issueDate": "2026-07-01",
-    "dueDate": "2026-07-31",
-    "paid": false,
-    "paidVia": null,
-    "status": "Unpaid",
-    "template": "GENERAL"
-  },
-  {
-    "id": "inv-85",
     "invoiceNo": "AD/9767/07/26",
     "clientId": "cli-025",
     "client": "MEDICAM",
@@ -3827,7 +3671,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-86",
+    "id": "inv-80",
     "invoiceNo": "AD/9772/07/26",
     "clientId": "cli-025",
     "client": "MEDICAM",
@@ -3853,7 +3697,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-87",
+    "id": "inv-81",
     "invoiceNo": "AD/9863/07/26",
     "clientId": "cli-025",
     "client": "MEDICAM",
@@ -3879,7 +3723,7 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-88",
+    "id": "inv-82",
     "invoiceNo": "INV-Sold",
     "clientId": "cli-028",
     "client": "SALMAN MEO",
@@ -3905,8 +3749,8 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-89",
-    "invoiceNo": "INV-26-089",
+    "id": "inv-83",
+    "invoiceNo": "INV-26-083",
     "clientId": "cli-028",
     "client": "SALMAN MEO",
     "projectId": null,
@@ -3931,8 +3775,8 @@ export const REAL_INVOICES = [
     "template": "GENERAL"
   },
   {
-    "id": "inv-90",
-    "invoiceNo": "INV-26-090",
+    "id": "inv-84",
+    "invoiceNo": "INV-26-084",
     "clientId": "cli-028",
     "client": "SALMAN MEO",
     "projectId": null,
@@ -3951,6 +3795,110 @@ export const REAL_INVOICES = [
     "totalAmount": 20000,
     "issueDate": "2025-12-04",
     "dueDate": "2026-01-03",
+    "paid": false,
+    "paidVia": null,
+    "status": "Unpaid",
+    "template": "GENERAL"
+  },
+  {
+    "id": "inv-85",
+    "invoiceNo": "INV-AD-S0182",
+    "clientId": "cli-031",
+    "client": "SUNRIDGE",
+    "projectId": null,
+    "description": "SUNRIDGE SHAHRAH E PAKISTAN BUILDING FRONT BRANDING",
+    "amount": 421213.95,
+    "grossAmount": 421213.95,
+    "applyDiscount": false,
+    "discountPercent": 0,
+    "discountAmount": 0,
+    "applyAgencyCommission": false,
+    "agencyCommissionRate": 0,
+    "agencyCommissionAmount": 0,
+    "applySst": false,
+    "sstRate": 0,
+    "sstAmount": 0,
+    "totalAmount": 421213.95,
+    "issueDate": "2025-10-15",
+    "dueDate": "2025-11-14",
+    "paid": false,
+    "paidVia": null,
+    "status": "Unpaid",
+    "template": "GENERAL"
+  },
+  {
+    "id": "inv-86",
+    "invoiceNo": "INV-AD-S0181",
+    "clientId": "cli-031",
+    "client": "SUNRIDGE",
+    "projectId": null,
+    "description": "SUNRIDGE NARAM ROTI OOH CAMPAIGN (2nd MONTH)",
+    "amount": 4446831.5,
+    "grossAmount": 4446831.5,
+    "applyDiscount": false,
+    "discountPercent": 0,
+    "discountAmount": 0,
+    "applyAgencyCommission": false,
+    "agencyCommissionRate": 0,
+    "agencyCommissionAmount": 0,
+    "applySst": false,
+    "sstRate": 0,
+    "sstAmount": 0,
+    "totalAmount": 4446831.5,
+    "issueDate": "2025-10-15",
+    "dueDate": "2025-11-14",
+    "paid": false,
+    "paidVia": null,
+    "status": "Unpaid",
+    "template": "GENERAL"
+  },
+  {
+    "id": "inv-87",
+    "invoiceNo": "INV-AD-S0185",
+    "clientId": "cli-031",
+    "client": "SUNRIDGE",
+    "projectId": null,
+    "description": "SHAHRAH E PAKISTAN - BILLBOARDS AND BACKLITS RENTAL",
+    "amount": 2099893,
+    "grossAmount": 2099893,
+    "applyDiscount": false,
+    "discountPercent": 0,
+    "discountAmount": 0,
+    "applyAgencyCommission": false,
+    "agencyCommissionRate": 0,
+    "agencyCommissionAmount": 0,
+    "applySst": false,
+    "sstRate": 0,
+    "sstAmount": 0,
+    "totalAmount": 2099893,
+    "issueDate": "2025-10-15",
+    "dueDate": "2025-11-14",
+    "paid": false,
+    "paidVia": null,
+    "status": "Unpaid",
+    "template": "GENERAL"
+  },
+  {
+    "id": "inv-88",
+    "invoiceNo": "INV-AD-S0186",
+    "clientId": "cli-031",
+    "client": "SUNRIDGE",
+    "projectId": null,
+    "description": "SUNRIDGE NARAM ROTI OOH CAMPAIGN (3rd MONTH)",
+    "amount": 1313461,
+    "grossAmount": 1313461,
+    "applyDiscount": false,
+    "discountPercent": 0,
+    "discountAmount": 0,
+    "applyAgencyCommission": false,
+    "agencyCommissionRate": 0,
+    "agencyCommissionAmount": 0,
+    "applySst": false,
+    "sstRate": 0,
+    "sstAmount": 0,
+    "totalAmount": 1313461,
+    "issueDate": "2025-10-25",
+    "dueDate": "2025-11-24",
     "paid": false,
     "paidVia": null,
     "status": "Unpaid",
@@ -4589,9 +4537,8 @@ export const REAL_VOUCHERS = [
     "paymentMode": "Bank",
     "receiveMode": "bank",
     "isPdc": false,
-    "chequeNo": "",
+    "chequeNo": "Adjustment",
     "chequeDate": "2026-08-20",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
@@ -4614,7 +4561,6 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "",
     "chequeDate": "2026-08-20",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
@@ -4637,7 +4583,6 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "",
     "chequeDate": "2026-09-12",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
@@ -4648,19 +4593,18 @@ export const REAL_VOUCHERS = [
     "voucherNo": "BRV-26-004",
     "type": "RV",
     "date": "2026-07-01",
-    "party": "CHASE VALUE",
-    "clientId": "cli-002",
+    "party": "CHASE UP",
+    "clientId": "cli-001",
     "vendorId": null,
-    "description": "Chase Value Gift Voucher Recevied",
-    "amount": 500000,
-    "netAmount": 500000,
+    "description": "Payment Received from CHASE UP",
+    "amount": 9670499,
+    "netAmount": 9670499,
     "via": "Bank",
     "paymentMode": "Bank",
     "receiveMode": "bank",
     "isPdc": false,
     "chequeNo": "",
     "chequeDate": "2026-07-01",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
@@ -4675,15 +4619,14 @@ export const REAL_VOUCHERS = [
     "clientId": "cli-002",
     "vendorId": null,
     "description": "Chase Value Gift Voucher Recevied",
-    "amount": 930000,
-    "netAmount": 930000,
+    "amount": 500000,
+    "netAmount": 500000,
     "via": "Bank",
     "paymentMode": "Bank",
     "receiveMode": "bank",
     "isPdc": false,
     "chequeNo": "",
     "chequeDate": "2026-07-01",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
@@ -4692,6 +4635,28 @@ export const REAL_VOUCHERS = [
   {
     "id": "vch-rv-6",
     "voucherNo": "BRV-26-006",
+    "type": "RV",
+    "date": "2026-07-01",
+    "party": "CHASE VALUE",
+    "clientId": "cli-002",
+    "vendorId": null,
+    "description": "Chase Value Gift Voucher Recevied",
+    "amount": 930000,
+    "netAmount": 930000,
+    "via": "Bank",
+    "paymentMode": "Bank",
+    "receiveMode": "bank",
+    "isPdc": false,
+    "chequeNo": "",
+    "chequeDate": "2026-07-01",
+    "bankAccountId": "bank-hbl",
+    "status": "Posted",
+    "settleAR": true,
+    "notes": ""
+  },
+  {
+    "id": "vch-rv-7",
+    "voucherNo": "BRV-26-007",
     "type": "RV",
     "date": "2025-03-24",
     "party": "CHASE VALUE",
@@ -4706,15 +4671,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "",
     "chequeDate": "2025-03-24",
-    "drawnBank": "",
     "bankAccountId": "bank-cash",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-7",
-    "voucherNo": "BRV-26-007",
+    "id": "vch-rv-8",
+    "voucherNo": "BRV-26-008",
     "type": "RV",
     "date": "2025-03-25",
     "party": "CHASE VALUE",
@@ -4729,15 +4693,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "",
     "chequeDate": "2025-03-25",
-    "drawnBank": "",
     "bankAccountId": "bank-cash",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-8",
-    "voucherNo": "BRV-26-008",
+    "id": "vch-rv-9",
+    "voucherNo": "BRV-26-009",
     "type": "RV",
     "date": "2025-03-26",
     "party": "CHASE VALUE",
@@ -4752,15 +4715,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "",
     "chequeDate": "2025-03-26",
-    "drawnBank": "",
     "bankAccountId": "bank-cash",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-9",
-    "voucherNo": "BRV-26-009",
+    "id": "vch-rv-10",
+    "voucherNo": "BRV-26-010",
     "type": "RV",
     "date": "2025-03-27",
     "party": "CHASE VALUE",
@@ -4775,17 +4737,16 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "",
     "chequeDate": "2025-03-27",
-    "drawnBank": "",
     "bankAccountId": "bank-cash",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-10",
-    "voucherNo": "BRV-26-010",
+    "id": "vch-rv-11",
+    "voucherNo": "BRV-26-011",
     "type": "RV",
-    "date": "2026-07-01",
+    "date": "2025-04-15",
     "party": "CHASE VALUE",
     "clientId": "cli-002",
     "vendorId": null,
@@ -4797,18 +4758,17 @@ export const REAL_VOUCHERS = [
     "receiveMode": "bank",
     "isPdc": false,
     "chequeNo": "20768137",
-    "chequeDate": "2026-07-01",
-    "drawnBank": "",
+    "chequeDate": "2025-04-15",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-11",
-    "voucherNo": "BRV-26-011",
+    "id": "vch-rv-12",
+    "voucherNo": "BRV-26-012",
     "type": "RV",
-    "date": "2026-07-01",
+    "date": "2025-04-15",
     "party": "CHASE VALUE",
     "clientId": "cli-002",
     "vendorId": null,
@@ -4820,18 +4780,17 @@ export const REAL_VOUCHERS = [
     "receiveMode": "bank",
     "isPdc": false,
     "chequeNo": "20758173",
-    "chequeDate": "2026-07-01",
-    "drawnBank": "",
+    "chequeDate": "2025-04-15",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-12",
-    "voucherNo": "BRV-26-012",
+    "id": "vch-rv-13",
+    "voucherNo": "BRV-26-013",
     "type": "RV",
-    "date": "2026-07-01",
+    "date": "2025-04-15",
     "party": "CHASE VALUE",
     "clientId": "cli-002",
     "vendorId": null,
@@ -4843,18 +4802,17 @@ export const REAL_VOUCHERS = [
     "receiveMode": "bank",
     "isPdc": false,
     "chequeNo": "20765803",
-    "chequeDate": "2026-07-01",
-    "drawnBank": "",
+    "chequeDate": "2025-04-15",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-13",
-    "voucherNo": "BRV-26-013",
+    "id": "vch-rv-14",
+    "voucherNo": "BRV-26-014",
     "type": "RV",
-    "date": "2026-07-01",
+    "date": "2025-04-15",
     "party": "CHASE VALUE",
     "clientId": "cli-002",
     "vendorId": null,
@@ -4866,18 +4824,17 @@ export const REAL_VOUCHERS = [
     "receiveMode": "bank",
     "isPdc": false,
     "chequeNo": "20761661",
-    "chequeDate": "2026-07-01",
-    "drawnBank": "",
+    "chequeDate": "2025-04-15",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-14",
-    "voucherNo": "BRV-26-014",
+    "id": "vch-rv-15",
+    "voucherNo": "BRV-26-015",
     "type": "RV",
-    "date": "2026-07-01",
+    "date": "2025-04-15",
     "party": "CHASE VALUE",
     "clientId": "cli-002",
     "vendorId": null,
@@ -4889,16 +4846,15 @@ export const REAL_VOUCHERS = [
     "receiveMode": "bank",
     "isPdc": false,
     "chequeNo": "20761660",
-    "chequeDate": "2026-07-01",
-    "drawnBank": "",
+    "chequeDate": "2025-04-15",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-15",
-    "voucherNo": "BRV-26-015",
+    "id": "vch-rv-16",
+    "voucherNo": "BRV-26-016",
     "type": "RV",
     "date": "2026-07-08",
     "party": "CHASE VALUE",
@@ -4913,15 +4869,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "",
     "chequeDate": "2026-07-08",
-    "drawnBank": "",
     "bankAccountId": "bank-cash",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-16",
-    "voucherNo": "BRV-26-016",
+    "id": "vch-rv-17",
+    "voucherNo": "BRV-26-017",
     "type": "RV",
     "date": "2026-07-09",
     "party": "CHASE VALUE",
@@ -4936,15 +4891,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "",
     "chequeDate": "2026-07-09",
-    "drawnBank": "",
     "bankAccountId": "bank-cash",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-17",
-    "voucherNo": "BRV-26-017",
+    "id": "vch-rv-18",
+    "voucherNo": "BRV-26-018",
     "type": "RV",
     "date": "2026-07-01",
     "party": "CHASE VALUE",
@@ -4959,15 +4913,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "",
     "chequeDate": "2026-07-01",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-18",
-    "voucherNo": "BRV-26-018",
+    "id": "vch-rv-19",
+    "voucherNo": "BRV-26-019",
     "type": "RV",
     "date": "2026-08-19",
     "party": "CHASE VALUE",
@@ -4982,15 +4935,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "Vouchers",
     "chequeDate": "2026-08-19",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-19",
-    "voucherNo": "BRV-26-019",
+    "id": "vch-rv-20",
+    "voucherNo": "BRV-26-020",
     "type": "RV",
     "date": "2026-07-01",
     "party": "CHASE VALUE",
@@ -5005,15 +4957,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "",
     "chequeDate": "2026-07-01",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-20",
-    "voucherNo": "BRV-26-020",
+    "id": "vch-rv-21",
+    "voucherNo": "BRV-26-021",
     "type": "RV",
     "date": "2026-07-08",
     "party": "CHASE VALUE",
@@ -5028,15 +4979,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "",
     "chequeDate": "2026-07-08",
-    "drawnBank": "",
     "bankAccountId": "bank-cash",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-21",
-    "voucherNo": "BRV-26-021",
+    "id": "vch-rv-22",
+    "voucherNo": "BRV-26-022",
     "type": "RV",
     "date": "2026-07-08",
     "party": "DEBS",
@@ -5049,17 +4999,16 @@ export const REAL_VOUCHERS = [
     "paymentMode": "Bank",
     "receiveMode": "bank",
     "isPdc": false,
-    "chequeNo": "VOUCHERS",
+    "chequeNo": "",
     "chequeDate": "2026-07-08",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-22",
-    "voucherNo": "BRV-26-022",
+    "id": "vch-rv-23",
+    "voucherNo": "BRV-26-023",
     "type": "RV",
     "date": "2026-08-27",
     "party": "DEBS",
@@ -5074,15 +5023,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "",
     "chequeDate": "2026-08-27",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-23",
-    "voucherNo": "BRV-26-023",
+    "id": "vch-rv-24",
+    "voucherNo": "BRV-26-024",
     "type": "RV",
     "date": "2026-08-24",
     "party": "DECENT",
@@ -5097,30 +5045,6 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "12561262",
     "chequeDate": "2026-08-24",
-    "drawnBank": "",
-    "bankAccountId": "bank-hbl",
-    "status": "Posted",
-    "settleAR": true,
-    "notes": ""
-  },
-  {
-    "id": "vch-rv-24",
-    "voucherNo": "BRV-26-024",
-    "type": "RV",
-    "date": "2026-09-07",
-    "party": "DECENT",
-    "clientId": "cli-004",
-    "vendorId": null,
-    "description": "CHEQUE RECEIVED FROM DECENT - MALIR TOWN PHASE 4",
-    "amount": 900000,
-    "netAmount": 900000,
-    "via": "Bank",
-    "paymentMode": "Bank",
-    "receiveMode": "bank",
-    "isPdc": false,
-    "chequeNo": "12560885",
-    "chequeDate": "2026-09-07",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
@@ -5141,9 +5065,8 @@ export const REAL_VOUCHERS = [
     "paymentMode": "Bank",
     "receiveMode": "bank",
     "isPdc": false,
-    "chequeNo": "12560886",
+    "chequeNo": "12560885",
     "chequeDate": "2026-09-07",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
@@ -5152,6 +5075,28 @@ export const REAL_VOUCHERS = [
   {
     "id": "vch-rv-26",
     "voucherNo": "BRV-26-026",
+    "type": "RV",
+    "date": "2026-09-07",
+    "party": "DECENT",
+    "clientId": "cli-004",
+    "vendorId": null,
+    "description": "CHEQUE RECEIVED FROM DECENT - MALIR TOWN PHASE 4",
+    "amount": 900000,
+    "netAmount": 900000,
+    "via": "Bank",
+    "paymentMode": "Bank",
+    "receiveMode": "bank",
+    "isPdc": false,
+    "chequeNo": "12560886",
+    "chequeDate": "2026-09-07",
+    "bankAccountId": "bank-hbl",
+    "status": "Posted",
+    "settleAR": true,
+    "notes": ""
+  },
+  {
+    "id": "vch-rv-27",
+    "voucherNo": "BRV-26-027",
     "type": "RV",
     "date": "2026-04-06",
     "party": "FALAKNAZ",
@@ -5166,30 +5111,6 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "10038470",
     "chequeDate": "2026-04-06",
-    "drawnBank": "",
-    "bankAccountId": "bank-hbl",
-    "status": "Posted",
-    "settleAR": true,
-    "notes": ""
-  },
-  {
-    "id": "vch-rv-27",
-    "voucherNo": "BRV-26-027",
-    "type": "RV",
-    "date": "2026-04-10",
-    "party": "FALAKNAZ",
-    "clientId": "cli-009",
-    "vendorId": null,
-    "description": "CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
-    "amount": 500000,
-    "netAmount": 500000,
-    "via": "Bank",
-    "paymentMode": "Bank",
-    "receiveMode": "bank",
-    "isPdc": false,
-    "chequeNo": "10043517",
-    "chequeDate": "2026-04-10",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
@@ -5204,15 +5125,14 @@ export const REAL_VOUCHERS = [
     "clientId": "cli-009",
     "vendorId": null,
     "description": "CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
-    "amount": 642519,
-    "netAmount": 642519,
+    "amount": 500000,
+    "netAmount": 500000,
     "via": "Bank",
     "paymentMode": "Bank",
     "receiveMode": "bank",
     "isPdc": false,
-    "chequeNo": "10995941",
+    "chequeNo": "10043517",
     "chequeDate": "2026-04-10",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
@@ -5222,20 +5142,19 @@ export const REAL_VOUCHERS = [
     "id": "vch-rv-29",
     "voucherNo": "BRV-26-029",
     "type": "RV",
-    "date": "2026-04-15",
+    "date": "2026-04-10",
     "party": "FALAKNAZ",
     "clientId": "cli-009",
     "vendorId": null,
     "description": "CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
-    "amount": 500000,
-    "netAmount": 500000,
+    "amount": 642519,
+    "netAmount": 642519,
     "via": "Bank",
     "paymentMode": "Bank",
     "receiveMode": "bank",
     "isPdc": false,
-    "chequeNo": "10043516",
-    "chequeDate": "2026-04-15",
-    "drawnBank": "",
+    "chequeNo": "10995941",
+    "chequeDate": "2026-04-10",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
@@ -5250,15 +5169,14 @@ export const REAL_VOUCHERS = [
     "clientId": "cli-009",
     "vendorId": null,
     "description": "CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
-    "amount": 517150,
-    "netAmount": 517150,
+    "amount": 500000,
+    "netAmount": 500000,
     "via": "Bank",
     "paymentMode": "Bank",
     "receiveMode": "bank",
     "isPdc": false,
-    "chequeNo": "10995468",
+    "chequeNo": "10043516",
     "chequeDate": "2026-04-15",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
@@ -5267,6 +5185,28 @@ export const REAL_VOUCHERS = [
   {
     "id": "vch-rv-31",
     "voucherNo": "BRV-26-031",
+    "type": "RV",
+    "date": "2026-04-15",
+    "party": "FALAKNAZ",
+    "clientId": "cli-009",
+    "vendorId": null,
+    "description": "CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
+    "amount": 517150,
+    "netAmount": 517150,
+    "via": "Bank",
+    "paymentMode": "Bank",
+    "receiveMode": "bank",
+    "isPdc": false,
+    "chequeNo": "10995468",
+    "chequeDate": "2026-04-15",
+    "bankAccountId": "bank-hbl",
+    "status": "Posted",
+    "settleAR": true,
+    "notes": ""
+  },
+  {
+    "id": "vch-rv-32",
+    "voucherNo": "BRV-26-032",
     "type": "RV",
     "date": "2026-04-20",
     "party": "FALAKNAZ",
@@ -5281,15 +5221,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "10043515",
     "chequeDate": "2026-04-20",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-32",
-    "voucherNo": "BRV-26-032",
+    "id": "vch-rv-33",
+    "voucherNo": "BRV-26-033",
     "type": "RV",
     "date": "2026-04-24",
     "party": "FALAKNAZ",
@@ -5304,15 +5243,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "10043514",
     "chequeDate": "2026-04-24",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-33",
-    "voucherNo": "BRV-26-033",
+    "id": "vch-rv-34",
+    "voucherNo": "BRV-26-034",
     "type": "RV",
     "date": "2026-04-30",
     "party": "FALAKNAZ",
@@ -5327,15 +5265,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "10043513",
     "chequeDate": "2026-04-30",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-34",
-    "voucherNo": "BRV-26-034",
+    "id": "vch-rv-35",
+    "voucherNo": "BRV-26-035",
     "type": "RV",
     "date": "2026-07-13",
     "party": "FALAKNAZ",
@@ -5350,15 +5287,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "10045569",
     "chequeDate": "2026-07-13",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-35",
-    "voucherNo": "BRV-26-035",
+    "id": "vch-rv-36",
+    "voucherNo": "BRV-26-036",
     "type": "RV",
     "date": "2026-07-20",
     "party": "FALAKNAZ",
@@ -5373,15 +5309,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "11014585",
     "chequeDate": "2026-07-20",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-36",
-    "voucherNo": "BRV-26-036",
+    "id": "vch-rv-37",
+    "voucherNo": "BRV-26-037",
     "type": "RV",
     "date": "2026-07-24",
     "party": "FALAKNAZ",
@@ -5396,30 +5331,6 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "11014218",
     "chequeDate": "2026-07-24",
-    "drawnBank": "",
-    "bankAccountId": "bank-hbl",
-    "status": "Posted",
-    "settleAR": true,
-    "notes": ""
-  },
-  {
-    "id": "vch-rv-37",
-    "voucherNo": "BRV-26-037",
-    "type": "RV",
-    "date": "2026-07-27",
-    "party": "FALAKNAZ",
-    "clientId": "cli-009",
-    "vendorId": null,
-    "description": "CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
-    "amount": 205000,
-    "netAmount": 205000,
-    "via": "Bank",
-    "paymentMode": "Bank",
-    "receiveMode": "bank",
-    "isPdc": false,
-    "chequeNo": "11014586",
-    "chequeDate": "2026-07-27",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
@@ -5434,15 +5345,14 @@ export const REAL_VOUCHERS = [
     "clientId": "cli-009",
     "vendorId": null,
     "description": "CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
-    "amount": 130000,
-    "netAmount": 130000,
+    "amount": 205000,
+    "netAmount": 205000,
     "via": "Bank",
     "paymentMode": "Bank",
     "receiveMode": "bank",
     "isPdc": false,
-    "chequeNo": "10045570",
+    "chequeNo": "11014586",
     "chequeDate": "2026-07-27",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
@@ -5451,6 +5361,28 @@ export const REAL_VOUCHERS = [
   {
     "id": "vch-rv-39",
     "voucherNo": "BRV-26-039",
+    "type": "RV",
+    "date": "2026-07-27",
+    "party": "FALAKNAZ",
+    "clientId": "cli-009",
+    "vendorId": null,
+    "description": "CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
+    "amount": 130000,
+    "netAmount": 130000,
+    "via": "Bank",
+    "paymentMode": "Bank",
+    "receiveMode": "bank",
+    "isPdc": false,
+    "chequeNo": "10045570",
+    "chequeDate": "2026-07-27",
+    "bankAccountId": "bank-hbl",
+    "status": "Posted",
+    "settleAR": true,
+    "notes": ""
+  },
+  {
+    "id": "vch-rv-40",
+    "voucherNo": "BRV-26-040",
     "type": "RV",
     "date": "2026-07-30",
     "party": "FALAKNAZ",
@@ -5465,15 +5397,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "11014219",
     "chequeDate": "2026-07-30",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-40",
-    "voucherNo": "BRV-26-040",
+    "id": "vch-rv-41",
+    "voucherNo": "BRV-26-041",
     "type": "RV",
     "date": "2026-07-31",
     "party": "FALAKNAZ",
@@ -5488,15 +5419,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "10047596",
     "chequeDate": "2026-07-31",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-41",
-    "voucherNo": "BRV-26-041",
+    "id": "vch-rv-42",
+    "voucherNo": "BRV-26-042",
     "type": "RV",
     "date": "2026-08-05",
     "party": "FALAKNAZ",
@@ -5511,15 +5441,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "10047597",
     "chequeDate": "2026-08-05",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-42",
-    "voucherNo": "BRV-26-042",
+    "id": "vch-rv-43",
+    "voucherNo": "BRV-26-043",
     "type": "RV",
     "date": "2026-08-10",
     "party": "FALAKNAZ",
@@ -5534,15 +5463,168 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "10047598",
     "chequeDate": "2026-08-10",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-43",
-    "voucherNo": "BRV-26-043",
+    "id": "vch-rv-44",
+    "voucherNo": "BRV-26-044",
+    "type": "RV",
+    "date": "2026-07-15",
+    "party": "FALAKNAZ SKYVIEW",
+    "clientId": "cli-010",
+    "vendorId": null,
+    "description": "Cheque Received from Falaknaz Skyview Towers",
+    "amount": 600000,
+    "netAmount": 600000,
+    "via": "Bank",
+    "paymentMode": "Bank",
+    "receiveMode": "bank",
+    "isPdc": false,
+    "chequeNo": "CA0000000273",
+    "chequeDate": "2026-07-15",
+    "bankAccountId": "bank-hbl",
+    "status": "Posted",
+    "settleAR": true,
+    "notes": ""
+  },
+  {
+    "id": "vch-rv-45",
+    "voucherNo": "BRV-26-045",
+    "type": "RV",
+    "date": "2026-07-21",
+    "party": "FALAKNAZ SKYVIEW",
+    "clientId": "cli-010",
+    "vendorId": null,
+    "description": "Cheque Received from Falaknaz Skyview Towers",
+    "amount": 500000,
+    "netAmount": 500000,
+    "via": "Bank",
+    "paymentMode": "Bank",
+    "receiveMode": "bank",
+    "isPdc": false,
+    "chequeNo": "CA0000000285",
+    "chequeDate": "2026-07-21",
+    "bankAccountId": "bank-hbl",
+    "status": "Posted",
+    "settleAR": true,
+    "notes": ""
+  },
+  {
+    "id": "vch-rv-46",
+    "voucherNo": "BRV-26-046",
+    "type": "RV",
+    "date": "2026-07-27",
+    "party": "FALAKNAZ SKYVIEW",
+    "clientId": "cli-010",
+    "vendorId": null,
+    "description": "Cheque Received from Falaknaz Skyview Towers",
+    "amount": 600000,
+    "netAmount": 600000,
+    "via": "Bank",
+    "paymentMode": "Bank",
+    "receiveMode": "bank",
+    "isPdc": false,
+    "chequeNo": "CA0000000294",
+    "chequeDate": "2026-07-27",
+    "bankAccountId": "bank-hbl",
+    "status": "Posted",
+    "settleAR": true,
+    "notes": ""
+  },
+  {
+    "id": "vch-rv-47",
+    "voucherNo": "BRV-26-047",
+    "type": "RV",
+    "date": "2026-08-10",
+    "party": "FALAKNAZ SKYVIEW",
+    "clientId": "cli-010",
+    "vendorId": null,
+    "description": "Cheque Received from Falaknaz Skyview Towers",
+    "amount": 675000,
+    "netAmount": 675000,
+    "via": "Bank",
+    "paymentMode": "Bank",
+    "receiveMode": "bank",
+    "isPdc": false,
+    "chequeNo": "CA0000000306",
+    "chequeDate": "2026-08-10",
+    "bankAccountId": "bank-hbl",
+    "status": "Posted",
+    "settleAR": true,
+    "notes": ""
+  },
+  {
+    "id": "vch-rv-48",
+    "voucherNo": "BRV-26-048",
+    "type": "RV",
+    "date": "2026-08-17",
+    "party": "FALAKNAZ SKYVIEW",
+    "clientId": "cli-010",
+    "vendorId": null,
+    "description": "Cheque Received from Falaknaz Skyview Towers",
+    "amount": 600000,
+    "netAmount": 600000,
+    "via": "Bank",
+    "paymentMode": "Bank",
+    "receiveMode": "bank",
+    "isPdc": false,
+    "chequeNo": "CA0000000332",
+    "chequeDate": "2026-08-17",
+    "bankAccountId": "bank-hbl",
+    "status": "Posted",
+    "settleAR": true,
+    "notes": ""
+  },
+  {
+    "id": "vch-rv-49",
+    "voucherNo": "BRV-26-049",
+    "type": "RV",
+    "date": "2026-09-01",
+    "party": "FALAKNAZ SKYVIEW",
+    "clientId": "cli-010",
+    "vendorId": null,
+    "description": "Cheque Received from Falaknaz Skyview Towers",
+    "amount": 550000,
+    "netAmount": 550000,
+    "via": "Bank",
+    "paymentMode": "Bank",
+    "receiveMode": "bank",
+    "isPdc": false,
+    "chequeNo": "CA0000000356",
+    "chequeDate": "2026-09-01",
+    "bankAccountId": "bank-hbl",
+    "status": "Posted",
+    "settleAR": true,
+    "notes": ""
+  },
+  {
+    "id": "vch-rv-50",
+    "voucherNo": "BRV-26-050",
+    "type": "RV",
+    "date": "2026-09-04",
+    "party": "FALAKNAZ SKYVIEW",
+    "clientId": "cli-010",
+    "vendorId": null,
+    "description": "Cheque Received from Falaknaz Skyview Towers",
+    "amount": 500000,
+    "netAmount": 500000,
+    "via": "Bank",
+    "paymentMode": "Bank",
+    "receiveMode": "bank",
+    "isPdc": false,
+    "chequeNo": "CA0000000369",
+    "chequeDate": "2026-09-04",
+    "bankAccountId": "bank-hbl",
+    "status": "Posted",
+    "settleAR": true,
+    "notes": ""
+  },
+  {
+    "id": "vch-rv-51",
+    "voucherNo": "BRV-26-051",
     "type": "RV",
     "date": "2026-08-07",
     "party": "FALAKNAZ GRANDE",
@@ -5557,15 +5639,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "CA0000000133",
     "chequeDate": "2026-08-07",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-44",
-    "voucherNo": "BRV-26-044",
+    "id": "vch-rv-52",
+    "voucherNo": "BRV-26-052",
     "type": "RV",
     "date": "2026-09-05",
     "party": "FALAKNAZ GRANDE",
@@ -5580,15 +5661,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "CA0000000140",
     "chequeDate": "2026-09-05",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-45",
-    "voucherNo": "BRV-26-045",
+    "id": "vch-rv-53",
+    "voucherNo": "BRV-26-053",
     "type": "RV",
     "date": "2026-07-04",
     "party": "HMR",
@@ -5603,15 +5683,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "",
     "chequeDate": "2026-07-04",
-    "drawnBank": "",
     "bankAccountId": "bank-cash",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-46",
-    "voucherNo": "BRV-26-046",
+    "id": "vch-rv-54",
+    "voucherNo": "BRV-26-054",
     "type": "RV",
     "date": "2026-08-28",
     "party": "HMR",
@@ -5626,17 +5705,16 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "12212855",
     "chequeDate": "2026-08-28",
-    "drawnBank": "",
     "bankAccountId": "bank-cash",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-47",
-    "voucherNo": "BRV-26-047",
+    "id": "vch-rv-55",
+    "voucherNo": "BRV-26-055",
     "type": "RV",
-    "date": "2026-07-01",
+    "date": "2026-08-26",
     "party": "H&H",
     "clientId": "cli-016",
     "vendorId": null,
@@ -5648,18 +5726,17 @@ export const REAL_VOUCHERS = [
     "receiveMode": "bank",
     "isPdc": false,
     "chequeNo": "57026829",
-    "chequeDate": "2026-07-01",
-    "drawnBank": "",
+    "chequeDate": "2026-08-26",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-48",
-    "voucherNo": "BRV-26-048",
+    "id": "vch-rv-56",
+    "voucherNo": "BRV-26-056",
     "type": "RV",
-    "date": "2026-07-01",
+    "date": "2026-08-28",
     "party": "H&H",
     "clientId": "cli-016",
     "vendorId": null,
@@ -5671,18 +5748,17 @@ export const REAL_VOUCHERS = [
     "receiveMode": "bank",
     "isPdc": false,
     "chequeNo": "57026830",
-    "chequeDate": "2026-07-01",
-    "drawnBank": "",
+    "chequeDate": "2026-08-28",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-49",
-    "voucherNo": "BRV-26-049",
+    "id": "vch-rv-57",
+    "voucherNo": "BRV-26-057",
     "type": "RV",
-    "date": "2026-07-01",
+    "date": "2026-08-31",
     "party": "H&H",
     "clientId": "cli-016",
     "vendorId": null,
@@ -5694,16 +5770,15 @@ export const REAL_VOUCHERS = [
     "receiveMode": "bank",
     "isPdc": false,
     "chequeNo": "57026831",
-    "chequeDate": "2026-07-01",
-    "drawnBank": "",
+    "chequeDate": "2026-08-31",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-50",
-    "voucherNo": "BRV-26-050",
+    "id": "vch-rv-58",
+    "voucherNo": "BRV-26-058",
     "type": "RV",
     "date": "2026-02-09",
     "party": "H&H",
@@ -5718,15 +5793,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "57026832",
     "chequeDate": "2026-02-09",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-51",
-    "voucherNo": "BRV-26-051",
+    "id": "vch-rv-59",
+    "voucherNo": "BRV-26-059",
     "type": "RV",
     "date": "2026-04-09",
     "party": "H&H",
@@ -5741,15 +5815,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "57026833",
     "chequeDate": "2026-04-09",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-52",
-    "voucherNo": "BRV-26-052",
+    "id": "vch-rv-60",
+    "voucherNo": "BRV-26-060",
     "type": "RV",
     "date": "2026-07-09",
     "party": "H&H",
@@ -5764,15 +5837,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "57026834",
     "chequeDate": "2026-07-09",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-53",
-    "voucherNo": "BRV-26-053",
+    "id": "vch-rv-61",
+    "voucherNo": "BRV-26-061",
     "type": "RV",
     "date": "2026-06-20",
     "party": "HABBIT STORE",
@@ -5787,15 +5859,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "",
     "chequeDate": "2026-06-20",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
-    "notes": "Direct Adjustment"
+    "notes": ""
   },
   {
-    "id": "vch-rv-54",
-    "voucherNo": "BRV-26-054",
+    "id": "vch-rv-62",
+    "voucherNo": "BRV-26-062",
     "type": "RV",
     "date": "2026-08-13",
     "party": "IMTIAZ",
@@ -5810,15 +5881,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "56919832",
     "chequeDate": "2026-08-13",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-55",
-    "voucherNo": "BRV-26-055",
+    "id": "vch-rv-63",
+    "voucherNo": "BRV-26-063",
     "type": "RV",
     "date": "2026-08-13",
     "party": "IMTIAZ",
@@ -5833,15 +5903,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "",
     "chequeDate": "2026-08-13",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-56",
-    "voucherNo": "BRV-26-056",
+    "id": "vch-rv-64",
+    "voucherNo": "BRV-26-064",
     "type": "RV",
     "date": "2026-08-13",
     "party": "IMTIAZ",
@@ -5856,15 +5925,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "",
     "chequeDate": "2026-08-13",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-57",
-    "voucherNo": "BRV-26-057",
+    "id": "vch-rv-65",
+    "voucherNo": "BRV-26-065",
     "type": "RV",
     "date": "2026-07-31",
     "party": "IDEMITSU",
@@ -5879,15 +5947,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "",
     "chequeDate": "2026-07-31",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-58",
-    "voucherNo": "BRV-26-058",
+    "id": "vch-rv-66",
+    "voucherNo": "BRV-26-066",
     "type": "RV",
     "date": "2026-07-31",
     "party": "IDEMITSU",
@@ -5902,15 +5969,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "",
     "chequeDate": "2026-07-31",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-59",
-    "voucherNo": "BRV-26-059",
+    "id": "vch-rv-67",
+    "voucherNo": "BRV-26-067",
     "type": "RV",
     "date": "2026-07-31",
     "party": "IDEMITSU",
@@ -5925,15 +5991,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "",
     "chequeDate": "2026-07-31",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-60",
-    "voucherNo": "BRV-26-060",
+    "id": "vch-rv-68",
+    "voucherNo": "BRV-26-068",
     "type": "RV",
     "date": "2025-09-01",
     "party": "IGLOO",
@@ -5948,15 +6013,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "15513427",
     "chequeDate": "2025-09-01",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-61",
-    "voucherNo": "BRV-26-061",
+    "id": "vch-rv-69",
+    "voucherNo": "BRV-26-069",
     "type": "RV",
     "date": "2026-07-07",
     "party": "IGLOO",
@@ -5971,15 +6035,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "191974929",
     "chequeDate": "2026-07-07",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-62",
-    "voucherNo": "BRV-26-062",
+    "id": "vch-rv-70",
+    "voucherNo": "BRV-26-070",
     "type": "RV",
     "date": "2026-07-01",
     "party": "IGLOO",
@@ -5994,15 +6057,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "",
     "chequeDate": "2026-07-01",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-63",
-    "voucherNo": "BRV-26-063",
+    "id": "vch-rv-71",
+    "voucherNo": "BRV-26-071",
     "type": "RV",
     "date": "2026-07-01",
     "party": "IGLOO",
@@ -6017,15 +6079,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "",
     "chequeDate": "2026-07-01",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-64",
-    "voucherNo": "BRV-26-064",
+    "id": "vch-rv-72",
+    "voucherNo": "BRV-26-072",
     "type": "RV",
     "date": "2026-07-29",
     "party": "IGLOO",
@@ -6040,15 +6101,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "192480178",
     "chequeDate": "2026-07-29",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-65",
-    "voucherNo": "BRV-26-065",
+    "id": "vch-rv-73",
+    "voucherNo": "BRV-26-073",
     "type": "RV",
     "date": "2026-07-29",
     "party": "IGLOO",
@@ -6063,15 +6123,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "",
     "chequeDate": "2026-07-29",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-66",
-    "voucherNo": "BRV-26-066",
+    "id": "vch-rv-74",
+    "voucherNo": "BRV-26-074",
     "type": "RV",
     "date": "2026-07-29",
     "party": "IGLOO",
@@ -6086,15 +6145,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "",
     "chequeDate": "2026-07-29",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-67",
-    "voucherNo": "BRV-26-067",
+    "id": "vch-rv-75",
+    "voucherNo": "BRV-26-075",
     "type": "RV",
     "date": "2026-08-28",
     "party": "IGLOO",
@@ -6109,15 +6167,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "193072852",
     "chequeDate": "2026-08-28",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-68",
-    "voucherNo": "BRV-26-068",
+    "id": "vch-rv-76",
+    "voucherNo": "BRV-26-076",
     "type": "RV",
     "date": "2026-08-28",
     "party": "IGLOO",
@@ -6132,15 +6189,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "",
     "chequeDate": "2026-08-28",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-69",
-    "voucherNo": "BRV-26-069",
+    "id": "vch-rv-77",
+    "voucherNo": "BRV-26-077",
     "type": "RV",
     "date": "2026-08-28",
     "party": "IGLOO",
@@ -6155,15 +6211,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "",
     "chequeDate": "2026-08-28",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-70",
-    "voucherNo": "BRV-26-070",
+    "id": "vch-rv-78",
+    "voucherNo": "BRV-26-078",
     "type": "RV",
     "date": "2026-08-28",
     "party": "IGLOO",
@@ -6178,15 +6233,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "193072860",
     "chequeDate": "2026-08-28",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-71",
-    "voucherNo": "BRV-26-071",
+    "id": "vch-rv-79",
+    "voucherNo": "BRV-26-079",
     "type": "RV",
     "date": "2026-08-28",
     "party": "KINZA BEVRAGES",
@@ -6201,15 +6255,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "D-77630207",
     "chequeDate": "2026-08-28",
-    "drawnBank": "",
     "bankAccountId": "bank-cash",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-72",
-    "voucherNo": "BRV-26-072",
+    "id": "vch-rv-80",
+    "voucherNo": "BRV-26-080",
     "type": "RV",
     "date": "2026-08-28",
     "party": "KINZA BEVRAGES",
@@ -6224,192 +6277,7 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "D-77630212",
     "chequeDate": "2026-08-28",
-    "drawnBank": "",
     "bankAccountId": "bank-cash",
-    "status": "Posted",
-    "settleAR": true,
-    "notes": ""
-  },
-  {
-    "id": "vch-rv-73",
-    "voucherNo": "BRV-26-073",
-    "type": "RV",
-    "date": "2026-07-01",
-    "party": "KIFAYAH",
-    "clientId": "cli-024",
-    "vendorId": null,
-    "description": "Payment Received from KIFAYAH",
-    "amount": 8250,
-    "netAmount": 8250,
-    "via": "Bank",
-    "paymentMode": "Bank",
-    "receiveMode": "bank",
-    "isPdc": false,
-    "chequeNo": "",
-    "chequeDate": "2026-07-01",
-    "drawnBank": "",
-    "bankAccountId": "bank-hbl",
-    "status": "Posted",
-    "settleAR": true,
-    "notes": ""
-  },
-  {
-    "id": "vch-rv-74",
-    "voucherNo": "BRV-26-074",
-    "type": "RV",
-    "date": "2026-07-01",
-    "party": "KIFAYAH",
-    "clientId": "cli-024",
-    "vendorId": null,
-    "description": "Payment Received from KIFAYAH",
-    "amount": 8250,
-    "netAmount": 8250,
-    "via": "Bank",
-    "paymentMode": "Bank",
-    "receiveMode": "bank",
-    "isPdc": false,
-    "chequeNo": "",
-    "chequeDate": "2026-07-01",
-    "drawnBank": "",
-    "bankAccountId": "bank-hbl",
-    "status": "Posted",
-    "settleAR": true,
-    "notes": ""
-  },
-  {
-    "id": "vch-rv-75",
-    "voucherNo": "BRV-26-075",
-    "type": "RV",
-    "date": "2026-07-01",
-    "party": "KIFAYAH",
-    "clientId": "cli-024",
-    "vendorId": null,
-    "description": "Payment Received from KIFAYAH",
-    "amount": 8250,
-    "netAmount": 8250,
-    "via": "Bank",
-    "paymentMode": "Bank",
-    "receiveMode": "bank",
-    "isPdc": false,
-    "chequeNo": "",
-    "chequeDate": "2026-07-01",
-    "drawnBank": "",
-    "bankAccountId": "bank-hbl",
-    "status": "Posted",
-    "settleAR": true,
-    "notes": ""
-  },
-  {
-    "id": "vch-rv-76",
-    "voucherNo": "BRV-26-076",
-    "type": "RV",
-    "date": "2026-07-01",
-    "party": "KIFAYAH",
-    "clientId": "cli-024",
-    "vendorId": null,
-    "description": "Payment Received from KIFAYAH",
-    "amount": 8250,
-    "netAmount": 8250,
-    "via": "Bank",
-    "paymentMode": "Bank",
-    "receiveMode": "bank",
-    "isPdc": false,
-    "chequeNo": "",
-    "chequeDate": "2026-07-01",
-    "drawnBank": "",
-    "bankAccountId": "bank-hbl",
-    "status": "Posted",
-    "settleAR": true,
-    "notes": ""
-  },
-  {
-    "id": "vch-rv-77",
-    "voucherNo": "BRV-26-077",
-    "type": "RV",
-    "date": "2026-07-01",
-    "party": "KIFAYAH",
-    "clientId": "cli-024",
-    "vendorId": null,
-    "description": "Payment Received from KIFAYAH",
-    "amount": 8250,
-    "netAmount": 8250,
-    "via": "Bank",
-    "paymentMode": "Bank",
-    "receiveMode": "bank",
-    "isPdc": false,
-    "chequeNo": "",
-    "chequeDate": "2026-07-01",
-    "drawnBank": "",
-    "bankAccountId": "bank-hbl",
-    "status": "Posted",
-    "settleAR": true,
-    "notes": ""
-  },
-  {
-    "id": "vch-rv-78",
-    "voucherNo": "BRV-26-078",
-    "type": "RV",
-    "date": "2026-07-01",
-    "party": "KIFAYAH",
-    "clientId": "cli-024",
-    "vendorId": null,
-    "description": "Payment Received from KIFAYAH",
-    "amount": 8250,
-    "netAmount": 8250,
-    "via": "Bank",
-    "paymentMode": "Bank",
-    "receiveMode": "bank",
-    "isPdc": false,
-    "chequeNo": "",
-    "chequeDate": "2026-07-01",
-    "drawnBank": "",
-    "bankAccountId": "bank-hbl",
-    "status": "Posted",
-    "settleAR": true,
-    "notes": ""
-  },
-  {
-    "id": "vch-rv-79",
-    "voucherNo": "BRV-26-079",
-    "type": "RV",
-    "date": "2026-07-01",
-    "party": "KIFAYAH",
-    "clientId": "cli-024",
-    "vendorId": null,
-    "description": "Payment Received from KIFAYAH",
-    "amount": 8250,
-    "netAmount": 8250,
-    "via": "Bank",
-    "paymentMode": "Bank",
-    "receiveMode": "bank",
-    "isPdc": false,
-    "chequeNo": "",
-    "chequeDate": "2026-07-01",
-    "drawnBank": "",
-    "bankAccountId": "bank-hbl",
-    "status": "Posted",
-    "settleAR": true,
-    "notes": ""
-  },
-  {
-    "id": "vch-rv-80",
-    "voucherNo": "BRV-26-080",
-    "type": "RV",
-    "date": "2026-07-01",
-    "party": "KIFAYAH",
-    "clientId": "cli-024",
-    "vendorId": null,
-    "description": "Payment Received from KIFAYAH",
-    "amount": 6204.24,
-    "netAmount": 6204.24,
-    "via": "Bank",
-    "paymentMode": "Bank",
-    "receiveMode": "bank",
-    "isPdc": false,
-    "chequeNo": "",
-    "chequeDate": "2026-07-01",
-    "drawnBank": "",
-    "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
@@ -6417,29 +6285,6 @@ export const REAL_VOUCHERS = [
   {
     "id": "vch-rv-81",
     "voucherNo": "BRV-26-081",
-    "type": "RV",
-    "date": "2026-07-01",
-    "party": "KIFAYAH",
-    "clientId": "cli-024",
-    "vendorId": null,
-    "description": "Payment Received from KIFAYAH",
-    "amount": 63954.24,
-    "netAmount": 63954.24,
-    "via": "Bank",
-    "paymentMode": "Bank",
-    "receiveMode": "bank",
-    "isPdc": false,
-    "chequeNo": "",
-    "chequeDate": "2026-07-01",
-    "drawnBank": "",
-    "bankAccountId": "bank-hbl",
-    "status": "Posted",
-    "settleAR": true,
-    "notes": ""
-  },
-  {
-    "id": "vch-rv-82",
-    "voucherNo": "BRV-26-082",
     "type": "RV",
     "date": "2026-08-28",
     "party": "MEDICAM",
@@ -6454,15 +6299,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "",
     "chequeDate": "2026-08-28",
-    "drawnBank": "",
     "bankAccountId": "bank-cash",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-83",
-    "voucherNo": "BRV-26-083",
+    "id": "vch-rv-82",
+    "voucherNo": "BRV-26-082",
     "type": "RV",
     "date": "2026-08-28",
     "party": "MEDICAM",
@@ -6477,15 +6321,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "00000084",
     "chequeDate": "2026-08-28",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-84",
-    "voucherNo": "BRV-26-084",
+    "id": "vch-rv-83",
+    "voucherNo": "BRV-26-083",
     "type": "RV",
     "date": "2026-09-14",
     "party": "MEDICAM",
@@ -6500,15 +6343,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "",
     "chequeDate": "2026-09-14",
-    "drawnBank": "",
     "bankAccountId": "bank-cash",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-85",
-    "voucherNo": "BRV-26-085",
+    "id": "vch-rv-84",
+    "voucherNo": "BRV-26-084",
     "type": "RV",
     "date": "2026-09-14",
     "party": "MEDICAM",
@@ -6523,15 +6365,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "77543549",
     "chequeDate": "2026-09-14",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-86",
-    "voucherNo": "BRV-26-086",
+    "id": "vch-rv-85",
+    "voucherNo": "BRV-26-085",
     "type": "RV",
     "date": "2026-09-14",
     "party": "MEDICAM",
@@ -6546,15 +6387,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "77543560",
     "chequeDate": "2026-09-14",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-87",
-    "voucherNo": "BRV-26-087",
+    "id": "vch-rv-86",
+    "voucherNo": "BRV-26-086",
     "type": "RV",
     "date": "2026-09-14",
     "party": "MEDICAM",
@@ -6569,15 +6409,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "77543559",
     "chequeDate": "2026-09-14",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-88",
-    "voucherNo": "BRV-26-088",
+    "id": "vch-rv-87",
+    "voucherNo": "BRV-26-087",
     "type": "RV",
     "date": "2026-09-14",
     "party": "MEDICAM",
@@ -6592,15 +6431,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "354580028",
     "chequeDate": "2026-09-14",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-89",
-    "voucherNo": "BRV-26-089",
+    "id": "vch-rv-88",
+    "voucherNo": "BRV-26-088",
     "type": "RV",
     "date": "2026-09-14",
     "party": "MEDICAM",
@@ -6615,15 +6453,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "354580040",
     "chequeDate": "2026-09-14",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-90",
-    "voucherNo": "BRV-26-090",
+    "id": "vch-rv-89",
+    "voucherNo": "BRV-26-089",
     "type": "RV",
     "date": "2026-08-01",
     "party": "NAJEEB FAROOQUI",
@@ -6638,15 +6475,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "ADJUSTMENT",
     "chequeDate": "2026-08-01",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
-    "notes": "Direct Adjustment"
+    "notes": ""
   },
   {
-    "id": "vch-rv-91",
-    "voucherNo": "BRV-26-091",
+    "id": "vch-rv-90",
+    "voucherNo": "BRV-26-090",
     "type": "RV",
     "date": "2025-09-18",
     "party": "SALMAN MEO",
@@ -6661,7 +6497,28 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "Purchase",
     "chequeDate": "2025-09-18",
-    "drawnBank": "",
+    "bankAccountId": "bank-hbl",
+    "status": "Posted",
+    "settleAR": true,
+    "notes": ""
+  },
+  {
+    "id": "vch-rv-91",
+    "voucherNo": "BRV-26-091",
+    "type": "RV",
+    "date": "2025-10-15",
+    "party": "SALMAN MEO",
+    "clientId": "cli-028",
+    "vendorId": null,
+    "description": "CHQ RECEIVED FROM ANSAR BHAI (AKD BUILDERS & DEVELOPERS)",
+    "amount": 900000,
+    "netAmount": 900000,
+    "via": "Bank",
+    "paymentMode": "Bank",
+    "receiveMode": "bank",
+    "isPdc": false,
+    "chequeNo": "181294575",
+    "chequeDate": "2025-10-15",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
@@ -6682,9 +6539,8 @@ export const REAL_VOUCHERS = [
     "paymentMode": "Bank",
     "receiveMode": "bank",
     "isPdc": false,
-    "chequeNo": "181294575",
+    "chequeNo": "181294576",
     "chequeDate": "2025-10-15",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
@@ -6705,9 +6561,8 @@ export const REAL_VOUCHERS = [
     "paymentMode": "Bank",
     "receiveMode": "bank",
     "isPdc": false,
-    "chequeNo": "181294576",
+    "chequeNo": "181294577",
     "chequeDate": "2025-10-15",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
@@ -6728,9 +6583,8 @@ export const REAL_VOUCHERS = [
     "paymentMode": "Bank",
     "receiveMode": "bank",
     "isPdc": false,
-    "chequeNo": "181294577",
+    "chequeNo": "181294578",
     "chequeDate": "2025-10-15",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
@@ -6751,9 +6605,8 @@ export const REAL_VOUCHERS = [
     "paymentMode": "Bank",
     "receiveMode": "bank",
     "isPdc": false,
-    "chequeNo": "181294578",
+    "chequeNo": "181294579",
     "chequeDate": "2025-10-15",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
@@ -6768,29 +6621,6 @@ export const REAL_VOUCHERS = [
     "clientId": "cli-028",
     "vendorId": null,
     "description": "CHQ RECEIVED FROM ANSAR BHAI (AKD BUILDERS & DEVELOPERS)",
-    "amount": 900000,
-    "netAmount": 900000,
-    "via": "Bank",
-    "paymentMode": "Bank",
-    "receiveMode": "bank",
-    "isPdc": false,
-    "chequeNo": "181294579",
-    "chequeDate": "2025-10-15",
-    "drawnBank": "",
-    "bankAccountId": "bank-hbl",
-    "status": "Posted",
-    "settleAR": true,
-    "notes": ""
-  },
-  {
-    "id": "vch-rv-97",
-    "voucherNo": "BRV-26-097",
-    "type": "RV",
-    "date": "2025-10-15",
-    "party": "SALMAN MEO",
-    "clientId": "cli-028",
-    "vendorId": null,
-    "description": "CHQ RECEIVED FROM ANSAR BHAI (AKD BUILDERS & DEVELOPERS)",
     "amount": 500000,
     "netAmount": 500000,
     "via": "Bank",
@@ -6799,15 +6629,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "181294580",
     "chequeDate": "2025-10-15",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-98",
-    "voucherNo": "BRV-26-098",
+    "id": "vch-rv-97",
+    "voucherNo": "BRV-26-097",
     "type": "RV",
     "date": "2026-02-09",
     "party": "SALMAN MEO",
@@ -6822,15 +6651,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "DISCOUNT",
     "chequeDate": "2026-02-09",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-99",
-    "voucherNo": "BRV-26-099",
+    "id": "vch-rv-98",
+    "voucherNo": "BRV-26-098",
     "type": "RV",
     "date": "2026-02-09",
     "party": "SALMAN MEO",
@@ -6845,176 +6673,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "",
     "chequeDate": "2026-02-09",
-    "drawnBank": "",
     "bankAccountId": "bank-cash",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-100",
-    "voucherNo": "BRV-26-100",
-    "type": "RV",
-    "date": "2026-08-04",
-    "party": "SUNRIDGE",
-    "clientId": "cli-031",
-    "vendorId": null,
-    "description": "IBFT RECEIVED IN IMC FROM SUNRIDGE",
-    "amount": 500000,
-    "netAmount": 500000,
-    "via": "Bank",
-    "paymentMode": "Bank",
-    "receiveMode": "bank",
-    "isPdc": false,
-    "chequeNo": "",
-    "chequeDate": "2026-08-04",
-    "drawnBank": "",
-    "bankAccountId": "bank-hbl",
-    "status": "Posted",
-    "settleAR": true,
-    "notes": ""
-  },
-  {
-    "id": "vch-rv-101",
-    "voucherNo": "BRV-26-101",
-    "type": "RV",
-    "date": "2026-08-07",
-    "party": "SUNRIDGE",
-    "clientId": "cli-031",
-    "vendorId": null,
-    "description": "IBFT RECEIVED IN IMC FROM SUNRIDGE",
-    "amount": 500000,
-    "netAmount": 500000,
-    "via": "Bank",
-    "paymentMode": "Bank",
-    "receiveMode": "bank",
-    "isPdc": false,
-    "chequeNo": "",
-    "chequeDate": "2026-08-07",
-    "drawnBank": "",
-    "bankAccountId": "bank-hbl",
-    "status": "Posted",
-    "settleAR": true,
-    "notes": ""
-  },
-  {
-    "id": "vch-rv-102",
-    "voucherNo": "BRV-26-102",
-    "type": "RV",
-    "date": "2026-08-11",
-    "party": "SUNRIDGE",
-    "clientId": "cli-031",
-    "vendorId": null,
-    "description": "IBFT RECEIVED IN IMC FROM SUNRIDGE",
-    "amount": 500000,
-    "netAmount": 500000,
-    "via": "Bank",
-    "paymentMode": "Bank",
-    "receiveMode": "bank",
-    "isPdc": false,
-    "chequeNo": "",
-    "chequeDate": "2026-08-11",
-    "drawnBank": "",
-    "bankAccountId": "bank-hbl",
-    "status": "Posted",
-    "settleAR": true,
-    "notes": ""
-  },
-  {
-    "id": "vch-rv-103",
-    "voucherNo": "BRV-26-103",
-    "type": "RV",
-    "date": "2026-08-15",
-    "party": "SUNRIDGE",
-    "clientId": "cli-031",
-    "vendorId": null,
-    "description": "IBFT RECEIVED IN IMC FROM SUNRIDGE",
-    "amount": 500000,
-    "netAmount": 500000,
-    "via": "Bank",
-    "paymentMode": "Bank",
-    "receiveMode": "bank",
-    "isPdc": false,
-    "chequeNo": "",
-    "chequeDate": "2026-08-15",
-    "drawnBank": "",
-    "bankAccountId": "bank-hbl",
-    "status": "Posted",
-    "settleAR": true,
-    "notes": ""
-  },
-  {
-    "id": "vch-rv-104",
-    "voucherNo": "BRV-26-104",
-    "type": "RV",
-    "date": "2026-08-20",
-    "party": "SUNRIDGE",
-    "clientId": "cli-031",
-    "vendorId": null,
-    "description": "IBFT RECEIVED IN IMC FROM SUNRIDGE",
-    "amount": 500000,
-    "netAmount": 500000,
-    "via": "Bank",
-    "paymentMode": "Bank",
-    "receiveMode": "bank",
-    "isPdc": false,
-    "chequeNo": "",
-    "chequeDate": "2026-08-20",
-    "drawnBank": "",
-    "bankAccountId": "bank-hbl",
-    "status": "Posted",
-    "settleAR": true,
-    "notes": ""
-  },
-  {
-    "id": "vch-rv-105",
-    "voucherNo": "BRV-26-105",
-    "type": "RV",
-    "date": "2026-08-24",
-    "party": "SUNRIDGE",
-    "clientId": "cli-031",
-    "vendorId": null,
-    "description": "IBFT RECEIVED IN IMC FROM SUNRIDGE",
-    "amount": 500000,
-    "netAmount": 500000,
-    "via": "Bank",
-    "paymentMode": "Bank",
-    "receiveMode": "bank",
-    "isPdc": false,
-    "chequeNo": "",
-    "chequeDate": "2026-08-24",
-    "drawnBank": "",
-    "bankAccountId": "bank-hbl",
-    "status": "Posted",
-    "settleAR": true,
-    "notes": ""
-  },
-  {
-    "id": "vch-rv-106",
-    "voucherNo": "BRV-26-106",
-    "type": "RV",
-    "date": "2026-08-27",
-    "party": "SUNRIDGE",
-    "clientId": "cli-031",
-    "vendorId": null,
-    "description": "IBFT RECEIVED IN IMC FROM SUNRIDGE",
-    "amount": 500000,
-    "netAmount": 500000,
-    "via": "Bank",
-    "paymentMode": "Bank",
-    "receiveMode": "bank",
-    "isPdc": false,
-    "chequeNo": "",
-    "chequeDate": "2026-08-27",
-    "drawnBank": "",
-    "bankAccountId": "bank-hbl",
-    "status": "Posted",
-    "settleAR": true,
-    "notes": ""
-  },
-  {
-    "id": "vch-rv-107",
-    "voucherNo": "BRV-26-107",
+    "id": "vch-rv-99",
+    "voucherNo": "BRV-26-099",
     "type": "RV",
     "date": "2026-02-18",
     "party": "SUNRIDGE",
@@ -7029,15 +6695,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "",
     "chequeDate": "2026-02-18",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-108",
-    "voucherNo": "BRV-26-108",
+    "id": "vch-rv-100",
+    "voucherNo": "BRV-26-100",
     "type": "RV",
     "date": "2026-02-27",
     "party": "SUNRIDGE",
@@ -7052,15 +6717,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "",
     "chequeDate": "2026-02-27",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-109",
-    "voucherNo": "BRV-26-109",
+    "id": "vch-rv-101",
+    "voucherNo": "BRV-26-101",
     "type": "RV",
     "date": "2026-03-04",
     "party": "SUNRIDGE",
@@ -7075,15 +6739,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "",
     "chequeDate": "2026-03-04",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-110",
-    "voucherNo": "BRV-26-110",
+    "id": "vch-rv-102",
+    "voucherNo": "BRV-26-102",
     "type": "RV",
     "date": "2026-04-30",
     "party": "SUNRIDGE",
@@ -7098,15 +6761,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "",
     "chequeDate": "2026-04-30",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-111",
-    "voucherNo": "BRV-26-111",
+    "id": "vch-rv-103",
+    "voucherNo": "BRV-26-103",
     "type": "RV",
     "date": "2026-06-24",
     "party": "SUNRIDGE",
@@ -7121,15 +6783,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "",
     "chequeDate": "2026-06-24",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-112",
-    "voucherNo": "BRV-26-112",
+    "id": "vch-rv-104",
+    "voucherNo": "BRV-26-104",
     "type": "RV",
     "date": "2026-08-04",
     "party": "SUNRIDGE",
@@ -7144,15 +6805,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "",
     "chequeDate": "2026-08-04",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-113",
-    "voucherNo": "BRV-26-113",
+    "id": "vch-rv-105",
+    "voucherNo": "BRV-26-105",
     "type": "RV",
     "date": "2026-08-07",
     "party": "SUNRIDGE",
@@ -7167,15 +6827,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "",
     "chequeDate": "2026-08-07",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-114",
-    "voucherNo": "BRV-26-114",
+    "id": "vch-rv-106",
+    "voucherNo": "BRV-26-106",
     "type": "RV",
     "date": "2026-08-11",
     "party": "SUNRIDGE",
@@ -7190,15 +6849,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "",
     "chequeDate": "2026-08-11",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-115",
-    "voucherNo": "BRV-26-115",
+    "id": "vch-rv-107",
+    "voucherNo": "BRV-26-107",
     "type": "RV",
     "date": "2026-08-15",
     "party": "SUNRIDGE",
@@ -7213,15 +6871,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "",
     "chequeDate": "2026-08-15",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-116",
-    "voucherNo": "BRV-26-116",
+    "id": "vch-rv-108",
+    "voucherNo": "BRV-26-108",
     "type": "RV",
     "date": "2026-08-20",
     "party": "SUNRIDGE",
@@ -7236,15 +6893,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "",
     "chequeDate": "2026-08-20",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-117",
-    "voucherNo": "BRV-26-117",
+    "id": "vch-rv-109",
+    "voucherNo": "BRV-26-109",
     "type": "RV",
     "date": "2026-08-24",
     "party": "SUNRIDGE",
@@ -7259,15 +6915,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "",
     "chequeDate": "2026-08-24",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-118",
-    "voucherNo": "BRV-26-118",
+    "id": "vch-rv-110",
+    "voucherNo": "BRV-26-110",
     "type": "RV",
     "date": "2026-08-27",
     "party": "SUNRIDGE",
@@ -7282,7 +6937,182 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "",
     "chequeDate": "2026-08-27",
-    "drawnBank": "",
+    "bankAccountId": "bank-hbl",
+    "status": "Posted",
+    "settleAR": true,
+    "notes": ""
+  },
+  {
+    "id": "vch-rv-111",
+    "voucherNo": "BRV-26-111",
+    "type": "RV",
+    "date": "2026-07-04",
+    "party": "XEFAN",
+    "clientId": "cli-032",
+    "vendorId": null,
+    "description": "IBFT Received IN ADPULSE 1170",
+    "amount": 395000,
+    "netAmount": 395000,
+    "via": "Bank",
+    "paymentMode": "Bank",
+    "receiveMode": "bank",
+    "isPdc": false,
+    "chequeNo": "",
+    "chequeDate": "2026-07-04",
+    "bankAccountId": "bank-hbl",
+    "status": "Posted",
+    "settleAR": true,
+    "notes": ""
+  },
+  {
+    "id": "vch-rv-112",
+    "voucherNo": "BRV-26-112",
+    "type": "RV",
+    "date": "2026-07-18",
+    "party": "XEFAN",
+    "clientId": "cli-032",
+    "vendorId": null,
+    "description": "IBFT Received IN ADPULSE 1170",
+    "amount": 300000,
+    "netAmount": 300000,
+    "via": "Bank",
+    "paymentMode": "Bank",
+    "receiveMode": "bank",
+    "isPdc": false,
+    "chequeNo": "",
+    "chequeDate": "2026-07-18",
+    "bankAccountId": "bank-hbl",
+    "status": "Posted",
+    "settleAR": true,
+    "notes": ""
+  },
+  {
+    "id": "vch-rv-113",
+    "voucherNo": "BRV-26-113",
+    "type": "RV",
+    "date": "2026-07-21",
+    "party": "XEFAN",
+    "clientId": "cli-032",
+    "vendorId": null,
+    "description": "IBFT Received IN ADPULSE 1170",
+    "amount": 350000,
+    "netAmount": 350000,
+    "via": "Bank",
+    "paymentMode": "Bank",
+    "receiveMode": "bank",
+    "isPdc": false,
+    "chequeNo": "",
+    "chequeDate": "2026-07-21",
+    "bankAccountId": "bank-hbl",
+    "status": "Posted",
+    "settleAR": true,
+    "notes": ""
+  },
+  {
+    "id": "vch-rv-114",
+    "voucherNo": "BRV-26-114",
+    "type": "RV",
+    "date": "2026-07-22",
+    "party": "XEFAN",
+    "clientId": "cli-032",
+    "vendorId": null,
+    "description": "Cash Deposit in ADPULSE 1170",
+    "amount": 300000,
+    "netAmount": 300000,
+    "via": "Cash",
+    "paymentMode": "Cash",
+    "receiveMode": "cash",
+    "isPdc": false,
+    "chequeNo": "",
+    "chequeDate": "2026-07-22",
+    "bankAccountId": "bank-cash",
+    "status": "Posted",
+    "settleAR": true,
+    "notes": ""
+  },
+  {
+    "id": "vch-rv-115",
+    "voucherNo": "BRV-26-115",
+    "type": "RV",
+    "date": "2026-07-23",
+    "party": "XEFAN",
+    "clientId": "cli-032",
+    "vendorId": null,
+    "description": "IBFT Received IN ADPULSE 1170",
+    "amount": 525000,
+    "netAmount": 525000,
+    "via": "Bank",
+    "paymentMode": "Bank",
+    "receiveMode": "bank",
+    "isPdc": false,
+    "chequeNo": "",
+    "chequeDate": "2026-07-23",
+    "bankAccountId": "bank-hbl",
+    "status": "Posted",
+    "settleAR": true,
+    "notes": ""
+  },
+  {
+    "id": "vch-rv-116",
+    "voucherNo": "BRV-26-116",
+    "type": "RV",
+    "date": "2026-07-25",
+    "party": "XEFAN",
+    "clientId": "cli-032",
+    "vendorId": null,
+    "description": "IBFT Received IN ADPULSE 1170",
+    "amount": 200000,
+    "netAmount": 200000,
+    "via": "Bank",
+    "paymentMode": "Bank",
+    "receiveMode": "bank",
+    "isPdc": false,
+    "chequeNo": "",
+    "chequeDate": "2026-07-25",
+    "bankAccountId": "bank-hbl",
+    "status": "Posted",
+    "settleAR": true,
+    "notes": ""
+  },
+  {
+    "id": "vch-rv-117",
+    "voucherNo": "BRV-26-117",
+    "type": "RV",
+    "date": "2026-07-25",
+    "party": "XEFAN",
+    "clientId": "cli-032",
+    "vendorId": null,
+    "description": "IBFT Received IN ADPULSE 1170",
+    "amount": 350000,
+    "netAmount": 350000,
+    "via": "Bank",
+    "paymentMode": "Bank",
+    "receiveMode": "bank",
+    "isPdc": false,
+    "chequeNo": "",
+    "chequeDate": "2026-07-25",
+    "bankAccountId": "bank-hbl",
+    "status": "Posted",
+    "settleAR": true,
+    "notes": ""
+  },
+  {
+    "id": "vch-rv-118",
+    "voucherNo": "BRV-26-118",
+    "type": "RV",
+    "date": "2026-07-27",
+    "party": "XEFAN",
+    "clientId": "cli-032",
+    "vendorId": null,
+    "description": "Cheque Transfer in ADPULSE 1170",
+    "amount": 200000,
+    "netAmount": 200000,
+    "via": "Bank",
+    "paymentMode": "Bank",
+    "receiveMode": "bank",
+    "isPdc": false,
+    "chequeNo": "11830042",
+    "chequeDate": "2026-07-27",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
@@ -7292,20 +7122,19 @@ export const REAL_VOUCHERS = [
     "id": "vch-rv-119",
     "voucherNo": "BRV-26-119",
     "type": "RV",
-    "date": "2026-07-04",
+    "date": "2026-07-28",
     "party": "XEFAN",
     "clientId": "cli-032",
     "vendorId": null,
-    "description": "Payment Received from XEFAN",
-    "amount": 395000,
-    "netAmount": 395000,
+    "description": "IBFT Received IN ADPULSE 1170",
+    "amount": 200000,
+    "netAmount": 200000,
     "via": "Bank",
     "paymentMode": "Bank",
     "receiveMode": "bank",
     "isPdc": false,
     "chequeNo": "",
-    "chequeDate": "2026-07-04",
-    "drawnBank": "",
+    "chequeDate": "2026-07-28",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
@@ -7315,20 +7144,19 @@ export const REAL_VOUCHERS = [
     "id": "vch-rv-120",
     "voucherNo": "BRV-26-120",
     "type": "RV",
-    "date": "2026-07-18",
+    "date": "2026-07-29",
     "party": "XEFAN",
     "clientId": "cli-032",
     "vendorId": null,
-    "description": "Payment Received from XEFAN",
-    "amount": 300000,
-    "netAmount": 300000,
+    "description": "IBFT Received IN ADPULSE 1170",
+    "amount": 200000,
+    "netAmount": 200000,
     "via": "Bank",
     "paymentMode": "Bank",
     "receiveMode": "bank",
     "isPdc": false,
     "chequeNo": "",
-    "chequeDate": "2026-07-18",
-    "drawnBank": "",
+    "chequeDate": "2026-07-29",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
@@ -7338,21 +7166,20 @@ export const REAL_VOUCHERS = [
     "id": "vch-rv-121",
     "voucherNo": "BRV-26-121",
     "type": "RV",
-    "date": "2026-07-21",
+    "date": "2026-07-30",
     "party": "XEFAN",
     "clientId": "cli-032",
     "vendorId": null,
-    "description": "Payment Received from XEFAN",
-    "amount": 350000,
-    "netAmount": 350000,
-    "via": "Bank",
-    "paymentMode": "Bank",
-    "receiveMode": "bank",
+    "description": "Cash Deposit in ADPULSE 1170",
+    "amount": 900000,
+    "netAmount": 900000,
+    "via": "Cash",
+    "paymentMode": "Cash",
+    "receiveMode": "cash",
     "isPdc": false,
     "chequeNo": "",
-    "chequeDate": "2026-07-21",
-    "drawnBank": "",
-    "bankAccountId": "bank-hbl",
+    "chequeDate": "2026-07-30",
+    "bankAccountId": "bank-cash",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
@@ -7361,20 +7188,19 @@ export const REAL_VOUCHERS = [
     "id": "vch-rv-122",
     "voucherNo": "BRV-26-122",
     "type": "RV",
-    "date": "2026-07-22",
+    "date": "2026-08-07",
     "party": "XEFAN",
     "clientId": "cli-032",
     "vendorId": null,
-    "description": "Payment Received from XEFAN",
-    "amount": 300000,
-    "netAmount": 300000,
+    "description": "Cash Deposit in ADPULSE 1170",
+    "amount": 600000,
+    "netAmount": 600000,
     "via": "Cash",
     "paymentMode": "Cash",
     "receiveMode": "cash",
     "isPdc": false,
     "chequeNo": "",
-    "chequeDate": "2026-07-22",
-    "drawnBank": "",
+    "chequeDate": "2026-08-07",
     "bankAccountId": "bank-cash",
     "status": "Posted",
     "settleAR": true,
@@ -7384,20 +7210,19 @@ export const REAL_VOUCHERS = [
     "id": "vch-rv-123",
     "voucherNo": "BRV-26-123",
     "type": "RV",
-    "date": "2026-07-23",
+    "date": "2026-08-10",
     "party": "XEFAN",
     "clientId": "cli-032",
     "vendorId": null,
-    "description": "Payment Received from XEFAN",
-    "amount": 525000,
-    "netAmount": 525000,
+    "description": "IBFT Received IN ADPULSE 1170",
+    "amount": 100000,
+    "netAmount": 100000,
     "via": "Bank",
     "paymentMode": "Bank",
     "receiveMode": "bank",
     "isPdc": false,
     "chequeNo": "",
-    "chequeDate": "2026-07-23",
-    "drawnBank": "",
+    "chequeDate": "2026-08-10",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
@@ -7407,11 +7232,11 @@ export const REAL_VOUCHERS = [
     "id": "vch-rv-124",
     "voucherNo": "BRV-26-124",
     "type": "RV",
-    "date": "2026-07-25",
+    "date": "2026-08-13",
     "party": "XEFAN",
     "clientId": "cli-032",
     "vendorId": null,
-    "description": "Payment Received from XEFAN",
+    "description": "IBFT Received IN ADPULSE 1170",
     "amount": 200000,
     "netAmount": 200000,
     "via": "Bank",
@@ -7419,8 +7244,7 @@ export const REAL_VOUCHERS = [
     "receiveMode": "bank",
     "isPdc": false,
     "chequeNo": "",
-    "chequeDate": "2026-07-25",
-    "drawnBank": "",
+    "chequeDate": "2026-08-13",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
@@ -7430,20 +7254,19 @@ export const REAL_VOUCHERS = [
     "id": "vch-rv-125",
     "voucherNo": "BRV-26-125",
     "type": "RV",
-    "date": "2026-07-25",
+    "date": "2026-08-15",
     "party": "XEFAN",
     "clientId": "cli-032",
     "vendorId": null,
-    "description": "Payment Received from XEFAN",
-    "amount": 350000,
-    "netAmount": 350000,
+    "description": "IBFT Received IN ADPULSE 1170",
+    "amount": 500000,
+    "netAmount": 500000,
     "via": "Bank",
     "paymentMode": "Bank",
     "receiveMode": "bank",
     "isPdc": false,
     "chequeNo": "",
-    "chequeDate": "2026-07-25",
-    "drawnBank": "",
+    "chequeDate": "2026-08-15",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
@@ -7453,20 +7276,19 @@ export const REAL_VOUCHERS = [
     "id": "vch-rv-126",
     "voucherNo": "BRV-26-126",
     "type": "RV",
-    "date": "2026-07-27",
+    "date": "2026-08-17",
     "party": "XEFAN",
     "clientId": "cli-032",
     "vendorId": null,
-    "description": "Payment Received from XEFAN",
-    "amount": 200000,
-    "netAmount": 200000,
+    "description": "IBFT Received IN ADPULSE 1170",
+    "amount": 350000,
+    "netAmount": 350000,
     "via": "Bank",
     "paymentMode": "Bank",
     "receiveMode": "bank",
     "isPdc": false,
-    "chequeNo": "11830042",
-    "chequeDate": "2026-07-27",
-    "drawnBank": "",
+    "chequeNo": "",
+    "chequeDate": "2026-08-17",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
@@ -7476,20 +7298,19 @@ export const REAL_VOUCHERS = [
     "id": "vch-rv-127",
     "voucherNo": "BRV-26-127",
     "type": "RV",
-    "date": "2026-07-28",
+    "date": "2026-08-17",
     "party": "XEFAN",
     "clientId": "cli-032",
     "vendorId": null,
-    "description": "Payment Received from XEFAN",
-    "amount": 200000,
-    "netAmount": 200000,
+    "description": "IBFT Received IN ADPULSE 1170",
+    "amount": 300000,
+    "netAmount": 300000,
     "via": "Bank",
     "paymentMode": "Bank",
     "receiveMode": "bank",
     "isPdc": false,
     "chequeNo": "",
-    "chequeDate": "2026-07-28",
-    "drawnBank": "",
+    "chequeDate": "2026-08-17",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
@@ -7499,20 +7320,19 @@ export const REAL_VOUCHERS = [
     "id": "vch-rv-128",
     "voucherNo": "BRV-26-128",
     "type": "RV",
-    "date": "2026-07-29",
+    "date": "2026-08-21",
     "party": "XEFAN",
     "clientId": "cli-032",
     "vendorId": null,
-    "description": "Payment Received from XEFAN",
-    "amount": 200000,
-    "netAmount": 200000,
+    "description": "IBFT Received IN ADPULSE 1170",
+    "amount": 155000,
+    "netAmount": 155000,
     "via": "Bank",
     "paymentMode": "Bank",
     "receiveMode": "bank",
     "isPdc": false,
     "chequeNo": "",
-    "chequeDate": "2026-07-29",
-    "drawnBank": "",
+    "chequeDate": "2026-08-21",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
@@ -7522,21 +7342,20 @@ export const REAL_VOUCHERS = [
     "id": "vch-rv-129",
     "voucherNo": "BRV-26-129",
     "type": "RV",
-    "date": "2026-07-30",
+    "date": "2026-08-22",
     "party": "XEFAN",
     "clientId": "cli-032",
     "vendorId": null,
-    "description": "Payment Received from XEFAN",
-    "amount": 900000,
-    "netAmount": 900000,
-    "via": "Cash",
-    "paymentMode": "Cash",
-    "receiveMode": "cash",
+    "description": "IBFT Received IN ADPULSE 1170",
+    "amount": 200000,
+    "netAmount": 200000,
+    "via": "Bank",
+    "paymentMode": "Bank",
+    "receiveMode": "bank",
     "isPdc": false,
     "chequeNo": "",
-    "chequeDate": "2026-07-30",
-    "drawnBank": "",
-    "bankAccountId": "bank-cash",
+    "chequeDate": "2026-08-22",
+    "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
@@ -7545,21 +7364,20 @@ export const REAL_VOUCHERS = [
     "id": "vch-rv-130",
     "voucherNo": "BRV-26-130",
     "type": "RV",
-    "date": "2026-08-07",
+    "date": "2026-09-03",
     "party": "XEFAN",
     "clientId": "cli-032",
     "vendorId": null,
-    "description": "Payment Received from XEFAN",
-    "amount": 600000,
-    "netAmount": 600000,
-    "via": "Cash",
-    "paymentMode": "Cash",
-    "receiveMode": "cash",
+    "description": "IBFT Received IN ADPULSE 1170",
+    "amount": 150000,
+    "netAmount": 150000,
+    "via": "Bank",
+    "paymentMode": "Bank",
+    "receiveMode": "bank",
     "isPdc": false,
     "chequeNo": "",
-    "chequeDate": "2026-08-07",
-    "drawnBank": "",
-    "bankAccountId": "bank-cash",
+    "chequeDate": "2026-09-03",
+    "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
@@ -7568,20 +7386,19 @@ export const REAL_VOUCHERS = [
     "id": "vch-rv-131",
     "voucherNo": "BRV-26-131",
     "type": "RV",
-    "date": "2026-08-10",
+    "date": "2026-09-04",
     "party": "XEFAN",
     "clientId": "cli-032",
     "vendorId": null,
-    "description": "Payment Received from XEFAN",
-    "amount": 100000,
-    "netAmount": 100000,
+    "description": "IBFT Received IN ADPULSE 1170",
+    "amount": 150000,
+    "netAmount": 150000,
     "via": "Bank",
     "paymentMode": "Bank",
     "receiveMode": "bank",
     "isPdc": false,
     "chequeNo": "",
-    "chequeDate": "2026-08-10",
-    "drawnBank": "",
+    "chequeDate": "2026-09-04",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
@@ -7591,20 +7408,19 @@ export const REAL_VOUCHERS = [
     "id": "vch-rv-132",
     "voucherNo": "BRV-26-132",
     "type": "RV",
-    "date": "2026-08-13",
+    "date": "2026-09-05",
     "party": "XEFAN",
     "clientId": "cli-032",
     "vendorId": null,
-    "description": "Payment Received from XEFAN",
-    "amount": 200000,
-    "netAmount": 200000,
+    "description": "IBFT Received IN ADPULSE 1170",
+    "amount": 150000,
+    "netAmount": 150000,
     "via": "Bank",
     "paymentMode": "Bank",
     "receiveMode": "bank",
     "isPdc": false,
     "chequeNo": "",
-    "chequeDate": "2026-08-13",
-    "drawnBank": "",
+    "chequeDate": "2026-09-05",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
@@ -7614,195 +7430,11 @@ export const REAL_VOUCHERS = [
     "id": "vch-rv-133",
     "voucherNo": "BRV-26-133",
     "type": "RV",
-    "date": "2026-08-15",
-    "party": "XEFAN",
-    "clientId": "cli-032",
-    "vendorId": null,
-    "description": "Payment Received from XEFAN",
-    "amount": 500000,
-    "netAmount": 500000,
-    "via": "Bank",
-    "paymentMode": "Bank",
-    "receiveMode": "bank",
-    "isPdc": false,
-    "chequeNo": "",
-    "chequeDate": "2026-08-15",
-    "drawnBank": "",
-    "bankAccountId": "bank-hbl",
-    "status": "Posted",
-    "settleAR": true,
-    "notes": ""
-  },
-  {
-    "id": "vch-rv-134",
-    "voucherNo": "BRV-26-134",
-    "type": "RV",
-    "date": "2026-08-17",
-    "party": "XEFAN",
-    "clientId": "cli-032",
-    "vendorId": null,
-    "description": "Payment Received from XEFAN",
-    "amount": 350000,
-    "netAmount": 350000,
-    "via": "Bank",
-    "paymentMode": "Bank",
-    "receiveMode": "bank",
-    "isPdc": false,
-    "chequeNo": "",
-    "chequeDate": "2026-08-17",
-    "drawnBank": "",
-    "bankAccountId": "bank-hbl",
-    "status": "Posted",
-    "settleAR": true,
-    "notes": ""
-  },
-  {
-    "id": "vch-rv-135",
-    "voucherNo": "BRV-26-135",
-    "type": "RV",
-    "date": "2026-08-17",
-    "party": "XEFAN",
-    "clientId": "cli-032",
-    "vendorId": null,
-    "description": "Payment Received from XEFAN",
-    "amount": 300000,
-    "netAmount": 300000,
-    "via": "Bank",
-    "paymentMode": "Bank",
-    "receiveMode": "bank",
-    "isPdc": false,
-    "chequeNo": "",
-    "chequeDate": "2026-08-17",
-    "drawnBank": "",
-    "bankAccountId": "bank-hbl",
-    "status": "Posted",
-    "settleAR": true,
-    "notes": ""
-  },
-  {
-    "id": "vch-rv-136",
-    "voucherNo": "BRV-26-136",
-    "type": "RV",
-    "date": "2026-08-21",
-    "party": "XEFAN",
-    "clientId": "cli-032",
-    "vendorId": null,
-    "description": "Payment Received from XEFAN",
-    "amount": 155000,
-    "netAmount": 155000,
-    "via": "Bank",
-    "paymentMode": "Bank",
-    "receiveMode": "bank",
-    "isPdc": false,
-    "chequeNo": "",
-    "chequeDate": "2026-08-21",
-    "drawnBank": "",
-    "bankAccountId": "bank-hbl",
-    "status": "Posted",
-    "settleAR": true,
-    "notes": ""
-  },
-  {
-    "id": "vch-rv-137",
-    "voucherNo": "BRV-26-137",
-    "type": "RV",
-    "date": "2026-08-22",
-    "party": "XEFAN",
-    "clientId": "cli-032",
-    "vendorId": null,
-    "description": "Payment Received from XEFAN",
-    "amount": 200000,
-    "netAmount": 200000,
-    "via": "Bank",
-    "paymentMode": "Bank",
-    "receiveMode": "bank",
-    "isPdc": false,
-    "chequeNo": "",
-    "chequeDate": "2026-08-22",
-    "drawnBank": "",
-    "bankAccountId": "bank-hbl",
-    "status": "Posted",
-    "settleAR": true,
-    "notes": ""
-  },
-  {
-    "id": "vch-rv-138",
-    "voucherNo": "BRV-26-138",
-    "type": "RV",
-    "date": "2026-09-03",
-    "party": "XEFAN",
-    "clientId": "cli-032",
-    "vendorId": null,
-    "description": "Payment Received from XEFAN",
-    "amount": 150000,
-    "netAmount": 150000,
-    "via": "Bank",
-    "paymentMode": "Bank",
-    "receiveMode": "bank",
-    "isPdc": false,
-    "chequeNo": "",
-    "chequeDate": "2026-09-03",
-    "drawnBank": "",
-    "bankAccountId": "bank-hbl",
-    "status": "Posted",
-    "settleAR": true,
-    "notes": ""
-  },
-  {
-    "id": "vch-rv-139",
-    "voucherNo": "BRV-26-139",
-    "type": "RV",
-    "date": "2026-09-04",
-    "party": "XEFAN",
-    "clientId": "cli-032",
-    "vendorId": null,
-    "description": "Payment Received from XEFAN",
-    "amount": 150000,
-    "netAmount": 150000,
-    "via": "Bank",
-    "paymentMode": "Bank",
-    "receiveMode": "bank",
-    "isPdc": false,
-    "chequeNo": "",
-    "chequeDate": "2026-09-04",
-    "drawnBank": "",
-    "bankAccountId": "bank-hbl",
-    "status": "Posted",
-    "settleAR": true,
-    "notes": ""
-  },
-  {
-    "id": "vch-rv-140",
-    "voucherNo": "BRV-26-140",
-    "type": "RV",
     "date": "2026-09-05",
     "party": "XEFAN",
     "clientId": "cli-032",
     "vendorId": null,
-    "description": "Payment Received from XEFAN",
-    "amount": 150000,
-    "netAmount": 150000,
-    "via": "Bank",
-    "paymentMode": "Bank",
-    "receiveMode": "bank",
-    "isPdc": false,
-    "chequeNo": "",
-    "chequeDate": "2026-09-05",
-    "drawnBank": "",
-    "bankAccountId": "bank-hbl",
-    "status": "Posted",
-    "settleAR": true,
-    "notes": ""
-  },
-  {
-    "id": "vch-rv-141",
-    "voucherNo": "BRV-26-141",
-    "type": "RV",
-    "date": "2026-09-05",
-    "party": "XEFAN",
-    "clientId": "cli-032",
-    "vendorId": null,
-    "description": "Payment Received from XEFAN",
+    "description": "IBFT Received IN ADPULSE 1170",
     "amount": 100000,
     "netAmount": 100000,
     "via": "Bank",
@@ -7811,15 +7443,14 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "",
     "chequeDate": "2026-09-05",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
     "notes": ""
   },
   {
-    "id": "vch-rv-142",
-    "voucherNo": "BRV-26-142",
+    "id": "vch-rv-134",
+    "voucherNo": "BRV-26-134",
     "type": "RV",
     "date": "2026-09-01",
     "party": "9 FIGURE",
@@ -7834,7 +7465,6 @@ export const REAL_VOUCHERS = [
     "isPdc": false,
     "chequeNo": "",
     "chequeDate": "2026-09-01",
-    "drawnBank": "",
     "bankAccountId": "bank-hbl",
     "status": "Posted",
     "settleAR": true,
@@ -8661,6 +8291,66 @@ export const REAL_VOUCHERS = [
 
 export const REAL_JOURNAL = [
   {
+    "id": "jnl-inv-1",
+    "date": "2026-07-30",
+    "reference": "AD/9774/06/26",
+    "description": "[Sales Invoice] CHASE UP — OOH MEDIA CAMPAIGN KARACHI AND HYDERABAD",
+    "lines": [
+      {
+        "account": "ar",
+        "debit": 7000000,
+        "credit": 0,
+        "memo": "Accounts Receivable — CHASE UP"
+      },
+      {
+        "account": "revenue",
+        "debit": 0,
+        "credit": 7000000,
+        "memo": "Sales Revenue — CHASE UP"
+      }
+    ]
+  },
+  {
+    "id": "jnl-inv-2",
+    "date": "2026-07-30",
+    "reference": "AD/9775/06/26",
+    "description": "[Sales Invoice] CHASE UP — OOH MEDIA CAMPAIGN KARACHI AND HYDERABAD PRINTING AND INSTALLATION",
+    "lines": [
+      {
+        "account": "ar",
+        "debit": 2323570,
+        "credit": 0,
+        "memo": "Accounts Receivable — CHASE UP"
+      },
+      {
+        "account": "revenue",
+        "debit": 0,
+        "credit": 2323570,
+        "memo": "Sales Revenue — CHASE UP"
+      }
+    ]
+  },
+  {
+    "id": "jnl-inv-3",
+    "date": "2026-07-30",
+    "reference": "AD/9777/06/26",
+    "description": "[Sales Invoice] CHASE UP — MARDAN AND FAISALABAD VENDOR PAYMENT",
+    "lines": [
+      {
+        "account": "ar",
+        "debit": 668817,
+        "credit": 0,
+        "memo": "Accounts Receivable — CHASE UP"
+      },
+      {
+        "account": "revenue",
+        "debit": 0,
+        "credit": 668817,
+        "memo": "Sales Revenue — CHASE UP"
+      }
+    ]
+  },
+  {
     "id": "jnl-rv-1",
     "date": "2026-08-20",
     "reference": "BRV-26-001",
@@ -8724,6 +8414,67 @@ export const REAL_JOURNAL = [
     ]
   },
   {
+    "id": "jnl-inv-4",
+    "date": "2026-07-01",
+    "reference": "INV-26-004",
+    "description": "[Sales Invoice] CHASE UP — Media Billing",
+    "lines": [
+      {
+        "account": "ar",
+        "debit": 9992387,
+        "credit": 0,
+        "memo": "Accounts Receivable — CHASE UP"
+      },
+      {
+        "account": "revenue",
+        "debit": 0,
+        "credit": 9992387,
+        "memo": "Sales Revenue — CHASE UP"
+      }
+    ]
+  },
+  {
+    "id": "jnl-rv-4",
+    "date": "2026-07-01",
+    "reference": "BRV-26-004",
+    "description": "[Receipt Voucher] CHASE UP — Payment Received",
+    "lines": [
+      {
+        "account": "bank",
+        "bankAccountId": "bank-hbl",
+        "debit": 9670499,
+        "credit": 0,
+        "memo": "HBL Operations"
+      },
+      {
+        "account": "ar",
+        "debit": 0,
+        "credit": 9670499,
+        "memo": "Accounts Receivable — CHASE UP"
+      }
+    ]
+  },
+  {
+    "id": "jnl-inv-5",
+    "date": "2026-08-20",
+    "reference": "INV-Adjustment",
+    "description": "[Sales Invoice] CHASE UP — Adjustment In Cash Ledger",
+    "lines": [
+      {
+        "account": "ar",
+        "debit": 6417266,
+        "credit": 0,
+        "memo": "Accounts Receivable — CHASE UP"
+      },
+      {
+        "account": "revenue",
+        "debit": 0,
+        "credit": 6417266,
+        "memo": "Sales Revenue — CHASE UP"
+      }
+    ]
+  },
+  {
     "id": "jnl-ob-cli-001",
     "date": "2026-06-30",
     "reference": "OB-CLI-001",
@@ -8731,20 +8482,20 @@ export const REAL_JOURNAL = [
     "lines": [
       {
         "account": "ar",
-        "debit": 0,
-        "credit": 6417266,
+        "debit": 14319.359999999404,
+        "credit": 0,
         "memo": "Opening Balance — CHASE UP"
       },
       {
         "account": "equity",
-        "debit": 6417266,
-        "credit": 0,
+        "debit": 0,
+        "credit": 14319.359999999404,
         "memo": "Opening Retained Earnings / Equity"
       }
     ]
   },
   {
-    "id": "jnl-inv-1",
+    "id": "jnl-inv-6",
     "date": "2025-02-17",
     "reference": "AD/8584/02/25",
     "description": "[Sales Invoice] CHASE VALUE — Chase Value Festive Collection Site Printing & Installation of Baloch Bridge & Essa Nagri",
@@ -8764,7 +8515,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-2",
+    "id": "jnl-inv-7",
     "date": "2025-02-17",
     "reference": "AD/8585/02/25",
     "description": "[Sales Invoice] CHASE VALUE — Chase Value Festive Collection Site Rental of Baloch Bridge & Essa Nagri for 45 Days",
@@ -8784,7 +8535,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-3",
+    "id": "jnl-inv-8",
     "date": "2025-02-17",
     "reference": "AD/8586/02/25",
     "description": "[Sales Invoice] CHASE VALUE — Chase Value Festive Collection Digital Media campaign",
@@ -8804,9 +8555,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-4",
+    "id": "jnl-rv-5",
     "date": "2026-07-01",
-    "reference": "BRV-26-004",
+    "reference": "BRV-26-005",
     "description": "[Receipt Voucher] CHASE VALUE — Chase Value Gift Voucher Recevied",
     "lines": [
       {
@@ -8825,9 +8576,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-5",
+    "id": "jnl-rv-6",
     "date": "2026-07-01",
-    "reference": "BRV-26-005",
+    "reference": "BRV-26-006",
     "description": "[Receipt Voucher] CHASE VALUE — Chase Value Gift Voucher Recevied",
     "lines": [
       {
@@ -8846,9 +8597,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-6",
+    "id": "jnl-rv-7",
     "date": "2025-03-24",
-    "reference": "BRV-26-006",
+    "reference": "BRV-26-007",
     "description": "[Receipt Voucher] CHASE VALUE — Cash Recevied from Chase Value KBR branch against Site rental invoice",
     "lines": [
       {
@@ -8867,7 +8618,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-4",
+    "id": "jnl-inv-9",
     "date": "2025-03-18",
     "reference": "AD/8615/03/25",
     "description": "[Sales Invoice] CHASE VALUE — Chase Value Hyderabad Launch Electronic Media Campaign",
@@ -8887,7 +8638,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-5",
+    "id": "jnl-inv-10",
     "date": "2025-03-18",
     "reference": "AD/8613/03/25",
     "description": "[Sales Invoice] CHASE VALUE — Chase Value Hyderabad Launch Cable Media campaign",
@@ -8907,7 +8658,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-6",
+    "id": "jnl-inv-11",
     "date": "2025-03-18",
     "reference": "AD/8614/03/25",
     "description": "[Sales Invoice] CHASE VALUE — Chase Value Hyderabad Launch FM Radio campaign",
@@ -8927,7 +8678,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-7",
+    "id": "jnl-inv-12",
     "date": "2025-03-21",
     "reference": "AD/8632/03/25",
     "description": "[Sales Invoice] CHASE VALUE — Chase Value Media & PR Coverage of Hyderabad Launch",
@@ -8947,9 +8698,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-7",
+    "id": "jnl-rv-8",
     "date": "2025-03-25",
-    "reference": "BRV-26-007",
+    "reference": "BRV-26-008",
     "description": "[Receipt Voucher] CHASE VALUE — Cash Recevied from Chase Value KBR branch against Site rental invoice",
     "lines": [
       {
@@ -8968,9 +8719,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-8",
+    "id": "jnl-rv-9",
     "date": "2025-03-26",
-    "reference": "BRV-26-008",
+    "reference": "BRV-26-009",
     "description": "[Receipt Voucher] CHASE VALUE — Cash Recevied from Chase Value KBR branch against Site rental invoice",
     "lines": [
       {
@@ -8989,9 +8740,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-9",
+    "id": "jnl-rv-10",
     "date": "2025-03-27",
-    "reference": "BRV-26-009",
+    "reference": "BRV-26-010",
     "description": "[Receipt Voucher] CHASE VALUE — Cash Recevied from Chase Value KBR branch against Site rental invoice",
     "lines": [
       {
@@ -9010,9 +8761,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-10",
-    "date": "2026-07-01",
-    "reference": "BRV-26-010",
+    "id": "jnl-rv-11",
+    "date": "2025-04-15",
+    "reference": "BRV-26-011",
     "description": "[Receipt Voucher] CHASE VALUE — Received From Chase Value",
     "lines": [
       {
@@ -9031,9 +8782,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-11",
-    "date": "2026-07-01",
-    "reference": "BRV-26-011",
+    "id": "jnl-rv-12",
+    "date": "2025-04-15",
+    "reference": "BRV-26-012",
     "description": "[Receipt Voucher] CHASE VALUE — Received From Chase Value",
     "lines": [
       {
@@ -9052,9 +8803,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-12",
-    "date": "2026-07-01",
-    "reference": "BRV-26-012",
+    "id": "jnl-rv-13",
+    "date": "2025-04-15",
+    "reference": "BRV-26-013",
     "description": "[Receipt Voucher] CHASE VALUE — Received From Chase Value",
     "lines": [
       {
@@ -9073,9 +8824,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-13",
-    "date": "2026-07-01",
-    "reference": "BRV-26-013",
+    "id": "jnl-rv-14",
+    "date": "2025-04-15",
+    "reference": "BRV-26-014",
     "description": "[Receipt Voucher] CHASE VALUE — Received From Chase Value",
     "lines": [
       {
@@ -9094,9 +8845,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-14",
-    "date": "2026-07-01",
-    "reference": "BRV-26-014",
+    "id": "jnl-rv-15",
+    "date": "2025-04-15",
+    "reference": "BRV-26-015",
     "description": "[Receipt Voucher] CHASE VALUE — Received From Chase Value",
     "lines": [
       {
@@ -9115,9 +8866,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-15",
+    "id": "jnl-rv-16",
     "date": "2026-07-08",
-    "reference": "BRV-26-015",
+    "reference": "BRV-26-016",
     "description": "[Receipt Voucher] CHASE VALUE — CASH RECEIVED FROM CLIENT CHASE VALUE",
     "lines": [
       {
@@ -9136,9 +8887,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-16",
+    "id": "jnl-rv-17",
     "date": "2026-07-09",
-    "reference": "BRV-26-016",
+    "reference": "BRV-26-017",
     "description": "[Receipt Voucher] CHASE VALUE — CASH RECEIVED FROM CLIENT CHASE VALUE",
     "lines": [
       {
@@ -9157,7 +8908,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-8",
+    "id": "jnl-inv-13",
     "date": "2026-08-29",
     "reference": "AD/9832/08/26",
     "description": "[Sales Invoice] CHASE VALUE — CHASE VALUE CENTER RENTAL ABL ROUND ABOUT (22 DAYS) &              RJ MALL (17 DAYS)",
@@ -9177,7 +8928,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-9",
+    "id": "jnl-inv-14",
     "date": "2026-08-29",
     "reference": "AD/9833/08/26",
     "description": "[Sales Invoice] CHASE VALUE — CHASE VALUE CENTER RENTAL ABL ROUND ABOUT (22 DAYS) &              RJ MALL (17 DAYS)",
@@ -9197,7 +8948,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-10",
+    "id": "jnl-inv-15",
     "date": "2026-08-29",
     "reference": "AD/9834/08/26",
     "description": "[Sales Invoice] CHASE VALUE — CHASE VALUE CENTER PRINTING AND INSTALLATION KARACHI                      (AZADI ARTWORK)",
@@ -9217,7 +8968,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-11",
+    "id": "jnl-inv-16",
     "date": "2026-08-29",
     "reference": "AD/9835/08/26",
     "description": "[Sales Invoice] CHASE VALUE — CHASE VALUE CENTER PRINTING AND INSTALLATION KARACHI  (CAMPAIGN ARTWORK)",
@@ -9237,7 +8988,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-12",
+    "id": "jnl-inv-17",
     "date": "2026-08-29",
     "reference": "AD/9836/08/26",
     "description": "[Sales Invoice] CHASE VALUE — CHASE VALUE CENTER DIGITAL STREAMERS AT AIRPORT (15 DAYS)",
@@ -9257,7 +9008,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-13",
+    "id": "jnl-inv-18",
     "date": "2026-09-10",
     "reference": "AD/9864/09/26",
     "description": "[Sales Invoice] CHASE VALUE — CHASE VALUE CENTER RENTAL ABL ROUND ABOUT & RJ MALL                             (1 MONTH)",
@@ -9277,7 +9028,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-14",
+    "id": "jnl-inv-19",
     "date": "2026-09-10",
     "reference": "AD/9866/09/26",
     "description": "[Sales Invoice] CHASE VALUE — CHASE VALUE CENTER PRINTING AND INSTALLATION KARACHI",
@@ -9297,9 +9048,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-15",
+    "id": "jnl-inv-20",
     "date": "2026-07-01",
-    "reference": "INV-26-015",
+    "reference": "INV-26-020",
     "description": "[Sales Invoice] CHASE VALUE — Total Net Amount",
     "lines": [
       {
@@ -9317,9 +9068,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-17",
+    "id": "jnl-rv-18",
     "date": "2026-07-01",
-    "reference": "BRV-26-017",
+    "reference": "BRV-26-018",
     "description": "[Receipt Voucher] CHASE VALUE — Total Net Amount",
     "lines": [
       {
@@ -9338,9 +9089,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-18",
+    "id": "jnl-rv-19",
     "date": "2026-08-19",
-    "reference": "BRV-26-018",
+    "reference": "BRV-26-019",
     "description": "[Receipt Voucher] CHASE VALUE — CHASE VALUE VOUCHERS RECEIVED Qty: 184  x 5000",
     "lines": [
       {
@@ -9359,7 +9110,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-16",
+    "id": "jnl-inv-21",
     "date": "2026-08-29",
     "reference": "AD/96233/08/26",
     "description": "[Sales Invoice] CHASE VALUE — CHASE VALUE CENTER RENTAL ABL ROUND ABOUT (22 DAYS) &              RJ MALL (17 DAYS)",
@@ -9379,7 +9130,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-17",
+    "id": "jnl-inv-22",
     "date": "2026-09-10",
     "reference": "AD/9865/09/26",
     "description": "[Sales Invoice] CHASE VALUE — CHASE VALUE CENTER RENTAL ABL ROUND ABOUT & RJ MALL                             (1 MONTH)",
@@ -9399,9 +9150,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-18",
+    "id": "jnl-inv-23",
     "date": "2026-07-01",
-    "reference": "INV-26-018",
+    "reference": "INV-26-023",
     "description": "[Sales Invoice] CHASE VALUE — Total Net Amount",
     "lines": [
       {
@@ -9419,9 +9170,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-19",
+    "id": "jnl-rv-20",
     "date": "2026-07-01",
-    "reference": "BRV-26-019",
+    "reference": "BRV-26-020",
     "description": "[Receipt Voucher] CHASE VALUE — Total Net Amount",
     "lines": [
       {
@@ -9440,7 +9191,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-19",
+    "id": "jnl-inv-24",
     "date": "2026-02-20",
     "reference": "AD/9258/02/26",
     "description": "[Sales Invoice] CHASE VALUE — EMINENT OOH Media Campaign 1 Month",
@@ -9460,7 +9211,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-20",
+    "id": "jnl-inv-25",
     "date": "2026-02-20",
     "reference": "AD/9334/02/26",
     "description": "[Sales Invoice] CHASE VALUE — Printing & Installation (Open Now)",
@@ -9480,7 +9231,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-21",
+    "id": "jnl-inv-26",
     "date": "2026-02-20",
     "reference": "AD/9362/02/26",
     "description": "[Sales Invoice] CHASE VALUE — Eminent OOH Digital Media Campaign",
@@ -9500,9 +9251,29 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-20",
+    "id": "jnl-inv-27",
+    "date": "2026-07-01",
+    "reference": "INV-26-027",
+    "description": "[Sales Invoice] CHASE VALUE — Media Billing",
+    "lines": [
+      {
+        "account": "ar",
+        "debit": 4102200,
+        "credit": 0,
+        "memo": "Accounts Receivable — CHASE VALUE"
+      },
+      {
+        "account": "revenue",
+        "debit": 0,
+        "credit": 4102200,
+        "memo": "Sales Revenue — CHASE VALUE"
+      }
+    ]
+  },
+  {
+    "id": "jnl-rv-21",
     "date": "2026-07-08",
-    "reference": "BRV-26-020",
+    "reference": "BRV-26-021",
     "description": "[Receipt Voucher] CHASE VALUE — Cash Received from Chase Value",
     "lines": [
       {
@@ -9528,22 +9299,22 @@ export const REAL_JOURNAL = [
     "lines": [
       {
         "account": "ar",
-        "debit": 3019800,
+        "debit": 6316314,
         "credit": 0,
         "memo": "Opening Balance — CHASE VALUE"
       },
       {
         "account": "equity",
         "debit": 0,
-        "credit": 3019800,
+        "credit": 6316314,
         "memo": "Opening Retained Earnings / Equity"
       }
     ]
   },
   {
-    "id": "jnl-rv-21",
+    "id": "jnl-rv-22",
     "date": "2026-07-08",
-    "reference": "BRV-26-021",
+    "reference": "BRV-26-022",
     "description": "[Receipt Voucher] DEBS — VOUCEHRS RECEIVED FROM DEBS",
     "lines": [
       {
@@ -9562,9 +9333,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-22",
+    "id": "jnl-rv-23",
     "date": "2026-08-27",
-    "reference": "BRV-26-022",
+    "reference": "BRV-26-023",
     "description": "[Receipt Voucher] DEBS — IBFT Recevied from Debs Schooling System against OOH Billbaords Campaign against Cheque No 10076517",
     "lines": [
       {
@@ -9603,7 +9374,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-22",
+    "id": "jnl-inv-28",
     "date": "2026-07-23",
     "reference": "AD/9766/07/26",
     "description": "[Sales Invoice] DECENT — HFA COMMERCIAL ZONE WALL BRANDING",
@@ -9623,29 +9394,8 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-23",
-    "date": "2026-08-24",
-    "reference": "BRV-26-023",
-    "description": "[Receipt Voucher] DECENT — CHEQUE RECEIVED FROM DECENT - MALIR TOWN PHASE 4",
-    "lines": [
-      {
-        "account": "bank",
-        "bankAccountId": "bank-hbl",
-        "debit": 900000,
-        "credit": 0,
-        "memo": "HBL Operations"
-      },
-      {
-        "account": "ar",
-        "debit": 0,
-        "credit": 900000,
-        "memo": "Accounts Receivable — DECENT"
-      }
-    ]
-  },
-  {
     "id": "jnl-rv-24",
-    "date": "2026-09-07",
+    "date": "2026-08-24",
     "reference": "BRV-26-024",
     "description": "[Receipt Voucher] DECENT — CHEQUE RECEIVED FROM DECENT - MALIR TOWN PHASE 4",
     "lines": [
@@ -9686,6 +9436,27 @@ export const REAL_JOURNAL = [
     ]
   },
   {
+    "id": "jnl-rv-26",
+    "date": "2026-09-07",
+    "reference": "BRV-26-026",
+    "description": "[Receipt Voucher] DECENT — CHEQUE RECEIVED FROM DECENT - MALIR TOWN PHASE 4",
+    "lines": [
+      {
+        "account": "bank",
+        "bankAccountId": "bank-hbl",
+        "debit": 900000,
+        "credit": 0,
+        "memo": "HBL Operations"
+      },
+      {
+        "account": "ar",
+        "debit": 0,
+        "credit": 900000,
+        "memo": "Accounts Receivable — DECENT"
+      }
+    ]
+  },
+  {
     "id": "jnl-ob-cli-004",
     "date": "2026-06-30",
     "reference": "OB-CLI-004",
@@ -9706,167 +9477,27 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-23",
-    "date": "2026-07-01",
-    "reference": "INV-26-023",
-    "description": "[Sales Invoice] DESIGN MEDIA — Media Billing",
+    "id": "jnl-ob-cli-005",
+    "date": "2026-06-30",
+    "reference": "OB-CLI-005",
+    "description": "[Opening Balance] Accounts Receivable — DESIGN MEDIA",
     "lines": [
       {
         "account": "ar",
-        "debit": 3471368,
+        "debit": 752951,
         "credit": 0,
-        "memo": "Accounts Receivable — DESIGN MEDIA"
+        "memo": "Opening Balance — DESIGN MEDIA"
       },
       {
-        "account": "revenue",
+        "account": "equity",
         "debit": 0,
-        "credit": 3471368,
-        "memo": "Sales Revenue — DESIGN MEDIA"
-      }
-    ]
-  },
-  {
-    "id": "jnl-inv-24",
-    "date": "2026-07-01",
-    "reference": "INV-JUNE, 2024",
-    "description": "[Sales Invoice] DESIGN MEDIA — Media Billing",
-    "lines": [
-      {
-        "account": "ar",
-        "debit": 75000,
-        "credit": 0,
-        "memo": "Accounts Receivable — DESIGN MEDIA"
-      },
-      {
-        "account": "revenue",
-        "debit": 0,
-        "credit": 75000,
-        "memo": "Sales Revenue — DESIGN MEDIA"
-      }
-    ]
-  },
-  {
-    "id": "jnl-inv-25",
-    "date": "2026-07-01",
-    "reference": "INV-JULY, 2024",
-    "description": "[Sales Invoice] DESIGN MEDIA — Media Billing",
-    "lines": [
-      {
-        "account": "ar",
-        "debit": 75000,
-        "credit": 0,
-        "memo": "Accounts Receivable — DESIGN MEDIA"
-      },
-      {
-        "account": "revenue",
-        "debit": 0,
-        "credit": 75000,
-        "memo": "Sales Revenue — DESIGN MEDIA"
-      }
-    ]
-  },
-  {
-    "id": "jnl-inv-26",
-    "date": "2026-07-01",
-    "reference": "INV-AUGUST, 2024",
-    "description": "[Sales Invoice] DESIGN MEDIA — Media Billing",
-    "lines": [
-      {
-        "account": "ar",
-        "debit": 75000,
-        "credit": 0,
-        "memo": "Accounts Receivable — DESIGN MEDIA"
-      },
-      {
-        "account": "revenue",
-        "debit": 0,
-        "credit": 75000,
-        "memo": "Sales Revenue — DESIGN MEDIA"
-      }
-    ]
-  },
-  {
-    "id": "jnl-inv-27",
-    "date": "2026-07-01",
-    "reference": "INV-SEP, 2024",
-    "description": "[Sales Invoice] DESIGN MEDIA — Media Billing",
-    "lines": [
-      {
-        "account": "ar",
-        "debit": 75000,
-        "credit": 0,
-        "memo": "Accounts Receivable — DESIGN MEDIA"
-      },
-      {
-        "account": "revenue",
-        "debit": 0,
-        "credit": 75000,
-        "memo": "Sales Revenue — DESIGN MEDIA"
-      }
-    ]
-  },
-  {
-    "id": "jnl-inv-28",
-    "date": "2026-07-01",
-    "reference": "INV-OCT, 2024",
-    "description": "[Sales Invoice] DESIGN MEDIA — Media Billing",
-    "lines": [
-      {
-        "account": "ar",
-        "debit": 75000,
-        "credit": 0,
-        "memo": "Accounts Receivable — DESIGN MEDIA"
-      },
-      {
-        "account": "revenue",
-        "debit": 0,
-        "credit": 75000,
-        "memo": "Sales Revenue — DESIGN MEDIA"
+        "credit": 752951,
+        "memo": "Opening Retained Earnings / Equity"
       }
     ]
   },
   {
     "id": "jnl-inv-29",
-    "date": "2026-07-01",
-    "reference": "INV-NOV, 2024",
-    "description": "[Sales Invoice] DESIGN MEDIA — Media Billing",
-    "lines": [
-      {
-        "account": "ar",
-        "debit": 75000,
-        "credit": 0,
-        "memo": "Accounts Receivable — DESIGN MEDIA"
-      },
-      {
-        "account": "revenue",
-        "debit": 0,
-        "credit": 75000,
-        "memo": "Sales Revenue — DESIGN MEDIA"
-      }
-    ]
-  },
-  {
-    "id": "jnl-inv-30",
-    "date": "2026-07-01",
-    "reference": "INV-26-030",
-    "description": "[Sales Invoice] DESIGN MEDIA — Media Billing",
-    "lines": [
-      {
-        "account": "ar",
-        "debit": 3921368,
-        "credit": 0,
-        "memo": "Accounts Receivable — DESIGN MEDIA"
-      },
-      {
-        "account": "revenue",
-        "debit": 0,
-        "credit": 3921368,
-        "memo": "Sales Revenue — DESIGN MEDIA"
-      }
-    ]
-  },
-  {
-    "id": "jnl-inv-31",
     "date": "2026-08-04",
     "reference": "AD/9776/08/26",
     "description": "[Sales Invoice] DINERS — AL BARAKA APPAREL OOH STREAMERS CAMPAIGN NATION WIDE",
@@ -9886,7 +9517,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-32",
+    "id": "jnl-inv-30",
     "date": "2026-08-04",
     "reference": "AD/9778/08/26",
     "description": "[Sales Invoice] DINERS — AL BARAKA APPAREL OOH STREAMERS CAMPAIGN NATION WIDE",
@@ -9913,20 +9544,20 @@ export const REAL_JOURNAL = [
     "lines": [
       {
         "account": "ar",
-        "debit": 1510782,
+        "debit": 3495782,
         "credit": 0,
         "memo": "Opening Balance — DINERS"
       },
       {
         "account": "equity",
         "debit": 0,
-        "credit": 1510782,
+        "credit": 3495782,
         "memo": "Opening Retained Earnings / Equity"
       }
     ]
   },
   {
-    "id": "jnl-inv-33",
+    "id": "jnl-inv-31",
     "date": "2026-08-31",
     "reference": "INV-AD-S376",
     "description": "[Sales Invoice] DVAGO — DVAGO - STREAMERS CAMPAIGN",
@@ -9966,7 +9597,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-34",
+    "id": "jnl-inv-32",
     "date": "2025-09-05",
     "reference": "AD/9009/10/25",
     "description": "[Sales Invoice] FALAKNAZ — OOH MEDIA CAMPAIGN 1 MONTH DIFFERENT SITES & DIGITAL (AYESHA BAWANI, LUCKYONE, NATA KHAN & BAHADURABAD - FOC)",
@@ -9986,7 +9617,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-35",
+    "id": "jnl-inv-33",
     "date": "2025-09-05",
     "reference": "AD/9010/10/25",
     "description": "[Sales Invoice] FALAKNAZ — PRINTING & INSTALLATION CHARGES SHAHRAH-E-FAISAL AIRPORT, NURSURY, NAGAN & SAREENA",
@@ -10006,7 +9637,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-36",
+    "id": "jnl-inv-34",
     "date": "2025-11-11",
     "reference": "AD/9118/11/25",
     "description": "[Sales Invoice] FALAKNAZ — OOH MEDIA CAMPAIGN 1 MONTH DIFFERENT SITES & DIGITAL (FALAK NAZ WINTER FAMILY FESTIVAL & ELITE TOWERS)",
@@ -10026,7 +9657,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-37",
+    "id": "jnl-inv-35",
     "date": "2025-11-25",
     "reference": "AD/9119/11/25",
     "description": "[Sales Invoice] FALAKNAZ — PRINTING & INSTALLATION CHARGES ELITE TOWERS",
@@ -10046,7 +9677,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-38",
+    "id": "jnl-inv-36",
     "date": "2026-01-19",
     "reference": "AD/9227/01/26",
     "description": "[Sales Invoice] FALAKNAZ — OOH MEDIA CAMPAIGN - ONE BEVERLY BY FALAKNAZ GROUP",
@@ -10066,7 +9697,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-39",
+    "id": "jnl-inv-37",
     "date": "2026-01-19",
     "reference": "AD/9228/01/26",
     "description": "[Sales Invoice] FALAKNAZ — PRINTING & INSTALLATION - ONE BEVERLY BY FALAKNAZ GROUP",
@@ -10086,7 +9717,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-40",
+    "id": "jnl-inv-38",
     "date": "2026-01-19",
     "reference": "AD/9229/01/26",
     "description": "[Sales Invoice] FALAKNAZ — OOH MEDIA CAMPAIGN (LED LIGHTS)",
@@ -10106,9 +9737,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-26",
+    "id": "jnl-rv-27",
     "date": "2026-04-06",
-    "reference": "BRV-26-026",
+    "reference": "BRV-26-027",
     "description": "[Receipt Voucher] FALAKNAZ — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
     "lines": [
       {
@@ -10127,9 +9758,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-27",
+    "id": "jnl-rv-28",
     "date": "2026-04-10",
-    "reference": "BRV-26-027",
+    "reference": "BRV-26-028",
     "description": "[Receipt Voucher] FALAKNAZ — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
     "lines": [
       {
@@ -10148,9 +9779,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-28",
+    "id": "jnl-rv-29",
     "date": "2026-04-10",
-    "reference": "BRV-26-028",
+    "reference": "BRV-26-029",
     "description": "[Receipt Voucher] FALAKNAZ — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
     "lines": [
       {
@@ -10169,9 +9800,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-29",
+    "id": "jnl-rv-30",
     "date": "2026-04-15",
-    "reference": "BRV-26-029",
+    "reference": "BRV-26-030",
     "description": "[Receipt Voucher] FALAKNAZ — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
     "lines": [
       {
@@ -10190,9 +9821,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-30",
+    "id": "jnl-rv-31",
     "date": "2026-04-15",
-    "reference": "BRV-26-030",
+    "reference": "BRV-26-031",
     "description": "[Receipt Voucher] FALAKNAZ — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
     "lines": [
       {
@@ -10211,29 +9842,8 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-31",
-    "date": "2026-04-20",
-    "reference": "BRV-26-031",
-    "description": "[Receipt Voucher] FALAKNAZ — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
-    "lines": [
-      {
-        "account": "bank",
-        "bankAccountId": "bank-hbl",
-        "debit": 500000,
-        "credit": 0,
-        "memo": "HBL Operations"
-      },
-      {
-        "account": "ar",
-        "debit": 0,
-        "credit": 500000,
-        "memo": "Accounts Receivable — FALAKNAZ"
-      }
-    ]
-  },
-  {
     "id": "jnl-rv-32",
-    "date": "2026-04-24",
+    "date": "2026-04-20",
     "reference": "BRV-26-032",
     "description": "[Receipt Voucher] FALAKNAZ — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
     "lines": [
@@ -10254,29 +9864,8 @@ export const REAL_JOURNAL = [
   },
   {
     "id": "jnl-rv-33",
-    "date": "2026-04-30",
+    "date": "2026-04-24",
     "reference": "BRV-26-033",
-    "description": "[Receipt Voucher] FALAKNAZ — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
-    "lines": [
-      {
-        "account": "bank",
-        "bankAccountId": "bank-hbl",
-        "debit": 381140,
-        "credit": 0,
-        "memo": "HBL Operations"
-      },
-      {
-        "account": "ar",
-        "debit": 0,
-        "credit": 381140,
-        "memo": "Accounts Receivable — FALAKNAZ"
-      }
-    ]
-  },
-  {
-    "id": "jnl-rv-34",
-    "date": "2026-07-13",
-    "reference": "BRV-26-034",
     "description": "[Receipt Voucher] FALAKNAZ — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
     "lines": [
       {
@@ -10295,8 +9884,29 @@ export const REAL_JOURNAL = [
     ]
   },
   {
+    "id": "jnl-rv-34",
+    "date": "2026-04-30",
+    "reference": "BRV-26-034",
+    "description": "[Receipt Voucher] FALAKNAZ — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
+    "lines": [
+      {
+        "account": "bank",
+        "bankAccountId": "bank-hbl",
+        "debit": 381140,
+        "credit": 0,
+        "memo": "HBL Operations"
+      },
+      {
+        "account": "ar",
+        "debit": 0,
+        "credit": 381140,
+        "memo": "Accounts Receivable — FALAKNAZ"
+      }
+    ]
+  },
+  {
     "id": "jnl-rv-35",
-    "date": "2026-07-20",
+    "date": "2026-07-13",
     "reference": "BRV-26-035",
     "description": "[Receipt Voucher] FALAKNAZ — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
     "lines": [
@@ -10317,7 +9927,7 @@ export const REAL_JOURNAL = [
   },
   {
     "id": "jnl-rv-36",
-    "date": "2026-07-24",
+    "date": "2026-07-20",
     "reference": "BRV-26-036",
     "description": "[Receipt Voucher] FALAKNAZ — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
     "lines": [
@@ -10338,71 +9948,8 @@ export const REAL_JOURNAL = [
   },
   {
     "id": "jnl-rv-37",
-    "date": "2026-07-27",
+    "date": "2026-07-24",
     "reference": "BRV-26-037",
-    "description": "[Receipt Voucher] FALAKNAZ — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
-    "lines": [
-      {
-        "account": "bank",
-        "bankAccountId": "bank-hbl",
-        "debit": 205000,
-        "credit": 0,
-        "memo": "HBL Operations"
-      },
-      {
-        "account": "ar",
-        "debit": 0,
-        "credit": 205000,
-        "memo": "Accounts Receivable — FALAKNAZ"
-      }
-    ]
-  },
-  {
-    "id": "jnl-rv-38",
-    "date": "2026-07-27",
-    "reference": "BRV-26-038",
-    "description": "[Receipt Voucher] FALAKNAZ — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
-    "lines": [
-      {
-        "account": "bank",
-        "bankAccountId": "bank-hbl",
-        "debit": 130000,
-        "credit": 0,
-        "memo": "HBL Operations"
-      },
-      {
-        "account": "ar",
-        "debit": 0,
-        "credit": 130000,
-        "memo": "Accounts Receivable — FALAKNAZ"
-      }
-    ]
-  },
-  {
-    "id": "jnl-rv-39",
-    "date": "2026-07-30",
-    "reference": "BRV-26-039",
-    "description": "[Receipt Voucher] FALAKNAZ — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
-    "lines": [
-      {
-        "account": "bank",
-        "bankAccountId": "bank-hbl",
-        "debit": 165000,
-        "credit": 0,
-        "memo": "HBL Operations"
-      },
-      {
-        "account": "ar",
-        "debit": 0,
-        "credit": 165000,
-        "memo": "Accounts Receivable — FALAKNAZ"
-      }
-    ]
-  },
-  {
-    "id": "jnl-rv-40",
-    "date": "2026-07-31",
-    "reference": "BRV-26-040",
     "description": "[Receipt Voucher] FALAKNAZ — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
     "lines": [
       {
@@ -10421,8 +9968,71 @@ export const REAL_JOURNAL = [
     ]
   },
   {
+    "id": "jnl-rv-38",
+    "date": "2026-07-27",
+    "reference": "BRV-26-038",
+    "description": "[Receipt Voucher] FALAKNAZ — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
+    "lines": [
+      {
+        "account": "bank",
+        "bankAccountId": "bank-hbl",
+        "debit": 205000,
+        "credit": 0,
+        "memo": "HBL Operations"
+      },
+      {
+        "account": "ar",
+        "debit": 0,
+        "credit": 205000,
+        "memo": "Accounts Receivable — FALAKNAZ"
+      }
+    ]
+  },
+  {
+    "id": "jnl-rv-39",
+    "date": "2026-07-27",
+    "reference": "BRV-26-039",
+    "description": "[Receipt Voucher] FALAKNAZ — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
+    "lines": [
+      {
+        "account": "bank",
+        "bankAccountId": "bank-hbl",
+        "debit": 130000,
+        "credit": 0,
+        "memo": "HBL Operations"
+      },
+      {
+        "account": "ar",
+        "debit": 0,
+        "credit": 130000,
+        "memo": "Accounts Receivable — FALAKNAZ"
+      }
+    ]
+  },
+  {
+    "id": "jnl-rv-40",
+    "date": "2026-07-30",
+    "reference": "BRV-26-040",
+    "description": "[Receipt Voucher] FALAKNAZ — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
+    "lines": [
+      {
+        "account": "bank",
+        "bankAccountId": "bank-hbl",
+        "debit": 165000,
+        "credit": 0,
+        "memo": "HBL Operations"
+      },
+      {
+        "account": "ar",
+        "debit": 0,
+        "credit": 165000,
+        "memo": "Accounts Receivable — FALAKNAZ"
+      }
+    ]
+  },
+  {
     "id": "jnl-rv-41",
-    "date": "2026-08-05",
+    "date": "2026-07-31",
     "reference": "BRV-26-041",
     "description": "[Receipt Voucher] FALAKNAZ — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
     "lines": [
@@ -10443,8 +10053,29 @@ export const REAL_JOURNAL = [
   },
   {
     "id": "jnl-rv-42",
-    "date": "2026-08-10",
+    "date": "2026-08-05",
     "reference": "BRV-26-042",
+    "description": "[Receipt Voucher] FALAKNAZ — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
+    "lines": [
+      {
+        "account": "bank",
+        "bankAccountId": "bank-hbl",
+        "debit": 500000,
+        "credit": 0,
+        "memo": "HBL Operations"
+      },
+      {
+        "account": "ar",
+        "debit": 0,
+        "credit": 500000,
+        "memo": "Accounts Receivable — FALAKNAZ"
+      }
+    ]
+  },
+  {
+    "id": "jnl-rv-43",
+    "date": "2026-08-10",
+    "reference": "BRV-26-043",
     "description": "[Receipt Voucher] FALAKNAZ — CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
     "lines": [
       {
@@ -10463,7 +10094,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-41",
+    "id": "jnl-inv-39",
     "date": "2026-08-13",
     "reference": "AD/9784/08/26",
     "description": "[Sales Invoice] FALAKNAZ — OOH MEDIA CAMPAIGN ELITE TOWER (15 JULY 2026 TO 09 AUGUST 2026)",
@@ -10483,7 +10114,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-42",
+    "id": "jnl-inv-40",
     "date": "2026-08-13",
     "reference": "AD/9785/08/26",
     "description": "[Sales Invoice] FALAKNAZ — PRINTING & INSTALLATION CHARGES ELITE TOWERS",
@@ -10503,7 +10134,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-43",
+    "id": "jnl-inv-41",
     "date": "2026-08-17",
     "reference": "AD/9787/08/26",
     "description": "[Sales Invoice] FALAKNAZ — PRINTING & INSTALLATION CHARGES OF FOC SITES",
@@ -10523,7 +10154,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-44",
+    "id": "jnl-inv-42",
     "date": "2026-09-16",
     "reference": "AD/9868/09/26",
     "description": "[Sales Invoice] FALAKNAZ — OOH MEDIA CAMPAIGN FALAKNAZ ELITE TOWER",
@@ -10543,7 +10174,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-45",
+    "id": "jnl-inv-43",
     "date": "2026-09-16",
     "reference": "AD/9871/09/26",
     "description": "[Sales Invoice] FALAKNAZ — OOH MEDIA CAMPAIGN FALAKNAZ ELITE TOWER",
@@ -10563,7 +10194,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-46",
+    "id": "jnl-inv-44",
     "date": "2026-09-16",
     "reference": "AD/9875/09/26",
     "description": "[Sales Invoice] FALAKNAZ — OOH MEDIA CAMPAIGN FALAKNAZ ELITE TOWER PRINTING",
@@ -10583,7 +10214,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-47",
+    "id": "jnl-inv-45",
     "date": "2026-09-16",
     "reference": "AD/9877/09/26",
     "description": "[Sales Invoice] FALAKNAZ — OOH MEDIA CAMPAIGN FALAKNAZ ELITE TOWER PRINTING",
@@ -10603,9 +10234,296 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-43",
+    "id": "jnl-rv-44",
+    "date": "2026-07-15",
+    "reference": "BRV-26-044",
+    "description": "[Receipt Voucher] FALAKNAZ SKYVIEW — Cheque Received from Falaknaz Skyview Towers",
+    "lines": [
+      {
+        "account": "bank",
+        "bankAccountId": "bank-hbl",
+        "debit": 600000,
+        "credit": 0,
+        "memo": "HBL Operations"
+      },
+      {
+        "account": "ar",
+        "debit": 0,
+        "credit": 600000,
+        "memo": "Accounts Receivable — FALAKNAZ SKYVIEW"
+      }
+    ]
+  },
+  {
+    "id": "jnl-inv-46",
+    "date": "2026-07-02",
+    "reference": "AD/9762/07/26",
+    "description": "[Sales Invoice] FALAKNAZ SKYVIEW — FALAKNAZ SKYVIEW OOH MEDIA CAMPAIGN RENTAL(30 DAYS 1 JUNE 2026 TO 30 JUNE 2026)  EXPRESSWAY DHA ITEHAD",
+    "lines": [
+      {
+        "account": "ar",
+        "debit": 1236000,
+        "credit": 0,
+        "memo": "Accounts Receivable — FALAKNAZ SKYVIEW"
+      },
+      {
+        "account": "revenue",
+        "debit": 0,
+        "credit": 1236000,
+        "memo": "Sales Revenue — FALAKNAZ SKYVIEW"
+      }
+    ]
+  },
+  {
+    "id": "jnl-inv-47",
+    "date": "2026-07-21",
+    "reference": "AD/9763/07/26",
+    "description": "[Sales Invoice] FALAKNAZ SKYVIEW — FALAKNAZ SKYVIEW OOH MEDIA CAMPAIGN RENTAL(31 DAYS 1 JULY 2026 TO 31 JULY 2026)  EXPRESSWAY DHA ITEHAD",
+    "lines": [
+      {
+        "account": "ar",
+        "debit": 1236000,
+        "credit": 0,
+        "memo": "Accounts Receivable — FALAKNAZ SKYVIEW"
+      },
+      {
+        "account": "revenue",
+        "debit": 0,
+        "credit": 1236000,
+        "memo": "Sales Revenue — FALAKNAZ SKYVIEW"
+      }
+    ]
+  },
+  {
+    "id": "jnl-inv-48",
+    "date": "2026-07-02",
+    "reference": "AD/9764/07/26",
+    "description": "[Sales Invoice] FALAKNAZ SKYVIEW — FALAKNAZ SKYVIEW OOH MEDIA CAMPAIGN PRINTING AND INSTALLATION",
+    "lines": [
+      {
+        "account": "ar",
+        "debit": 388825,
+        "credit": 0,
+        "memo": "Accounts Receivable — FALAKNAZ SKYVIEW"
+      },
+      {
+        "account": "revenue",
+        "debit": 0,
+        "credit": 388825,
+        "memo": "Sales Revenue — FALAKNAZ SKYVIEW"
+      }
+    ]
+  },
+  {
+    "id": "jnl-rv-45",
+    "date": "2026-07-21",
+    "reference": "BRV-26-045",
+    "description": "[Receipt Voucher] FALAKNAZ SKYVIEW — Cheque Received from Falaknaz Skyview Towers",
+    "lines": [
+      {
+        "account": "bank",
+        "bankAccountId": "bank-hbl",
+        "debit": 500000,
+        "credit": 0,
+        "memo": "HBL Operations"
+      },
+      {
+        "account": "ar",
+        "debit": 0,
+        "credit": 500000,
+        "memo": "Accounts Receivable — FALAKNAZ SKYVIEW"
+      }
+    ]
+  },
+  {
+    "id": "jnl-rv-46",
+    "date": "2026-07-27",
+    "reference": "BRV-26-046",
+    "description": "[Receipt Voucher] FALAKNAZ SKYVIEW — Cheque Received from Falaknaz Skyview Towers",
+    "lines": [
+      {
+        "account": "bank",
+        "bankAccountId": "bank-hbl",
+        "debit": 600000,
+        "credit": 0,
+        "memo": "HBL Operations"
+      },
+      {
+        "account": "ar",
+        "debit": 0,
+        "credit": 600000,
+        "memo": "Accounts Receivable — FALAKNAZ SKYVIEW"
+      }
+    ]
+  },
+  {
+    "id": "jnl-rv-47",
+    "date": "2026-08-10",
+    "reference": "BRV-26-047",
+    "description": "[Receipt Voucher] FALAKNAZ SKYVIEW — Cheque Received from Falaknaz Skyview Towers",
+    "lines": [
+      {
+        "account": "bank",
+        "bankAccountId": "bank-hbl",
+        "debit": 675000,
+        "credit": 0,
+        "memo": "HBL Operations"
+      },
+      {
+        "account": "ar",
+        "debit": 0,
+        "credit": 675000,
+        "memo": "Accounts Receivable — FALAKNAZ SKYVIEW"
+      }
+    ]
+  },
+  {
+    "id": "jnl-rv-48",
+    "date": "2026-08-17",
+    "reference": "BRV-26-048",
+    "description": "[Receipt Voucher] FALAKNAZ SKYVIEW — Cheque Received from Falaknaz Skyview Towers",
+    "lines": [
+      {
+        "account": "bank",
+        "bankAccountId": "bank-hbl",
+        "debit": 600000,
+        "credit": 0,
+        "memo": "HBL Operations"
+      },
+      {
+        "account": "ar",
+        "debit": 0,
+        "credit": 600000,
+        "memo": "Accounts Receivable — FALAKNAZ SKYVIEW"
+      }
+    ]
+  },
+  {
+    "id": "jnl-inv-49",
+    "date": "2026-08-19",
+    "reference": "AD/9793/08/26",
+    "description": "[Sales Invoice] FALAKNAZ SKYVIEW — FALAKNAZ SKYVIEW OOH MEDIA CAMPAIGN RENTAL(31 DAYS 1 AUGUST 2026 TO 31 AUGUST 2026)  EXPRESSWAY DHA ITEHAD",
+    "lines": [
+      {
+        "account": "ar",
+        "debit": 1236000,
+        "credit": 0,
+        "memo": "Accounts Receivable — FALAKNAZ SKYVIEW"
+      },
+      {
+        "account": "revenue",
+        "debit": 0,
+        "credit": 1236000,
+        "memo": "Sales Revenue — FALAKNAZ SKYVIEW"
+      }
+    ]
+  },
+  {
+    "id": "jnl-inv-50",
+    "date": "2026-08-19",
+    "reference": "AD/9794/08/26",
+    "description": "[Sales Invoice] FALAKNAZ SKYVIEW — FALAKNAZ SKYVIEW OOH MEDIA CAMPAIGN PRINTING AND INSTALLATION",
+    "lines": [
+      {
+        "account": "ar",
+        "debit": 149350,
+        "credit": 0,
+        "memo": "Accounts Receivable — FALAKNAZ SKYVIEW"
+      },
+      {
+        "account": "revenue",
+        "debit": 0,
+        "credit": 149350,
+        "memo": "Sales Revenue — FALAKNAZ SKYVIEW"
+      }
+    ]
+  },
+  {
+    "id": "jnl-inv-51",
+    "date": "2026-08-31",
+    "reference": "AD/9829/08/26",
+    "description": "[Sales Invoice] FALAKNAZ SKYVIEW — FALAKNAZ GRANDE BRANDING WALL PRINITING",
+    "lines": [
+      {
+        "account": "ar",
+        "debit": 14832,
+        "credit": 0,
+        "memo": "Accounts Receivable — FALAKNAZ SKYVIEW"
+      },
+      {
+        "account": "revenue",
+        "debit": 0,
+        "credit": 14832,
+        "memo": "Sales Revenue — FALAKNAZ SKYVIEW"
+      }
+    ]
+  },
+  {
+    "id": "jnl-rv-49",
+    "date": "2026-09-01",
+    "reference": "BRV-26-049",
+    "description": "[Receipt Voucher] FALAKNAZ SKYVIEW — Cheque Received from Falaknaz Skyview Towers",
+    "lines": [
+      {
+        "account": "bank",
+        "bankAccountId": "bank-hbl",
+        "debit": 550000,
+        "credit": 0,
+        "memo": "HBL Operations"
+      },
+      {
+        "account": "ar",
+        "debit": 0,
+        "credit": 550000,
+        "memo": "Accounts Receivable — FALAKNAZ SKYVIEW"
+      }
+    ]
+  },
+  {
+    "id": "jnl-rv-50",
+    "date": "2026-09-04",
+    "reference": "BRV-26-050",
+    "description": "[Receipt Voucher] FALAKNAZ SKYVIEW — Cheque Received from Falaknaz Skyview Towers",
+    "lines": [
+      {
+        "account": "bank",
+        "bankAccountId": "bank-hbl",
+        "debit": 500000,
+        "credit": 0,
+        "memo": "HBL Operations"
+      },
+      {
+        "account": "ar",
+        "debit": 0,
+        "credit": 500000,
+        "memo": "Accounts Receivable — FALAKNAZ SKYVIEW"
+      }
+    ]
+  },
+  {
+    "id": "jnl-ob-cli-010",
+    "date": "2026-06-30",
+    "reference": "OB-CLI-010",
+    "description": "[Opening Balance] Accounts Receivable — FALAKNAZ SKYVIEW",
+    "lines": [
+      {
+        "account": "ar",
+        "debit": 11362154,
+        "credit": 0,
+        "memo": "Opening Balance — FALAKNAZ SKYVIEW"
+      },
+      {
+        "account": "equity",
+        "debit": 0,
+        "credit": 11362154,
+        "memo": "Opening Retained Earnings / Equity"
+      }
+    ]
+  },
+  {
+    "id": "jnl-rv-51",
     "date": "2026-08-07",
-    "reference": "BRV-26-043",
+    "reference": "BRV-26-051",
     "description": "[Receipt Voucher] FALAKNAZ GRANDE — CHEQUE RECEIVED AGAINST INVOICE NO AD/9623/05/26",
     "lines": [
       {
@@ -10624,7 +10542,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-48",
+    "id": "jnl-inv-52",
     "date": "2026-08-19",
     "reference": "AD/9792/08/26",
     "description": "[Sales Invoice] FALAKNAZ GRANDE — FALAKNAZ GRANDE STREAMERS PLAN (7 DAYS)",
@@ -10644,7 +10562,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-49",
+    "id": "jnl-inv-53",
     "date": "2026-08-19",
     "reference": "AD/9786/08/26",
     "description": "[Sales Invoice] FALAKNAZ GRANDE — FALAKNAZ GRANDE BRANDING WALL PRINITING",
@@ -10664,9 +10582,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-44",
+    "id": "jnl-rv-52",
     "date": "2026-09-05",
-    "reference": "BRV-26-044",
+    "reference": "BRV-26-052",
     "description": "[Receipt Voucher] FALAKNAZ GRANDE — CHEQUE RECEIVED FROM FALAKNAZ GRANDE",
     "lines": [
       {
@@ -10705,7 +10623,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-50",
+    "id": "jnl-inv-54",
     "date": "2026-08-13",
     "reference": "INV-AD-S361",
     "description": "[Sales Invoice] FPCCI — PRINT MEDIA CAMPAIGN (DAWN WEEKDAYS)",
@@ -10721,6 +10639,86 @@ export const REAL_JOURNAL = [
         "debit": 0,
         "credit": 191070,
         "memo": "Sales Revenue — FPCCI"
+      }
+    ]
+  },
+  {
+    "id": "jnl-ob-cli-013",
+    "date": "2026-06-30",
+    "reference": "OB-CLI-013",
+    "description": "[Opening Balance] Accounts Receivable — GOVERNOR HOUSE",
+    "lines": [
+      {
+        "account": "ar",
+        "debit": 5000000,
+        "credit": 0,
+        "memo": "Opening Balance — GOVERNOR HOUSE"
+      },
+      {
+        "account": "equity",
+        "debit": 0,
+        "credit": 5000000,
+        "memo": "Opening Retained Earnings / Equity"
+      }
+    ]
+  },
+  {
+    "id": "jnl-inv-55",
+    "date": "2026-07-02",
+    "reference": "AD/9755/07/2025",
+    "description": "[Sales Invoice] GREENWICH UNIVERSITY — EDVIA OOH CAMPAIGN (STATICS SITES, DIGITAL MEDIA AND OOG BUS BRANDING)",
+    "lines": [
+      {
+        "account": "ar",
+        "debit": 2390000,
+        "credit": 0,
+        "memo": "Accounts Receivable — GREENWICH UNIVERSITY"
+      },
+      {
+        "account": "revenue",
+        "debit": 0,
+        "credit": 2390000,
+        "memo": "Sales Revenue — GREENWICH UNIVERSITY"
+      }
+    ]
+  },
+  {
+    "id": "jnl-inv-56",
+    "date": "2026-07-15",
+    "reference": "AD/9756/07/2025",
+    "description": "[Sales Invoice] GREENWICH UNIVERSITY — GREENWICH OOH CAMPAIGN (STATICS SITES, DIGITAL MEDIA AND OOG BUS BRANDING)",
+    "lines": [
+      {
+        "account": "ar",
+        "debit": 2850000,
+        "credit": 0,
+        "memo": "Accounts Receivable — GREENWICH UNIVERSITY"
+      },
+      {
+        "account": "revenue",
+        "debit": 0,
+        "credit": 2850000,
+        "memo": "Sales Revenue — GREENWICH UNIVERSITY"
+      }
+    ]
+  },
+  {
+    "id": "jnl-inv-57",
+    "date": "2026-07-15",
+    "reference": "AD/9757/07/2025",
+    "description": "[Sales Invoice] GREENWICH UNIVERSITY — OOH CAMPAIGN ADDITIONAL PRINTING AND INSTALLATION",
+    "lines": [
+      {
+        "account": "ar",
+        "debit": 210000,
+        "credit": 0,
+        "memo": "Accounts Receivable — GREENWICH UNIVERSITY"
+      },
+      {
+        "account": "revenue",
+        "debit": 0,
+        "credit": 210000,
+        "memo": "Sales Revenue — GREENWICH UNIVERSITY"
       }
     ]
   },
@@ -10745,9 +10743,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-45",
+    "id": "jnl-rv-53",
     "date": "2026-07-04",
-    "reference": "BRV-26-045",
+    "reference": "BRV-26-053",
     "description": "[Receipt Voucher] HMR — Cash Received HMR Waterfront against inv #AD/9615/05/26",
     "lines": [
       {
@@ -10766,7 +10764,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-51",
+    "id": "jnl-inv-58",
     "date": "2026-07-03",
     "reference": "AD/9724/06/26",
     "description": "[Sales Invoice] HMR — HMR OOH Media Campaign 30Days",
@@ -10786,7 +10784,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-52",
+    "id": "jnl-inv-59",
     "date": "2026-07-03",
     "reference": "AD/9725/06/26",
     "description": "[Sales Invoice] HMR — HMR OOH Media Campaign Printing and Installation",
@@ -10806,9 +10804,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-46",
+    "id": "jnl-rv-54",
     "date": "2026-08-28",
-    "reference": "BRV-26-046",
+    "reference": "BRV-26-054",
     "description": "[Receipt Voucher] HMR — Cash/Cheque Received HMR Waterfront (dt 29-8-26)",
     "lines": [
       {
@@ -10847,7 +10845,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-53",
+    "id": "jnl-inv-60",
     "date": "2026-07-15",
     "reference": "AD/9768/06/26",
     "description": "[Sales Invoice] H&H — OOH MEDIA CAMPAIGN KARACHI (15DAYS)",
@@ -10867,7 +10865,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-54",
+    "id": "jnl-inv-61",
     "date": "2026-07-15",
     "reference": "AD/9769/06/26",
     "description": "[Sales Invoice] H&H — OOH MEDIA CAMPAIGN KARACHI (15DAYS)",
@@ -10887,7 +10885,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-55",
+    "id": "jnl-inv-62",
     "date": "2026-07-20",
     "reference": "AD/9770/06/26",
     "description": "[Sales Invoice] H&H — OOH MEDIA CAMPAIGN KARACHI (15DAYS) / FOC",
@@ -10907,7 +10905,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-56",
+    "id": "jnl-inv-63",
     "date": "2026-07-27",
     "reference": "AD/9771/06/26",
     "description": "[Sales Invoice] H&H — OOH MEDIA CAMPAIGN KARACHI (15DAYS)",
@@ -10927,9 +10925,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-47",
-    "date": "2026-07-01",
-    "reference": "BRV-26-047",
+    "id": "jnl-rv-55",
+    "date": "2026-08-26",
+    "reference": "BRV-26-055",
     "description": "[Receipt Voucher] H&H — Cheque received from H&H",
     "lines": [
       {
@@ -10948,9 +10946,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-48",
-    "date": "2026-07-01",
-    "reference": "BRV-26-048",
+    "id": "jnl-rv-56",
+    "date": "2026-08-28",
+    "reference": "BRV-26-056",
     "description": "[Receipt Voucher] H&H — Cheque received from H&H",
     "lines": [
       {
@@ -10969,9 +10967,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-49",
-    "date": "2026-07-01",
-    "reference": "BRV-26-049",
+    "id": "jnl-rv-57",
+    "date": "2026-08-31",
+    "reference": "BRV-26-057",
     "description": "[Receipt Voucher] H&H — Cheque received from H&H",
     "lines": [
       {
@@ -10990,9 +10988,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-50",
+    "id": "jnl-rv-58",
     "date": "2026-02-09",
-    "reference": "BRV-26-050",
+    "reference": "BRV-26-058",
     "description": "[Receipt Voucher] H&H — Cheque received from H&H",
     "lines": [
       {
@@ -11011,9 +11009,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-51",
+    "id": "jnl-rv-59",
     "date": "2026-04-09",
-    "reference": "BRV-26-051",
+    "reference": "BRV-26-059",
     "description": "[Receipt Voucher] H&H — Cheque received from H&H",
     "lines": [
       {
@@ -11032,9 +11030,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-52",
+    "id": "jnl-rv-60",
     "date": "2026-07-09",
-    "reference": "BRV-26-052",
+    "reference": "BRV-26-060",
     "description": "[Receipt Voucher] H&H — Cheque received from H&H",
     "lines": [
       {
@@ -11053,7 +11051,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-57",
+    "id": "jnl-inv-64",
     "date": "2026-08-04",
     "reference": "INV-AD-S359",
     "description": "[Sales Invoice] HABBIT STORE — OOH CAMPAIGN 1 MONTH",
@@ -11073,9 +11071,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-53",
+    "id": "jnl-rv-61",
     "date": "2026-06-20",
-    "reference": "BRV-26-053",
+    "reference": "BRV-26-061",
     "description": "[Receipt Voucher] HABBIT STORE — KHURRAM BHAI FURNITURE SHOPPING",
     "lines": [
       {
@@ -11094,7 +11092,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-58",
+    "id": "jnl-inv-65",
     "date": "2026-07-01",
     "reference": "AD/9742/07/26",
     "description": "[Sales Invoice] HABBIT STORE — OOH MEDIA CAMPAIGN",
@@ -11114,89 +11112,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-59",
-    "date": "2026-06-16",
-    "reference": "INV-AD-S352",
-    "description": "[Sales Invoice] HABBIT STORE — Habitt Store DHA permission (VINYL Branding) 1 Year",
-    "lines": [
-      {
-        "account": "ar",
-        "debit": 7161869,
-        "credit": 0,
-        "memo": "Accounts Receivable — HABBIT STORE"
-      },
-      {
-        "account": "revenue",
-        "debit": 0,
-        "credit": 7161869,
-        "memo": "Sales Revenue — HABBIT STORE"
-      }
-    ]
-  },
-  {
-    "id": "jnl-inv-60",
-    "date": "2026-06-16",
-    "reference": "INV-AD-S353",
-    "description": "[Sales Invoice] HABBIT STORE — Habitt Store DHA permission (VINYL Branding) agency comission",
-    "lines": [
-      {
-        "account": "ar",
-        "debit": 666770,
-        "credit": 0,
-        "memo": "Accounts Receivable — HABBIT STORE"
-      },
-      {
-        "account": "revenue",
-        "debit": 0,
-        "credit": 666770,
-        "memo": "Sales Revenue — HABBIT STORE"
-      }
-    ]
-  },
-  {
-    "id": "jnl-inv-61",
-    "date": "2026-06-16",
-    "reference": "INV-AD-S354",
-    "description": "[Sales Invoice] HABBIT STORE — Habitt Store DHA permission (VINYL Branding)",
-    "lines": [
-      {
-        "account": "ar",
-        "debit": 361790,
-        "credit": 0,
-        "memo": "Accounts Receivable — HABBIT STORE"
-      },
-      {
-        "account": "revenue",
-        "debit": 0,
-        "credit": 361790,
-        "memo": "Sales Revenue — HABBIT STORE"
-      }
-    ]
-  },
-  {
-    "id": "jnl-inv-62",
-    "date": "2026-06-18",
-    "reference": "AD/9742/05/26",
-    "description": "[Sales Invoice] HABBIT STORE — OUTDOOR BRANDING WORK",
-    "lines": [
-      {
-        "account": "ar",
-        "debit": 2000000,
-        "credit": 0,
-        "memo": "Accounts Receivable — HABBIT STORE"
-      },
-      {
-        "account": "revenue",
-        "debit": 0,
-        "credit": 2000000,
-        "memo": "Sales Revenue — HABBIT STORE"
-      }
-    ]
-  },
-  {
-    "id": "jnl-rv-54",
+    "id": "jnl-rv-62",
     "date": "2026-08-13",
-    "reference": "BRV-26-054",
+    "reference": "BRV-26-062",
     "description": "[Receipt Voucher] IMTIAZ — Cheque Received from IMTIAZ STORE against Invoice # AD/S351",
     "lines": [
       {
@@ -11215,9 +11133,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-55",
+    "id": "jnl-rv-63",
     "date": "2026-08-13",
-    "reference": "BRV-26-055",
+    "reference": "BRV-26-063",
     "description": "[Receipt Voucher] IMTIAZ — WHT 1.5% on Inv # S351",
     "lines": [
       {
@@ -11236,9 +11154,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-56",
+    "id": "jnl-rv-64",
     "date": "2026-08-13",
-    "reference": "BRV-26-056",
+    "reference": "BRV-26-064",
     "description": "[Receipt Voucher] IMTIAZ — SWHT 100% Witheld on S351",
     "lines": [
       {
@@ -11257,7 +11175,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-63",
+    "id": "jnl-inv-66",
     "date": "2026-08-31",
     "reference": "INV-AD-S374",
     "description": "[Sales Invoice] IMTIAZ — OOH STREAMERS CAMPAIGN AZADI KA TICKET",
@@ -11277,7 +11195,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-64",
+    "id": "jnl-inv-67",
     "date": "2026-08-31",
     "reference": "INV-AD-S375",
     "description": "[Sales Invoice] IMTIAZ — OOH STREAMERS CAMPAIGN AZADI KA TICKET FOC SITES PRINTING",
@@ -11317,9 +11235,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-57",
+    "id": "jnl-rv-65",
     "date": "2026-07-31",
-    "reference": "BRV-26-057",
+    "reference": "BRV-26-065",
     "description": "[Receipt Voucher] IDEMITSU — IBFT RECEIBED IN ADPULSE IMC PVT LTD",
     "lines": [
       {
@@ -11338,9 +11256,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-58",
+    "id": "jnl-rv-66",
     "date": "2026-07-31",
-    "reference": "BRV-26-058",
+    "reference": "BRV-26-066",
     "description": "[Receipt Voucher] IDEMITSU — WHT",
     "lines": [
       {
@@ -11359,9 +11277,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-59",
+    "id": "jnl-rv-67",
     "date": "2026-07-31",
-    "reference": "BRV-26-059",
+    "reference": "BRV-26-067",
     "description": "[Receipt Voucher] IDEMITSU — S.Tax",
     "lines": [
       {
@@ -11400,9 +11318,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-60",
+    "id": "jnl-rv-68",
     "date": "2025-09-01",
-    "reference": "BRV-26-060",
+    "reference": "BRV-26-068",
     "description": "[Receipt Voucher] IGLOO — CHEQUE RECEIVED FROM IGLOO AGAINST INVOICE # AD-S153",
     "lines": [
       {
@@ -11421,9 +11339,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-61",
+    "id": "jnl-rv-69",
     "date": "2026-07-07",
-    "reference": "BRV-26-061",
+    "reference": "BRV-26-069",
     "description": "[Receipt Voucher] IGLOO — CHEQUE RECEIVED FROM IGLOO AGAINST INVOICE # AD-S153",
     "lines": [
       {
@@ -11442,9 +11360,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-62",
+    "id": "jnl-rv-70",
     "date": "2026-07-01",
-    "reference": "BRV-26-062",
+    "reference": "BRV-26-070",
     "description": "[Receipt Voucher] IGLOO — SWHT 100% WHT",
     "lines": [
       {
@@ -11463,9 +11381,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-63",
+    "id": "jnl-rv-71",
     "date": "2026-07-01",
-    "reference": "BRV-26-063",
+    "reference": "BRV-26-071",
     "description": "[Receipt Voucher] IGLOO — WHT 6%",
     "lines": [
       {
@@ -11484,7 +11402,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-65",
+    "id": "jnl-inv-68",
     "date": "2026-04-20",
     "reference": "INV-AD-S324",
     "description": "[Sales Invoice] IGLOO — OOH MEDIA CAMPAIGN MAR TO ARPIL (30 DAYS)",
@@ -11504,7 +11422,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-66",
+    "id": "jnl-inv-69",
     "date": "2026-04-20",
     "reference": "INV-AD-S325",
     "description": "[Sales Invoice] IGLOO — OOH MEDIA CAMPAIGN PRINTING AND INSTALLATION",
@@ -11524,7 +11442,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-67",
+    "id": "jnl-inv-70",
     "date": "2026-05-18",
     "reference": "INV-AD-S326",
     "description": "[Sales Invoice] IGLOO — OOH MEDIA CAMPAIGN (28 April 2026 to 27 May 2026)",
@@ -11544,9 +11462,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-64",
+    "id": "jnl-rv-72",
     "date": "2026-07-29",
-    "reference": "BRV-26-064",
+    "reference": "BRV-26-072",
     "description": "[Receipt Voucher] IGLOO — CHEQUE RECEIVED FROM IGLOO AGAINST INVOICE # AD-S324, AD-S325 & AD-S326",
     "lines": [
       {
@@ -11565,9 +11483,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-65",
+    "id": "jnl-rv-73",
     "date": "2026-07-29",
-    "reference": "BRV-26-065",
+    "reference": "BRV-26-073",
     "description": "[Receipt Voucher] IGLOO — SWHT 100% WHT ON INVOICE # AD-S324, AD-S325 & AD-S326",
     "lines": [
       {
@@ -11586,9 +11504,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-66",
+    "id": "jnl-rv-74",
     "date": "2026-07-29",
-    "reference": "BRV-26-066",
+    "reference": "BRV-26-074",
     "description": "[Receipt Voucher] IGLOO — WHT 7% ON INVOICE # AD-S324, AD-S325 & AD-S326",
     "lines": [
       {
@@ -11607,7 +11525,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-68",
+    "id": "jnl-inv-71",
     "date": "2026-07-01",
     "reference": "INV-AD-S360",
     "description": "[Sales Invoice] IGLOO — OOH MEDIA CAMPAIGN BALOCH FLYOVER(12 June 2026 to 11 July 2026)",
@@ -11627,9 +11545,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-67",
+    "id": "jnl-rv-75",
     "date": "2026-08-28",
-    "reference": "BRV-26-067",
+    "reference": "BRV-26-075",
     "description": "[Receipt Voucher] IGLOO — CHEQUE RECEIVED FROM IGLOO AGAINST INVOICE # AD-S360",
     "lines": [
       {
@@ -11648,9 +11566,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-68",
+    "id": "jnl-rv-76",
     "date": "2026-08-28",
-    "reference": "BRV-26-068",
+    "reference": "BRV-26-076",
     "description": "[Receipt Voucher] IGLOO — SWHT 100% WHT ON INVOICE # AD-S360",
     "lines": [
       {
@@ -11669,9 +11587,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-69",
+    "id": "jnl-rv-77",
     "date": "2026-08-28",
-    "reference": "BRV-26-069",
+    "reference": "BRV-26-077",
     "description": "[Receipt Voucher] IGLOO — WHT 7% ON INVOICE # AD-S324, AD-S325 & AD-S326",
     "lines": [
       {
@@ -11690,9 +11608,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-69",
+    "id": "jnl-inv-72",
     "date": "2026-08-25",
-    "reference": "INV-26-069",
+    "reference": "INV-26-072",
     "description": "[Sales Invoice] IGLOO — SWHT 80% WHT ON INVOICE # AD-S324, AD-S325 & AD-S326 Paid by Adpulse",
     "lines": [
       {
@@ -11710,9 +11628,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-70",
+    "id": "jnl-rv-78",
     "date": "2026-08-28",
-    "reference": "BRV-26-070",
+    "reference": "BRV-26-078",
     "description": "[Receipt Voucher] IGLOO — chq dt 25-8-2026",
     "lines": [
       {
@@ -11771,7 +11689,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-70",
+    "id": "jnl-inv-73",
     "date": "2026-09-01",
     "reference": "INV-AD-S377",
     "description": "[Sales Invoice] KIA SHEHZORE — Kia Shehzore - Print Media",
@@ -11791,7 +11709,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-71",
+    "id": "jnl-inv-74",
     "date": "2026-09-01",
     "reference": "INV-AD-S378",
     "description": "[Sales Invoice] KIA SHEHZORE — Kia Shehzore - POS Materials",
@@ -11811,7 +11729,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-72",
+    "id": "jnl-inv-75",
     "date": "2026-09-01",
     "reference": "INV-AD-S379",
     "description": "[Sales Invoice] KIA SHEHZORE — Kia Shehzore - OOH Media Campaign",
@@ -11831,7 +11749,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-73",
+    "id": "jnl-inv-76",
     "date": "2026-09-01",
     "reference": "INV-AD-S380",
     "description": "[Sales Invoice] KIA SHEHZORE — Kia Shehzore - Social Media / Digital Campaign",
@@ -11851,7 +11769,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-74",
+    "id": "jnl-inv-77",
     "date": "2026-08-18",
     "reference": "AD/9791/08/26",
     "description": "[Sales Invoice] KINZA BEVRAGES — WEBSITE DEVELOPMENT AND DIGITAL MARKETING",
@@ -11871,9 +11789,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-71",
+    "id": "jnl-rv-79",
     "date": "2026-08-28",
-    "reference": "BRV-26-071",
+    "reference": "BRV-26-079",
     "description": "[Receipt Voucher] KINZA BEVRAGES — CASH CHEQUE RECEIVED FROM KINZA BAVERAGES (CHQ DT 22-8-26)",
     "lines": [
       {
@@ -11892,9 +11810,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-72",
+    "id": "jnl-rv-80",
     "date": "2026-08-28",
-    "reference": "BRV-26-072",
+    "reference": "BRV-26-080",
     "description": "[Receipt Voucher] KINZA BEVRAGES — CASH CHEQUE RECEIVED FROM KINZA BAVERAGES (CHQ DT 28-8-26)",
     "lines": [
       {
@@ -11913,7 +11831,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-75",
+    "id": "jnl-inv-78",
     "date": "2026-07-07",
     "reference": "AD/9754/07/26",
     "description": "[Sales Invoice] KIFAYAH — OOH SITE PRINTING, INSTALLATION & RENTAL",
@@ -11929,375 +11847,6 @@ export const REAL_JOURNAL = [
         "debit": 0,
         "credit": 60400,
         "memo": "Sales Revenue — KIFAYAH"
-      }
-    ]
-  },
-  {
-    "id": "jnl-inv-76",
-    "date": "2026-07-01",
-    "reference": "INV-26-076",
-    "description": "[Sales Invoice] KIFAYAH — Media Billing",
-    "lines": [
-      {
-        "account": "ar",
-        "debit": 550000,
-        "credit": 0,
-        "memo": "Accounts Receivable — KIFAYAH"
-      },
-      {
-        "account": "revenue",
-        "debit": 0,
-        "credit": 550000,
-        "memo": "Sales Revenue — KIFAYAH"
-      }
-    ]
-  },
-  {
-    "id": "jnl-rv-73",
-    "date": "2026-07-01",
-    "reference": "BRV-26-073",
-    "description": "[Receipt Voucher] KIFAYAH — Payment Received",
-    "lines": [
-      {
-        "account": "bank",
-        "bankAccountId": "bank-hbl",
-        "debit": 8250,
-        "credit": 0,
-        "memo": "HBL Operations"
-      },
-      {
-        "account": "ar",
-        "debit": 0,
-        "credit": 8250,
-        "memo": "Accounts Receivable — KIFAYAH"
-      }
-    ]
-  },
-  {
-    "id": "jnl-inv-77",
-    "date": "2026-07-01",
-    "reference": "INV-26-077",
-    "description": "[Sales Invoice] KIFAYAH — Media Billing",
-    "lines": [
-      {
-        "account": "ar",
-        "debit": 550000,
-        "credit": 0,
-        "memo": "Accounts Receivable — KIFAYAH"
-      },
-      {
-        "account": "revenue",
-        "debit": 0,
-        "credit": 550000,
-        "memo": "Sales Revenue — KIFAYAH"
-      }
-    ]
-  },
-  {
-    "id": "jnl-rv-74",
-    "date": "2026-07-01",
-    "reference": "BRV-26-074",
-    "description": "[Receipt Voucher] KIFAYAH — Payment Received",
-    "lines": [
-      {
-        "account": "bank",
-        "bankAccountId": "bank-hbl",
-        "debit": 8250,
-        "credit": 0,
-        "memo": "HBL Operations"
-      },
-      {
-        "account": "ar",
-        "debit": 0,
-        "credit": 8250,
-        "memo": "Accounts Receivable — KIFAYAH"
-      }
-    ]
-  },
-  {
-    "id": "jnl-inv-78",
-    "date": "2026-07-01",
-    "reference": "INV-26-078",
-    "description": "[Sales Invoice] KIFAYAH — Media Billing",
-    "lines": [
-      {
-        "account": "ar",
-        "debit": 550000,
-        "credit": 0,
-        "memo": "Accounts Receivable — KIFAYAH"
-      },
-      {
-        "account": "revenue",
-        "debit": 0,
-        "credit": 550000,
-        "memo": "Sales Revenue — KIFAYAH"
-      }
-    ]
-  },
-  {
-    "id": "jnl-rv-75",
-    "date": "2026-07-01",
-    "reference": "BRV-26-075",
-    "description": "[Receipt Voucher] KIFAYAH — Payment Received",
-    "lines": [
-      {
-        "account": "bank",
-        "bankAccountId": "bank-hbl",
-        "debit": 8250,
-        "credit": 0,
-        "memo": "HBL Operations"
-      },
-      {
-        "account": "ar",
-        "debit": 0,
-        "credit": 8250,
-        "memo": "Accounts Receivable — KIFAYAH"
-      }
-    ]
-  },
-  {
-    "id": "jnl-inv-79",
-    "date": "2026-07-01",
-    "reference": "INV-26-079",
-    "description": "[Sales Invoice] KIFAYAH — Media Billing",
-    "lines": [
-      {
-        "account": "ar",
-        "debit": 550000,
-        "credit": 0,
-        "memo": "Accounts Receivable — KIFAYAH"
-      },
-      {
-        "account": "revenue",
-        "debit": 0,
-        "credit": 550000,
-        "memo": "Sales Revenue — KIFAYAH"
-      }
-    ]
-  },
-  {
-    "id": "jnl-rv-76",
-    "date": "2026-07-01",
-    "reference": "BRV-26-076",
-    "description": "[Receipt Voucher] KIFAYAH — Payment Received",
-    "lines": [
-      {
-        "account": "bank",
-        "bankAccountId": "bank-hbl",
-        "debit": 8250,
-        "credit": 0,
-        "memo": "HBL Operations"
-      },
-      {
-        "account": "ar",
-        "debit": 0,
-        "credit": 8250,
-        "memo": "Accounts Receivable — KIFAYAH"
-      }
-    ]
-  },
-  {
-    "id": "jnl-inv-80",
-    "date": "2026-07-01",
-    "reference": "INV-26-080",
-    "description": "[Sales Invoice] KIFAYAH — Media Billing",
-    "lines": [
-      {
-        "account": "ar",
-        "debit": 550000,
-        "credit": 0,
-        "memo": "Accounts Receivable — KIFAYAH"
-      },
-      {
-        "account": "revenue",
-        "debit": 0,
-        "credit": 550000,
-        "memo": "Sales Revenue — KIFAYAH"
-      }
-    ]
-  },
-  {
-    "id": "jnl-rv-77",
-    "date": "2026-07-01",
-    "reference": "BRV-26-077",
-    "description": "[Receipt Voucher] KIFAYAH — Payment Received",
-    "lines": [
-      {
-        "account": "bank",
-        "bankAccountId": "bank-hbl",
-        "debit": 8250,
-        "credit": 0,
-        "memo": "HBL Operations"
-      },
-      {
-        "account": "ar",
-        "debit": 0,
-        "credit": 8250,
-        "memo": "Accounts Receivable — KIFAYAH"
-      }
-    ]
-  },
-  {
-    "id": "jnl-inv-81",
-    "date": "2026-07-01",
-    "reference": "INV-26-081",
-    "description": "[Sales Invoice] KIFAYAH — Media Billing",
-    "lines": [
-      {
-        "account": "ar",
-        "debit": 550000,
-        "credit": 0,
-        "memo": "Accounts Receivable — KIFAYAH"
-      },
-      {
-        "account": "revenue",
-        "debit": 0,
-        "credit": 550000,
-        "memo": "Sales Revenue — KIFAYAH"
-      }
-    ]
-  },
-  {
-    "id": "jnl-rv-78",
-    "date": "2026-07-01",
-    "reference": "BRV-26-078",
-    "description": "[Receipt Voucher] KIFAYAH — Payment Received",
-    "lines": [
-      {
-        "account": "bank",
-        "bankAccountId": "bank-hbl",
-        "debit": 8250,
-        "credit": 0,
-        "memo": "HBL Operations"
-      },
-      {
-        "account": "ar",
-        "debit": 0,
-        "credit": 8250,
-        "memo": "Accounts Receivable — KIFAYAH"
-      }
-    ]
-  },
-  {
-    "id": "jnl-inv-82",
-    "date": "2026-07-01",
-    "reference": "INV-26-082",
-    "description": "[Sales Invoice] KIFAYAH — Media Billing",
-    "lines": [
-      {
-        "account": "ar",
-        "debit": 550000,
-        "credit": 0,
-        "memo": "Accounts Receivable — KIFAYAH"
-      },
-      {
-        "account": "revenue",
-        "debit": 0,
-        "credit": 550000,
-        "memo": "Sales Revenue — KIFAYAH"
-      }
-    ]
-  },
-  {
-    "id": "jnl-rv-79",
-    "date": "2026-07-01",
-    "reference": "BRV-26-079",
-    "description": "[Receipt Voucher] KIFAYAH — Payment Received",
-    "lines": [
-      {
-        "account": "bank",
-        "bankAccountId": "bank-hbl",
-        "debit": 8250,
-        "credit": 0,
-        "memo": "HBL Operations"
-      },
-      {
-        "account": "ar",
-        "debit": 0,
-        "credit": 8250,
-        "memo": "Accounts Receivable — KIFAYAH"
-      }
-    ]
-  },
-  {
-    "id": "jnl-inv-83",
-    "date": "2026-07-01",
-    "reference": "INV-26-083",
-    "description": "[Sales Invoice] KIFAYAH — Media Billing",
-    "lines": [
-      {
-        "account": "ar",
-        "debit": 413616,
-        "credit": 0,
-        "memo": "Accounts Receivable — KIFAYAH"
-      },
-      {
-        "account": "revenue",
-        "debit": 0,
-        "credit": 413616,
-        "memo": "Sales Revenue — KIFAYAH"
-      }
-    ]
-  },
-  {
-    "id": "jnl-rv-80",
-    "date": "2026-07-01",
-    "reference": "BRV-26-080",
-    "description": "[Receipt Voucher] KIFAYAH — Payment Received",
-    "lines": [
-      {
-        "account": "bank",
-        "bankAccountId": "bank-hbl",
-        "debit": 6204.24,
-        "credit": 0,
-        "memo": "HBL Operations"
-      },
-      {
-        "account": "ar",
-        "debit": 0,
-        "credit": 6204.24,
-        "memo": "Accounts Receivable — KIFAYAH"
-      }
-    ]
-  },
-  {
-    "id": "jnl-inv-84",
-    "date": "2026-07-01",
-    "reference": "INV-26-084",
-    "description": "[Sales Invoice] KIFAYAH — Media Billing",
-    "lines": [
-      {
-        "account": "ar",
-        "debit": 4263616,
-        "credit": 0,
-        "memo": "Accounts Receivable — KIFAYAH"
-      },
-      {
-        "account": "revenue",
-        "debit": 0,
-        "credit": 4263616,
-        "memo": "Sales Revenue — KIFAYAH"
-      }
-    ]
-  },
-  {
-    "id": "jnl-rv-81",
-    "date": "2026-07-01",
-    "reference": "BRV-26-081",
-    "description": "[Receipt Voucher] KIFAYAH — Payment Received",
-    "lines": [
-      {
-        "account": "bank",
-        "bankAccountId": "bank-hbl",
-        "debit": 63954.24,
-        "credit": 0,
-        "memo": "HBL Operations"
-      },
-      {
-        "account": "ar",
-        "debit": 0,
-        "credit": 63954.24,
-        "memo": "Accounts Receivable — KIFAYAH"
       }
     ]
   },
@@ -12322,7 +11871,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-85",
+    "id": "jnl-inv-79",
     "date": "2026-07-27",
     "reference": "AD/9767/07/26",
     "description": "[Sales Invoice] MEDICAM — OOH MEDIA CAMPAIGN KARACHI",
@@ -12342,7 +11891,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-86",
+    "id": "jnl-inv-80",
     "date": "2026-07-27",
     "reference": "AD/9772/07/26",
     "description": "[Sales Invoice] MEDICAM — MEDICAM ICON ONE DEALERS CONVENTION EVENT",
@@ -12362,9 +11911,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-82",
+    "id": "jnl-rv-81",
     "date": "2026-08-28",
-    "reference": "BRV-26-082",
+    "reference": "BRV-26-081",
     "description": "[Receipt Voucher] MEDICAM — CASH RECEIVED FROM MEDICAM AGAINST INVOICE NO AD/9772/07/26",
     "lines": [
       {
@@ -12383,9 +11932,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-83",
+    "id": "jnl-rv-82",
     "date": "2026-08-28",
-    "reference": "BRV-26-083",
+    "reference": "BRV-26-082",
     "description": "[Receipt Voucher] MEDICAM — CHEQUE RECEIVED FROM MEDICAM AGAINST INVOICE NO AD/9772/07/26",
     "lines": [
       {
@@ -12404,7 +11953,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-87",
+    "id": "jnl-inv-81",
     "date": "2026-09-10",
     "reference": "AD/9863/07/26",
     "description": "[Sales Invoice] MEDICAM — MEDICAM ICON ONE OOH DIGITAL MEDIA",
@@ -12424,9 +11973,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-84",
+    "id": "jnl-rv-83",
     "date": "2026-09-14",
-    "reference": "BRV-26-084",
+    "reference": "BRV-26-083",
     "description": "[Receipt Voucher] MEDICAM — CASH RECEIVED FROM MEDICAM AGAINST INVOICE NO AD/9767/07/26",
     "lines": [
       {
@@ -12445,9 +11994,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-85",
+    "id": "jnl-rv-84",
     "date": "2026-09-14",
-    "reference": "BRV-26-085",
+    "reference": "BRV-26-084",
     "description": "[Receipt Voucher] MEDICAM — CHEQUE RECEIVED FROM MEDICAM AGAINST INVOICE NO AD/9767/07/26",
     "lines": [
       {
@@ -12466,9 +12015,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-86",
+    "id": "jnl-rv-85",
     "date": "2026-09-14",
-    "reference": "BRV-26-086",
+    "reference": "BRV-26-085",
     "description": "[Receipt Voucher] MEDICAM — CHEQUE RECEIVED FROM MEDICAM AGAINST INVOICE NO AD/9767/07/26",
     "lines": [
       {
@@ -12487,9 +12036,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-87",
+    "id": "jnl-rv-86",
     "date": "2026-09-14",
-    "reference": "BRV-26-087",
+    "reference": "BRV-26-086",
     "description": "[Receipt Voucher] MEDICAM — CHEQUE RECEIVED FROM MEDICAM AGAINST INVOICE NO AD/9767/07/26",
     "lines": [
       {
@@ -12508,9 +12057,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-88",
+    "id": "jnl-rv-87",
     "date": "2026-09-14",
-    "reference": "BRV-26-088",
+    "reference": "BRV-26-087",
     "description": "[Receipt Voucher] MEDICAM — CHEQUE RECEIVED FROM MEDICAM AGAINST INVOICE NO AD/9767/07/26",
     "lines": [
       {
@@ -12529,9 +12078,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-89",
+    "id": "jnl-rv-88",
     "date": "2026-09-14",
-    "reference": "BRV-26-089",
+    "reference": "BRV-26-088",
     "description": "[Receipt Voucher] MEDICAM — CHEQUE RECEIVED FROM MEDICAM AGAINST INVOICE NO AD/9767/07/26",
     "lines": [
       {
@@ -12570,9 +12119,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-90",
+    "id": "jnl-rv-89",
     "date": "2026-08-01",
-    "reference": "BRV-26-090",
+    "reference": "BRV-26-089",
     "description": "[Receipt Voucher] NAJEEB FAROOQUI — ADJUSTED AGAINST SIGNWAYS COMMUNICATION",
     "lines": [
       {
@@ -12611,7 +12160,7 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-88",
+    "id": "jnl-inv-82",
     "date": "2025-09-18",
     "reference": "INV-Sold",
     "description": "[Sales Invoice] SALMAN MEO — TOYOTA FORTUNER/BK-7972 Sold to Salman Meow PURCHASED FROM GAGAI'S AUTOMOBILE",
@@ -12631,9 +12180,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-91",
+    "id": "jnl-rv-90",
     "date": "2025-09-18",
-    "reference": "BRV-26-091",
+    "reference": "BRV-26-090",
     "description": "[Receipt Voucher] SALMAN MEO — Jac Car Purchase from Salman Meow SOLD TO TNI KHURRAM",
     "lines": [
       {
@@ -12647,6 +12196,27 @@ export const REAL_JOURNAL = [
         "account": "ar",
         "debit": 0,
         "credit": 10800000,
+        "memo": "Accounts Receivable — SALMAN MEO"
+      }
+    ]
+  },
+  {
+    "id": "jnl-rv-91",
+    "date": "2025-10-15",
+    "reference": "BRV-26-091",
+    "description": "[Receipt Voucher] SALMAN MEO — CHQ RECEIVED FROM ANSAR BHAI (AKD BUILDERS & DEVELOPERS)",
+    "lines": [
+      {
+        "account": "bank",
+        "bankAccountId": "bank-hbl",
+        "debit": 900000,
+        "credit": 0,
+        "memo": "HBL Operations"
+      },
+      {
+        "account": "ar",
+        "debit": 0,
+        "credit": 900000,
         "memo": "Accounts Receivable — SALMAN MEO"
       }
     ]
@@ -12744,27 +12314,6 @@ export const REAL_JOURNAL = [
       {
         "account": "bank",
         "bankAccountId": "bank-hbl",
-        "debit": 900000,
-        "credit": 0,
-        "memo": "HBL Operations"
-      },
-      {
-        "account": "ar",
-        "debit": 0,
-        "credit": 900000,
-        "memo": "Accounts Receivable — SALMAN MEO"
-      }
-    ]
-  },
-  {
-    "id": "jnl-rv-97",
-    "date": "2025-10-15",
-    "reference": "BRV-26-097",
-    "description": "[Receipt Voucher] SALMAN MEO — CHQ RECEIVED FROM ANSAR BHAI (AKD BUILDERS & DEVELOPERS)",
-    "lines": [
-      {
-        "account": "bank",
-        "bankAccountId": "bank-hbl",
         "debit": 500000,
         "credit": 0,
         "memo": "HBL Operations"
@@ -12778,9 +12327,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-89",
+    "id": "jnl-inv-83",
     "date": "2025-11-13",
-    "reference": "INV-26-089",
+    "reference": "INV-26-083",
     "description": "[Sales Invoice] SALMAN MEO — BALANCE PAYMENT OF MERCEDEZ BENZ AUF-350",
     "lines": [
       {
@@ -12798,9 +12347,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-inv-90",
+    "id": "jnl-inv-84",
     "date": "2025-12-04",
-    "reference": "INV-26-090",
+    "reference": "INV-26-084",
     "description": "[Sales Invoice] SALMAN MEO — TRANSFER FEES OF TOYOTA FORTUNER/BK-7972",
     "lines": [
       {
@@ -12818,9 +12367,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-98",
+    "id": "jnl-rv-97",
     "date": "2026-02-09",
-    "reference": "BRV-26-098",
+    "reference": "BRV-26-097",
     "description": "[Receipt Voucher] SALMAN MEO — DISCOUNT",
     "lines": [
       {
@@ -12839,9 +12388,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-99",
+    "id": "jnl-rv-98",
     "date": "2026-02-09",
-    "reference": "BRV-26-099",
+    "reference": "BRV-26-098",
     "description": "[Receipt Voucher] SALMAN MEO — CASH RECEIVED (KHURRAM BHAI DIRECTLY RECEIVED)",
     "lines": [
       {
@@ -12900,8 +12449,109 @@ export const REAL_JOURNAL = [
     ]
   },
   {
+    "id": "jnl-inv-85",
+    "date": "2025-10-15",
+    "reference": "INV-AD-S0182",
+    "description": "[Sales Invoice] SUNRIDGE — SUNRIDGE SHAHRAH E PAKISTAN BUILDING FRONT BRANDING",
+    "lines": [
+      {
+        "account": "ar",
+        "debit": 421213.95,
+        "credit": 0,
+        "memo": "Accounts Receivable — SUNRIDGE"
+      },
+      {
+        "account": "revenue",
+        "debit": 0,
+        "credit": 421213.95,
+        "memo": "Sales Revenue — SUNRIDGE"
+      }
+    ]
+  },
+  {
+    "id": "jnl-inv-86",
+    "date": "2025-10-15",
+    "reference": "INV-AD-S0181",
+    "description": "[Sales Invoice] SUNRIDGE — SUNRIDGE NARAM ROTI OOH CAMPAIGN (2nd MONTH)",
+    "lines": [
+      {
+        "account": "ar",
+        "debit": 4446831.5,
+        "credit": 0,
+        "memo": "Accounts Receivable — SUNRIDGE"
+      },
+      {
+        "account": "revenue",
+        "debit": 0,
+        "credit": 4446831.5,
+        "memo": "Sales Revenue — SUNRIDGE"
+      }
+    ]
+  },
+  {
+    "id": "jnl-inv-87",
+    "date": "2025-10-15",
+    "reference": "INV-AD-S0185",
+    "description": "[Sales Invoice] SUNRIDGE — SHAHRAH E PAKISTAN - BILLBOARDS AND BACKLITS RENTAL",
+    "lines": [
+      {
+        "account": "ar",
+        "debit": 2099893,
+        "credit": 0,
+        "memo": "Accounts Receivable — SUNRIDGE"
+      },
+      {
+        "account": "revenue",
+        "debit": 0,
+        "credit": 2099893,
+        "memo": "Sales Revenue — SUNRIDGE"
+      }
+    ]
+  },
+  {
+    "id": "jnl-inv-88",
+    "date": "2025-10-25",
+    "reference": "INV-AD-S0186",
+    "description": "[Sales Invoice] SUNRIDGE — SUNRIDGE NARAM ROTI OOH CAMPAIGN (3rd MONTH)",
+    "lines": [
+      {
+        "account": "ar",
+        "debit": 1313461,
+        "credit": 0,
+        "memo": "Accounts Receivable — SUNRIDGE"
+      },
+      {
+        "account": "revenue",
+        "debit": 0,
+        "credit": 1313461,
+        "memo": "Sales Revenue — SUNRIDGE"
+      }
+    ]
+  },
+  {
+    "id": "jnl-rv-99",
+    "date": "2026-02-18",
+    "reference": "BRV-26-099",
+    "description": "[Receipt Voucher] SUNRIDGE — IBFT RECEIVED IN IMC FROM SUNRIDGE",
+    "lines": [
+      {
+        "account": "bank",
+        "bankAccountId": "bank-hbl",
+        "debit": 500000,
+        "credit": 0,
+        "memo": "HBL Operations"
+      },
+      {
+        "account": "ar",
+        "debit": 0,
+        "credit": 500000,
+        "memo": "Accounts Receivable — SUNRIDGE"
+      }
+    ]
+  },
+  {
     "id": "jnl-rv-100",
-    "date": "2026-08-04",
+    "date": "2026-02-27",
     "reference": "BRV-26-100",
     "description": "[Receipt Voucher] SUNRIDGE — IBFT RECEIVED IN IMC FROM SUNRIDGE",
     "lines": [
@@ -12922,7 +12572,7 @@ export const REAL_JOURNAL = [
   },
   {
     "id": "jnl-rv-101",
-    "date": "2026-08-07",
+    "date": "2026-03-04",
     "reference": "BRV-26-101",
     "description": "[Receipt Voucher] SUNRIDGE — IBFT RECEIVED IN IMC FROM SUNRIDGE",
     "lines": [
@@ -12943,28 +12593,28 @@ export const REAL_JOURNAL = [
   },
   {
     "id": "jnl-rv-102",
-    "date": "2026-08-11",
+    "date": "2026-04-30",
     "reference": "BRV-26-102",
     "description": "[Receipt Voucher] SUNRIDGE — IBFT RECEIVED IN IMC FROM SUNRIDGE",
     "lines": [
       {
         "account": "bank",
         "bankAccountId": "bank-hbl",
-        "debit": 500000,
+        "debit": 804073.05,
         "credit": 0,
         "memo": "HBL Operations"
       },
       {
         "account": "ar",
         "debit": 0,
-        "credit": 500000,
+        "credit": 804073.05,
         "memo": "Accounts Receivable — SUNRIDGE"
       }
     ]
   },
   {
     "id": "jnl-rv-103",
-    "date": "2026-08-15",
+    "date": "2026-06-24",
     "reference": "BRV-26-103",
     "description": "[Receipt Voucher] SUNRIDGE — IBFT RECEIVED IN IMC FROM SUNRIDGE",
     "lines": [
@@ -12985,7 +12635,7 @@ export const REAL_JOURNAL = [
   },
   {
     "id": "jnl-rv-104",
-    "date": "2026-08-20",
+    "date": "2026-08-04",
     "reference": "BRV-26-104",
     "description": "[Receipt Voucher] SUNRIDGE — IBFT RECEIVED IN IMC FROM SUNRIDGE",
     "lines": [
@@ -13006,7 +12656,7 @@ export const REAL_JOURNAL = [
   },
   {
     "id": "jnl-rv-105",
-    "date": "2026-08-24",
+    "date": "2026-08-07",
     "reference": "BRV-26-105",
     "description": "[Receipt Voucher] SUNRIDGE — IBFT RECEIVED IN IMC FROM SUNRIDGE",
     "lines": [
@@ -13027,7 +12677,7 @@ export const REAL_JOURNAL = [
   },
   {
     "id": "jnl-rv-106",
-    "date": "2026-08-27",
+    "date": "2026-08-11",
     "reference": "BRV-26-106",
     "description": "[Receipt Voucher] SUNRIDGE — IBFT RECEIVED IN IMC FROM SUNRIDGE",
     "lines": [
@@ -13048,7 +12698,7 @@ export const REAL_JOURNAL = [
   },
   {
     "id": "jnl-rv-107",
-    "date": "2026-02-18",
+    "date": "2026-08-15",
     "reference": "BRV-26-107",
     "description": "[Receipt Voucher] SUNRIDGE — IBFT RECEIVED IN IMC FROM SUNRIDGE",
     "lines": [
@@ -13069,7 +12719,7 @@ export const REAL_JOURNAL = [
   },
   {
     "id": "jnl-rv-108",
-    "date": "2026-02-27",
+    "date": "2026-08-20",
     "reference": "BRV-26-108",
     "description": "[Receipt Voucher] SUNRIDGE — IBFT RECEIVED IN IMC FROM SUNRIDGE",
     "lines": [
@@ -13090,7 +12740,7 @@ export const REAL_JOURNAL = [
   },
   {
     "id": "jnl-rv-109",
-    "date": "2026-03-04",
+    "date": "2026-08-24",
     "reference": "BRV-26-109",
     "description": "[Receipt Voucher] SUNRIDGE — IBFT RECEIVED IN IMC FROM SUNRIDGE",
     "lines": [
@@ -13111,218 +12761,30 @@ export const REAL_JOURNAL = [
   },
   {
     "id": "jnl-rv-110",
-    "date": "2026-04-30",
+    "date": "2026-08-27",
     "reference": "BRV-26-110",
     "description": "[Receipt Voucher] SUNRIDGE — IBFT RECEIVED IN IMC FROM SUNRIDGE",
     "lines": [
       {
         "account": "bank",
         "bankAccountId": "bank-hbl",
-        "debit": 804073.05,
+        "debit": 500000,
         "credit": 0,
         "memo": "HBL Operations"
       },
       {
         "account": "ar",
         "debit": 0,
-        "credit": 804073.05,
+        "credit": 500000,
         "memo": "Accounts Receivable — SUNRIDGE"
       }
     ]
   },
   {
     "id": "jnl-rv-111",
-    "date": "2026-06-24",
-    "reference": "BRV-26-111",
-    "description": "[Receipt Voucher] SUNRIDGE — IBFT RECEIVED IN IMC FROM SUNRIDGE",
-    "lines": [
-      {
-        "account": "bank",
-        "bankAccountId": "bank-hbl",
-        "debit": 500000,
-        "credit": 0,
-        "memo": "HBL Operations"
-      },
-      {
-        "account": "ar",
-        "debit": 0,
-        "credit": 500000,
-        "memo": "Accounts Receivable — SUNRIDGE"
-      }
-    ]
-  },
-  {
-    "id": "jnl-rv-112",
-    "date": "2026-08-04",
-    "reference": "BRV-26-112",
-    "description": "[Receipt Voucher] SUNRIDGE — IBFT RECEIVED IN IMC FROM SUNRIDGE",
-    "lines": [
-      {
-        "account": "bank",
-        "bankAccountId": "bank-hbl",
-        "debit": 500000,
-        "credit": 0,
-        "memo": "HBL Operations"
-      },
-      {
-        "account": "ar",
-        "debit": 0,
-        "credit": 500000,
-        "memo": "Accounts Receivable — SUNRIDGE"
-      }
-    ]
-  },
-  {
-    "id": "jnl-rv-113",
-    "date": "2026-08-07",
-    "reference": "BRV-26-113",
-    "description": "[Receipt Voucher] SUNRIDGE — IBFT RECEIVED IN IMC FROM SUNRIDGE",
-    "lines": [
-      {
-        "account": "bank",
-        "bankAccountId": "bank-hbl",
-        "debit": 500000,
-        "credit": 0,
-        "memo": "HBL Operations"
-      },
-      {
-        "account": "ar",
-        "debit": 0,
-        "credit": 500000,
-        "memo": "Accounts Receivable — SUNRIDGE"
-      }
-    ]
-  },
-  {
-    "id": "jnl-rv-114",
-    "date": "2026-08-11",
-    "reference": "BRV-26-114",
-    "description": "[Receipt Voucher] SUNRIDGE — IBFT RECEIVED IN IMC FROM SUNRIDGE",
-    "lines": [
-      {
-        "account": "bank",
-        "bankAccountId": "bank-hbl",
-        "debit": 500000,
-        "credit": 0,
-        "memo": "HBL Operations"
-      },
-      {
-        "account": "ar",
-        "debit": 0,
-        "credit": 500000,
-        "memo": "Accounts Receivable — SUNRIDGE"
-      }
-    ]
-  },
-  {
-    "id": "jnl-rv-115",
-    "date": "2026-08-15",
-    "reference": "BRV-26-115",
-    "description": "[Receipt Voucher] SUNRIDGE — IBFT RECEIVED IN IMC FROM SUNRIDGE",
-    "lines": [
-      {
-        "account": "bank",
-        "bankAccountId": "bank-hbl",
-        "debit": 500000,
-        "credit": 0,
-        "memo": "HBL Operations"
-      },
-      {
-        "account": "ar",
-        "debit": 0,
-        "credit": 500000,
-        "memo": "Accounts Receivable — SUNRIDGE"
-      }
-    ]
-  },
-  {
-    "id": "jnl-rv-116",
-    "date": "2026-08-20",
-    "reference": "BRV-26-116",
-    "description": "[Receipt Voucher] SUNRIDGE — IBFT RECEIVED IN IMC FROM SUNRIDGE",
-    "lines": [
-      {
-        "account": "bank",
-        "bankAccountId": "bank-hbl",
-        "debit": 500000,
-        "credit": 0,
-        "memo": "HBL Operations"
-      },
-      {
-        "account": "ar",
-        "debit": 0,
-        "credit": 500000,
-        "memo": "Accounts Receivable — SUNRIDGE"
-      }
-    ]
-  },
-  {
-    "id": "jnl-rv-117",
-    "date": "2026-08-24",
-    "reference": "BRV-26-117",
-    "description": "[Receipt Voucher] SUNRIDGE — IBFT RECEIVED IN IMC FROM SUNRIDGE",
-    "lines": [
-      {
-        "account": "bank",
-        "bankAccountId": "bank-hbl",
-        "debit": 500000,
-        "credit": 0,
-        "memo": "HBL Operations"
-      },
-      {
-        "account": "ar",
-        "debit": 0,
-        "credit": 500000,
-        "memo": "Accounts Receivable — SUNRIDGE"
-      }
-    ]
-  },
-  {
-    "id": "jnl-rv-118",
-    "date": "2026-08-27",
-    "reference": "BRV-26-118",
-    "description": "[Receipt Voucher] SUNRIDGE — IBFT RECEIVED IN IMC FROM SUNRIDGE",
-    "lines": [
-      {
-        "account": "bank",
-        "bankAccountId": "bank-hbl",
-        "debit": 500000,
-        "credit": 0,
-        "memo": "HBL Operations"
-      },
-      {
-        "account": "ar",
-        "debit": 0,
-        "credit": 500000,
-        "memo": "Accounts Receivable — SUNRIDGE"
-      }
-    ]
-  },
-  {
-    "id": "jnl-ob-cli-031",
-    "date": "2026-06-30",
-    "reference": "OB-CLI-031",
-    "description": "[Opening Balance] Accounts Receivable — SUNRIDGE",
-    "lines": [
-      {
-        "account": "ar",
-        "debit": 5401182.7,
-        "credit": 0,
-        "memo": "Opening Balance — SUNRIDGE"
-      },
-      {
-        "account": "equity",
-        "debit": 0,
-        "credit": 5401182.7,
-        "memo": "Opening Retained Earnings / Equity"
-      }
-    ]
-  },
-  {
-    "id": "jnl-rv-119",
     "date": "2026-07-04",
-    "reference": "BRV-26-119",
-    "description": "[Receipt Voucher] XEFAN — Payment Received",
+    "reference": "BRV-26-111",
+    "description": "[Receipt Voucher] XEFAN — IBFT Received IN ADPULSE 1170",
     "lines": [
       {
         "account": "bank",
@@ -13340,10 +12802,10 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-120",
+    "id": "jnl-rv-112",
     "date": "2026-07-18",
-    "reference": "BRV-26-120",
-    "description": "[Receipt Voucher] XEFAN — Payment Received",
+    "reference": "BRV-26-112",
+    "description": "[Receipt Voucher] XEFAN — IBFT Received IN ADPULSE 1170",
     "lines": [
       {
         "account": "bank",
@@ -13361,10 +12823,10 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-121",
+    "id": "jnl-rv-113",
     "date": "2026-07-21",
-    "reference": "BRV-26-121",
-    "description": "[Receipt Voucher] XEFAN — Payment Received",
+    "reference": "BRV-26-113",
+    "description": "[Receipt Voucher] XEFAN — IBFT Received IN ADPULSE 1170",
     "lines": [
       {
         "account": "bank",
@@ -13382,10 +12844,10 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-122",
+    "id": "jnl-rv-114",
     "date": "2026-07-22",
-    "reference": "BRV-26-122",
-    "description": "[Receipt Voucher] XEFAN — Payment Received",
+    "reference": "BRV-26-114",
+    "description": "[Receipt Voucher] XEFAN — Cash Deposit in ADPULSE 1170",
     "lines": [
       {
         "account": "cash",
@@ -13403,10 +12865,10 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-123",
+    "id": "jnl-rv-115",
     "date": "2026-07-23",
-    "reference": "BRV-26-123",
-    "description": "[Receipt Voucher] XEFAN — Payment Received",
+    "reference": "BRV-26-115",
+    "description": "[Receipt Voucher] XEFAN — IBFT Received IN ADPULSE 1170",
     "lines": [
       {
         "account": "bank",
@@ -13424,10 +12886,178 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-124",
+    "id": "jnl-rv-116",
     "date": "2026-07-25",
+    "reference": "BRV-26-116",
+    "description": "[Receipt Voucher] XEFAN — IBFT Received IN ADPULSE 1170",
+    "lines": [
+      {
+        "account": "bank",
+        "bankAccountId": "bank-hbl",
+        "debit": 200000,
+        "credit": 0,
+        "memo": "HBL Operations"
+      },
+      {
+        "account": "ar",
+        "debit": 0,
+        "credit": 200000,
+        "memo": "Accounts Receivable — XEFAN"
+      }
+    ]
+  },
+  {
+    "id": "jnl-rv-117",
+    "date": "2026-07-25",
+    "reference": "BRV-26-117",
+    "description": "[Receipt Voucher] XEFAN — IBFT Received IN ADPULSE 1170",
+    "lines": [
+      {
+        "account": "bank",
+        "bankAccountId": "bank-hbl",
+        "debit": 350000,
+        "credit": 0,
+        "memo": "HBL Operations"
+      },
+      {
+        "account": "ar",
+        "debit": 0,
+        "credit": 350000,
+        "memo": "Accounts Receivable — XEFAN"
+      }
+    ]
+  },
+  {
+    "id": "jnl-rv-118",
+    "date": "2026-07-27",
+    "reference": "BRV-26-118",
+    "description": "[Receipt Voucher] XEFAN — Cheque Transfer in ADPULSE 1170",
+    "lines": [
+      {
+        "account": "bank",
+        "bankAccountId": "bank-hbl",
+        "debit": 200000,
+        "credit": 0,
+        "memo": "HBL Operations"
+      },
+      {
+        "account": "ar",
+        "debit": 0,
+        "credit": 200000,
+        "memo": "Accounts Receivable — XEFAN"
+      }
+    ]
+  },
+  {
+    "id": "jnl-rv-119",
+    "date": "2026-07-28",
+    "reference": "BRV-26-119",
+    "description": "[Receipt Voucher] XEFAN — IBFT Received IN ADPULSE 1170",
+    "lines": [
+      {
+        "account": "bank",
+        "bankAccountId": "bank-hbl",
+        "debit": 200000,
+        "credit": 0,
+        "memo": "HBL Operations"
+      },
+      {
+        "account": "ar",
+        "debit": 0,
+        "credit": 200000,
+        "memo": "Accounts Receivable — XEFAN"
+      }
+    ]
+  },
+  {
+    "id": "jnl-rv-120",
+    "date": "2026-07-29",
+    "reference": "BRV-26-120",
+    "description": "[Receipt Voucher] XEFAN — IBFT Received IN ADPULSE 1170",
+    "lines": [
+      {
+        "account": "bank",
+        "bankAccountId": "bank-hbl",
+        "debit": 200000,
+        "credit": 0,
+        "memo": "HBL Operations"
+      },
+      {
+        "account": "ar",
+        "debit": 0,
+        "credit": 200000,
+        "memo": "Accounts Receivable — XEFAN"
+      }
+    ]
+  },
+  {
+    "id": "jnl-rv-121",
+    "date": "2026-07-30",
+    "reference": "BRV-26-121",
+    "description": "[Receipt Voucher] XEFAN — Cash Deposit in ADPULSE 1170",
+    "lines": [
+      {
+        "account": "cash",
+        "bankAccountId": "bank-cash",
+        "debit": 900000,
+        "credit": 0,
+        "memo": "Petty Cash Vault"
+      },
+      {
+        "account": "ar",
+        "debit": 0,
+        "credit": 900000,
+        "memo": "Accounts Receivable — XEFAN"
+      }
+    ]
+  },
+  {
+    "id": "jnl-rv-122",
+    "date": "2026-08-07",
+    "reference": "BRV-26-122",
+    "description": "[Receipt Voucher] XEFAN — Cash Deposit in ADPULSE 1170",
+    "lines": [
+      {
+        "account": "cash",
+        "bankAccountId": "bank-cash",
+        "debit": 600000,
+        "credit": 0,
+        "memo": "Petty Cash Vault"
+      },
+      {
+        "account": "ar",
+        "debit": 0,
+        "credit": 600000,
+        "memo": "Accounts Receivable — XEFAN"
+      }
+    ]
+  },
+  {
+    "id": "jnl-rv-123",
+    "date": "2026-08-10",
+    "reference": "BRV-26-123",
+    "description": "[Receipt Voucher] XEFAN — IBFT Received IN ADPULSE 1170",
+    "lines": [
+      {
+        "account": "bank",
+        "bankAccountId": "bank-hbl",
+        "debit": 100000,
+        "credit": 0,
+        "memo": "HBL Operations"
+      },
+      {
+        "account": "ar",
+        "debit": 0,
+        "credit": 100000,
+        "memo": "Accounts Receivable — XEFAN"
+      }
+    ]
+  },
+  {
+    "id": "jnl-rv-124",
+    "date": "2026-08-13",
     "reference": "BRV-26-124",
-    "description": "[Receipt Voucher] XEFAN — Payment Received",
+    "description": "[Receipt Voucher] XEFAN — IBFT Received IN ADPULSE 1170",
     "lines": [
       {
         "account": "bank",
@@ -13446,177 +13076,9 @@ export const REAL_JOURNAL = [
   },
   {
     "id": "jnl-rv-125",
-    "date": "2026-07-25",
-    "reference": "BRV-26-125",
-    "description": "[Receipt Voucher] XEFAN — Payment Received",
-    "lines": [
-      {
-        "account": "bank",
-        "bankAccountId": "bank-hbl",
-        "debit": 350000,
-        "credit": 0,
-        "memo": "HBL Operations"
-      },
-      {
-        "account": "ar",
-        "debit": 0,
-        "credit": 350000,
-        "memo": "Accounts Receivable — XEFAN"
-      }
-    ]
-  },
-  {
-    "id": "jnl-rv-126",
-    "date": "2026-07-27",
-    "reference": "BRV-26-126",
-    "description": "[Receipt Voucher] XEFAN — Payment Received",
-    "lines": [
-      {
-        "account": "bank",
-        "bankAccountId": "bank-hbl",
-        "debit": 200000,
-        "credit": 0,
-        "memo": "HBL Operations"
-      },
-      {
-        "account": "ar",
-        "debit": 0,
-        "credit": 200000,
-        "memo": "Accounts Receivable — XEFAN"
-      }
-    ]
-  },
-  {
-    "id": "jnl-rv-127",
-    "date": "2026-07-28",
-    "reference": "BRV-26-127",
-    "description": "[Receipt Voucher] XEFAN — Payment Received",
-    "lines": [
-      {
-        "account": "bank",
-        "bankAccountId": "bank-hbl",
-        "debit": 200000,
-        "credit": 0,
-        "memo": "HBL Operations"
-      },
-      {
-        "account": "ar",
-        "debit": 0,
-        "credit": 200000,
-        "memo": "Accounts Receivable — XEFAN"
-      }
-    ]
-  },
-  {
-    "id": "jnl-rv-128",
-    "date": "2026-07-29",
-    "reference": "BRV-26-128",
-    "description": "[Receipt Voucher] XEFAN — Payment Received",
-    "lines": [
-      {
-        "account": "bank",
-        "bankAccountId": "bank-hbl",
-        "debit": 200000,
-        "credit": 0,
-        "memo": "HBL Operations"
-      },
-      {
-        "account": "ar",
-        "debit": 0,
-        "credit": 200000,
-        "memo": "Accounts Receivable — XEFAN"
-      }
-    ]
-  },
-  {
-    "id": "jnl-rv-129",
-    "date": "2026-07-30",
-    "reference": "BRV-26-129",
-    "description": "[Receipt Voucher] XEFAN — Payment Received",
-    "lines": [
-      {
-        "account": "cash",
-        "bankAccountId": "bank-cash",
-        "debit": 900000,
-        "credit": 0,
-        "memo": "Petty Cash Vault"
-      },
-      {
-        "account": "ar",
-        "debit": 0,
-        "credit": 900000,
-        "memo": "Accounts Receivable — XEFAN"
-      }
-    ]
-  },
-  {
-    "id": "jnl-rv-130",
-    "date": "2026-08-07",
-    "reference": "BRV-26-130",
-    "description": "[Receipt Voucher] XEFAN — Payment Received",
-    "lines": [
-      {
-        "account": "cash",
-        "bankAccountId": "bank-cash",
-        "debit": 600000,
-        "credit": 0,
-        "memo": "Petty Cash Vault"
-      },
-      {
-        "account": "ar",
-        "debit": 0,
-        "credit": 600000,
-        "memo": "Accounts Receivable — XEFAN"
-      }
-    ]
-  },
-  {
-    "id": "jnl-rv-131",
-    "date": "2026-08-10",
-    "reference": "BRV-26-131",
-    "description": "[Receipt Voucher] XEFAN — Payment Received",
-    "lines": [
-      {
-        "account": "bank",
-        "bankAccountId": "bank-hbl",
-        "debit": 100000,
-        "credit": 0,
-        "memo": "HBL Operations"
-      },
-      {
-        "account": "ar",
-        "debit": 0,
-        "credit": 100000,
-        "memo": "Accounts Receivable — XEFAN"
-      }
-    ]
-  },
-  {
-    "id": "jnl-rv-132",
-    "date": "2026-08-13",
-    "reference": "BRV-26-132",
-    "description": "[Receipt Voucher] XEFAN — Payment Received",
-    "lines": [
-      {
-        "account": "bank",
-        "bankAccountId": "bank-hbl",
-        "debit": 200000,
-        "credit": 0,
-        "memo": "HBL Operations"
-      },
-      {
-        "account": "ar",
-        "debit": 0,
-        "credit": 200000,
-        "memo": "Accounts Receivable — XEFAN"
-      }
-    ]
-  },
-  {
-    "id": "jnl-rv-133",
     "date": "2026-08-15",
-    "reference": "BRV-26-133",
-    "description": "[Receipt Voucher] XEFAN — Payment Received",
+    "reference": "BRV-26-125",
+    "description": "[Receipt Voucher] XEFAN — IBFT Received IN ADPULSE 1170",
     "lines": [
       {
         "account": "bank",
@@ -13634,10 +13096,10 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-134",
+    "id": "jnl-rv-126",
     "date": "2026-08-17",
-    "reference": "BRV-26-134",
-    "description": "[Receipt Voucher] XEFAN — Payment Received",
+    "reference": "BRV-26-126",
+    "description": "[Receipt Voucher] XEFAN — IBFT Received IN ADPULSE 1170",
     "lines": [
       {
         "account": "bank",
@@ -13655,10 +13117,10 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-135",
+    "id": "jnl-rv-127",
     "date": "2026-08-17",
-    "reference": "BRV-26-135",
-    "description": "[Receipt Voucher] XEFAN — Payment Received",
+    "reference": "BRV-26-127",
+    "description": "[Receipt Voucher] XEFAN — IBFT Received IN ADPULSE 1170",
     "lines": [
       {
         "account": "bank",
@@ -13676,10 +13138,10 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-136",
+    "id": "jnl-rv-128",
     "date": "2026-08-21",
-    "reference": "BRV-26-136",
-    "description": "[Receipt Voucher] XEFAN — Payment Received",
+    "reference": "BRV-26-128",
+    "description": "[Receipt Voucher] XEFAN — IBFT Received IN ADPULSE 1170",
     "lines": [
       {
         "account": "bank",
@@ -13697,10 +13159,10 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-137",
+    "id": "jnl-rv-129",
     "date": "2026-08-22",
-    "reference": "BRV-26-137",
-    "description": "[Receipt Voucher] XEFAN — Payment Received",
+    "reference": "BRV-26-129",
+    "description": "[Receipt Voucher] XEFAN — IBFT Received IN ADPULSE 1170",
     "lines": [
       {
         "account": "bank",
@@ -13718,10 +13180,10 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-138",
+    "id": "jnl-rv-130",
     "date": "2026-09-03",
-    "reference": "BRV-26-138",
-    "description": "[Receipt Voucher] XEFAN — Payment Received",
+    "reference": "BRV-26-130",
+    "description": "[Receipt Voucher] XEFAN — IBFT Received IN ADPULSE 1170",
     "lines": [
       {
         "account": "bank",
@@ -13739,10 +13201,10 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-139",
+    "id": "jnl-rv-131",
     "date": "2026-09-04",
-    "reference": "BRV-26-139",
-    "description": "[Receipt Voucher] XEFAN — Payment Received",
+    "reference": "BRV-26-131",
+    "description": "[Receipt Voucher] XEFAN — IBFT Received IN ADPULSE 1170",
     "lines": [
       {
         "account": "bank",
@@ -13760,10 +13222,10 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-140",
+    "id": "jnl-rv-132",
     "date": "2026-09-05",
-    "reference": "BRV-26-140",
-    "description": "[Receipt Voucher] XEFAN — Payment Received",
+    "reference": "BRV-26-132",
+    "description": "[Receipt Voucher] XEFAN — IBFT Received IN ADPULSE 1170",
     "lines": [
       {
         "account": "bank",
@@ -13781,10 +13243,10 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-141",
+    "id": "jnl-rv-133",
     "date": "2026-09-05",
-    "reference": "BRV-26-141",
-    "description": "[Receipt Voucher] XEFAN — Payment Received",
+    "reference": "BRV-26-133",
+    "description": "[Receipt Voucher] XEFAN — IBFT Received IN ADPULSE 1170",
     "lines": [
       {
         "account": "bank",
@@ -13798,6 +13260,26 @@ export const REAL_JOURNAL = [
         "debit": 0,
         "credit": 100000,
         "memo": "Accounts Receivable — XEFAN"
+      }
+    ]
+  },
+  {
+    "id": "jnl-ob-cli-032",
+    "date": "2026-06-30",
+    "reference": "OB-CLI-032",
+    "description": "[Opening Balance] Accounts Receivable — XEFAN",
+    "lines": [
+      {
+        "account": "ar",
+        "debit": 8334750,
+        "credit": 0,
+        "memo": "Opening Balance — XEFAN"
+      },
+      {
+        "account": "equity",
+        "debit": 0,
+        "credit": 8334750,
+        "memo": "Opening Retained Earnings / Equity"
       }
     ]
   },
@@ -13822,9 +13304,9 @@ export const REAL_JOURNAL = [
     ]
   },
   {
-    "id": "jnl-rv-142",
+    "id": "jnl-rv-134",
     "date": "2026-09-01",
-    "reference": "BRV-26-142",
+    "reference": "BRV-26-134",
     "description": "[Receipt Voucher] 9 FIGURE — IBFT received from 9F Lunch advance",
     "lines": [
       {
