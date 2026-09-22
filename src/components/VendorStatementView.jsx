@@ -414,8 +414,8 @@ export default function VendorStatementView({
   onSelectVendor
 }) {
   const [activeVendorId, setActiveVendorId] = useState(selectedVendorId || (vendors[0]?.id || ""));
-  const [dateFrom, setDateFrom] = useState("2026-07-01");
-  const [dateTo, setDateTo] = useState("2026-08-31");
+  const [dateFrom, setDateFrom] = useState("2026-01-01");
+  const [dateTo, setDateTo] = useState("2026-12-31");
   const [selectedProjectId, setSelectedProjectId] = useState("all");
   const [showPrintModal, setShowPrintModal] = useState(false);
   const [showTaxBreakdown, setShowTaxBreakdown] = useState(true);

@@ -415,8 +415,8 @@ export default function ClientStatementView({
   onSelectClient
 }) {
   const [activeClientId, setActiveClientId] = useState(selectedClientId || (clients[0]?.id || ""));
-  const [dateFrom, setDateFrom] = useState("2026-07-01");
-  const [dateTo, setDateTo] = useState("2026-08-31");
+  const [dateFrom, setDateFrom] = useState("2026-01-01");
+  const [dateTo, setDateTo] = useState("2026-12-31");
   const [selectedProjectId, setSelectedProjectId] = useState("all");
   const [selectedTxType, setSelectedTxType] = useState("all");
   const [showPrintModal, setShowPrintModal] = useState(false);

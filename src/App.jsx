@@ -1180,7 +1180,7 @@ export default function App() {
   /* Financial & Operations state */
   const [seedData] = useState(buildInitialData);
 
-  const STORAGE_KEY = "adpulse_erp_financial_clean_v9_master";
+  const STORAGE_KEY = "adpulse_erp_financial_clean_v10_verified";
 
   // Helper to load state from localStorage or fallback to default
   const getInitialState = (key, fallback) => {

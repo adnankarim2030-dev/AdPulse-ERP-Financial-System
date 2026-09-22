@@ -1,0 +1,1486 @@
+[
+  {
+    "sheetName": "ADMAX",
+    "title": "ADMAX ADVERTISING - MR. UMAIR BUKHARI",
+    "headerRowIdx": 2,
+    "headers": [
+      "S/No.",
+      "Date",
+      "PR",
+      "Description",
+      "Amount",
+      "Paid",
+      "Balance"
+    ],
+    "openingBalance": 0,
+    "totalBilled": 2600000,
+    "totalPaid": 650000,
+    "calculatedClosingBalance": 1950000,
+    "txnsCount": 3,
+    "txns": [
+      {
+        "type": "BILL",
+        "date": "2026-09-28",
+        "ref": "2026-021",
+        "desc": "SHAHEED-E-MILLAT HOARDING 60X30  (23-June-2026   to   22-July-2026)",
+        "amount": 650000,
+        "paid": 0,
+        "balance": 650000,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-09-08",
+        "ref": "IBFT (1241)",
+        "desc": "IBFT TRANSFER AGAINST INVOICE NO 2026-021",
+        "amount": 0,
+        "paid": 650000,
+        "balance": 0,
+        "notes": ""
+      },
+      {
+        "type": "BILL",
+        "date": "2026-06-20",
+        "ref": "AD/OOH/459/2026",
+        "desc": "SHAHEED-E-MILLAT HOARDING 60X30 (23-6-26 TO 23-9-26) EXT",
+        "amount": 1950000,
+        "paid": 0,
+        "balance": 1950000,
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "sheetName": "AHSAN COMMUNICATION",
+    "title": "AHSAN COMMUNICATION",
+    "headerRowIdx": 2,
+    "headers": [
+      "Date",
+      "Reference",
+      "Description",
+      "Amount",
+      "Paid",
+      "Balance"
+    ],
+    "openingBalance": 600000,
+    "totalBilled": 0,
+    "totalPaid": 600000,
+    "calculatedClosingBalance": 0,
+    "txnsCount": 3,
+    "txns": [
+      {
+        "type": "OB",
+        "date": "2026-06-30",
+        "ref": "OB-000",
+        "desc": "B/F BALANCE",
+        "amount": 0,
+        "paid": 0,
+        "balance": 600000,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-07-16",
+        "ref": "IBFT TRANFSER",
+        "desc": "IBFT Tranfer from Adpulse 1241 against Invoice No 98",
+        "amount": 0,
+        "paid": 300000,
+        "balance": 300000,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-08-22",
+        "ref": "10391111",
+        "desc": "CHQ Issued to Ahsan Communication against invoice no 98",
+        "amount": 0,
+        "paid": 300000,
+        "balance": 0,
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "sheetName": "AD-CARE",
+    "title": "ADCARE  (Mr. Aslam)",
+    "headerRowIdx": 3,
+    "headers": [
+      "SR No",
+      "Date",
+      "Invoice No",
+      "Description",
+      "Amount",
+      "Paid",
+      "Balance"
+    ],
+    "openingBalance": 0,
+    "totalBilled": 2952850,
+    "totalPaid": 1800000,
+    "calculatedClosingBalance": 1152850,
+    "txnsCount": 4,
+    "txns": [
+      {
+        "type": "PAYMENT",
+        "date": "2026-07-31",
+        "ref": "PAY",
+        "desc": "Cheque Deposit in Muhammmad Aslam - ADCARE",
+        "amount": 0,
+        "paid": 800000,
+        "balance": -800000,
+        "notes": ""
+      },
+      {
+        "type": "BILL",
+        "date": "2026-08-11",
+        "ref": "BILL",
+        "desc": "STREMERS, PRINTING & FABRICATION PUNJAB (DINERS)",
+        "amount": 2952850,
+        "paid": 0,
+        "balance": 2152850,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-08-24",
+        "ref": "PAY",
+        "desc": "Cheque Issued to Muhammmad Aslam - ADCARE",
+        "amount": 0,
+        "paid": 500000,
+        "balance": 1652850,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-09-17",
+        "ref": "PAY",
+        "desc": "Cheque Issued to Muhammmad Aslam - ADCARE",
+        "amount": 0,
+        "paid": 500000,
+        "balance": 1152850,
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "sheetName": "AXIS MEDIA",
+    "title": "AXIS MEDIA",
+    "headerRowIdx": 3,
+    "headers": [
+      "SR No",
+      "Date",
+      "PR",
+      "Description",
+      "Amount",
+      "Paid",
+      "Balance"
+    ],
+    "openingBalance": 1492050,
+    "totalBilled": 1102800,
+    "totalPaid": 1992000,
+    "calculatedClosingBalance": 602850,
+    "txnsCount": 6,
+    "txns": [
+      {
+        "type": "OB",
+        "date": "2026-06-30",
+        "ref": "OB-000",
+        "desc": "B/F BALANCE",
+        "amount": 0,
+        "paid": 0,
+        "balance": 1492050,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-07-12",
+        "ref": "IBFT TRANSFER",
+        "desc": "IBFT TRANSFER IN AXIS MEDIA ACCOUNT AGAINST INVOICE ADP-2026-26005",
+        "amount": 0,
+        "paid": 500000,
+        "balance": 992050,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-07-16",
+        "ref": "12548696",
+        "desc": "CHEQUE DEPOSIT IN AXIS MEDIA ACCOUNT AGAINST INVOICE ADP-2026-26005",
+        "amount": 0,
+        "paid": 500000,
+        "balance": 492050,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-07-23",
+        "ref": "CASH DEPOSIT",
+        "desc": "CASH DEPOSIT IN AXIX MEDIA ACCOUNT",
+        "amount": 0,
+        "paid": 492000,
+        "balance": 50,
+        "notes": ""
+      },
+      {
+        "type": "BILL",
+        "date": "2026-08-17",
+        "ref": "ADP-2026-26005",
+        "desc": "DINERS STREAMER CAMPAIGN KARACHI & SINDH",
+        "amount": 1102800,
+        "paid": 0,
+        "balance": 1102850,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-08-24",
+        "ref": "10391110",
+        "desc": "Cheque issued to Axis Media against Diners Streamer Campaign karachi & Sindh",
+        "amount": 0,
+        "paid": 500000,
+        "balance": 602850,
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "sheetName": "AZEEM BUKHARI",
+    "title": "AZEEM BUKHARI PHOTOGRAPHER (HAKIM SONS)",
+    "headerRowIdx": 4,
+    "headers": [
+      "Sr.No",
+      "Date",
+      "P/R",
+      "Description",
+      "Amount",
+      "Paid",
+      "Balance"
+    ],
+    "openingBalance": 0,
+    "totalBilled": 170000,
+    "totalPaid": 135000,
+    "calculatedClosingBalance": 35000,
+    "txnsCount": 10,
+    "txns": [
+      {
+        "type": "BILL",
+        "date": "2026-07-11",
+        "ref": "9",
+        "desc": "HMR Drone Shoot (11-07-2026)",
+        "amount": 15000,
+        "paid": 0,
+        "balance": 15000,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-07-18",
+        "ref": "IBFT",
+        "desc": "IBFT from BIPL against Invoice No 09",
+        "amount": 0,
+        "paid": 15000,
+        "balance": 0,
+        "notes": ""
+      },
+      {
+        "type": "BILL",
+        "date": "2026-07-20",
+        "ref": "53",
+        "desc": "Outdoor Drone shoot",
+        "amount": 20000,
+        "paid": 0,
+        "balance": 20000,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-07-28",
+        "ref": "IBFT",
+        "desc": "IBFT from BIPL against Invoice No 53",
+        "amount": 0,
+        "paid": 20000,
+        "balance": 0,
+        "notes": ""
+      },
+      {
+        "type": "BILL",
+        "date": "2026-08-24",
+        "ref": "16",
+        "desc": "Rafiq Juloos Video & Drone Shoot",
+        "amount": 35000,
+        "paid": 0,
+        "balance": 35000,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-08-29",
+        "ref": "IBFT",
+        "desc": "IBFT from BIPL against Invoice No 16",
+        "amount": 0,
+        "paid": 35000,
+        "balance": 0,
+        "notes": ""
+      },
+      {
+        "type": "BILL",
+        "date": "2026-09-09",
+        "ref": "25",
+        "desc": "GFS dealers Convention Video Graphy with Gimble and photography",
+        "amount": 25000,
+        "paid": 0,
+        "balance": 25000,
+        "notes": ""
+      },
+      {
+        "type": "BILL",
+        "date": "2026-09-09",
+        "ref": "36",
+        "desc": "Adpulse sign Board sites coverage approimate (75 to 90) drone shoot 2 days",
+        "amount": 40000,
+        "paid": 0,
+        "balance": 65000,
+        "notes": ""
+      },
+      {
+        "type": "BILL",
+        "date": "2026-09-14",
+        "ref": "37",
+        "desc": "Video and photography Dewan and lakhmir Sign Marriott Hotel",
+        "amount": 35000,
+        "paid": 0,
+        "balance": 100000,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-09-16",
+        "ref": "Cash Payment",
+        "desc": "Cash Paid to Mr. Azeem Bukhari against Invoice No 25 & 36-A",
+        "amount": 0,
+        "paid": 65000,
+        "balance": 35000,
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "sheetName": "BRAND ACTIVE",
+    "title": "BRAND ACTIVE",
+    "headerRowIdx": 2,
+    "headers": [
+      "S.No",
+      "Date",
+      "Reference",
+      "Description",
+      "Amount",
+      "Paid",
+      "Balance",
+      "Status"
+    ],
+    "openingBalance": 0,
+    "totalBilled": 970000,
+    "totalPaid": 0,
+    "calculatedClosingBalance": 970000,
+    "txnsCount": 1,
+    "txns": [
+      {
+        "type": "BILL",
+        "date": "2026-08-17",
+        "ref": "0160/2026",
+        "desc": "Bukhari Commercial, Ittehad DHA, Karachi (03-Jul to 01-Aug, 2026) & PASTING CHARGES",
+        "amount": 970000,
+        "paid": 0,
+        "balance": 970000,
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "sheetName": "DEPLEX INN",
+    "title": "16-1-2026",
+    "headerRowIdx": 3,
+    "headers": [
+      "SR",
+      "Date",
+      "P / R",
+      "Description",
+      "Amount",
+      "Paid",
+      "Balance",
+      "STATUS"
+    ],
+    "openingBalance": 0,
+    "totalBilled": 433000,
+    "totalPaid": 0,
+    "calculatedClosingBalance": 433000,
+    "txnsCount": 2,
+    "txns": [
+      {
+        "type": "BILL",
+        "date": "2026-08-24",
+        "ref": "DI-1375",
+        "desc": "Bridge panel at Nazimabad Board Office (22-07-2026 to 10-08-2026) Falaknaz",
+        "amount": 183000,
+        "paid": 0,
+        "balance": 183000,
+        "notes": ""
+      },
+      {
+        "type": "BILL",
+        "date": "2026-08-24",
+        "ref": "DI-1376",
+        "desc": "Billboard at Bukhari Commercial (15-07-2026 to 30-07-2026) H&H Home",
+        "amount": 250000,
+        "paid": 0,
+        "balance": 433000,
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "sheetName": "GRAVITY MEDIA",
+    "title": "GRAVITY MEDIA - HYDERABAD",
+    "headerRowIdx": 2,
+    "headers": [
+      "Date",
+      "P/R",
+      "Description",
+      "AMOUNT",
+      "PAID",
+      "Balance"
+    ],
+    "openingBalance": 0,
+    "totalBilled": 110000,
+    "totalPaid": 110000,
+    "calculatedClosingBalance": 0,
+    "txnsCount": 2,
+    "txns": [
+      {
+        "type": "BILL",
+        "date": "2026-07-31",
+        "ref": "NST2112",
+        "desc": "HOARDING AT AGRICULTURE COMPLEX GUUD CHOWK 60X20 (15-7-26 TO 31-7-26) 15 DAYS @ 220,000",
+        "amount": 110000,
+        "paid": 0,
+        "balance": 110000,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-09-12",
+        "ref": "10391389",
+        "desc": "Cheque Issued from IMC",
+        "amount": 0,
+        "paid": 110000,
+        "balance": 0,
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "sheetName": "IMRAN ENTERPRISE",
+    "title": "IMRAN ENTERPRISE - HYDERABAD",
+    "headerRowIdx": 2,
+    "headers": [
+      "Date",
+      "P/R",
+      "Description",
+      "AMOUNT",
+      "PAID",
+      "Balance"
+    ],
+    "openingBalance": 0,
+    "totalBilled": 285000,
+    "totalPaid": 285000,
+    "calculatedClosingBalance": 0,
+    "txnsCount": 3,
+    "txns": [
+      {
+        "type": "BILL",
+        "date": "2026-07-31",
+        "ref": "BILL",
+        "desc": "HOARDING AT AKBAR CNG 45X40 (15 DAYS), AUTO BHAN ROAD OPP RIDHAN 60X20 (15 DAYS) & AUTO BHAN ASKARI BANK 60X20 (10 DAYS)",
+        "amount": 285000,
+        "paid": 0,
+        "balance": 285000,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-09-01",
+        "ref": "00000084",
+        "desc": "Cheque Deposit in Imran Ahmed Account (Received from Medicam) Chq dt 15-8-2026",
+        "amount": 0,
+        "paid": 270000,
+        "balance": 15000,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-09-08",
+        "ref": "IBFT",
+        "desc": "IBFT Transfer from BIPL",
+        "amount": 0,
+        "paid": 15000,
+        "balance": 0,
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "sheetName": "IBRAHIM ANJARWALA",
+    "title": "MR. IBRAHIM ANJARWALA",
+    "headerRowIdx": 4,
+    "headers": [
+      "Date",
+      "Reference",
+      "Description",
+      "Amount",
+      "Received",
+      "Balance"
+    ],
+    "openingBalance": 0,
+    "totalBilled": 10000000,
+    "totalPaid": 0,
+    "calculatedClosingBalance": 10000000,
+    "txnsCount": 15,
+    "txns": [
+      {
+        "type": "BILL",
+        "date": "2026-07-25",
+        "ref": "11005793",
+        "desc": "PDC Received from Mr. Ibrahim Anjarwala against Loan",
+        "amount": 2500000,
+        "paid": 0,
+        "balance": 2500000,
+        "notes": ""
+      },
+      {
+        "type": "BILL",
+        "date": "2026-07-30",
+        "ref": "11005794",
+        "desc": "PDC Received from Mr. Ibrahim Anjarwala against Loan",
+        "amount": 2500000,
+        "paid": 0,
+        "balance": 5000000,
+        "notes": ""
+      },
+      {
+        "type": "BILL",
+        "date": "2026-08-25",
+        "ref": "11005795",
+        "desc": "PDC Received from Mr. Ibrahim Anjarwala against Loan",
+        "amount": 2500000,
+        "paid": 0,
+        "balance": 7500000,
+        "notes": ""
+      },
+      {
+        "type": "BILL",
+        "date": "2026-08-30",
+        "ref": "11005796",
+        "desc": "PDC Received from Mr. Ibrahim Anjarwala against Loan",
+        "amount": 2500000,
+        "paid": 0,
+        "balance": 10000000,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-07-24",
+        "ref": "167",
+        "desc": "Cheque Deposit in Call Advertiser Account",
+        "amount": 0,
+        "paid": 0,
+        "balance": 9200000,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-07-28",
+        "ref": "Cash Deposit",
+        "desc": "Cash Deposit in Call Advertiser Account",
+        "amount": 0,
+        "paid": 0,
+        "balance": 8500000,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-08-03",
+        "ref": "IBFT",
+        "desc": "IBFT Transfer in Call Acct",
+        "amount": 0,
+        "paid": 0,
+        "balance": 7000000,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-08-11",
+        "ref": "Cash Deposit",
+        "desc": "Cash Deposit in Call Advertiser Account",
+        "amount": 0,
+        "paid": 0,
+        "balance": 6100000,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-08-28",
+        "ref": "Cash Received",
+        "desc": "Cash Received from Mr. Ibrahim Anjarwala against Loan",
+        "amount": 0,
+        "paid": 0,
+        "balance": 5200000,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-08-30",
+        "ref": "A-43515978",
+        "desc": "Cash/Cheque Received from Mr. Ibrahim Anjarwala against Loan",
+        "amount": 0,
+        "paid": 0,
+        "balance": 4800000,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-08-31",
+        "ref": "A-43515979",
+        "desc": "Cash/Cheque Received from Mr. Ibrahim Anjarwala against Loan",
+        "amount": 0,
+        "paid": 0,
+        "balance": 4300000,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-09-04",
+        "ref": "CA0000000176",
+        "desc": "Cheque Received from Mr. Ibrahim Anjarwala against Loan",
+        "amount": 0,
+        "paid": 0,
+        "balance": 3800000,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-09-05",
+        "ref": "CA0000000179",
+        "desc": "Cheque Received from Mr. Ibrahim Anjarwala against Loan",
+        "amount": 0,
+        "paid": 0,
+        "balance": 3600000,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-09-06",
+        "ref": "CA0000000177",
+        "desc": "Cheque Received from Mr. Ibrahim Anjarwala against Loan",
+        "amount": 0,
+        "paid": 0,
+        "balance": 2700000,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-09-07",
+        "ref": "CA0000000178",
+        "desc": "Cheque Received from Mr. Ibrahim Anjarwala against Loan",
+        "amount": 0,
+        "paid": 0,
+        "balance": 2000000,
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "sheetName": "K-GROUP",
+    "title": "Kundanz Advertising (K-Group)",
+    "headerRowIdx": 4,
+    "headers": [
+      "Sr.No",
+      "Date",
+      "Invoice",
+      "Description",
+      "Amount",
+      "Paid",
+      "Balance"
+    ],
+    "openingBalance": 0,
+    "totalBilled": 35000,
+    "totalPaid": 35000,
+    "calculatedClosingBalance": 0,
+    "txnsCount": 2,
+    "txns": [
+      {
+        "type": "BILL",
+        "date": "2026-08-17",
+        "ref": "BILL",
+        "desc": "Invoice Recevied from Media Solution against Diners",
+        "amount": 35000,
+        "paid": 0,
+        "balance": 35000,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-09-12",
+        "ref": "PAY",
+        "desc": "CHEQUE DEPOSIT IN MEDIA SOLUTION ACCOUNT AGAINST INVOIVE NO 'MS/BILL/10015/2026",
+        "amount": 0,
+        "paid": 35000,
+        "balance": 0,
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "sheetName": "MILLENNIUM GRAPHICS",
+    "title": "MILLENNIUM GRAPHIC",
+    "headerRowIdx": 2,
+    "headers": [
+      "Date",
+      "Reference",
+      "Description",
+      "Amount",
+      "Recevied",
+      "Balance",
+      "Status"
+    ],
+    "openingBalance": 0,
+    "totalBilled": 650000,
+    "totalPaid": 0,
+    "calculatedClosingBalance": 650000,
+    "txnsCount": 4,
+    "txns": [
+      {
+        "type": "BILL",
+        "date": "2026-08-18",
+        "ref": "471",
+        "desc": "Shehbaz Flyover Panel, Hilltop Chari, Qasim Chowk, Naseem Nagar (17-July-25 to 31-July-25) 15 Days",
+        "amount": 650000,
+        "paid": 0,
+        "balance": 650000,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-09-07",
+        "ref": "12548704",
+        "desc": "CHEQUE DEPSOIT IN MILLENNIUM GRAPHICS ACCOUNT (RECEIVED FROM ANSAR BHAI AGAINST CREEK GOLD)",
+        "amount": 0,
+        "paid": 0,
+        "balance": 150000,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-07-01",
+        "ref": "PAY",
+        "desc": "IBFT TRANSFER FROM ADPULSE 1241 AGAINST INVOICE # 471",
+        "amount": 0,
+        "paid": 0,
+        "balance": 25000,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-07-01",
+        "ref": "PAY",
+        "desc": "Discount",
+        "amount": 0,
+        "paid": 0,
+        "balance": 0,
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "sheetName": "MNB",
+    "title": "MNB OOH Advertiisng",
+    "headerRowIdx": 2,
+    "headers": [
+      "S.No",
+      "Date",
+      "Reference",
+      "Description",
+      "Amount",
+      "Paid",
+      "Balance"
+    ],
+    "openingBalance": 0,
+    "totalBilled": 4475000,
+    "totalPaid": 4075000,
+    "calculatedClosingBalance": 400000,
+    "txnsCount": 13,
+    "txns": [
+      {
+        "type": "BILL",
+        "date": "2026-06-30",
+        "ref": "RG-330/2026",
+        "desc": "Bridge Panel at Drig Road, Shahra-e-Faisal, Karachi 80x12 (15-5-26 to 12-6-26)",
+        "amount": 500000,
+        "paid": 0,
+        "balance": 500000,
+        "notes": ""
+      },
+      {
+        "type": "BILL",
+        "date": "2026-07-08",
+        "ref": "RG-333/2026",
+        "desc": "Bridge Panel at Drig Road, Shahra-e-Faisal, Karachi 80X12  (13-6-26 to 12-7-26), Bridge Panel at RJ Mall, Karachi 80x15 (6-6-26 to 5-7-26) & Bridge Panel at Millennium Mall, Karachi  80X12 For 30  Days (1-1-6-26 to 30-6-26)",
+        "amount": 1225000,
+        "paid": 0,
+        "balance": 1725000,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-07-15",
+        "ref": "Cash",
+        "desc": "Cash depoist in Umair Nasim Butt (MNB) Account",
+        "amount": 0,
+        "paid": 1000000,
+        "balance": 725000,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-07-16",
+        "ref": "Cash",
+        "desc": "Cash depoist in Umair Nasim Butt (MNB) Account",
+        "amount": 0,
+        "paid": 600000,
+        "balance": 125000,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-07-16",
+        "ref": "Discount",
+        "desc": "Early Cash Discount",
+        "amount": 0,
+        "paid": 125000,
+        "balance": 0,
+        "notes": ""
+      },
+      {
+        "type": "BILL",
+        "date": "2026-07-31",
+        "ref": "RG-342/2026",
+        "desc": "Bridge Panel at Drig Road, Shahra-e-Faisal, Karachi 80X12  (13-7-26 to 30-7-26), Bridge Panel at RJ Mall Side 1 Karachi 80x15 (6-7-26 to 30-7-26), Bridge Panel at RJ Mall Side 2 Karachi 80x15 (16-7-26 to 30-7-26 & Bridge Panel at Millennium Mall, Karachi  80X12 For 30  Days (1-7-26 to 30-7-26)",
+        "amount": 1150000,
+        "paid": 0,
+        "balance": 1150000,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-08-08",
+        "ref": "IBFT",
+        "desc": "IBFT Transfer to Umair Nasim Butt (mnb) against RG-324/2026",
+        "amount": 0,
+        "paid": 300000,
+        "balance": 850000,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-08-10",
+        "ref": "12548700",
+        "desc": "CHEQUE DEPOSIT IN UMAIR NASEEM BUTT ACCOUNT FROM ANSAR BHAI CHEQUE",
+        "amount": 0,
+        "paid": 500000,
+        "balance": 350000,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-08-12",
+        "ref": "IBFT",
+        "desc": "IBFT Transfer to Umair Nasim Butt (mnb) against RG-324/2026",
+        "amount": 0,
+        "paid": 300000,
+        "balance": 50000,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-08-12",
+        "ref": "Discount",
+        "desc": "Discount",
+        "amount": 0,
+        "paid": 100000,
+        "balance": -50000,
+        "notes": ""
+      },
+      {
+        "type": "BILL",
+        "date": "2026-09-08",
+        "ref": "RG-354/2026",
+        "desc": "Bridge Panel at Drig Road, Shahra-e-Faisal, Karachi 80X12  (1-8-26 to 30-8-26), Bridge Panel at RJ Mall Side 1 Karachi 80x15 (1-8-26 to 30-8-26), Bridge Panel at RJ Mall Side 2 Karachi 80x15 (1-8-26 to 30-8-26 & Bridge Panel at Millennium Mall, Karachi  80X12 For 30  Days (1-8-26 to 30-8-26)",
+        "amount": 1600000,
+        "paid": 0,
+        "balance": 1550000,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-09-16",
+        "ref": "77543549",
+        "desc": "Cash/Cheque Given to MNB",
+        "amount": 0,
+        "paid": 766021,
+        "balance": 783979,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-09-16",
+        "ref": "77543560",
+        "desc": "Cash/Cheque Given to MNB",
+        "amount": 0,
+        "paid": 383979,
+        "balance": 400000,
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "sheetName": "MEDIA COMMUNICATION",
+    "title": "Media Communication (Imran Sheikh)",
+    "headerRowIdx": 3,
+    "headers": [
+      "S.No",
+      "Date",
+      "Reference",
+      "Description",
+      "Amount",
+      "Paid",
+      "Balance",
+      "Status"
+    ],
+    "openingBalance": 0,
+    "totalBilled": 775000,
+    "totalPaid": 0,
+    "calculatedClosingBalance": 775000,
+    "txnsCount": 2,
+    "txns": [
+      {
+        "type": "BILL",
+        "date": "2026-06-30",
+        "ref": "177",
+        "desc": "Bahadurabad Site 33x55 (17-4-26 to 16-5-26)",
+        "amount": 775000,
+        "paid": 0,
+        "balance": 775000,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-07-01",
+        "ref": "PAY",
+        "desc": "BAHADURABAD AA INVOICE PENDING",
+        "amount": 0,
+        "paid": 0,
+        "balance": 775000,
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "sheetName": "NEXTIER - KAINAT",
+    "title": "MS. KAINAT ZAHEER - NEXTIER",
+    "headerRowIdx": 3,
+    "headers": [
+      "S.No",
+      "Date",
+      "P/R",
+      "Description",
+      "Amount",
+      "Paid",
+      "Balance"
+    ],
+    "openingBalance": 0,
+    "totalBilled": 6400000,
+    "totalPaid": 6400000,
+    "calculatedClosingBalance": 0,
+    "txnsCount": 9,
+    "txns": [
+      {
+        "type": "BILL",
+        "date": "2026-06-30",
+        "ref": "AD/OOH/460/2026",
+        "desc": "COMBINED PO Shahrah e Faisal 11-7-2026 to 10-10-26, Karsaz 11-7-2026 to 10-10-2026, Bahira Bridges 16-7-26 to 16-10-2026",
+        "amount": 6000000,
+        "paid": 0,
+        "balance": 6000000,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-07-10",
+        "ref": "Cash Payment",
+        "desc": "Cash paid to Ms. Kainat Zaheer against bridges",
+        "amount": 0,
+        "paid": 2000000,
+        "balance": 4000000,
+        "notes": ""
+      },
+      {
+        "type": "BILL",
+        "date": "2026-07-01",
+        "ref": "BILL",
+        "desc": "KARSAZ FOR MEDICAM 20-07-26 to 20-8-26",
+        "amount": 400000,
+        "paid": 0,
+        "balance": 4400000,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-08-07",
+        "ref": "12547572",
+        "desc": "Cheque deposit In Kainat Zaheer Account",
+        "amount": 0,
+        "paid": 500000,
+        "balance": 3900000,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-08-07",
+        "ref": "12548699",
+        "desc": "Cheque deposit In Kainat Zaheer Account",
+        "amount": 0,
+        "paid": 500000,
+        "balance": 3400000,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-08-10",
+        "ref": "Cash Payment",
+        "desc": "Cash paid to Mr. Imran C/O Ms. Kainat Zaheer (Nextier)",
+        "amount": 0,
+        "paid": 1400000,
+        "balance": 2000000,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-09-07",
+        "ref": "12560885",
+        "desc": "Cheque deposit In Kainat Zaheer Account",
+        "amount": 0,
+        "paid": 900000,
+        "balance": 1100000,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-09-14",
+        "ref": "10391121",
+        "desc": "Cheque deposit inKainat Zaheer - Nextier against PO No AD/OOH/460/2026",
+        "amount": 0,
+        "paid": 600000,
+        "balance": 500000,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-09-14",
+        "ref": "12548705",
+        "desc": "Cheque deposit inKainat Zaheer - Nextier against PO No AD/OOH/460/2026",
+        "amount": 0,
+        "paid": 500000,
+        "balance": 0,
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "sheetName": "R & D GROUP",
+    "title": "R & D GROUP (KASHIF GRAMI)",
+    "headerRowIdx": 2,
+    "headers": [
+      "S/No.",
+      "Date",
+      "PR",
+      "Description",
+      "Amount",
+      "Paid",
+      "Balance"
+    ],
+    "openingBalance": 0,
+    "totalBilled": 1600000,
+    "totalPaid": 400000,
+    "calculatedClosingBalance": 1200000,
+    "txnsCount": 5,
+    "txns": [
+      {
+        "type": "BILL",
+        "date": "2026-08-10",
+        "ref": "BILL",
+        "desc": "2x Spots, Digital streamers at Zulfiqar Avenue Creek Walk, Phase 8, DHA, (13 July – 12 Aug 2026)",
+        "amount": 200000,
+        "paid": 0,
+        "balance": 200000,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-08-22",
+        "ref": "10391114",
+        "desc": "Cheque Issued to R and D Group against Digital streamers",
+        "amount": 0,
+        "paid": 200000,
+        "balance": 0,
+        "notes": ""
+      },
+      {
+        "type": "BILL",
+        "date": "2026-09-10",
+        "ref": "BILL",
+        "desc": "2x Spots, Digital streamers at Zulfiqar Avenue Creek Walk, Phase 8, DHA, (13 Aug– 12 Sep 2026)",
+        "amount": 200000,
+        "paid": 0,
+        "balance": 200000,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-09-17",
+        "ref": "10391124",
+        "desc": "Cheque Issued to R and D Group against Digital streamers",
+        "amount": 0,
+        "paid": 200000,
+        "balance": 0,
+        "notes": ""
+      },
+      {
+        "type": "BILL",
+        "date": "2026-07-13",
+        "ref": "AD/OOH/427/2026",
+        "desc": "DHA Creek Walk Digital Streamers  3x6, (QTY 10) &  2X3 (QTY 16) 13-July-26 to 13-Jan-27",
+        "amount": 1200000,
+        "paid": 0,
+        "balance": 1200000,
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "sheetName": "RM ASSOCIATES",
+    "title": "R.M Associates / Mr. Zohaib",
+    "headerRowIdx": 2,
+    "headers": [
+      "S.No",
+      "Date",
+      "Reference",
+      "Description",
+      "Amount",
+      "Paid",
+      "Balance",
+      "Status"
+    ],
+    "openingBalance": 0,
+    "totalBilled": 600000,
+    "totalPaid": 600000,
+    "calculatedClosingBalance": 0,
+    "txnsCount": 6,
+    "txns": [
+      {
+        "type": "BILL",
+        "date": "2026-07-16",
+        "ref": "AP 002",
+        "desc": "OOH Campaign 16 May To 16 June One Month (Digital Streamers Shahrah e faisal and CSD road)",
+        "amount": 200000,
+        "paid": 0,
+        "balance": 200000,
+        "notes": ""
+      },
+      {
+        "type": "BILL",
+        "date": "2026-07-16",
+        "ref": "AP 003",
+        "desc": "OOH Campaign 16 June To 16 July One Month (Digital Streamers Shahrah e faisal and CSD road)",
+        "amount": 200000,
+        "paid": 0,
+        "balance": 400000,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-07-20",
+        "ref": "10391097",
+        "desc": "Cheque Issued to RM Associates against invoice AP 002",
+        "amount": 0,
+        "paid": 200000,
+        "balance": 200000,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-08-22",
+        "ref": "10391109",
+        "desc": "Cheque Issued to RM Associates against invoice AP 003",
+        "amount": 0,
+        "paid": 200000,
+        "balance": 0,
+        "notes": ""
+      },
+      {
+        "type": "BILL",
+        "date": "2026-07-01",
+        "ref": "INVOICE PENDNG",
+        "desc": "Vendor Bill",
+        "amount": 200000,
+        "paid": 0,
+        "balance": 200000,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-09-12",
+        "ref": "10391387",
+        "desc": "Cheque Issued to RM Associates against invoice",
+        "amount": 0,
+        "paid": 200000,
+        "balance": 0,
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "sheetName": "RING ADVERTISING",
+    "title": "RING ADVERTISING",
+    "headerRowIdx": 2,
+    "headers": [
+      "Date",
+      "Reference",
+      "Description",
+      "Amount",
+      "Paid",
+      "Balance"
+    ],
+    "openingBalance": 0,
+    "totalBilled": 525000,
+    "totalPaid": 525000,
+    "calculatedClosingBalance": 0,
+    "txnsCount": 3,
+    "txns": [
+      {
+        "type": "BILL",
+        "date": "2026-07-10",
+        "ref": "1",
+        "desc": "Hoding For 45 Days For Korangi 60x30 (Duration 45 Days From 18 April To 2 June)",
+        "amount": 525000,
+        "paid": 0,
+        "balance": 525000,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-07-20",
+        "ref": "12548697",
+        "desc": "Cheque issued to Ring Adversitings against Invoice 01",
+        "amount": 0,
+        "paid": 500000,
+        "balance": 25000,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-07-20",
+        "ref": "IBFT",
+        "desc": "IBFT Transfer in Ring Advertising account",
+        "amount": 0,
+        "paid": 25000,
+        "balance": 0,
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "sheetName": "SA ADVERTISING",
+    "title": "SA ADVERTISING SERVICES",
+    "headerRowIdx": 2,
+    "headers": [
+      "Date",
+      "Reference",
+      "Description",
+      "Amount",
+      "Paid",
+      "Balance"
+    ],
+    "openingBalance": 0,
+    "totalBilled": 665000,
+    "totalPaid": 0,
+    "calculatedClosingBalance": 665000,
+    "txnsCount": 1,
+    "txns": [
+      {
+        "type": "BILL",
+        "date": "2026-09-16",
+        "ref": "12485",
+        "desc": "Hoding For Chase-Up Fasialabad Sites City Heart Plaza 60x20 (26-8-26 to 9-9-26), D-Ground 60x20 (30-8-26 to 13-9-26), Abdullah Pur Chowk 60x20 (30-8-26 to 13-9-26) & Opp Misaqul Mall 60x20 (30-8-26 to 13-9-26)",
+        "amount": 665000,
+        "paid": 0,
+        "balance": 665000,
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "sheetName": "SKYLAND",
+    "title": "DATE: 09-SEP-2026",
+    "headerRowIdx": 0,
+    "headers": [
+      "DATE: 09-SEP-2026"
+    ],
+    "openingBalance": 0,
+    "totalBilled": 0,
+    "totalPaid": 0,
+    "calculatedClosingBalance": 0,
+    "txnsCount": 0,
+    "txns": []
+  },
+  {
+    "sheetName": "TNI",
+    "title": "LEDGER",
+    "headerRowIdx": 3,
+    "headers": [
+      "S/No.",
+      "Date",
+      "PR",
+      "Description",
+      "Amount",
+      "PAID",
+      "Balance"
+    ],
+    "openingBalance": -166284,
+    "totalBilled": 0,
+    "totalPaid": 0,
+    "calculatedClosingBalance": -166284,
+    "txnsCount": 1,
+    "txns": [
+      {
+        "type": "OB",
+        "date": "2026-06-30",
+        "ref": "OB-000",
+        "desc": "B/F BALANCE",
+        "amount": 0,
+        "paid": 0,
+        "balance": -166284,
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "sheetName": "Zaib Enterprises",
+    "title": "LEDGER",
+    "headerRowIdx": 3,
+    "headers": [
+      "S/No.",
+      "Date",
+      "PR",
+      "Description",
+      "Amount",
+      "PAID",
+      "Balance"
+    ],
+    "openingBalance": 0,
+    "totalBilled": 4063000,
+    "totalPaid": 1363000,
+    "calculatedClosingBalance": 2700000,
+    "txnsCount": 5,
+    "txns": [
+      {
+        "type": "BILL",
+        "date": "2026-07-18",
+        "ref": "286",
+        "desc": "Hoarding at Boat Basin 60x30 (9 Days) , Shahrah-e-Faisal 90x35 (7 Days) & Shahrah-e-Qaideen 55x30 (8 Days) for HMR",
+        "amount": 463000,
+        "paid": 0,
+        "balance": 463000,
+        "notes": ""
+      },
+      {
+        "type": "BILL",
+        "date": "2026-09-01",
+        "ref": "Invoice pending",
+        "desc": "DHA NMC BRIDGE",
+        "amount": 900000,
+        "paid": 0,
+        "balance": 1363000,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-09-10",
+        "ref": "12560886",
+        "desc": "Cheuqe Given o Zaib Enterprises",
+        "amount": 0,
+        "paid": 900000,
+        "balance": 463000,
+        "notes": ""
+      },
+      {
+        "type": "PAYMENT",
+        "date": "2026-09-16",
+        "ref": "Cash Payment",
+        "desc": "Cash Paid to Zaib Enterprises",
+        "amount": 0,
+        "paid": 463000,
+        "balance": 0,
+        "notes": ""
+      },
+      {
+        "type": "BILL",
+        "date": "2026-06-29",
+        "ref": "AD/OOH/461/2026",
+        "desc": "DHA NMC BRIDGE 01 AND NMC BRIDGE 02 FOR 3 MONTHS",
+        "amount": 2700000,
+        "paid": 0,
+        "balance": 2700000,
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "sheetName": "UNITED CATERING",
+    "title": "UNITED CATERING",
+    "headerRowIdx": 2,
+    "headers": [
+      "SR",
+      "Date",
+      "P / R",
+      "Description",
+      "Amount",
+      "Paid",
+      "Balance"
+    ],
+    "openingBalance": 3997500,
+    "totalBilled": 0,
+    "totalPaid": 0,
+    "calculatedClosingBalance": 3997500,
+    "txnsCount": 1,
+    "txns": [
+      {
+        "type": "OB",
+        "date": "2026-06-30",
+        "ref": "OB-000",
+        "desc": "B/F BALANCE",
+        "amount": 0,
+        "paid": 0,
+        "balance": 3997500,
+        "notes": ""
+      }
+    ]
+  }
+]

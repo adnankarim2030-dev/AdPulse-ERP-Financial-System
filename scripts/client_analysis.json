@@ -1,0 +1,3151 @@
+[
+  {
+    "sheetName": "CHASE UP",
+    "title": "CHASE UP - CASH STATEMENT",
+    "headerRowIdx": 1,
+    "headers": [
+      "Date",
+      "Inv",
+      "Description",
+      "Total Amount",
+      "Recevied",
+      "Balance",
+      "Status"
+    ],
+    "openingBalance": -6417266,
+    "totalBilled": 0,
+    "totalReceived": 19340998,
+    "calculatedClosingBalance": -6417266,
+    "txnsCount": 10,
+    "txns": [
+      {
+        "type": "OB",
+        "date": "2026-06-30",
+        "ref": "OB-000",
+        "desc": "B/F BALANCE",
+        "amount": 0,
+        "received": 0,
+        "balance": 6431585.359999999
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-07-30",
+        "ref": "REC",
+        "desc": "OOH MEDIA CAMPAIGN KARACHI AND HYDERABAD",
+        "amount": 0,
+        "received": 0,
+        "balance": 13431585.36
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-07-30",
+        "ref": "REC",
+        "desc": "OOH MEDIA CAMPAIGN KARACHI AND HYDERABAD PRINTING AND INSTALLATION",
+        "amount": 0,
+        "received": 0,
+        "balance": 15755155.36
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-07-30",
+        "ref": "REC",
+        "desc": "MARDAN AND FAISALABAD VENDOR PAYMENT",
+        "amount": 0,
+        "received": 0,
+        "balance": 16423972.36
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-08-20",
+        "ref": "REC",
+        "desc": "Adjustment In Barter Ledger",
+        "amount": 0,
+        "received": 6417266,
+        "balance": 10006706.36
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-08-20",
+        "ref": "REC",
+        "desc": "IBFT RECEIVED FROM CHASE UP",
+        "amount": 0,
+        "received": 2323233,
+        "balance": 7683473.359999999
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-09-12",
+        "ref": "REC",
+        "desc": "IBFT RECEIVED FROM CHASE UP",
+        "amount": 0,
+        "received": 930000,
+        "balance": 6753473.359999999
+      },
+      {
+        "type": "RECEIPT",
+        "date": "TOTAL AMOUNT CASH ",
+        "ref": "REC",
+        "desc": "Payment Received",
+        "amount": 0,
+        "received": 9670499,
+        "balance": 6753473.359999999
+      },
+      {
+        "type": "OB",
+        "date": "2026-06-30",
+        "ref": "OB-000",
+        "desc": "B/F BALANCE",
+        "amount": 0,
+        "received": 0,
+        "balance": -6417266
+      },
+      {
+        "type": "RECEIPT",
+        "date": "20-08-26",
+        "ref": "REC",
+        "desc": "Adjustment In Cash Ledger",
+        "amount": 0,
+        "received": 0,
+        "balance": 0
+      }
+    ]
+  },
+  {
+    "sheetName": "CHASE VALUE",
+    "title": "CHASE VALUE CENTER",
+    "headerRowIdx": 2,
+    "headers": [
+      "Date",
+      "Reference",
+      "Description",
+      "Amount",
+      "Recevied",
+      "Balance"
+    ],
+    "openingBalance": 3019800,
+    "totalBilled": 17069398,
+    "totalReceived": 13075298,
+    "calculatedClosingBalance": 7334400,
+    "txnsCount": 43,
+    "txns": [
+      {
+        "type": "BILLING",
+        "date": "2025-02-17",
+        "ref": "AD/8584/02/25",
+        "desc": "Chase Value Festive Collection Site Printing & Installation of Baloch Bridge & Essa Nagri",
+        "amount": 86000,
+        "received": 0,
+        "balance": 86000
+      },
+      {
+        "type": "BILLING",
+        "date": "2025-02-17",
+        "ref": "AD/8585/02/25",
+        "desc": "Chase Value Festive Collection Site Rental of Baloch Bridge & Essa Nagri for 45 Days",
+        "amount": 1275000,
+        "received": 0,
+        "balance": 1361000
+      },
+      {
+        "type": "BILLING",
+        "date": "2025-02-17",
+        "ref": "AD/8586/02/25",
+        "desc": "Chase Value Festive Collection Digital Media campaign",
+        "amount": 1500000,
+        "received": 0,
+        "balance": 2861000
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-07-01",
+        "ref": "REC",
+        "desc": "Chase Value Gift Voucher Recevied",
+        "amount": 0,
+        "received": 500000,
+        "balance": 2361000
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-07-01",
+        "ref": "REC",
+        "desc": "Chase Value Gift Voucher Recevied",
+        "amount": 0,
+        "received": 930000,
+        "balance": 1431000
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2025-03-24",
+        "ref": "Cash Recevied",
+        "desc": "Cash Recevied from Chase Value KBR branch against Site rental invoice",
+        "amount": 0,
+        "received": 1000000,
+        "balance": 431000
+      },
+      {
+        "type": "BILLING",
+        "date": "2025-03-18",
+        "ref": "AD/8615/03/25",
+        "desc": "Chase Value Hyderabad Launch Electronic Media Campaign",
+        "amount": 740025,
+        "received": 0,
+        "balance": 1171025
+      },
+      {
+        "type": "BILLING",
+        "date": "2025-03-18",
+        "ref": "AD/8613/03/25",
+        "desc": "Chase Value Hyderabad Launch Cable Media campaign",
+        "amount": 269500,
+        "received": 0,
+        "balance": 1440525
+      },
+      {
+        "type": "BILLING",
+        "date": "2025-03-18",
+        "ref": "AD/8614/03/25",
+        "desc": "Chase Value Hyderabad Launch FM Radio campaign",
+        "amount": 324773,
+        "received": 0,
+        "balance": 1765298
+      },
+      {
+        "type": "BILLING",
+        "date": "2025-03-21",
+        "ref": "AD/8632/03/25",
+        "desc": "Chase Value Media & PR Coverage of Hyderabad Launch",
+        "amount": 1000000,
+        "received": 0,
+        "balance": 2765298
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2025-03-25",
+        "ref": "Cash Recevied",
+        "desc": "Cash Recevied from Chase Value KBR branch against Site rental invoice",
+        "amount": 0,
+        "received": 500000,
+        "balance": 2265298
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2025-03-26",
+        "ref": "Cash Recevied",
+        "desc": "Cash Recevied from Chase Value KBR branch against Site rental invoice",
+        "amount": 0,
+        "received": 700000,
+        "balance": 1565298
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2025-03-27",
+        "ref": "Cash Recevied",
+        "desc": "Cash Recevied from Chase Value KBR branch against Site rental invoice",
+        "amount": 0,
+        "received": 800000,
+        "balance": 765298
+      },
+      {
+        "type": "RECEIPT",
+        "date": "15-4-2025",
+        "ref": "20768137",
+        "desc": "Received From Chase Value",
+        "amount": 0,
+        "received": 625747,
+        "balance": 139551
+      },
+      {
+        "type": "RECEIPT",
+        "date": "15-4-2025",
+        "ref": "20758173",
+        "desc": "Received From Chase Value",
+        "amount": 0,
+        "received": 16577,
+        "balance": 122974
+      },
+      {
+        "type": "RECEIPT",
+        "date": "15-4-2025",
+        "ref": "20765803",
+        "desc": "Received From Chase Value",
+        "amount": 0,
+        "received": 34129,
+        "balance": 88845
+      },
+      {
+        "type": "RECEIPT",
+        "date": "15-4-2025",
+        "ref": "20761661",
+        "desc": "Received From Chase Value",
+        "amount": 0,
+        "received": 568845,
+        "balance": -480000
+      },
+      {
+        "type": "RECEIPT",
+        "date": "15-4-2025",
+        "ref": "20761660",
+        "desc": "Received From Chase Value",
+        "amount": 0,
+        "received": 950000,
+        "balance": -1430000
+      },
+      {
+        "type": "RECEIPT",
+        "date": "Date",
+        "ref": "Reference",
+        "desc": "Description",
+        "amount": 0,
+        "received": 0,
+        "balance": -1430000
+      },
+      {
+        "type": "OB",
+        "date": "2026-06-30",
+        "ref": "OB-000",
+        "desc": "B/F BALANCE",
+        "amount": 0,
+        "received": 0,
+        "balance": 2123597
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-07-08",
+        "ref": "Cash Received",
+        "desc": "CASH RECEIVED FROM CLIENT CHASE VALUE",
+        "amount": 0,
+        "received": 870000,
+        "balance": 1253597
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-07-09",
+        "ref": "Cash Received",
+        "desc": "CASH RECEIVED FROM CLIENT CHASE VALUE",
+        "amount": 0,
+        "received": 1000000,
+        "balance": 253597
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-08-29",
+        "ref": "AD/9832/08/26",
+        "desc": "CHASE VALUE CENTER RENTAL ABL ROUND ABOUT (22 DAYS) &              RJ MALL (17 DAYS)",
+        "amount": 276250,
+        "received": 0,
+        "balance": 529847
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-08-29",
+        "ref": "AD/9833/08/26",
+        "desc": "CHASE VALUE CENTER RENTAL ABL ROUND ABOUT (22 DAYS) &              RJ MALL (17 DAYS)",
+        "amount": 276250,
+        "received": 0,
+        "balance": 806097
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-08-29",
+        "ref": "AD/9834/08/26",
+        "desc": "CHASE VALUE CENTER PRINTING AND INSTALLATION KARACHI                      (AZADI ARTWORK)",
+        "amount": 72000,
+        "received": 0,
+        "balance": 878097
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-08-29",
+        "ref": "AD/9835/08/26",
+        "desc": "CHASE VALUE CENTER PRINTING AND INSTALLATION KARACHI  (CAMPAIGN ARTWORK)",
+        "amount": 72000,
+        "received": 0,
+        "balance": 950097
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-08-29",
+        "ref": "AD/9836/08/26",
+        "desc": "CHASE VALUE CENTER DIGITAL STREAMERS AT AIRPORT (15 DAYS)",
+        "amount": 150000,
+        "received": 0,
+        "balance": 1100097
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-09-10",
+        "ref": "AD/9864/09/26",
+        "desc": "CHASE VALUE CENTER RENTAL ABL ROUND ABOUT & RJ MALL                             (1 MONTH)",
+        "amount": 425000,
+        "received": 0,
+        "balance": 1525097
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-09-10",
+        "ref": "AD/9866/09/26",
+        "desc": "CHASE VALUE CENTER PRINTING AND INSTALLATION KARACHI",
+        "amount": 72000,
+        "received": 0,
+        "balance": 1597097
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-07-01",
+        "ref": "INV",
+        "desc": "Total Net Amount",
+        "amount": 1343500,
+        "received": 1870000,
+        "balance": 1597097
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-07-01",
+        "ref": "REC",
+        "desc": "CHASE VALUE CENTER - VOUCHERS BARTER Statement",
+        "amount": 0,
+        "received": 0,
+        "balance": 1070597
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-07-01",
+        "ref": "REC",
+        "desc": "Description",
+        "amount": 0,
+        "received": 0,
+        "balance": 1070597
+      },
+      {
+        "type": "OB",
+        "date": "2026-06-30",
+        "ref": "OB-000",
+        "desc": "B/F BALANCE",
+        "amount": 0,
+        "received": 0,
+        "balance": 1172917
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-08-19",
+        "ref": "Vouchers",
+        "desc": "CHASE VALUE VOUCHERS RECEIVED Qty: 184  x 5000",
+        "amount": 0,
+        "received": 920000,
+        "balance": 252917
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-08-29",
+        "ref": "AD/96233/08/26",
+        "desc": "CHASE VALUE CENTER RENTAL ABL ROUND ABOUT (22 DAYS) &              RJ MALL (17 DAYS)",
+        "amount": 276250,
+        "received": 0,
+        "balance": 529167
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-09-10",
+        "ref": "AD/9865/09/26",
+        "desc": "CHASE VALUE CENTER RENTAL ABL ROUND ABOUT & RJ MALL                             (1 MONTH)",
+        "amount": 425000,
+        "received": 0,
+        "balance": 954167
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-07-01",
+        "ref": "INV",
+        "desc": "Total Net Amount",
+        "amount": 701250,
+        "received": 920000,
+        "balance": 954167
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-02-20",
+        "ref": "AD/9258/02/26",
+        "desc": "EMINENT OOH Media Campaign 1 Month",
+        "amount": 2600000,
+        "received": 0,
+        "balance": 2600000
+      },
+      {
+        "type": "OB",
+        "date": "2026-02-20",
+        "ref": "AD/9259/02/26",
+        "desc": "Printing & Installation (Opening Soon)",
+        "amount": 0,
+        "received": 0,
+        "balance": 3019800
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-02-20",
+        "ref": "AD/9334/02/26",
+        "desc": "Printing & Installation (Open Now)",
+        "amount": 257400,
+        "received": 0,
+        "balance": 3277200
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-02-20",
+        "ref": "AD/9362/02/26",
+        "desc": "Eminent OOH Digital Media Campaign",
+        "amount": 825000,
+        "received": 0,
+        "balance": 4102200
+      },
+      {
+        "type": "BILLING",
+        "date": "TOTAL AMOUNT CASH ",
+        "ref": "INV",
+        "desc": "Media Campaign Billed",
+        "amount": 4102200,
+        "received": 0,
+        "balance": 4102200
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-07-08",
+        "ref": "Cash Received",
+        "desc": "Cash Received from Chase Value",
+        "amount": 0,
+        "received": 870000,
+        "balance": 7334400
+      }
+    ]
+  },
+  {
+    "sheetName": "DEBS",
+    "title": "DEBS",
+    "headerRowIdx": 1,
+    "headers": [
+      "S/No.",
+      "Date",
+      "P/R",
+      "Description",
+      "Amount",
+      "Received",
+      "Balance"
+    ],
+    "openingBalance": 11959033,
+    "totalBilled": 0,
+    "totalReceived": 2500000,
+    "calculatedClosingBalance": 9459033,
+    "txnsCount": 3,
+    "txns": [
+      {
+        "type": "OB",
+        "date": "2026-06-30",
+        "ref": "OB-000",
+        "desc": "B/F BALANCE",
+        "amount": 0,
+        "received": 0,
+        "balance": 11959033
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-07-08",
+        "ref": "VOUCHERS",
+        "desc": "VOUCEHRS RECEIVED FROM DEBS",
+        "amount": 0,
+        "received": 1500000,
+        "balance": 10459033
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-08-27",
+        "ref": "IBFT Received",
+        "desc": "IBFT Recevied from Debs Schooling System against OOH Billbaords Campaign against Cheque No 10076517",
+        "amount": 0,
+        "received": 1000000,
+        "balance": 9459033
+      }
+    ]
+  },
+  {
+    "sheetName": "DECENT",
+    "title": "LEDGER",
+    "headerRowIdx": 2,
+    "headers": [
+      "Date",
+      "P/R",
+      "Description",
+      "Amount",
+      "Received",
+      "Balance"
+    ],
+    "openingBalance": 6349675,
+    "totalBilled": 882809,
+    "totalReceived": 2700000,
+    "calculatedClosingBalance": 4532484,
+    "txnsCount": 5,
+    "txns": [
+      {
+        "type": "OB",
+        "date": "2026-06-30",
+        "ref": "OB-000",
+        "desc": "B/F BALANCE",
+        "amount": 0,
+        "received": 0,
+        "balance": 6349675
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-07-23",
+        "ref": "AD/9766/07/26",
+        "desc": "HFA COMMERCIAL ZONE WALL BRANDING",
+        "amount": 882809,
+        "received": 0,
+        "balance": 7232484
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-08-24",
+        "ref": "12561262",
+        "desc": "CHEQUE RECEIVED FROM DECENT - MALIR TOWN PHASE 4",
+        "amount": 0,
+        "received": 900000,
+        "balance": 6332484
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-09-07",
+        "ref": "12560885",
+        "desc": "CHEQUE RECEIVED FROM DECENT - MALIR TOWN PHASE 4",
+        "amount": 0,
+        "received": 900000,
+        "balance": 5432484
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-09-07",
+        "ref": "12560886",
+        "desc": "CHEQUE RECEIVED FROM DECENT - MALIR TOWN PHASE 4",
+        "amount": 0,
+        "received": 900000,
+        "balance": 4532484
+      }
+    ]
+  },
+  {
+    "sheetName": "DESIGN MEDIA",
+    "title": "DESIGN MEDIA - Mr. Sajid Channa",
+    "headerRowIdx": 4,
+    "headers": [
+      "Date",
+      "Reference",
+      "Discription",
+      "Paid",
+      "Amount",
+      "Balance"
+    ],
+    "openingBalance": 0,
+    "totalBilled": 7842736,
+    "totalReceived": 0,
+    "calculatedClosingBalance": 7842736,
+    "txnsCount": 8,
+    "txns": [
+      {
+        "type": "BILLING",
+        "date": "2026-07-01",
+        "ref": "INV",
+        "desc": "Media Campaign Billed",
+        "amount": 3471368,
+        "received": 0,
+        "balance": 3471368
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-07-01",
+        "ref": "JUNE, 2024",
+        "desc": "Media Campaign Billed",
+        "amount": 75000,
+        "received": 0,
+        "balance": 3546368
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-07-01",
+        "ref": "JULY, 2024",
+        "desc": "Media Campaign Billed",
+        "amount": 75000,
+        "received": 0,
+        "balance": 3621368
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-07-01",
+        "ref": "AUGUST, 2024",
+        "desc": "Media Campaign Billed",
+        "amount": 75000,
+        "received": 0,
+        "balance": 3696368
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-07-01",
+        "ref": "SEP, 2024",
+        "desc": "Media Campaign Billed",
+        "amount": 75000,
+        "received": 0,
+        "balance": 3771368
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-07-01",
+        "ref": "OCT, 2024",
+        "desc": "Media Campaign Billed",
+        "amount": 75000,
+        "received": 0,
+        "balance": 3846368
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-07-01",
+        "ref": "NOV, 2024",
+        "desc": "Media Campaign Billed",
+        "amount": 75000,
+        "received": 0,
+        "balance": 3921368
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-07-01",
+        "ref": "INV",
+        "desc": "Media Campaign Billed",
+        "amount": 3921368,
+        "received": 0,
+        "balance": 7842736
+      }
+    ]
+  },
+  {
+    "sheetName": "DINERS",
+    "title": "LEDGER",
+    "headerRowIdx": 3,
+    "headers": [
+      "Date",
+      "P/R",
+      "Description",
+      "Amount",
+      "Received",
+      "Balance",
+      "STATUS"
+    ],
+    "openingBalance": 1510782,
+    "totalBilled": 7449435,
+    "totalReceived": 0,
+    "calculatedClosingBalance": 1510782,
+    "txnsCount": 6,
+    "txns": [
+      {
+        "type": "OB",
+        "date": "2026-06-30",
+        "ref": "OB-000",
+        "desc": "B/F BALANCE",
+        "amount": 0,
+        "received": 0,
+        "balance": 1985000
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-08-04",
+        "ref": "AD/9776/08/26",
+        "desc": "AL BARAKA APPAREL OOH STREAMERS CAMPAIGN NATION WIDE",
+        "amount": 7257155,
+        "received": 0,
+        "balance": 9242155
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-08-04",
+        "ref": "AD/9778/08/26",
+        "desc": "AL BARAKA APPAREL OOH STREAMERS CAMPAIGN NATION WIDE",
+        "amount": 192280,
+        "received": 0,
+        "balance": 9434435
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-07-01",
+        "ref": "REC",
+        "desc": "LEDGER",
+        "amount": 0,
+        "received": 0,
+        "balance": 9434435
+      },
+      {
+        "type": "RECEIPT",
+        "date": "Date",
+        "ref": "P/R",
+        "desc": "Description",
+        "amount": 0,
+        "received": 0,
+        "balance": 9434435
+      },
+      {
+        "type": "OB",
+        "date": "2026-06-30",
+        "ref": "OB-000",
+        "desc": "B/F BALANCE",
+        "amount": 0,
+        "received": 0,
+        "balance": 1510782
+      }
+    ]
+  },
+  {
+    "sheetName": "DVAGO",
+    "title": "LEDGER",
+    "headerRowIdx": 3,
+    "headers": [
+      "Date",
+      "P/R",
+      "Description",
+      "Amount",
+      "Received",
+      "Balance",
+      "STATUS"
+    ],
+    "openingBalance": 0,
+    "totalBilled": 437000,
+    "totalReceived": 0,
+    "calculatedClosingBalance": 437000,
+    "txnsCount": 1,
+    "txns": [
+      {
+        "type": "BILLING",
+        "date": "2026-08-31",
+        "ref": "AD-S376",
+        "desc": "DVAGO - STREAMERS CAMPAIGN",
+        "amount": 437000,
+        "received": 0,
+        "balance": 437000
+      }
+    ]
+  },
+  {
+    "sheetName": "ESSANI GROUP",
+    "title": "ESSANI GROUP - STATEMENT",
+    "headerRowIdx": 2,
+    "headers": [
+      "Date",
+      "Inv",
+      "Description",
+      "Total Amount",
+      "Recevied",
+      "Balance",
+      "Status"
+    ],
+    "openingBalance": 50000,
+    "totalBilled": 0,
+    "totalReceived": 0,
+    "calculatedClosingBalance": 50000,
+    "txnsCount": 1,
+    "txns": [
+      {
+        "type": "OB",
+        "date": "2026-06-30",
+        "ref": "OB-000",
+        "desc": "B/F BALANCE",
+        "amount": 0,
+        "received": 0,
+        "balance": 50000
+      }
+    ]
+  },
+  {
+    "sheetName": "FALAKNAZ",
+    "title": "FALAKNAZ GROUP - ELITE TOWERS",
+    "headerRowIdx": 2,
+    "headers": [
+      "Date",
+      "Reference",
+      "Description",
+      "Amount",
+      "Recevied",
+      "Balance",
+      "Status"
+    ],
+    "openingBalance": 0,
+    "totalBilled": 27755505,
+    "totalReceived": 7369780,
+    "calculatedClosingBalance": 20385725,
+    "txnsCount": 31,
+    "txns": [
+      {
+        "type": "BILLING",
+        "date": "2025-09-05",
+        "ref": "AD/9009/10/25",
+        "desc": "OOH MEDIA CAMPAIGN 1 MONTH DIFFERENT SITES & DIGITAL (AYESHA BAWANI, LUCKYONE, NATA KHAN & BAHADURABAD - FOC)",
+        "amount": 3385680,
+        "received": 0,
+        "balance": 3385680
+      },
+      {
+        "type": "BILLING",
+        "date": "2025-09-05",
+        "ref": "AD/9010/10/25",
+        "desc": "PRINTING & INSTALLATION CHARGES SHAHRAH-E-FAISAL AIRPORT, NURSURY, NAGAN & SAREENA",
+        "amount": 181440,
+        "received": 0,
+        "balance": 3567120
+      },
+      {
+        "type": "BILLING",
+        "date": "2025-11-11",
+        "ref": "AD/9118/11/25",
+        "desc": "OOH MEDIA CAMPAIGN 1 MONTH DIFFERENT SITES & DIGITAL (FALAK NAZ WINTER FAMILY FESTIVAL & ELITE TOWERS)",
+        "amount": 2561520,
+        "received": 0,
+        "balance": 6128640
+      },
+      {
+        "type": "BILLING",
+        "date": "2025-11-25",
+        "ref": "AD/9119/11/25",
+        "desc": "PRINTING & INSTALLATION CHARGES ELITE TOWERS",
+        "amount": 281520,
+        "received": 0,
+        "balance": 6410160
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-01-19",
+        "ref": "AD/9227/01/26",
+        "desc": "OOH MEDIA CAMPAIGN - ONE BEVERLY BY FALAKNAZ GROUP",
+        "amount": 771500,
+        "received": 0,
+        "balance": 7181660
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-01-19",
+        "ref": "AD/9228/01/26",
+        "desc": "PRINTING & INSTALLATION - ONE BEVERLY BY FALAKNAZ GROUP",
+        "amount": 133120,
+        "received": 0,
+        "balance": 7314780
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-01-19",
+        "ref": "AD/9229/01/26",
+        "desc": "OOH MEDIA CAMPAIGN (LED LIGHTS)",
+        "amount": 55000,
+        "received": 0,
+        "balance": 7369780
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-04-06",
+        "ref": "10038470",
+        "desc": "CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
+        "amount": 0,
+        "received": 407451,
+        "balance": 6962329
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-04-10",
+        "ref": "10043517",
+        "desc": "CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
+        "amount": 0,
+        "received": 500000,
+        "balance": 6462329
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-04-10",
+        "ref": "10995941",
+        "desc": "CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
+        "amount": 0,
+        "received": 642519,
+        "balance": 5819810
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-04-15",
+        "ref": "10043516",
+        "desc": "CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
+        "amount": 0,
+        "received": 500000,
+        "balance": 5319810
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-04-15",
+        "ref": "10995468",
+        "desc": "CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
+        "amount": 0,
+        "received": 517150,
+        "balance": 4802660
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-04-20",
+        "ref": "10043515",
+        "desc": "CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
+        "amount": 0,
+        "received": 500000,
+        "balance": 4302660
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-04-24",
+        "ref": "10043514",
+        "desc": "CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
+        "amount": 0,
+        "received": 500000,
+        "balance": 3802660
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-04-30",
+        "ref": "10043513",
+        "desc": "CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
+        "amount": 0,
+        "received": 381140,
+        "balance": 3421520
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-07-13",
+        "ref": "10045569",
+        "desc": "CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
+        "amount": 0,
+        "received": 500000,
+        "balance": 2921520
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-07-20",
+        "ref": "11014585",
+        "desc": "CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
+        "amount": 0,
+        "received": 500000,
+        "balance": 2421520
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-07-24",
+        "ref": "11014218",
+        "desc": "CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
+        "amount": 0,
+        "received": 500000,
+        "balance": 1921520
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-07-27",
+        "ref": "11014586",
+        "desc": "CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
+        "amount": 0,
+        "received": 205000,
+        "balance": 1716520
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-07-27",
+        "ref": "10045570",
+        "desc": "CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
+        "amount": 0,
+        "received": 130000,
+        "balance": 1586520
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-07-30",
+        "ref": "11014219",
+        "desc": "CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
+        "amount": 0,
+        "received": 165000,
+        "balance": 1421520
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-07-31",
+        "ref": "10047596",
+        "desc": "CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
+        "amount": 0,
+        "received": 500000,
+        "balance": 921520
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-08-05",
+        "ref": "10047597",
+        "desc": "CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
+        "amount": 0,
+        "received": 500000,
+        "balance": 421520
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-08-10",
+        "ref": "10047598",
+        "desc": "CHEQUE RECEIVED FROM FALAKNAZ GROUP AGAINST LEDGER",
+        "amount": 0,
+        "received": 421520,
+        "balance": 0
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-08-13",
+        "ref": "AD/9784/08/26",
+        "desc": "OOH MEDIA CAMPAIGN ELITE TOWER (15 JULY 2026 TO 09 AUGUST 2026)",
+        "amount": 8464000,
+        "received": 0,
+        "balance": 8464000
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-08-13",
+        "ref": "AD/9785/08/26",
+        "desc": "PRINTING & INSTALLATION CHARGES ELITE TOWERS",
+        "amount": 1332185,
+        "received": 0,
+        "balance": 9796185
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-08-17",
+        "ref": "AD/9787/08/26",
+        "desc": "PRINTING & INSTALLATION CHARGES OF FOC SITES",
+        "amount": 155760,
+        "received": 0,
+        "balance": 9951945
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-09-16",
+        "ref": "AD/9868/09/26",
+        "desc": "OOH MEDIA CAMPAIGN FALAKNAZ ELITE TOWER",
+        "amount": 7750000,
+        "received": 0,
+        "balance": 17701945
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-09-16",
+        "ref": "AD/9871/09/26",
+        "desc": "OOH MEDIA CAMPAIGN FALAKNAZ ELITE TOWER",
+        "amount": 515000,
+        "received": 0,
+        "balance": 18216945
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-09-16",
+        "ref": "AD/9875/09/26",
+        "desc": "OOH MEDIA CAMPAIGN FALAKNAZ ELITE TOWER PRINTING",
+        "amount": 1851555,
+        "received": 0,
+        "balance": 20068500
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-09-16",
+        "ref": "AD/9877/09/26",
+        "desc": "OOH MEDIA CAMPAIGN FALAKNAZ ELITE TOWER PRINTING",
+        "amount": 317225,
+        "received": 0,
+        "balance": 20385725
+      }
+    ]
+  },
+  {
+    "sheetName": "FALAKNAZ SKYVIEW",
+    "title": "DATE: 01-09-2026",
+    "headerRowIdx": 2,
+    "headers": [
+      "DATE: 01-09-2026"
+    ],
+    "openingBalance": 0,
+    "totalBilled": 0,
+    "totalReceived": 0,
+    "calculatedClosingBalance": 0,
+    "txnsCount": 0,
+    "txns": []
+  },
+  {
+    "sheetName": "FALAKNAZ GRANDE",
+    "title": "FALAKNAZ GRANDE",
+    "headerRowIdx": 3,
+    "headers": [
+      "Date",
+      "Reference",
+      "Description",
+      "Amount",
+      "Recevied",
+      "Balance",
+      "Status"
+    ],
+    "openingBalance": 361118,
+    "totalBilled": 386343,
+    "totalReceived": 475000,
+    "calculatedClosingBalance": 272461,
+    "txnsCount": 5,
+    "txns": [
+      {
+        "type": "OB",
+        "date": "2026-06-30",
+        "ref": "OB-000",
+        "desc": "B/F BALAMCE",
+        "amount": 0,
+        "received": 0,
+        "balance": 361118
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-08-07",
+        "ref": "CA0000000133",
+        "desc": "CHEQUE RECEIVED AGAINST INVOICE NO AD/9623/05/26",
+        "amount": 0,
+        "received": 250000,
+        "balance": 111118
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-08-19",
+        "ref": "AD/9792/08/26",
+        "desc": "FALAKNAZ GRANDE STREAMERS PLAN (7 DAYS)",
+        "amount": 379143,
+        "received": 0,
+        "balance": 490261
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-08-19",
+        "ref": "AD/9786/08/26",
+        "desc": "FALAKNAZ GRANDE BRANDING WALL PRINITING",
+        "amount": 7200,
+        "received": 0,
+        "balance": 497461
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-09-05",
+        "ref": "CA0000000140",
+        "desc": "CHEQUE RECEIVED FROM FALAKNAZ GRANDE",
+        "amount": 0,
+        "received": 225000,
+        "balance": 272461
+      }
+    ]
+  },
+  {
+    "sheetName": "FPCCI",
+    "title": "FPCCI",
+    "headerRowIdx": 3,
+    "headers": [
+      "Date",
+      "Reference",
+      "Description",
+      "Amount",
+      "Recevied",
+      "Balance",
+      "Status"
+    ],
+    "openingBalance": 0,
+    "totalBilled": 191070,
+    "totalReceived": 0,
+    "calculatedClosingBalance": 191070,
+    "txnsCount": 1,
+    "txns": [
+      {
+        "type": "BILLING",
+        "date": "2026-08-13",
+        "ref": "AD-S361",
+        "desc": "PRINT MEDIA CAMPAIGN (DAWN WEEKDAYS)",
+        "amount": 191070,
+        "received": 0,
+        "balance": 191070
+      }
+    ]
+  },
+  {
+    "sheetName": "GOVERNOR HOUSE",
+    "title": "DATE: 21-JULY-2026",
+    "headerRowIdx": 2,
+    "headers": [
+      "DATE: 21-JULY-2026"
+    ],
+    "openingBalance": 0,
+    "totalBilled": 0,
+    "totalReceived": 0,
+    "calculatedClosingBalance": 0,
+    "txnsCount": 0,
+    "txns": []
+  },
+  {
+    "sheetName": "GREENWICH UNIVERSITY",
+    "title": "STATEMENT",
+    "headerRowIdx": 3,
+    "headers": [
+      "Date",
+      "PR",
+      "Description",
+      "Inv Amount / Adj",
+      "GU BILL / PAYMENTS",
+      "Balance"
+    ],
+    "openingBalance": -325000,
+    "totalBilled": 0,
+    "totalReceived": 0,
+    "calculatedClosingBalance": -325000,
+    "txnsCount": 4,
+    "txns": [
+      {
+        "type": "OB",
+        "date": "2026-06-30",
+        "ref": "OB-000",
+        "desc": "B/F BALANCE",
+        "amount": 0,
+        "received": 0,
+        "balance": -325000
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-07-02",
+        "ref": "AD/9755/07/2025",
+        "desc": "EDVIA OOH CAMPAIGN (STATICS SITES, DIGITAL MEDIA AND OOG BUS BRANDING)",
+        "amount": 0,
+        "received": 0,
+        "balance": 2065000
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-07-15",
+        "ref": "AD/9756/07/2025",
+        "desc": "GREENWICH OOH CAMPAIGN (STATICS SITES, DIGITAL MEDIA AND OOG BUS BRANDING)",
+        "amount": 0,
+        "received": 0,
+        "balance": 4915000
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-07-15",
+        "ref": "AD/9757/07/2025",
+        "desc": "OOH CAMPAIGN ADDITIONAL PRINTING AND INSTALLATION",
+        "amount": 0,
+        "received": 0,
+        "balance": 5125000
+      }
+    ]
+  },
+  {
+    "sheetName": "HMR",
+    "title": "Client : HMR WATERFRONT PVT LTD",
+    "headerRowIdx": 2,
+    "headers": [
+      "Date",
+      "PR",
+      "Description",
+      "Amount",
+      "Recevied",
+      "Balance"
+    ],
+    "openingBalance": 2500000,
+    "totalBilled": 13936170,
+    "totalReceived": 4639500,
+    "calculatedClosingBalance": 11796670,
+    "txnsCount": 5,
+    "txns": [
+      {
+        "type": "OB",
+        "date": "2026-06-30",
+        "ref": "OB-000",
+        "desc": "B/F BALANCE",
+        "amount": 0,
+        "received": 0,
+        "balance": 2500000
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-07-04",
+        "ref": "Cash",
+        "desc": "Cash Received HMR Waterfront against inv #AD/9615/05/26",
+        "amount": 0,
+        "received": 1500000,
+        "balance": 1000000
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-07-03",
+        "ref": "AD/9724/06/26",
+        "desc": "HMR OOH Media Campaign 30Days",
+        "amount": 11890000,
+        "received": 0,
+        "balance": 12890000
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-07-03",
+        "ref": "AD/9725/06/26",
+        "desc": "HMR OOH Media Campaign Printing and Installation",
+        "amount": 2046170,
+        "received": 0,
+        "balance": 14936170
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-08-28",
+        "ref": "12212855",
+        "desc": "Cash/Cheque Received HMR Waterfront (dt 29-8-26)",
+        "amount": 0,
+        "received": 3139500,
+        "balance": 11796670
+      }
+    ]
+  },
+  {
+    "sheetName": "H&H",
+    "title": "Client : H&H",
+    "headerRowIdx": 2,
+    "headers": [
+      "Date",
+      "PR",
+      "Description",
+      "Amount",
+      "Recevied",
+      "Balance"
+    ],
+    "openingBalance": 0,
+    "totalBilled": 5440280,
+    "totalReceived": 2700000,
+    "calculatedClosingBalance": 2740280,
+    "txnsCount": 10,
+    "txns": [
+      {
+        "type": "BILLING",
+        "date": "2026-07-15",
+        "ref": "AD/9768/06/26",
+        "desc": "OOH MEDIA CAMPAIGN KARACHI (15DAYS)",
+        "amount": 5000000,
+        "received": 0,
+        "balance": 5000000
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-07-15",
+        "ref": "AD/9769/06/26",
+        "desc": "OOH MEDIA CAMPAIGN KARACHI (15DAYS)",
+        "amount": 143680,
+        "received": 0,
+        "balance": 5143680
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-07-20",
+        "ref": "AD/9770/06/26",
+        "desc": "OOH MEDIA CAMPAIGN KARACHI (15DAYS) / FOC",
+        "amount": 121600,
+        "received": 0,
+        "balance": 5265280
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-07-27",
+        "ref": "AD/9771/06/26",
+        "desc": "OOH MEDIA CAMPAIGN KARACHI (15DAYS)",
+        "amount": 175000,
+        "received": 0,
+        "balance": 5440280
+      },
+      {
+        "type": "RECEIPT",
+        "date": "26-08-26",
+        "ref": "57026829",
+        "desc": "Cheque received from H&H",
+        "amount": 0,
+        "received": 550000,
+        "balance": 4890280
+      },
+      {
+        "type": "RECEIPT",
+        "date": "28-08-26",
+        "ref": "57026830",
+        "desc": "Cheque received from H&H",
+        "amount": 0,
+        "received": 400000,
+        "balance": 4490280
+      },
+      {
+        "type": "RECEIPT",
+        "date": "31-08-26",
+        "ref": "57026831",
+        "desc": "Cheque received from H&H",
+        "amount": 0,
+        "received": 500000,
+        "balance": 3990280
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-02-09",
+        "ref": "57026832",
+        "desc": "Cheque received from H&H",
+        "amount": 0,
+        "received": 475000,
+        "balance": 3515280
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-04-09",
+        "ref": "57026833",
+        "desc": "Cheque received from H&H",
+        "amount": 0,
+        "received": 425000,
+        "balance": 3090280
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-07-09",
+        "ref": "57026834",
+        "desc": "Cheque received from H&H",
+        "amount": 0,
+        "received": 350000,
+        "balance": 2740280
+      }
+    ]
+  },
+  {
+    "sheetName": "HABBIT STORE",
+    "title": "Client : HABITT STORE - CASH",
+    "headerRowIdx": 1,
+    "headers": [
+      "Date",
+      "PR",
+      "Description",
+      "Amount",
+      "Recevied",
+      "Balance"
+    ],
+    "openingBalance": 0,
+    "totalBilled": 13818910,
+    "totalReceived": 1379545,
+    "calculatedClosingBalance": 12439365,
+    "txnsCount": 8,
+    "txns": [
+      {
+        "type": "BILLING",
+        "date": "2026-08-04",
+        "ref": "AD-S359",
+        "desc": "OOH CAMPAIGN 1 MONTH",
+        "amount": 1128481,
+        "received": 0,
+        "balance": 1128481
+      },
+      {
+        "type": "RECEIPT",
+        "date": "Date",
+        "ref": "PR",
+        "desc": "Description",
+        "amount": 0,
+        "received": 0,
+        "balance": 1128481
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-06-20",
+        "ref": "BARTER ADJUSTMENT",
+        "desc": "KHURRAM BHAI FURNITURE SHOPPING",
+        "amount": 0,
+        "received": 1379545,
+        "balance": -1379545
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-07-01",
+        "ref": "AD/9742/07/26",
+        "desc": "OOH MEDIA CAMPAIGN",
+        "amount": 2500000,
+        "received": 0,
+        "balance": 1120455
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-06-16",
+        "ref": "AD-S352",
+        "desc": "Habitt Store DHA permission (VINYL Branding) 1 Year",
+        "amount": 7161869,
+        "received": 0,
+        "balance": 9410805
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-06-16",
+        "ref": "AD-S353",
+        "desc": "Habitt Store DHA permission (VINYL Branding) agency comission",
+        "amount": 666770,
+        "received": 0,
+        "balance": 10077575
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-06-16",
+        "ref": "AD-S354",
+        "desc": "Habitt Store DHA permission (VINYL Branding)",
+        "amount": 361790,
+        "received": 0,
+        "balance": 10439365
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-06-18",
+        "ref": "AD/9742/05/26",
+        "desc": "OUTDOOR BRANDING WORK",
+        "amount": 2000000,
+        "received": 0,
+        "balance": 12439365
+      }
+    ]
+  },
+  {
+    "sheetName": "IMTIAZ",
+    "title": "IMTIAZ GROUP SMC PVT LTD",
+    "headerRowIdx": 2,
+    "headers": [
+      "Date",
+      "Reference",
+      "Description",
+      "Amount",
+      "Recevied",
+      "Balance",
+      "Status"
+    ],
+    "openingBalance": 2850761.854999998,
+    "totalBilled": 6507706,
+    "totalReceived": 2769200,
+    "calculatedClosingBalance": 6589267.854999999,
+    "txnsCount": 6,
+    "txns": [
+      {
+        "type": "OB",
+        "date": "2026-06-30",
+        "ref": "OB-000",
+        "desc": "B/F BALANCE",
+        "amount": 0,
+        "received": 0,
+        "balance": 2850761.854999998
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-08-13",
+        "ref": "56919832",
+        "desc": "Cheque Received from IMTIAZ STORE against Invoice # AD/S351",
+        "amount": 0,
+        "received": 2366462,
+        "balance": 484299.8549999981
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-08-13",
+        "ref": "REC",
+        "desc": "WHT 1.5% on Inv # S351",
+        "amount": 0,
+        "received": 41538,
+        "balance": 442761.8549999981
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-08-13",
+        "ref": "REC",
+        "desc": "SWHT 100% Witheld on S351",
+        "amount": 0,
+        "received": 361200,
+        "balance": 81561.85499999812
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-08-31",
+        "ref": "AD-S374",
+        "desc": "OOH STREAMERS CAMPAIGN AZADI KA TICKET",
+        "amount": 6280558,
+        "received": 0,
+        "balance": 6362119.854999999
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-08-31",
+        "ref": "AD-S375",
+        "desc": "OOH STREAMERS CAMPAIGN AZADI KA TICKET FOC SITES PRINTING",
+        "amount": 227148,
+        "received": 0,
+        "balance": 6589267.854999999
+      }
+    ]
+  },
+  {
+    "sheetName": "IDEMITSU",
+    "title": "IDEMITSU LUBE PAKISTAN PVT LTD",
+    "headerRowIdx": 2,
+    "headers": [
+      "Date",
+      "Reference",
+      "Description",
+      "Amount",
+      "Recevied",
+      "Balance",
+      "Status"
+    ],
+    "openingBalance": 917000,
+    "totalBilled": 0,
+    "totalReceived": 918232,
+    "calculatedClosingBalance": -1232,
+    "txnsCount": 4,
+    "txns": [
+      {
+        "type": "OB",
+        "date": "2026-06-30",
+        "ref": "OB-000",
+        "desc": "B/F BALANCE",
+        "amount": 0,
+        "received": 0,
+        "balance": 917000
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-07-31",
+        "ref": "IBFT",
+        "desc": "IBFT RECEIBED IN ADPULSE IMC PVT LTD",
+        "amount": 0,
+        "received": 905269,
+        "balance": 11731
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-07-31",
+        "ref": "WHT",
+        "desc": "WHT",
+        "amount": 0,
+        "received": 9444,
+        "balance": 2287
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-07-31",
+        "ref": "SST",
+        "desc": "S.Tax",
+        "amount": 0,
+        "received": 3519,
+        "balance": -1232
+      }
+    ]
+  },
+  {
+    "sheetName": "IGLOO",
+    "title": "PAKISTAN DAIRY PRODUCTS (PVT) LTD IGLOO",
+    "headerRowIdx": 2,
+    "headers": [
+      "Date",
+      "Reference",
+      "Description",
+      "Amount",
+      "Recevied",
+      "Balance",
+      "Status"
+    ],
+    "openingBalance": 359375,
+    "totalBilled": 2809066,
+    "totalReceived": 2991044.5,
+    "calculatedClosingBalance": 177396.5,
+    "txnsCount": 18,
+    "txns": [
+      {
+        "type": "OB",
+        "date": "2026-06-30",
+        "ref": "OB-000",
+        "desc": "B/F BALANCE",
+        "amount": 0,
+        "received": 0,
+        "balance": 359375
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2025-09-01",
+        "ref": "15513427",
+        "desc": "CHEQUE RECEIVED FROM IGLOO AGAINST INVOICE # AD-S153",
+        "amount": 0,
+        "received": 281562,
+        "balance": 77813
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-07-07",
+        "ref": "191974929",
+        "desc": "CHEQUE RECEIVED FROM IGLOO AGAINST INVOICE # AD-S153",
+        "amount": 0,
+        "received": 9375,
+        "balance": 68438
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-07-01",
+        "ref": "REC",
+        "desc": "SWHT 100% WHT",
+        "amount": 0,
+        "received": 46875,
+        "balance": 21563
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-07-01",
+        "ref": "REC",
+        "desc": "WHT 6%",
+        "amount": 0,
+        "received": 21562.5,
+        "balance": 0.5
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-04-20",
+        "ref": "AD-S324",
+        "desc": "OOH MEDIA CAMPAIGN MAR TO ARPIL (30 DAYS)",
+        "amount": 1408750,
+        "received": 0,
+        "balance": 1408750.5
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-04-20",
+        "ref": "AD-S325",
+        "desc": "OOH MEDIA CAMPAIGN PRINTING AND INSTALLATION",
+        "amount": 115920,
+        "received": 0,
+        "balance": 1524670.5
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-05-18",
+        "ref": "AD-S326",
+        "desc": "OOH MEDIA CAMPAIGN (28 April 2026 to 27 May 2026)",
+        "amount": 534750,
+        "received": 0,
+        "balance": 2059420.5
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-07-29",
+        "ref": "192480178",
+        "desc": "CHEQUE RECEIVED FROM IGLOO AGAINST INVOICE # AD-S324, AD-S325 & AD-S326",
+        "amount": 0,
+        "received": 1646641,
+        "balance": 412779.5
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-07-29",
+        "ref": "REC",
+        "desc": "SWHT 100% WHT ON INVOICE # AD-S324, AD-S325 & AD-S326",
+        "amount": 0,
+        "received": 268620,
+        "balance": 144159.5
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-07-29",
+        "ref": "REC",
+        "desc": "WHT 7% ON INVOICE # AD-S324, AD-S325 & AD-S326",
+        "amount": 0,
+        "received": 144159,
+        "balance": 0.5
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-07-01",
+        "ref": "AD-S360",
+        "desc": "OOH MEDIA CAMPAIGN BALOCH FLYOVER(12 June 2026 to 11 July 2026)",
+        "amount": 534750,
+        "received": 0,
+        "balance": 534750.5
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-08-28",
+        "ref": "193072852",
+        "desc": "CHEQUE RECEIVED FROM IGLOO AGAINST INVOICE # AD-S360",
+        "amount": 0,
+        "received": 427567.5,
+        "balance": 107183
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-08-28",
+        "ref": "REC",
+        "desc": "SWHT 100% WHT ON INVOICE # AD-S360",
+        "amount": 0,
+        "received": 69750,
+        "balance": 37433
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-08-28",
+        "ref": "REC",
+        "desc": "WHT 7% ON INVOICE # AD-S324, AD-S325 & AD-S326",
+        "amount": 0,
+        "received": 37432.5,
+        "balance": 0.5
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-08-25",
+        "ref": "INV",
+        "desc": "SWHT 80% WHT ON INVOICE # AD-S324, AD-S325 & AD-S326 Paid by Adpulse",
+        "amount": 214896,
+        "received": 0,
+        "balance": 214896.5
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-08-28",
+        "ref": "193072860",
+        "desc": "chq dt 25-8-2026",
+        "amount": 0,
+        "received": 37500,
+        "balance": 177396.5
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-07-01",
+        "ref": "REC",
+        "desc": "214896",
+        "amount": 0,
+        "received": 0,
+        "balance": 177396.5
+      }
+    ]
+  },
+  {
+    "sheetName": "KAMRAN KARIM",
+    "title": "MR. KAMRAN KARIM",
+    "headerRowIdx": 2,
+    "headers": [
+      "Date",
+      "Reference",
+      "Description",
+      "Paid",
+      "Adjustment",
+      "Balance"
+    ],
+    "openingBalance": 236000,
+    "totalBilled": 0,
+    "totalReceived": 0,
+    "calculatedClosingBalance": 236000,
+    "txnsCount": 1,
+    "txns": [
+      {
+        "type": "OB",
+        "date": "2026-06-30",
+        "ref": "OB-000",
+        "desc": "B/F BALANCE",
+        "amount": 0,
+        "received": 0,
+        "balance": 236000
+      }
+    ]
+  },
+  {
+    "sheetName": "KIA SHEHZORE",
+    "title": "KIA SMART SHEHZORE - WITH TAX",
+    "headerRowIdx": 2,
+    "headers": [
+      "Date",
+      "Reference",
+      "Description",
+      "Amount",
+      "Received",
+      "Balance",
+      "Status"
+    ],
+    "openingBalance": 0,
+    "totalBilled": 19245308,
+    "totalReceived": 0,
+    "calculatedClosingBalance": 19245308,
+    "txnsCount": 4,
+    "txns": [
+      {
+        "type": "BILLING",
+        "date": "2026-09-01",
+        "ref": "AD-S377",
+        "desc": "Kia Shehzore - Print Media",
+        "amount": 5265836,
+        "received": 0,
+        "balance": 5265836
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-09-01",
+        "ref": "AD-S378",
+        "desc": "Kia Shehzore - POS Materials",
+        "amount": 750408,
+        "received": 0,
+        "balance": 6016244
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-09-01",
+        "ref": "AD-S379",
+        "desc": "Kia Shehzore - OOH Media Campaign",
+        "amount": 11256117,
+        "received": 0,
+        "balance": 17272361
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-09-01",
+        "ref": "AD-S380",
+        "desc": "Kia Shehzore - Social Media / Digital Campaign",
+        "amount": 1972947,
+        "received": 0,
+        "balance": 19245308
+      }
+    ]
+  },
+  {
+    "sheetName": "KINZA BEVRAGES",
+    "title": "KINZA BEVERAGES",
+    "headerRowIdx": 2,
+    "headers": [
+      "Date",
+      "Reference",
+      "Description",
+      "Amount",
+      "Recevied",
+      "Balance"
+    ],
+    "openingBalance": 0,
+    "totalBilled": 200000,
+    "totalReceived": 150000,
+    "calculatedClosingBalance": 50000,
+    "txnsCount": 3,
+    "txns": [
+      {
+        "type": "BILLING",
+        "date": "2026-08-18",
+        "ref": "AD/9791/08/26",
+        "desc": "WEBSITE DEVELOPMENT AND DIGITAL MARKETING",
+        "amount": 200000,
+        "received": 0,
+        "balance": 200000
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-08-28",
+        "ref": "D-77630207",
+        "desc": "CASH CHEQUE RECEIVED FROM KINZA BAVERAGES (CHQ DT 22-8-26)",
+        "amount": 0,
+        "received": 100000,
+        "balance": 100000
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-08-28",
+        "ref": "D-77630212",
+        "desc": "CASH CHEQUE RECEIVED FROM KINZA BAVERAGES (CHQ DT 28-8-26)",
+        "amount": 0,
+        "received": 50000,
+        "balance": 50000
+      }
+    ]
+  },
+  {
+    "sheetName": "KIFAYAH",
+    "title": "KIFAYAH PHARMACY & SUPER MARKET",
+    "headerRowIdx": 2,
+    "headers": [
+      "Date",
+      "Reference",
+      "Description",
+      "Amount",
+      "Recevied",
+      "Balance"
+    ],
+    "openingBalance": 87562,
+    "totalBilled": 8587632,
+    "totalReceived": 127908.48,
+    "calculatedClosingBalance": 8547285.52,
+    "txnsCount": 11,
+    "txns": [
+      {
+        "type": "OB",
+        "date": "2026-06-30",
+        "ref": "OB-000",
+        "desc": "B/F BALANCE",
+        "amount": 0,
+        "received": 0,
+        "balance": 87562
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-07-07",
+        "ref": "AD/9754/07/26",
+        "desc": "OOH SITE PRINTING, INSTALLATION & RENTAL",
+        "amount": 60400,
+        "received": 0,
+        "balance": 147962
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-07-01",
+        "ref": "INV",
+        "desc": "Media Campaign Billed",
+        "amount": 550000,
+        "received": 8250,
+        "balance": 541750
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-07-01",
+        "ref": "INV",
+        "desc": "Media Campaign Billed",
+        "amount": 550000,
+        "received": 8250,
+        "balance": 541750
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-07-01",
+        "ref": "INV",
+        "desc": "Media Campaign Billed",
+        "amount": 550000,
+        "received": 8250,
+        "balance": 541750
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-07-01",
+        "ref": "INV",
+        "desc": "Media Campaign Billed",
+        "amount": 550000,
+        "received": 8250,
+        "balance": 541750
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-07-01",
+        "ref": "INV",
+        "desc": "Media Campaign Billed",
+        "amount": 550000,
+        "received": 8250,
+        "balance": 541750
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-07-01",
+        "ref": "INV",
+        "desc": "Media Campaign Billed",
+        "amount": 550000,
+        "received": 8250,
+        "balance": 541750
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-07-01",
+        "ref": "INV",
+        "desc": "Media Campaign Billed",
+        "amount": 550000,
+        "received": 8250,
+        "balance": 541750
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-07-01",
+        "ref": "INV",
+        "desc": "Media Campaign Billed",
+        "amount": 413616,
+        "received": 6204.24,
+        "balance": 407411.76
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-07-01",
+        "ref": "INV",
+        "desc": "Media Campaign Billed",
+        "amount": 4263616,
+        "received": 63954.24,
+        "balance": 4199661.76
+      }
+    ]
+  },
+  {
+    "sheetName": "MEDICAM",
+    "title": "CLIENT: MEDICAM",
+    "headerRowIdx": 2,
+    "headers": [
+      "Date",
+      "Reference",
+      "Description",
+      "Amount",
+      "Recevied",
+      "Balance"
+    ],
+    "openingBalance": 0,
+    "totalBilled": 5925000,
+    "totalReceived": 5600000,
+    "calculatedClosingBalance": 325000,
+    "txnsCount": 11,
+    "txns": [
+      {
+        "type": "BILLING",
+        "date": "2026-07-27",
+        "ref": "AD/9767/07/26",
+        "desc": "OOH MEDIA CAMPAIGN KARACHI",
+        "amount": 2900000,
+        "received": 0,
+        "balance": 2900000
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-07-27",
+        "ref": "AD/9772/07/26",
+        "desc": "MEDICAM ICON ONE DEALERS CONVENTION EVENT",
+        "amount": 2700000,
+        "received": 0,
+        "balance": 5600000
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-08-28",
+        "ref": "CASH RECEIVED",
+        "desc": "CASH RECEIVED FROM MEDICAM AGAINST INVOICE NO AD/9772/07/26",
+        "amount": 0,
+        "received": 2430000,
+        "balance": 3170000
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-08-28",
+        "ref": "00000084",
+        "desc": "CHEQUE RECEIVED FROM MEDICAM AGAINST INVOICE NO AD/9772/07/26",
+        "amount": 0,
+        "received": 270000,
+        "balance": 2900000
+      },
+      {
+        "type": "BILLING",
+        "date": "2026-09-10",
+        "ref": "AD/9863/07/26",
+        "desc": "MEDICAM ICON ONE OOH DIGITAL MEDIA",
+        "amount": 325000,
+        "received": 0,
+        "balance": 3225000
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-09-14",
+        "ref": "CASH RECEIVED",
+        "desc": "CASH RECEIVED FROM MEDICAM AGAINST INVOICE NO AD/9767/07/26",
+        "amount": 0,
+        "received": 770000,
+        "balance": 2455000
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-09-14",
+        "ref": "77543549",
+        "desc": "CHEQUE RECEIVED FROM MEDICAM AGAINST INVOICE NO AD/9767/07/26",
+        "amount": 0,
+        "received": 766021,
+        "balance": 1688979
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-09-14",
+        "ref": "77543560",
+        "desc": "CHEQUE RECEIVED FROM MEDICAM AGAINST INVOICE NO AD/9767/07/26",
+        "amount": 0,
+        "received": 383979,
+        "balance": 1305000
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-09-14",
+        "ref": "77543559",
+        "desc": "CHEQUE RECEIVED FROM MEDICAM AGAINST INVOICE NO AD/9767/07/26",
+        "amount": 0,
+        "received": 850000,
+        "balance": 455000
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-09-14",
+        "ref": "354580028",
+        "desc": "CHEQUE RECEIVED FROM MEDICAM AGAINST INVOICE NO AD/9767/07/26",
+        "amount": 0,
+        "received": 30000,
+        "balance": 425000
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-09-14",
+        "ref": "354580040",
+        "desc": "CHEQUE RECEIVED FROM MEDICAM AGAINST INVOICE NO AD/9767/07/26",
+        "amount": 0,
+        "received": 100000,
+        "balance": 325000
+      }
+    ]
+  },
+  {
+    "sheetName": "MATEEN SONS",
+    "title": "MATEEN SONS ENERGY - STATEMENT",
+    "headerRowIdx": 2,
+    "headers": [
+      "Date",
+      "Reference",
+      "Description",
+      "Amount",
+      "Recevied",
+      "Balance"
+    ],
+    "openingBalance": 280520,
+    "totalBilled": 0,
+    "totalReceived": 0,
+    "calculatedClosingBalance": 280520,
+    "txnsCount": 1,
+    "txns": [
+      {
+        "type": "OB",
+        "date": "2026-06-30",
+        "ref": "OB-000",
+        "desc": "B/F BALANCE",
+        "amount": 0,
+        "received": 0,
+        "balance": 280520
+      }
+    ]
+  },
+  {
+    "sheetName": "NAJEEB FAROOQUI",
+    "title": "NAJEEB FAROOQUI",
+    "headerRowIdx": 2,
+    "headers": [
+      "Date",
+      "Reference",
+      "Description",
+      "Amount",
+      "Recevied",
+      "Balance",
+      "Status"
+    ],
+    "openingBalance": 1190666,
+    "totalBilled": 0,
+    "totalReceived": 1190666,
+    "calculatedClosingBalance": 0,
+    "txnsCount": 2,
+    "txns": [
+      {
+        "type": "OB",
+        "date": "2026-06-30",
+        "ref": "OB-000",
+        "desc": "B/F BALANCE",
+        "amount": 0,
+        "received": 0,
+        "balance": 1190666
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-08-01",
+        "ref": "ADJUSTMENT",
+        "desc": "ADJUSTED AGAINST SIGNWAYS COMMUNICATION",
+        "amount": 0,
+        "received": 1190666,
+        "balance": 0
+      }
+    ]
+  },
+  {
+    "sheetName": "SALMAN MEO",
+    "title": "TOYOTA FORTUNER LGN BK-7972",
+    "headerRowIdx": 2,
+    "headers": [
+      "DATE",
+      "Reference",
+      "DESCRIPTION",
+      "Amount",
+      "Received",
+      "Balance"
+    ],
+    "openingBalance": 0,
+    "totalBilled": 18320000,
+    "totalReceived": 18320000,
+    "calculatedClosingBalance": 0,
+    "txnsCount": 12,
+    "txns": [
+      {
+        "type": "BILLING",
+        "date": "2025-09-18",
+        "ref": "Sold",
+        "desc": "TOYOTA FORTUNER/BK-7972 Sold to Salman Meow PURCHASED FROM GAGAI'S AUTOMOBILE",
+        "amount": 18000000,
+        "received": 0,
+        "balance": 18000000
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2025-09-18",
+        "ref": "Purchase",
+        "desc": "Jac Car Purchase from Salman Meow SOLD TO TNI KHURRAM",
+        "amount": 0,
+        "received": 10800000,
+        "balance": 7200000
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2025-10-15",
+        "ref": "181294575",
+        "desc": "CHQ RECEIVED FROM ANSAR BHAI (AKD BUILDERS & DEVELOPERS)",
+        "amount": 0,
+        "received": 900000,
+        "balance": 6300000
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2025-10-15",
+        "ref": "181294576",
+        "desc": "CHQ RECEIVED FROM ANSAR BHAI (AKD BUILDERS & DEVELOPERS)",
+        "amount": 0,
+        "received": 900000,
+        "balance": 5400000
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2025-10-15",
+        "ref": "181294577",
+        "desc": "CHQ RECEIVED FROM ANSAR BHAI (AKD BUILDERS & DEVELOPERS)",
+        "amount": 0,
+        "received": 900000,
+        "balance": 4500000
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2025-10-15",
+        "ref": "181294578",
+        "desc": "CHQ RECEIVED FROM ANSAR BHAI (AKD BUILDERS & DEVELOPERS)",
+        "amount": 0,
+        "received": 900000,
+        "balance": 3600000
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2025-10-15",
+        "ref": "181294579",
+        "desc": "CHQ RECEIVED FROM ANSAR BHAI (AKD BUILDERS & DEVELOPERS)",
+        "amount": 0,
+        "received": 900000,
+        "balance": 2700000
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2025-10-15",
+        "ref": "181294580",
+        "desc": "CHQ RECEIVED FROM ANSAR BHAI (AKD BUILDERS & DEVELOPERS)",
+        "amount": 0,
+        "received": 500000,
+        "balance": 2200000
+      },
+      {
+        "type": "BILLING",
+        "date": "2025-11-13",
+        "ref": "INV",
+        "desc": "BALANCE PAYMENT OF MERCEDEZ BENZ AUF-350",
+        "amount": 300000,
+        "received": 0,
+        "balance": 2500000
+      },
+      {
+        "type": "BILLING",
+        "date": "2025-12-04",
+        "ref": "INV",
+        "desc": "TRANSFER FEES OF TOYOTA FORTUNER/BK-7972",
+        "amount": 20000,
+        "received": 0,
+        "balance": 2520000
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-02-09",
+        "ref": "DISCOUNT",
+        "desc": "DISCOUNT",
+        "amount": 0,
+        "received": 20000,
+        "balance": 2500000
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-02-09",
+        "ref": "REC",
+        "desc": "CASH RECEIVED (KHURRAM BHAI DIRECTLY RECEIVED)",
+        "amount": 0,
+        "received": 2500000,
+        "balance": 0
+      }
+    ]
+  },
+  {
+    "sheetName": "SHUJA AHMED",
+    "title": "SHUJA AHMED",
+    "headerRowIdx": 4,
+    "headers": [
+      "Date",
+      "P/R",
+      "Description",
+      "AMOUNT",
+      "RECEIVED",
+      "BALANCE"
+    ],
+    "openingBalance": 500000,
+    "totalBilled": 0,
+    "totalReceived": 0,
+    "calculatedClosingBalance": 500000,
+    "txnsCount": 2,
+    "txns": [
+      {
+        "type": "OB",
+        "date": "2026-06-30",
+        "ref": "OB-000",
+        "desc": "B/F BALANCE",
+        "amount": 0,
+        "received": 0,
+        "balance": 500000
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-07-01",
+        "ref": "REC",
+        "desc": "Total Balance Amount",
+        "amount": 0,
+        "received": 0,
+        "balance": 500000
+      }
+    ]
+  },
+  {
+    "sheetName": "SUMSUM",
+    "title": "SUMSUM GROUP STATEMENT",
+    "headerRowIdx": 2,
+    "headers": [
+      "Date",
+      "Inv",
+      "Description",
+      "INVOICE AMOUNT",
+      "RECEIVED",
+      "BALANCE"
+    ],
+    "openingBalance": 150000.0000000018,
+    "totalBilled": 0,
+    "totalReceived": 0,
+    "calculatedClosingBalance": 150000.0000000018,
+    "txnsCount": 1,
+    "txns": [
+      {
+        "type": "OB",
+        "date": "2026-06-30",
+        "ref": "OB-000",
+        "desc": "B/F BALANCE",
+        "amount": 0,
+        "received": 0,
+        "balance": 150000.0000000018
+      }
+    ]
+  },
+  {
+    "sheetName": "SUNRIDGE",
+    "title": "SUNRIDGE FOODS",
+    "headerRowIdx": 2,
+    "headers": [
+      "Date",
+      "Inv",
+      "Description",
+      "Total Amount",
+      "Recevied",
+      "Balance"
+    ],
+    "openingBalance": 5401182.7,
+    "totalBilled": 0,
+    "totalReceived": 9804073.05,
+    "calculatedClosingBalance": -4402890.35,
+    "txnsCount": 28,
+    "txns": [
+      {
+        "type": "OB",
+        "date": "2026-06-30",
+        "ref": "OB-000",
+        "desc": "B/F BALANCE",
+        "amount": 0,
+        "received": 0,
+        "balance": 5401182.7
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-08-04",
+        "ref": "REC",
+        "desc": "IBFT RECEIVED IN IMC FROM SUNRIDGE",
+        "amount": 0,
+        "received": 500000,
+        "balance": 4901182.7
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-08-07",
+        "ref": "REC",
+        "desc": "IBFT RECEIVED IN IMC FROM SUNRIDGE",
+        "amount": 0,
+        "received": 500000,
+        "balance": 4401182.7
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-08-11",
+        "ref": "REC",
+        "desc": "IBFT RECEIVED IN IMC FROM SUNRIDGE",
+        "amount": 0,
+        "received": 500000,
+        "balance": 3901182.7
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-08-15",
+        "ref": "REC",
+        "desc": "IBFT RECEIVED IN IMC FROM SUNRIDGE",
+        "amount": 0,
+        "received": 500000,
+        "balance": 3401182.7
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-08-20",
+        "ref": "REC",
+        "desc": "IBFT RECEIVED IN IMC FROM SUNRIDGE",
+        "amount": 0,
+        "received": 500000,
+        "balance": 2901182.7
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-08-24",
+        "ref": "REC",
+        "desc": "IBFT RECEIVED IN IMC FROM SUNRIDGE",
+        "amount": 0,
+        "received": 500000,
+        "balance": 2401182.7
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-08-27",
+        "ref": "REC",
+        "desc": "IBFT RECEIVED IN IMC FROM SUNRIDGE",
+        "amount": 0,
+        "received": 500000,
+        "balance": 1901182.7000000002
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2025-10-15",
+        "ref": "REC",
+        "desc": "SUNRIDGE SHAHRAH E PAKISTAN STREAMERS",
+        "amount": 0,
+        "received": 0,
+        "balance": 1901182.7000000002
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2025-10-15",
+        "ref": "REC",
+        "desc": "SUNRIDGE SHAHRAH E PAKISTAN LAUNCH ACTIVITY",
+        "amount": 0,
+        "received": 0,
+        "balance": 1901182.7000000002
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2025-10-15",
+        "ref": "REC",
+        "desc": "SUNRIDGE SHAHRAH E PAKISTAN OOH SITES PRINTING AND INSTALLATION",
+        "amount": 0,
+        "received": 0,
+        "balance": 1901182.7000000002
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2025-10-15",
+        "ref": "REC",
+        "desc": "SHAHRAH E PAKISTAN SITES AND BACKLITS",
+        "amount": 0,
+        "received": 0,
+        "balance": 1901182.7000000002
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2025-10-15",
+        "ref": "REC",
+        "desc": "SUNRIDGE SHAHRAH E PAKISTAN BUILDING FRONT BRANDING",
+        "amount": 0,
+        "received": 0,
+        "balance": 421213.95
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2025-10-15",
+        "ref": "REC",
+        "desc": "SUNRIDGE NARAM ROTI OOH CAMPAIGN (2nd MONTH)",
+        "amount": 0,
+        "received": 0,
+        "balance": 4868045.45
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2025-10-15",
+        "ref": "REC",
+        "desc": "SHAHRAH E PAKISTAN - BILLBOARDS AND BACKLITS RENTAL",
+        "amount": 0,
+        "received": 0,
+        "balance": 6967938.45
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2025-10-25",
+        "ref": "REC",
+        "desc": "SUNRIDGE NARAM ROTI OOH CAMPAIGN (3rd MONTH)",
+        "amount": 0,
+        "received": 0,
+        "balance": 8281399.45
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-02-18",
+        "ref": "REC",
+        "desc": "IBFT RECEIVED IN IMC FROM SUNRIDGE",
+        "amount": 0,
+        "received": 500000,
+        "balance": 7781399.45
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-02-27",
+        "ref": "REC",
+        "desc": "IBFT RECEIVED IN IMC FROM SUNRIDGE",
+        "amount": 0,
+        "received": 500000,
+        "balance": 7281399.45
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-03-04",
+        "ref": "REC",
+        "desc": "IBFT RECEIVED IN IMC FROM SUNRIDGE",
+        "amount": 0,
+        "received": 500000,
+        "balance": 6781399.45
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-04-30",
+        "ref": "REC",
+        "desc": "IBFT RECEIVED IN IMC FROM SUNRIDGE",
+        "amount": 0,
+        "received": 804073.05,
+        "balance": 5977326.4
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-06-24",
+        "ref": "REC",
+        "desc": "IBFT RECEIVED IN IMC FROM SUNRIDGE",
+        "amount": 0,
+        "received": 500000,
+        "balance": 5477326.4
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-08-04",
+        "ref": "REC",
+        "desc": "IBFT RECEIVED IN IMC FROM SUNRIDGE",
+        "amount": 0,
+        "received": 500000,
+        "balance": 4977326.4
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-08-07",
+        "ref": "REC",
+        "desc": "IBFT RECEIVED IN IMC FROM SUNRIDGE",
+        "amount": 0,
+        "received": 500000,
+        "balance": 4477326.4
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-08-11",
+        "ref": "REC",
+        "desc": "IBFT RECEIVED IN IMC FROM SUNRIDGE",
+        "amount": 0,
+        "received": 500000,
+        "balance": 3977326.4000000004
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-08-15",
+        "ref": "REC",
+        "desc": "IBFT RECEIVED IN IMC FROM SUNRIDGE",
+        "amount": 0,
+        "received": 500000,
+        "balance": 3477326.4000000004
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-08-20",
+        "ref": "REC",
+        "desc": "IBFT RECEIVED IN IMC FROM SUNRIDGE",
+        "amount": 0,
+        "received": 500000,
+        "balance": 2977326.4000000004
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-08-24",
+        "ref": "REC",
+        "desc": "IBFT RECEIVED IN IMC FROM SUNRIDGE",
+        "amount": 0,
+        "received": 500000,
+        "balance": 2477326.4000000004
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-08-27",
+        "ref": "REC",
+        "desc": "IBFT RECEIVED IN IMC FROM SUNRIDGE",
+        "amount": 0,
+        "received": 500000,
+        "balance": 1977326.4000000004
+      }
+    ]
+  },
+  {
+    "sheetName": "XEFAN",
+    "title": "XEFAN - OTEL RESIDENCY - CASH",
+    "headerRowIdx": 3,
+    "headers": [
+      "DATE",
+      "Reference",
+      "Discription",
+      "Amount",
+      "Recevied",
+      "Balance"
+    ],
+    "openingBalance": 0,
+    "totalBilled": 0,
+    "totalReceived": 6875000,
+    "calculatedClosingBalance": -6875000,
+    "txnsCount": 23,
+    "txns": [
+      {
+        "type": "RECEIPT",
+        "date": "2026-07-04",
+        "ref": "IBFT Receievd",
+        "desc": "Payment Received",
+        "amount": 0,
+        "received": 395000,
+        "balance": 7939750
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-07-18",
+        "ref": "IBFT Receievd",
+        "desc": "Payment Received",
+        "amount": 0,
+        "received": 300000,
+        "balance": 7639750
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-07-21",
+        "ref": "IBFT Receievd",
+        "desc": "Payment Received",
+        "amount": 0,
+        "received": 350000,
+        "balance": 7289750
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-07-22",
+        "ref": "Cash Deposit",
+        "desc": "Payment Received",
+        "amount": 0,
+        "received": 300000,
+        "balance": 6989750
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-07-23",
+        "ref": "IBFT Receievd",
+        "desc": "Payment Received",
+        "amount": 0,
+        "received": 525000,
+        "balance": 6464750
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-07-25",
+        "ref": "IBFT Receievd",
+        "desc": "Payment Received",
+        "amount": 0,
+        "received": 200000,
+        "balance": 6264750
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-07-25",
+        "ref": "IBFT Receievd",
+        "desc": "Payment Received",
+        "amount": 0,
+        "received": 350000,
+        "balance": 5914750
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-07-27",
+        "ref": "11830042",
+        "desc": "Payment Received",
+        "amount": 0,
+        "received": 200000,
+        "balance": 5714750
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-07-28",
+        "ref": "IBFT Receievd",
+        "desc": "Payment Received",
+        "amount": 0,
+        "received": 200000,
+        "balance": 5514750
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-07-29",
+        "ref": "IBFT Receievd",
+        "desc": "Payment Received",
+        "amount": 0,
+        "received": 200000,
+        "balance": 5314750
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-07-30",
+        "ref": "Cash Deposit",
+        "desc": "Payment Received",
+        "amount": 0,
+        "received": 900000,
+        "balance": 4414750
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-08-07",
+        "ref": "Cash Deposit",
+        "desc": "Payment Received",
+        "amount": 0,
+        "received": 600000,
+        "balance": 3814750
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-08-10",
+        "ref": "IBFT Receievd",
+        "desc": "Payment Received",
+        "amount": 0,
+        "received": 100000,
+        "balance": 3714750
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-08-13",
+        "ref": "IBFT Receievd",
+        "desc": "Payment Received",
+        "amount": 0,
+        "received": 200000,
+        "balance": 3514750
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-08-15",
+        "ref": "IBFT Receievd",
+        "desc": "Payment Received",
+        "amount": 0,
+        "received": 500000,
+        "balance": 3014750
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-08-17",
+        "ref": "IBFT Receievd",
+        "desc": "Payment Received",
+        "amount": 0,
+        "received": 350000,
+        "balance": 2664750
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-08-17",
+        "ref": "IBFT Receievd",
+        "desc": "Payment Received",
+        "amount": 0,
+        "received": 300000,
+        "balance": 2364750
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-08-21",
+        "ref": "IBFT Receievd",
+        "desc": "Payment Received",
+        "amount": 0,
+        "received": 155000,
+        "balance": 2209750
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-08-22",
+        "ref": "IBFT Receievd",
+        "desc": "Payment Received",
+        "amount": 0,
+        "received": 200000,
+        "balance": 2009750
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-09-03",
+        "ref": "IBFT Received",
+        "desc": "Payment Received",
+        "amount": 0,
+        "received": 150000,
+        "balance": 1859750
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-09-04",
+        "ref": "IBFT Received",
+        "desc": "Payment Received",
+        "amount": 0,
+        "received": 150000,
+        "balance": 1709750
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-09-05",
+        "ref": "IBFT Received",
+        "desc": "Payment Received",
+        "amount": 0,
+        "received": 150000,
+        "balance": 1559750
+      },
+      {
+        "type": "RECEIPT",
+        "date": "2026-09-05",
+        "ref": "IBFT Received",
+        "desc": "Payment Received",
+        "amount": 0,
+        "received": 100000,
+        "balance": 1459750
+      }
+    ]
+  },
+  {
+    "sheetName": "Z-GROUP",
+    "title": "Z GROUP OF COMPANIES",
+    "headerRowIdx": 2,
+    "headers": [
+      "Date",
+      "P/R",
+      "Description",
+      "Total Amount",
+      "Recevied",
+      "Balance"
+    ],
+    "openingBalance": 3630000,
+    "totalBilled": 0,
+    "totalReceived": 0,
+    "calculatedClosingBalance": 3630000,
+    "txnsCount": 1,
+    "txns": [
+      {
+        "type": "OB",
+        "date": "2026-06-30",
+        "ref": "OB-000",
+        "desc": "B/F BALANCE",
+        "amount": 0,
+        "received": 0,
+        "balance": 3630000
+      }
+    ]
+  },
+  {
+    "sheetName": "9 FIGURE",
+    "title": "Client : 9th FIGURE",
+    "headerRowIdx": 4,
+    "headers": [
+      "Date",
+      "PR",
+      "Description",
+      "Amount",
+      "Received",
+      "Balance"
+    ],
+    "openingBalance": 0,
+    "totalBilled": 0,
+    "totalReceived": 500000,
+    "calculatedClosingBalance": -500000,
+    "txnsCount": 1,
+    "txns": [
+      {
+        "type": "RECEIPT",
+        "date": "2026-09-01",
+        "ref": "IBFT RECEIVED",
+        "desc": "IBFT received from 9F Lunch advance",
+        "amount": 0,
+        "received": 500000,
+        "balance": -500000
+      }
+    ]
+  },
+  {
+    "sheetName": "9th AVENUE",
+    "title": "Client : 9th Avenue - CASH",
+    "headerRowIdx": 4,
+    "headers": [
+      "Date",
+      "PR",
+      "Description",
+      "Amount",
+      "Received",
+      "Balance"
+    ],
+    "openingBalance": 4543907,
+    "totalBilled": 0,
+    "totalReceived": 0,
+    "calculatedClosingBalance": 4543907,
+    "txnsCount": 2,
+    "txns": [
+      {
+        "type": "OB",
+        "date": "2026-06-30",
+        "ref": "OB-000",
+        "desc": "B/F BALANCE",
+        "amount": 0,
+        "received": 0,
+        "balance": 4543907
+      },
+      {
+        "type": "OB",
+        "date": "2026-06-30",
+        "ref": "OB-000",
+        "desc": "B/F BALANCE",
+        "amount": 0,
+        "received": 0,
+        "balance": 4543907
+      }
+    ]
+  }
+]
