@@ -412,7 +412,9 @@ export default function ClientStatementView({
   vouchers = [],
   journal = [],
   selectedClientId,
-  onSelectClient
+  onSelectClient,
+  isModal = false,
+  onClose
 }) {
   const [activeClientId, setActiveClientId] = useState(selectedClientId || (clients[0]?.id || ""));
   const [dateFrom, setDateFrom] = useState("2026-01-01");
@@ -427,6 +429,18 @@ export default function ClientStatementView({
       setActiveClientId(selectedClientId);
     }
   }, [selectedClientId]);
+
+  // Handle Escape key to close modal
+  useEffect(() => {
+    if (!isModal || !onClose) return;
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape" && !showPrintModal) {
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isModal, onClose, showPrintModal]);
 
   const selectedClient = useMemo(() => {
     if (!clients || clients.length === 0) return null;
@@ -690,8 +704,8 @@ export default function ClientStatementView({
     exportClientStatementToExcel({ client: selectedClient, dateFrom, dateTo, statementData });
   };
 
-  return (
-    <div style={{ padding: 20 }}>
+  const mainContent = (
+    <div style={{ padding: isModal ? 0 : 20 }}>
       {/* FILTER TOP BAR */}
       <div className="card" style={{ padding: 16, marginBottom: 20, background: "var(--card-bg)", borderRadius: 12, border: "1px solid var(--rule)" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 15, fontWeight: 700, marginBottom: 14, color: "var(--ink)" }}>
@@ -761,7 +775,7 @@ export default function ClientStatementView({
             <Download size={15} /> Export Excel
           </button>
           <button className="btn btn-primary" onClick={() => setShowPrintModal(true)} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, background: "#0284C7", borderColor: "#0284C7", color: "#FFFFFF" }}>
-            <Printer size={15} /> Print / Save PDF Statement
+            <Printer size={15} /> Print Preview &amp; Printout
           </button>
         </div>
       </div>
@@ -1075,4 +1089,59 @@ export default function ClientStatementView({
       )}
     </div>
   );
+
+  if (isModal) {
+    return (
+      <div className="modal-backdrop" style={{ zIndex: 1150, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(15, 23, 42, 0.75)", backdropFilter: "blur(6px)", padding: "16px" }} onClick={onClose}>
+        <div className="modal" style={{ width: 1320, maxWidth: "96vw", maxHeight: "94vh", display: "flex", flexDirection: "column", padding: 0, borderRadius: 16, background: "var(--card-bg, #FFFFFF)", boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.35)", border: "1px solid #E2E8F0", overflow: "hidden" }} onClick={e => e.stopPropagation()}>
+          {/* MODAL HEADER */}
+          <div style={{ background: "linear-gradient(135deg, #0F172A, #1E293B)", padding: "16px 24px", display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(255,255,255,0.1)", flexShrink: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <div style={{ width: 42, height: 42, borderRadius: 12, background: "linear-gradient(135deg, #0284C7, #0369A1)", color: "#FFFFFF", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 12px rgba(2, 132, 199, 0.35)" }}>
+                <Building2 size={22} />
+              </div>
+              <div>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <h3 style={{ margin: 0, fontSize: 18, fontWeight: 800, color: "#FFFFFF", letterSpacing: "-0.02em" }}>
+                    {selectedClient?.companyName || selectedClient?.name || "Client Statement"}
+                  </h3>
+                  <span style={{ background: "#0284C7", color: "#FFFFFF", padding: "2px 8px", borderRadius: 8, fontSize: 11, fontWeight: 700 }}>
+                    {selectedClient?.clientCode || selectedClient?.id}
+                  </span>
+                </div>
+                <p style={{ margin: "2px 0 0", fontSize: 12, color: "#94A3B8" }}>
+                  Client Statement &amp; Accounts Receivable Sub-Ledger &middot; Period: <strong>{dateFrom}</strong> to <strong>{dateTo}</strong>
+                </p>
+              </div>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <button className="btn" onClick={() => setShowPrintModal(true)} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12.5, fontWeight: 700, background: "linear-gradient(135deg, #0284C7, #0369A1)", borderColor: "#0284C7", color: "#FFFFFF", cursor: "pointer" }}>
+                <Printer size={15} /> Print Preview &amp; Printout
+              </button>
+              <button className="btn" onClick={handleExportExcel} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12.5, fontWeight: 700, background: "#059669", borderColor: "#059669", color: "#FFFFFF", cursor: "pointer" }}>
+                <Download size={15} /> Export Excel
+              </button>
+              <button 
+                type="button" 
+                onClick={onClose}
+                style={{ background: "rgba(255,255,255,0.1)", border: "none", color: "#94A3B8", width: 34, height: 34, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", transition: "all 0.2s" }}
+                onMouseEnter={e => { e.currentTarget.style.color = "#FFFFFF"; e.currentTarget.style.background = "rgba(255,255,255,0.2)"; }}
+                onMouseLeave={e => { e.currentTarget.style.color = "#94A3B8"; e.currentTarget.style.background = "rgba(255,255,255,0.1)"; }}
+                title="Close (Esc)"
+              >
+                <X size={18} />
+              </button>
+            </div>
+          </div>
+
+          {/* MODAL BODY */}
+          <div style={{ flex: 1, overflowY: "auto", padding: "20px 24px", background: "var(--bg, #F8FAFC)" }}>
+            {mainContent}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return mainContent;
 }

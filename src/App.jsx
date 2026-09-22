@@ -1243,11 +1243,13 @@ export default function App() {
   const [showClientModal, setShowClientModal] = useState(false);
   const [editingClient, setEditingClient] = useState(null);
   const [selectedClientId, setSelectedClientId] = useState(null);
+  const [activeStatementClientId, setActiveStatementClientId] = useState(null);
   const [clientSearchQuery, setClientSearchQuery] = useState("");
 
   const [showVendorModal, setShowVendorModal] = useState(false);
   const [editingVendor, setEditingVendor] = useState(null);
   const [selectedVendorId, setSelectedVendorId] = useState(null);
+  const [activeStatementVendorId, setActiveStatementVendorId] = useState(null);
   const [vendorSearchQuery, setVendorSearchQuery] = useState("");
 
   const [duplicateDocWarning, setDuplicateDocWarning] = useState(null);
@@ -5316,7 +5318,12 @@ export default function App() {
                           </td>
                           <td style={{ textAlign: "center" }}>
                             <div style={{ display: "flex", gap: 6, justifyContent: "center" }}>
-                              <button className="btn" style={{ fontSize: 11, padding: "2px 8px" }} onClick={() => setSelectedClientId(c.id)}>
+                              <button
+                                className="btn"
+                                style={{ fontSize: 11, padding: "3px 10px", background: "rgba(2, 132, 199, 0.1)", color: "#0284C7", borderColor: "#0284C7", fontWeight: 700 }}
+                                onClick={() => { setSelectedClientId(c.id); setActiveStatementClientId(c.id); }}
+                                title="Open Full Client Statement Modal Window"
+                              >
                                 View Statement
                               </button>
                               <button className="btn" style={{ fontSize: 11, padding: "2px 6px" }} onClick={() => { setEditingClient(c); setShowClientModal(true); }}>
@@ -5428,7 +5435,12 @@ export default function App() {
                           </td>
                           <td style={{ textAlign: "center" }}>
                             <div style={{ display: "flex", gap: 6, justifyContent: "center" }}>
-                              <button className="btn" style={{ fontSize: 11, padding: "2px 8px" }} onClick={() => setSelectedVendorId(v.id)}>
+                              <button
+                                className="btn"
+                                style={{ fontSize: 11, padding: "3px 10px", background: "rgba(217, 119, 6, 0.1)", color: "#D97706", borderColor: "#D97706", fontWeight: 700 }}
+                                onClick={() => { setSelectedVendorId(v.id); setActiveStatementVendorId(v.id); }}
+                                title="Open Full Vendor Statement Modal Window"
+                              >
                                 View Statement
                               </button>
                               <button className="btn" style={{ fontSize: 11, padding: "2px 6px" }} onClick={() => { setEditingVendor(v); setShowVendorModal(true); }}>
@@ -8500,6 +8512,35 @@ export default function App() {
       )}
       {showClientModal && <ClientMasterModal clients={clients} client={editingClient} onClose={() => { setShowClientModal(false); setEditingClient(null); }} onSave={handleSaveClient} />}
       {showVendorModal && <VendorMasterModal vendors={vendors} vendor={editingVendor} onClose={() => { setShowVendorModal(false); setEditingVendor(null); }} onSave={handleSaveVendor} />}
+      
+      {/* FULL-WINDOW CLIENT & VENDOR STATEMENT MODALS */}
+      {activeStatementClientId && (
+        <ClientStatementView
+          clients={clients}
+          projects={projects}
+          invoices={invoices}
+          vouchers={vouchers}
+          journal={journal}
+          selectedClientId={activeStatementClientId}
+          onSelectClient={id => { setActiveStatementClientId(id); setSelectedClientId(id); }}
+          isModal={true}
+          onClose={() => setActiveStatementClientId(null)}
+        />
+      )}
+      {activeStatementVendorId && (
+        <VendorStatementView
+          vendors={vendors}
+          projects={projects}
+          expenses={expenses}
+          vouchers={vouchers}
+          journal={journal}
+          selectedVendorId={activeStatementVendorId}
+          onSelectVendor={id => { setActiveStatementVendorId(id); setSelectedVendorId(id); }}
+          isModal={true}
+          onClose={() => setActiveStatementVendorId(null)}
+        />
+      )}
+
       {duplicateDocWarning && <AiDocumentDuplicateModal duplicateMatch={duplicateDocWarning.duplicateMatch} incomingDoc={duplicateDocWarning.incomingDoc} existingDoc={duplicateDocWarning.existingDoc} onClose={() => setDuplicateDocWarning(null)} onOverridePosting={duplicateDocWarning.onOverridePosting} />}
       {reviewingDocId && <DocumentReviewModal doc={documents.find(d => d.id === reviewingDocId)} projects={projects} clients={clients} vendors={vendors} bankAccounts={bankAccounts} onClose={() => setReviewingDocId(null)} onSaveDraft={saveDocumentDraft} onPost={postDocumentToLedger} onCreateProjectTrigger={() => { setReviewingDocId(null); setShowProjectForm(true); }} />}
       {compareDocData && <CompareDocumentsModal doc={compareDocData.doc} duplicateMatch={compareDocData.duplicateMatch} onClose={() => setCompareDocData(null)} onCancelUpload={() => { deleteDocument(compareDocData.doc.id); setCompareDocData(null); }} onOverride={(docId, reason) => postDocumentToLedger(docId, null, reason)} />}
