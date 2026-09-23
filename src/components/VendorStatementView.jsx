@@ -138,6 +138,22 @@ function exportVendorStatementToExcel({ vendor, dateFrom, dateTo, statementData 
   URL.revokeObjectURL(url);
 }
 
+const PAGE_SIZES = {
+  A4: "210mm 297mm",
+  Letter: "8.5in 11in",
+  Legal: "8.5in 14in"
+};
+
+function pageContentHeightMm(pageSize, orientation, marginStr) {
+  const raw = PAGE_SIZES[pageSize] || PAGE_SIZES.A4;
+  const [wRaw, hRaw] = raw.split(" ");
+  const toMm = v => (v.endsWith("in") ? parseFloat(v) * 25.4 : parseFloat(v));
+  let w = toMm(wRaw), h = toMm(hRaw);
+  if (orientation === "landscape") { const t = w; w = h; h = t; }
+  const margin = parseFloat(marginStr) || 0;
+  return Math.max(h - margin * 2, 40);
+}
+
 export function VendorStatementPrintModal({ vendor, dateFrom, dateTo, statementData, onClose }) {
   const [pageSize, setPageSize] = useState("A4");
   const [pageOrientation, setPageOrientation] = useState("portrait");
@@ -182,7 +198,9 @@ export function VendorStatementPrintModal({ vendor, dateFrom, dateTo, statementD
     exportVendorStatementToExcel({ vendor, dateFrom, dateTo, statementData });
   };
 
+  const printAreaHeightMm = pageContentHeightMm(pageSize, pageOrientation, pageMargin);
   const printScaleFactor = parseInt(printScale) / 100;
+  const printAreaScaledHeightMm = printAreaHeightMm / printScaleFactor;
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
@@ -278,6 +296,7 @@ export function VendorStatementPrintModal({ vendor, dateFrom, dateTo, statementD
             transform-origin: top left;
             width: ${100 / printScaleFactor}% !important;
             max-width: ${100 / printScaleFactor}% !important;
+            min-height: ${printAreaScaledHeightMm - 2}mm !important;
             display: flex !important;
             flex-direction: column !important;
             justify-content: space-between !important;
