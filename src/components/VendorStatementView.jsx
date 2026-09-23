@@ -140,6 +140,9 @@ function exportVendorStatementToExcel({ vendor, dateFrom, dateTo, statementData 
 
 export function VendorStatementPrintModal({ vendor, dateFrom, dateTo, statementData, onClose }) {
   const [pageSize, setPageSize] = useState("A4");
+  const [pageOrientation, setPageOrientation] = useState("portrait");
+  const [pageMargin, setPageMargin] = useState("8mm");
+  const [printScale, setPrintScale] = useState("100%");
   const printRef = useRef(null);
 
   const pkr = (val) => "PKR " + (Number(val) || 0).toLocaleString("en-PK", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
@@ -152,11 +155,11 @@ export function VendorStatementPrintModal({ vendor, dateFrom, dateTo, statementD
     const triggerPdf = () => {
       if (window.html2pdf) {
         const opt = {
-          margin: 8,
+          margin: 6,
           filename: `Vendor_Statement_${vName}_${dateFrom}_to_${dateTo}.pdf`,
           image: { type: 'jpeg', quality: 0.98 },
           html2canvas: { scale: 2, useCORS: true },
-          jsPDF: { unit: 'mm', format: (pageSize || "A4").toLowerCase(), orientation: "portrait" }
+          jsPDF: { unit: 'mm', format: (pageSize || "A4").toLowerCase(), orientation: pageOrientation || "portrait" }
         };
         window.html2pdf().set(opt).from(printEl).save();
       } else {
@@ -179,223 +182,367 @@ export function VendorStatementPrintModal({ vendor, dateFrom, dateTo, statementD
     exportVendorStatementToExcel({ vendor, dateFrom, dateTo, statementData });
   };
 
+  const printScaleFactor = parseInt(printScale) / 100;
+
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <style>{`
-        @page { size: ${pageSize} portrait; margin: 8mm; }
+        @page {
+          size: ${pageSize} ${pageOrientation};
+          margin: ${pageMargin};
+        }
+        .print-area table {
+          width: 100% !important;
+          max-width: 100% !important;
+          table-layout: fixed !important;
+          border-collapse: collapse !important;
+          border: 1px solid #000000 !important;
+        }
+        .print-area th {
+          font-size: 8.5px !important;
+          padding: 5px 3px !important;
+          text-align: center !important;
+          vertical-align: middle !important;
+          font-weight: 800 !important;
+          background: #F1F5F9 !important;
+          color: #0F172A !important;
+          border: 1px solid #000000 !important;
+          text-transform: uppercase !important;
+        }
+        .print-area td {
+          font-size: 8.8px !important;
+          padding: 4px 4px !important;
+          vertical-align: middle !important;
+          border: 1px solid #000000 !important;
+          color: #0F172A !important;
+          word-break: break-word !important;
+        }
         @media print {
-          .no-print-header, .sidebar, .topbar, .btn, .mobile-toggle, .content, .main, .erp-root > .main, .erp-root > .sidebar, .erp-root > .topbar { display: none !important; }
-          .modal-backdrop { background: none !important; padding: 0 !important; position: static !important; display: block !important; width: 100% !important; max-width: 100% !important; margin: 0 !important; }
-          .modal { box-shadow: none !important; border: none !important; width: 100% !important; max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
-          .print-area { padding: 0 !important; border: none !important; min-height: 880px !important; display: flex !important; flex-direction: column !important; justify-content: space-between !important; }
-          .invoice-footer-banner { background: #A81C1C !important; background-image: linear-gradient(90deg, #A81C1C 0%, #1D3B4E 100%) !important; color: #ffffff !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; display: flex !important; margin-top: auto !important; }
+          *, *::before, *::after {
+            scrollbar-width: none !important;
+            -ms-overflow-style: none !important;
+            box-shadow: none !important;
+            text-shadow: none !important;
+          }
+          *::-webkit-scrollbar {
+            display: none !important;
+          }
+          html, body, #root {
+            margin: 0 !important;
+            padding: 0 !important;
+            background: #ffffff !important;
+            height: auto !important;
+            width: 100% !important;
+            overflow: visible !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+          .no-print-header, .sidebar, .topbar, .btn, .mobile-toggle, .content, .main, .erp-root > .main, .erp-root > .sidebar, .erp-root > .topbar {
+            display: none !important;
+          }
+          .modal-backdrop {
+            background: none !important;
+            padding: 0 !important;
+            position: static !important;
+            display: block !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            margin: 0 !important;
+            overflow: visible !important;
+          }
+          .modal {
+            box-shadow: none !important;
+            border: none !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            overflow: visible !important;
+            max-height: none !important;
+            height: auto !important;
+            background: transparent !important;
+          }
+          .print-area {
+            padding: 0 !important;
+            border: none !important;
+            box-shadow: none !important;
+            border-radius: 0 !important;
+            transform: scale(${printScaleFactor});
+            transform-origin: top left;
+            width: ${100 / printScaleFactor}% !important;
+            max-width: ${100 / printScaleFactor}% !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: space-between !important;
+            box-sizing: border-box !important;
+            margin: 0 !important;
+            overflow: visible !important;
+          }
+          .print-area thead {
+            display: table-header-group !important;
+          }
+          .print-area tfoot {
+            display: table-footer-group !important;
+          }
+          .print-area tr {
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+          }
+          .print-signatures, .invoice-footer-banner {
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+          }
+          .invoice-footer-banner {
+            background: #A81C1C !important;
+            background-image: linear-gradient(90deg, #A81C1C 0%, #1D3B4E 100%) !important;
+            color: #ffffff !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            display: flex !important;
+            visibility: visible !important;
+            margin-top: 14px !important;
+          }
         }
       `}</style>
-      <div className="modal" style={{ width: 900, maxWidth: "98vw", maxHeight: "94vh", overflowY: "auto" }} onClick={e => e.stopPropagation()}>
+      <div className="modal" style={{ width: 960, maxWidth: "98vw", maxHeight: "94vh", overflowY: "auto", background: "var(--card-bg, #0F172A)", borderRadius: 14, border: "1px solid #334155" }} onClick={e => e.stopPropagation()}>
         {/* MODAL TOP TOOLBAR */}
-        <div className="no-print-header" style={{ marginBottom: 14, background: "#1E293B", padding: "12px 16px", borderRadius: 10, color: "#fff", border: "1px solid #334155", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 10 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ fontWeight: 800, fontSize: 13.5, color: "#F59E0B", display: "flex", alignItems: "center", gap: 5 }}>
-              <FileText size={16} /> Vendor Statement Preview
+        <div className="no-print-header" style={{ background: "#1E293B", padding: "12px 18px", borderBottom: "1px solid #334155", color: "#fff", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 10 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <span style={{ fontWeight: 800, fontSize: 14, color: "#F59E0B", display: "flex", alignItems: "center", gap: 6 }}>
+              <FileText size={18} /> Official Letterhead Print Preview
             </span>
           </div>
 
           <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-            <select value={pageSize} onChange={e => setPageSize(e.target.value)} style={{ background: "#0F172A", border: "1px solid #334155", borderRadius: 8, color: "#FFF", fontSize: 12.5, fontWeight: 700, padding: "5px 10px", cursor: "pointer" }}>
-              <option value="A4" style={{ background: "#1E293B", color: "#FFFFFF" }}>A4 (210 x 297 mm)</option>
-              <option value="Letter" style={{ background: "#1E293B", color: "#FFFFFF" }}>Letter (8.5 x 11 in)</option>
-              <option value="Legal" style={{ background: "#1E293B", color: "#FFFFFF" }}>Legal (8.5 x 14 in)</option>
-            </select>
-            <button className="btn btn-primary" style={{ padding: "6px 12px", fontSize: 12.5, fontWeight: 700 }} onClick={handleExportPDF}>
-              <Download size={14} /> Download PDF
+            <div style={{ display: "flex", alignItems: "center", gap: 5, background: "#0F172A", padding: "4px 8px", borderRadius: 8, border: "1px solid #334155" }}>
+              <span style={{ fontSize: 11, color: "#94A3B8", fontWeight: 700 }}>Paper:</span>
+              <select value={pageSize} onChange={e => setPageSize(e.target.value)} style={{ background: "transparent", border: "none", color: "#FFF", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+                <option value="A4" style={{ background: "#1E293B", color: "#FFFFFF" }}>A4 (210 x 297 mm)</option>
+                <option value="Letter" style={{ background: "#1E293B", color: "#FFFFFF" }}>Letter (8.5 x 11 in)</option>
+                <option value="Legal" style={{ background: "#1E293B", color: "#FFFFFF" }}>Legal (8.5 x 14 in)</option>
+              </select>
+            </div>
+
+            <div style={{ display: "flex", alignItems: "center", gap: 5, background: "#0F172A", padding: "4px 8px", borderRadius: 8, border: "1px solid #334155" }}>
+              <span style={{ fontSize: 11, color: "#94A3B8", fontWeight: 700 }}>Orient:</span>
+              <select value={pageOrientation} onChange={e => setPageOrientation(e.target.value)} style={{ background: "transparent", border: "none", color: "#FFF", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+                <option value="portrait" style={{ background: "#1E293B", color: "#FFFFFF" }}>Portrait 📄</option>
+                <option value="landscape" style={{ background: "#1E293B", color: "#FFFFFF" }}>Landscape 📑</option>
+              </select>
+            </div>
+
+            <div style={{ display: "flex", alignItems: "center", gap: 5, background: "#0F172A", padding: "4px 8px", borderRadius: 8, border: "1px solid #334155" }}>
+              <span style={{ fontSize: 11, color: "#94A3B8", fontWeight: 700 }}>Margin:</span>
+              <select value={pageMargin} onChange={e => setPageMargin(e.target.value)} style={{ background: "transparent", border: "none", color: "#FFF", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+                <option value="8mm" style={{ background: "#1E293B", color: "#FFFFFF" }}>Compact (8mm)</option>
+                <option value="12mm" style={{ background: "#1E293B", color: "#FFFFFF" }}>Normal (12mm)</option>
+                <option value="15mm" style={{ background: "#1E293B", color: "#FFFFFF" }}>Wide (15mm)</option>
+                <option value="0mm" style={{ background: "#1E293B", color: "#FFFFFF" }}>Zero (0mm)</option>
+              </select>
+            </div>
+
+            <div style={{ display: "flex", alignItems: "center", gap: 5, background: "#0F172A", padding: "4px 8px", borderRadius: 8, border: "1px solid #334155" }}>
+              <span style={{ fontSize: 11, color: "#94A3B8", fontWeight: 700 }}>Scale:</span>
+              <select value={printScale} onChange={e => setPrintScale(e.target.value)} style={{ background: "transparent", border: "none", color: "#FFF", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+                <option value="100%" style={{ background: "#1E293B", color: "#FFFFFF" }}>100%</option>
+                <option value="95%" style={{ background: "#1E293B", color: "#FFFFFF" }}>95%</option>
+                <option value="90%" style={{ background: "#1E293B", color: "#FFFFFF" }}>90%</option>
+                <option value="85%" style={{ background: "#1E293B", color: "#FFFFFF" }}>85%</option>
+              </select>
+            </div>
+
+            <button className="btn btn-primary" style={{ padding: "6px 12px", fontSize: 12, fontWeight: 700, background: "#D97706", borderColor: "#D97706", color: "#FFFFFF" }} onClick={handleExportPDF}>
+              <Download size={13} /> PDF
             </button>
-            <button className="btn" style={{ background: "#059669", color: "#FFFFFF", border: "none", padding: "6px 12px", fontSize: 12.5, fontWeight: 700 }} onClick={handleExportExcel}>
-              <Download size={14} /> Download Excel
+            <button className="btn" style={{ background: "#059669", color: "#FFFFFF", border: "none", padding: "6px 12px", fontSize: 12, fontWeight: 700 }} onClick={handleExportExcel}>
+              <Download size={13} /> Excel
             </button>
-            <button className="btn" style={{ background: "#475569", color: "#FFFFFF", border: "none", padding: "6px 12px", fontSize: 12.5, fontWeight: 700 }} onClick={() => window.print()}>
-              <Printer size={14} /> Print
+            <button className="btn" style={{ background: "#334155", color: "#FFFFFF", border: "none", padding: "6px 14px", fontSize: 12, fontWeight: 700 }} onClick={() => window.print()}>
+              <Printer size={13} /> Printout
             </button>
             <button className="btn" style={{ background: "var(--rose)", color: "#fff", border: "none", padding: "5px 9px" }} onClick={onClose}><X size={15} /></button>
           </div>
         </div>
 
-        {/* PRINTABLE AREA */}
-        <div ref={printRef} className="print-area" style={{ background: "#ffffff", color: "#0F172A", borderRadius: 10, padding: "20px 24px", fontFamily: "'Calibri', 'Inter', sans-serif", minHeight: "880px", display: "flex", flexDirection: "column", justifyContent: "space-between", boxSizing: "border-box" }}>
-          <div>
-            {/* TOP HEADER */}
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "2px solid #0F172A", paddingBottom: 10, marginBottom: 12 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                <img src="./logo.png" alt="AdPulse Logo" style={{ height: 70, maxHeight: 75, width: "auto", objectFit: "contain" }} onError={(e) => { e.target.style.display = 'none'; }} />
-                <div>
-                  <div style={{ fontSize: 18, fontWeight: 800, color: "#0F172A", letterSpacing: "-0.3px" }}>AdPulse IMC (Private) Ltd</div>
-                  <div style={{ fontSize: 10.5, color: "#475569" }}>Financial Management &amp; Accounts Payable Sub-Ledger</div>
+        {/* PRINTABLE AREA CONTAINER (A4 Paper Box) */}
+        <div style={{ padding: "20px", display: "flex", justifyContent: "center", background: "#334155" }}>
+          <div ref={printRef} className="print-area" style={{ background: "#ffffff", color: "#0F172A", width: "100%", maxWidth: "850px", minHeight: "1050px", padding: "24px 28px", fontFamily: "'Calibri', 'Inter', sans-serif", display: "flex", flexDirection: "column", justifyContent: "space-between", boxSizing: "border-box", boxShadow: "0 10px 30px rgba(0,0,0,0.35)", borderRadius: 4 }}>
+            <div>
+              {/* TOP LETTERHEAD HEADER */}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "2px solid #0F172A", paddingBottom: 10, marginBottom: 12 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                  <img src="./logo.png" alt="AdPulse Logo" style={{ height: 68, maxHeight: 72, width: "auto", objectFit: "contain" }} onError={(e) => { e.target.style.display = 'none'; }} />
+                  <div>
+                    <div style={{ fontSize: 19, fontWeight: 800, color: "#0F172A", letterSpacing: "-0.4px" }}>AdPulse IMC (Private) Ltd</div>
+                    <div style={{ fontSize: 10.5, color: "#475569", fontWeight: 600 }}>Financial Management &amp; Accounts Payable Sub-Ledger</div>
+                  </div>
+                </div>
+                <div style={{ textAlign: "right" }}>
+                  <div style={{ fontSize: 14, fontWeight: 800, color: "#D97706", textTransform: "uppercase", letterSpacing: "0.5px" }}>VENDOR STATEMENT</div>
+                  <div className="mono" style={{ fontSize: 11, fontWeight: 700, color: "#0F172A" }}>STMT-{(vendor.vendorCode || vendor.id || "").toUpperCase()}</div>
                 </div>
               </div>
-              <div style={{ textAlign: "right" }}>
-                <div style={{ fontSize: 14, fontWeight: 800, color: "#D97706", textTransform: "uppercase" }}>VENDOR STATEMENT</div>
-                <div className="mono" style={{ fontSize: 11.5, fontWeight: 700, color: "#0F172A" }}>STMT-{(vendor.vendorCode || vendor.id || "").toUpperCase()}</div>
-              </div>
-            </div>
 
-            {/* VENDOR & PERIOD INFO BOX */}
-            <div style={{ background: "#F8FAFC", border: "1px solid #000000", borderRadius: 6, padding: "8px 12px", marginBottom: 12, display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: 10, fontSize: 10.5 }}>
-              <div>
-                <div style={{ marginBottom: 3 }}><b>Vendor Account:</b> <span style={{ fontWeight: 700, fontSize: 11, color: "#0F172A" }}>{vendor.companyName || vendor.name}</span> <span style={{ color: "#64748B" }}>({vendor.vendorCode || vendor.id})</span></div>
-                <div style={{ marginBottom: 3 }}><b>Contact Person:</b> {vendor.contactPerson || "N/A"} {vendor.phone ? `(${vendor.phone})` : ""}</div>
-                <div><b>Bank &amp; Account:</b> {vendor.bankName || "N/A"} {vendor.accountNumberIban ? `· ${vendor.accountNumberIban}` : ""}</div>
+              {/* VENDOR & PERIOD INFO BOX */}
+              <div style={{ background: "#F8FAFC", border: "1px solid #000000", borderRadius: 5, padding: "8px 12px", marginBottom: 12, display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: 10, fontSize: 10.5 }}>
+                <div>
+                  <div style={{ marginBottom: 3 }}><b>Vendor Account:</b> <span style={{ fontWeight: 700, fontSize: 11.5, color: "#0F172A" }}>{vendor.companyName || vendor.name}</span> <span style={{ color: "#64748B" }}>({vendor.vendorCode || vendor.id})</span></div>
+                  <div style={{ marginBottom: 3 }}><b>Contact Person:</b> {vendor.contactPerson || "N/A"} {vendor.phone ? `(${vendor.phone})` : ""}</div>
+                  <div><b>Bank &amp; Account:</b> {vendor.bankName || "N/A"} {vendor.accountNumberIban ? `· ${vendor.accountNumberIban}` : ""}</div>
+                </div>
+                <div style={{ textAlign: "right" }}>
+                  <div style={{ marginBottom: 3 }}><b>Statement Period:</b> <span style={{ fontWeight: 700 }}>{dateFrom} to {dateTo}</span></div>
+                  <div style={{ marginBottom: 3 }}><b>Payment Terms:</b> {vendor.paymentTerms || "Net 15"}</div>
+                  <div><b>NTN / STRN:</b> {vendor.ntn || "N/A"} {vendor.strn ? `/ ${vendor.strn}` : ""}</div>
+                </div>
               </div>
-              <div style={{ textAlign: "right" }}>
-                <div style={{ marginBottom: 3 }}><b>Statement Period:</b> <span style={{ fontWeight: 700 }}>{dateFrom} to {dateTo}</span></div>
-                <div style={{ marginBottom: 3 }}><b>Payment Terms:</b> {vendor.paymentTerms || "Net 15"}</div>
-                <div><b>NTN / STRN:</b> {vendor.ntn || "N/A"} {vendor.strn ? `/ ${vendor.strn}` : ""}</div>
-              </div>
-            </div>
 
-            {/* 4 SUMMARY METRIC CARDS */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, marginBottom: 8 }}>
-              <div style={{ background: "#FFFFFF", padding: "6px 10px", borderRadius: 5, border: "1px solid #000000", textAlign: "center" }}>
-                <div style={{ fontSize: 8.5, color: "#475569", fontWeight: 700, textTransform: "uppercase" }}>Opening Payable</div>
-                <div style={{ fontSize: 11.5, fontWeight: 800, color: "#1E293B", marginTop: 2 }}>{pkr(statementData.openingPayable)}</div>
+              {/* 4 SUMMARY METRIC CARDS */}
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, marginBottom: 10 }}>
+                <div style={{ background: "#FFFFFF", padding: "6px 10px", borderRadius: 4, border: "1px solid #000000", textAlign: "center" }}>
+                  <div style={{ fontSize: 8.5, color: "#475569", fontWeight: 700, textTransform: "uppercase" }}>Opening Payable</div>
+                  <div style={{ fontSize: 11.5, fontWeight: 800, color: "#1E293B", marginTop: 2 }}>{pkr(statementData.openingPayable)}</div>
+                </div>
+                <div style={{ background: "#FFFFFF", padding: "6px 10px", borderRadius: 4, border: "1px solid #000000", textAlign: "center" }}>
+                  <div style={{ fontSize: 8.5, color: "#D97706", fontWeight: 700, textTransform: "uppercase" }}>Total Bills / Exp (+)</div>
+                  <div style={{ fontSize: 11.5, fontWeight: 800, color: "#D97706", marginTop: 2 }}>{pkr(statementData.totalExpenses)}</div>
+                </div>
+                <div style={{ background: "#FFFFFF", padding: "6px 10px", borderRadius: 4, border: "1px solid #000000", textAlign: "center" }}>
+                  <div style={{ fontSize: 8.5, color: "#059669", fontWeight: 700, textTransform: "uppercase" }}>Total Payments (-)</div>
+                  <div style={{ fontSize: 11.5, fontWeight: 800, color: "#059669", marginTop: 2 }}>{pkr(statementData.totalPayments)}</div>
+                </div>
+                <div style={{ background: "#FEF3C7", padding: "6px 10px", borderRadius: 4, border: "1.5px solid #D97706", textAlign: "center" }}>
+                  <div style={{ fontSize: 8.5, color: "#B45309", fontWeight: 800, textTransform: "uppercase" }}>Closing Payable</div>
+                  <div style={{ fontSize: 12, fontWeight: 900, color: "#B45309", marginTop: 2 }}>{pkr(statementData.closingPayable)}</div>
+                </div>
               </div>
-              <div style={{ background: "#FFFFFF", padding: "6px 10px", borderRadius: 5, border: "1px solid #000000", textAlign: "center" }}>
-                <div style={{ fontSize: 8.5, color: "#D97706", fontWeight: 700, textTransform: "uppercase" }}>Total Bills / Exp (+)</div>
-                <div style={{ fontSize: 11.5, fontWeight: 800, color: "#D97706", marginTop: 2 }}>{pkr(statementData.totalExpenses)}</div>
-              </div>
-              <div style={{ background: "#FFFFFF", padding: "6px 10px", borderRadius: 5, border: "1px solid #000000", textAlign: "center" }}>
-                <div style={{ fontSize: 8.5, color: "#059669", fontWeight: 700, textTransform: "uppercase" }}>Total Payments (-)</div>
-                <div style={{ fontSize: 11.5, fontWeight: 800, color: "#059669", marginTop: 2 }}>{pkr(statementData.totalPayments)}</div>
-              </div>
-              <div style={{ background: "#FEF3C7", padding: "6px 10px", borderRadius: 5, border: "1.5px solid #D97706", textAlign: "center" }}>
-                <div style={{ fontSize: 8.5, color: "#B45309", fontWeight: 800, textTransform: "uppercase" }}>Closing Payable</div>
-                <div style={{ fontSize: 12, fontWeight: 900, color: "#B45309", marginTop: 2 }}>{pkr(statementData.closingPayable)}</div>
-              </div>
-            </div>
 
-            {/* TAX BREAKDOWN BANNER IN VENDOR PRINT MODAL */}
-            {(statementData.totalGrossBilled > 0 || statementData.totalPayments > 0) && (
-              <div style={{ display: "flex", justifyContent: "space-between", background: "#FFFBEB", border: "1px solid #FCD34D", borderRadius: 4, padding: "4px 8px", marginBottom: 10, fontSize: 8, color: "#78350F" }}>
-                <span><b>Gross AP Billed:</b> {pkr(statementData.totalGrossBilled || statementData.totalExpenses)}</span>
-                <span><b>Agency Comm:</b> {pkr(statementData.totalCommission || 0)}</span>
-                <span><b>Input SST:</b> {pkr(statementData.totalInputSst || 0)}</span>
-                <span><b>WHT Deducted (FBR):</b> {pkr(statementData.totalWhtDeducted || 0)}</span>
-                <span><b>Net Paid (Disbursed):</b> {pkr(statementData.totalPayments)}</span>
-              </div>
-            )}
+              {/* TAX BREAKDOWN BANNER IN VENDOR PRINT MODAL */}
+              {(statementData.totalGrossBilled > 0 || statementData.totalPayments > 0) && (
+                <div style={{ display: "flex", justifyContent: "space-between", background: "#FFFBEB", border: "1px solid #FCD34D", borderRadius: 4, padding: "4px 8px", marginBottom: 10, fontSize: 8, color: "#78350F" }}>
+                  <span><b>Gross AP Billed:</b> {pkr(statementData.totalGrossBilled || statementData.totalExpenses)}</span>
+                  <span><b>Agency Comm:</b> {pkr(statementData.totalCommission || 0)}</span>
+                  <span><b>Input SST:</b> {pkr(statementData.totalInputSst || 0)}</span>
+                  <span><b>WHT Deducted (FBR):</b> {pkr(statementData.totalWhtDeducted || 0)}</span>
+                  <span><b>Net Paid (Disbursed):</b> {pkr(statementData.totalPayments)}</span>
+                </div>
+              )}
 
-            {/* TRANSACTIONS TABLE - 7 STANDARD SUB-LEDGER COLUMNS */}
-            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 12, fontSize: 9.5, tableLayout: "fixed" }}>
-              <colgroup>
-                <col style={{ width: "11%" }} />
-                <col style={{ width: "13%" }} />
-                <col style={{ width: "13%" }} />
-                <col style={{ width: "23%" }} />
-                <col style={{ width: "13%" }} />
-                <col style={{ width: "13%" }} />
-                <col style={{ width: "14%" }} />
-              </colgroup>
-              <thead>
-                <tr style={{ background: "#F1F5F9", color: "#0F172A" }}>
-                  <th style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "center", fontSize: 8.5, fontWeight: 800 }}>DATE</th>
-                  <th style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "center", fontSize: 8.5, fontWeight: 800 }}>REF NO</th>
-                  <th style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "center", fontSize: 8.5, fontWeight: 800 }}>TYPE</th>
-                  <th style={{ border: "1px solid #000", padding: "5px 5px", textAlign: "left", fontSize: 8.5, fontWeight: 800 }}>PROJECT / EXPENSE</th>
-                  <th style={{ border: "1px solid #000", padding: "4px 3px", textAlign: "right", fontSize: 8, fontWeight: 800, lineHeight: 1.15 }}>DEBIT / PAYMENT<br/>(PKR)</th>
-                  <th style={{ border: "1px solid #000", padding: "4px 3px", textAlign: "right", fontSize: 8, fontWeight: 800, lineHeight: 1.15 }}>CREDIT / BILL<br/>(PKR)</th>
-                  <th style={{ border: "1px solid #000", padding: "4px 3px", textAlign: "right", fontSize: 8, fontWeight: 800, lineHeight: 1.15 }}>PAYABLE BALANCE<br/>(PKR)</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr style={{ background: "#F8FAFC", fontWeight: 600 }}>
-                  <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "center" }}>{dateFrom}</td>
-                  <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "center", fontWeight: 700, fontFamily: "monospace" }}>OB-000</td>
-                  <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "center" }}>Opening Balance</td>
-                  <td style={{ border: "1px solid #000", padding: "5px 5px" }}>—</td>
-                  <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "right" }}>—</td>
-                  <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "right" }}>—</td>
-                  <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "right", fontWeight: 800 }}>{pkr(statementData.openingPayable)}</td>
-                </tr>
-
-                {statementData.rows.length === 0 ? (
-                  <tr>
-                    <td colSpan={7} style={{ border: "1px solid #000", textAlign: "center", padding: 14, color: "#64748B" }}>
-                      No vendor transactions recorded within this statement period.
-                    </td>
+              {/* TRANSACTIONS TABLE - 7 STANDARD SUB-LEDGER COLUMNS */}
+              <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 12, fontSize: 9, tableLayout: "fixed" }}>
+                <colgroup>
+                  <col style={{ width: "11%" }} />
+                  <col style={{ width: "13%" }} />
+                  <col style={{ width: "13%" }} />
+                  <col style={{ width: "23%" }} />
+                  <col style={{ width: "13%" }} />
+                  <col style={{ width: "13%" }} />
+                  <col style={{ width: "14%" }} />
+                </colgroup>
+                <thead>
+                  <tr style={{ background: "#F1F5F9", color: "#0F172A" }}>
+                    <th style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "center", fontSize: 8.5, fontWeight: 800 }}>DATE</th>
+                    <th style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "center", fontSize: 8.5, fontWeight: 800 }}>REF NO</th>
+                    <th style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "center", fontSize: 8.5, fontWeight: 800 }}>TYPE</th>
+                    <th style={{ border: "1px solid #000", padding: "5px 5px", textAlign: "left", fontSize: 8.5, fontWeight: 800 }}>PROJECT / EXPENSE</th>
+                    <th style={{ border: "1px solid #000", padding: "4px 3px", textAlign: "right", fontSize: 8, fontWeight: 800, lineHeight: 1.15 }}>DEBIT / PAYMENT<br/>(PKR)</th>
+                    <th style={{ border: "1px solid #000", padding: "4px 3px", textAlign: "right", fontSize: 8, fontWeight: 800, lineHeight: 1.15 }}>CREDIT / BILL<br/>(PKR)</th>
+                    <th style={{ border: "1px solid #000", padding: "4px 3px", textAlign: "right", fontSize: 8, fontWeight: 800, lineHeight: 1.15 }}>PAYABLE BALANCE<br/>(PKR)</th>
                   </tr>
-                ) : (
-                  statementData.rows.map((row, idx) => (
-                    <tr key={idx}>
-                      <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "center", fontSize: 9 }}>{row.date}</td>
-                      <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "center", fontWeight: 700, fontFamily: "monospace", fontSize: 8.8, whiteSpace: "nowrap" }}>{row.ref}</td>
-                      <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "center", fontWeight: 600, fontSize: 8.8, color: row.type === "Vendor Bill" ? "#D97706" : "#059669" }}>
-                        {row.type}
-                      </td>
-                      <td style={{ border: "1px solid #000", padding: "5px 5px", wordBreak: "break-word", fontSize: 9 }}>
-                        <div style={{ fontWeight: 600 }}>{row.project}</div>
-                        {row.taxBreakdown && row.taxBreakdown.kind === "bill" && (
-                          <div style={{ fontSize: 7.8, color: "#92400E", marginTop: 2, lineHeight: 1.2 }}>
-                            Gross Bill: {pkr(row.taxBreakdown.gross)} {row.taxBreakdown.category ? `[${row.taxBreakdown.category}]` : ""}
-                          </div>
-                        )}
-                        {row.taxBreakdown && row.taxBreakdown.kind === "payment" && (
-                          <div style={{ fontSize: 7.8, color: "#047857", marginTop: 2, lineHeight: 1.2 }}>
-                            Gross: {pkr(row.taxBreakdown.gross)} {row.taxBreakdown.comm > 0 ? `| Comm (${row.taxBreakdown.commRate}%): -${pkr(row.taxBreakdown.comm)}` : ""} {row.taxBreakdown.sst > 0 ? `| Input SST (${row.taxBreakdown.sstRate}%): +${pkr(row.taxBreakdown.sst)}` : ""} {row.taxBreakdown.wht > 0 ? `| WHT (${row.taxBreakdown.whtRate}%): -${pkr(row.taxBreakdown.wht)}` : ""} | Net Paid: {pkr(row.taxBreakdown.net)} {row.taxBreakdown.mode ? `[${row.taxBreakdown.mode}${row.taxBreakdown.instrumentNo ? ` #${row.taxBreakdown.instrumentNo}` : ""}]` : ""}
-                          </div>
-                        )}
-                        {row.taxBreakdown && row.taxBreakdown.kind === "direct_settlement" && (
-                          <div style={{ fontSize: 7.8, color: "#B45309", marginTop: 2, lineHeight: 1.2 }}>
-                            Direct Settled: {pkr(row.taxBreakdown.amount)} {row.taxBreakdown.mode ? `[${row.taxBreakdown.mode}${row.taxBreakdown.instrumentNo ? ` #${row.taxBreakdown.instrumentNo}` : ""}]` : ""}
-                          </div>
-                        )}
-                      </td>
-                      <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "right", color: row.debit > 0 ? "#059669" : "inherit", fontSize: 9, fontWeight: row.debit > 0 ? 700 : 400 }}>
-                        {row.debit > 0 ? pkr(row.debit) : "—"}
-                      </td>
-                      <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "right", color: row.credit > 0 ? "#D97706" : "inherit", fontSize: 9, fontWeight: row.credit > 0 ? 700 : 400 }}>
-                        {row.credit > 0 ? pkr(row.credit) : "—"}
-                      </td>
-                      <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "right", fontWeight: 800, color: row.runningBalance > 0 ? "#D97706" : "#059669", fontSize: 9.2 }}>
-                        {pkr(row.runningBalance)}
+                </thead>
+                <tbody>
+                  <tr style={{ background: "#F8FAFC", fontWeight: 600 }}>
+                    <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "center" }}>{dateFrom}</td>
+                    <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "center", fontWeight: 700, fontFamily: "monospace" }}>OB-000</td>
+                    <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "center" }}>Opening Balance</td>
+                    <td style={{ border: "1px solid #000", padding: "5px 5px" }}>—</td>
+                    <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "right" }}>—</td>
+                    <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "right" }}>—</td>
+                    <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "right", fontWeight: 800 }}>{pkr(statementData.openingPayable)}</td>
+                  </tr>
+
+                  {statementData.rows.length === 0 ? (
+                    <tr>
+                      <td colSpan={7} style={{ border: "1px solid #000", textAlign: "center", padding: 14, color: "#64748B" }}>
+                        No vendor transactions recorded within this statement period.
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-              <tfoot>
-                <tr style={{ background: "#F1F5F9", fontWeight: 800 }}>
-                  <td colSpan={4} style={{ border: "1px solid #000", padding: "5px 6px", textAlign: "right", fontSize: 9 }}>Closing Balance Summary</td>
-                  <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "right", color: "#059669", fontSize: 9 }}>{pkr(statementData.totalPayments)}</td>
-                  <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "right", color: "#D97706", fontSize: 9 }}>{pkr(statementData.totalExpenses)}</td>
-                  <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "right", color: "#B45309", fontSize: 9.5 }}>{pkr(statementData.closingPayable)}</td>
-                </tr>
-              </tfoot>
-            </table>
+                  ) : (
+                    statementData.rows.map((row, idx) => (
+                      <tr key={idx}>
+                        <td style={{ border: "1px solid #000", padding: "4px 3px", textAlign: "center", fontSize: 8.8 }}>{row.date}</td>
+                        <td style={{ border: "1px solid #000", padding: "4px 3px", textAlign: "center", fontWeight: 700, fontFamily: "monospace", fontSize: 8.5, whiteSpace: "nowrap" }}>{row.ref}</td>
+                        <td style={{ border: "1px solid #000", padding: "4px 3px", textAlign: "center", fontWeight: 600, fontSize: 8.5, color: row.type === "Vendor Bill" ? "#D97706" : "#059669" }}>
+                          {row.type}
+                        </td>
+                        <td style={{ border: "1px solid #000", padding: "4px 5px", wordBreak: "break-word", fontSize: 8.8 }}>
+                          <div style={{ fontWeight: 600 }}>{row.project}</div>
+                          {row.taxBreakdown && row.taxBreakdown.kind === "bill" && (
+                            <div style={{ fontSize: 7.5, color: "#92400E", marginTop: 2, lineHeight: 1.2 }}>
+                              Gross Bill: {pkr(row.taxBreakdown.gross)} {row.taxBreakdown.category ? `[${row.taxBreakdown.category}]` : ""}
+                            </div>
+                          )}
+                          {row.taxBreakdown && row.taxBreakdown.kind === "payment" && (
+                            <div style={{ fontSize: 7.5, color: "#047857", marginTop: 2, lineHeight: 1.2 }}>
+                              Gross: {pkr(row.taxBreakdown.gross)} {row.taxBreakdown.comm > 0 ? `| Comm (${row.taxBreakdown.commRate}%): -${pkr(row.taxBreakdown.comm)}` : ""} {row.taxBreakdown.sst > 0 ? `| Input SST (${row.taxBreakdown.sstRate}%): +${pkr(row.taxBreakdown.sst)}` : ""} {row.taxBreakdown.wht > 0 ? `| WHT (${row.taxBreakdown.whtRate}%): -${pkr(row.taxBreakdown.wht)}` : ""} | Net Paid: {pkr(row.taxBreakdown.net)} {row.taxBreakdown.mode ? `[${row.taxBreakdown.mode}${row.taxBreakdown.instrumentNo ? ` #${row.taxBreakdown.instrumentNo}` : ""}]` : ""}
+                            </div>
+                          )}
+                          {row.taxBreakdown && row.taxBreakdown.kind === "direct_settlement" && (
+                            <div style={{ fontSize: 7.5, color: "#B45309", marginTop: 2, lineHeight: 1.2 }}>
+                              Direct Settled: {pkr(row.taxBreakdown.amount)} {row.taxBreakdown.mode ? `[${row.taxBreakdown.mode}${row.taxBreakdown.instrumentNo ? ` #${row.taxBreakdown.instrumentNo}` : ""}]` : ""}
+                            </div>
+                          )}
+                        </td>
+                        <td style={{ border: "1px solid #000", padding: "4px 3px", textAlign: "right", color: row.debit > 0 ? "#059669" : "inherit", fontSize: 8.8, fontWeight: row.debit > 0 ? 700 : 400 }}>
+                          {row.debit > 0 ? pkr(row.debit) : "—"}
+                        </td>
+                        <td style={{ border: "1px solid #000", padding: "4px 3px", textAlign: "right", color: row.credit > 0 ? "#D97706" : "inherit", fontSize: 8.8, fontWeight: row.credit > 0 ? 700 : 400 }}>
+                          {row.credit > 0 ? pkr(row.credit) : "—"}
+                        </td>
+                        <td style={{ border: "1px solid #000", padding: "4px 3px", textAlign: "right", fontWeight: 800, color: row.runningBalance > 0 ? "#D97706" : "#059669", fontSize: 9 }}>
+                          {pkr(row.runningBalance)}
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+                <tfoot>
+                  <tr style={{ background: "#F1F5F9", fontWeight: 800 }}>
+                    <td colSpan={4} style={{ border: "1px solid #000", padding: "5px 6px", textAlign: "right", fontSize: 8.8 }}>Closing Balance Summary</td>
+                    <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "right", color: "#059669", fontSize: 8.8 }}>{pkr(statementData.totalPayments)}</td>
+                    <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "right", color: "#D97706", fontSize: 8.8 }}>{pkr(statementData.totalExpenses)}</td>
+                    <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "right", color: "#B45309", fontSize: 9.2 }}>{pkr(statementData.closingPayable)}</td>
+                  </tr>
+                </tfoot>
+              </table>
 
-            {/* AMOUNT IN WORDS */}
-            <div style={{ fontSize: 9.5, fontStyle: "italic", color: "#334155", marginBottom: 12, background: "#F8FAFC", padding: "5px 8px", borderRadius: 4, border: "1px solid #000" }}>
-              Closing Payable Balance in words: <b style={{ color: "#0F172A", fontStyle: "normal" }}>{amountInWords(statementData.closingPayable)}</b>
+              {/* AMOUNT IN WORDS */}
+              <div style={{ fontSize: 9, fontStyle: "italic", color: "#334155", marginBottom: 12, background: "#F8FAFC", padding: "5px 8px", borderRadius: 4, border: "1px solid #000" }}>
+                Closing Payable Balance in words: <b style={{ color: "#0F172A", fontStyle: "normal" }}>{amountInWords(statementData.closingPayable)}</b>
+              </div>
             </div>
-          </div>
 
-          {/* BOTTOM PINNED: SIGNATURES & FOOTER */}
-          <div style={{ marginTop: "auto", paddingTop: 14 }}>
-            {/* SIGNATURES - CLEANLY ALIGNED WITH PROPER SPACING */}
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 10, fontSize: 9.5, fontWeight: 700 }}>
-              <div style={{ textAlign: "center", width: 190 }}>
-                <div style={{ borderTop: "1.5px solid #000000", paddingTop: 4, letterSpacing: "0.3px" }}>PREPARED BY</div>
+            {/* BOTTOM PINNED: SIGNATURES & FOOTER */}
+            <div className="print-signatures" style={{ marginTop: "auto", paddingTop: 14 }}>
+              {/* SIGNATURES - CLEANLY ALIGNED WITH PROPER SPACING */}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 10, fontSize: 9, fontWeight: 700 }}>
+                <div style={{ textAlign: "center", width: 180 }}>
+                  <div style={{ borderTop: "1.5px solid #000000", paddingTop: 4, letterSpacing: "0.3px" }}>PREPARED BY</div>
+                </div>
+                <div style={{ textAlign: "center", width: 180 }}>
+                  <div style={{ borderTop: "1.5px solid #000000", paddingTop: 4, letterSpacing: "0.3px" }}>ACCOUNTS MANAGER</div>
+                </div>
+                <div style={{ textAlign: "center", width: 180 }}>
+                  <div style={{ borderTop: "1.5px solid #000000", paddingTop: 4, letterSpacing: "0.3px" }}>AUTHORIZED SIGNATORY</div>
+                </div>
               </div>
-              <div style={{ textAlign: "center", width: 190 }}>
-                <div style={{ borderTop: "1.5px solid #000000", paddingTop: 4, letterSpacing: "0.3px" }}>ACCOUNTS MANAGER</div>
-              </div>
-              <div style={{ textAlign: "center", width: 190 }}>
-                <div style={{ borderTop: "1.5px solid #000000", paddingTop: 4, letterSpacing: "0.3px" }}>AUTHORIZED SIGNATORY</div>
-              </div>
-            </div>
 
-            {/* FOOTER BANNER */}
-            <div className="invoice-footer-banner" style={{ background: "#A81C1C", backgroundImage: "linear-gradient(90deg, #A81C1C 0%, #1D3B4E 100%)", color: "#FFFFFF", padding: "5px 12px", borderRadius: 4, display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 8.8, fontWeight: 600, boxSizing: "border-box" }}>
-              <div>📞 +92 21 37526834</div>
-              <div>✉️ communication@adpulse.pk | 🌐 www.adpulse.pk</div>
-              <div>📍 Office # 213, 2nd Floor, Park Tower, Block 5 Clifton, Karachi.</div>
+              {/* FOOTER BANNER */}
+              <div className="invoice-footer-banner" style={{ background: "#A81C1C", backgroundImage: "linear-gradient(90deg, #A81C1C 0%, #1D3B4E 100%)", color: "#FFFFFF", padding: "5px 12px", borderRadius: 4, display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 8.5, fontWeight: 600, boxSizing: "border-box" }}>
+                <div>📞 +92 21 37526834</div>
+                <div>✉️ communication@adpulse.pk | 🌐 www.adpulse.pk</div>
+                <div>📍 Office # 213, 2nd Floor, Park Tower, Block 5 Clifton, Karachi.</div>
+              </div>
             </div>
           </div>
         </div>
