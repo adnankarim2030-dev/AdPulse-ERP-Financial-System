@@ -54,35 +54,179 @@ function fmtDate(d) {
   return new Date(d).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
 }
 
+export function getPartyTag(partyName) {
+  if (!partyName || typeof partyName !== "string") return "";
+  const clean = partyName.replace(/[^a-zA-Z0-9\s]/g, "").trim();
+  if (!clean) return "";
+  const words = clean.split(/\s+/).filter(Boolean);
+  if (words.length >= 2) {
+    return (words[0][0] + words[1][0]).toUpperCase();
+  }
+  if (words[0].length >= 2) {
+    return words[0].slice(0, 2).toUpperCase();
+  }
+  return (words[0] + "X").toUpperCase();
+}
+
 export function cleanInvoiceNo(raw) {
-  if (!raw) return "INV-26-001";
+  if (!raw) return "INV-26-01";
   let s = String(raw).trim();
-  if (/^(inv|po|ro|exp|brv|crv|bpv|cpv|jv|ctv|cv|rv|pv|prj)[-_]/i.test(s)) {
+  if (/^(inv|po|ro|exp|brv|crv|bpv|cpv|jv|ctv|cv|rv|pv|prj|cli|ven)[-_]/i.test(s)) {
     return s.toUpperCase();
   }
   return "INV-" + s.toUpperCase();
 }
 
-export function getNextInvoiceNo(invoices = []) {
-  let maxSeq = 0;
+export function getNextInvoiceNo(invoices = [], partyName = "") {
   const currentYear = new Date().getFullYear().toString().slice(-2);
+  const tag = getPartyTag(partyName);
+  let maxSeq = 0;
+
   invoices.forEach(inv => {
-    const raw = String(inv.invoiceNo || inv.voucherNo || inv.id || "");
-    const match = raw.match(/\d+$/);
-    if (match) {
-      const num = parseInt(match[0], 10);
-      if (num > maxSeq) maxSeq = num;
+    const raw = String(inv.invoiceNo || inv.voucherNo || inv.id || "").toUpperCase().trim();
+    if (tag) {
+      const match = raw.match(new RegExp(`^INV-${currentYear}-${tag}([0-9]+)`, "i")) ||
+                    raw.match(new RegExp(`^INV-${currentYear}-${tag}-([0-9]+)`, "i"));
+      if (match) {
+        const num = parseInt(match[1], 10);
+        if (num > maxSeq) maxSeq = num;
+      }
+    } else {
+      const match = raw.match(/[0-9]+$/);
+      if (match) {
+        const num = parseInt(match[0], 10);
+        if (num > maxSeq) maxSeq = num;
+      }
     }
   });
-  const nextSeq = (maxSeq + 1).toString().padStart(3, "0");
-  return `INV-${currentYear}-${nextSeq}`;
+
+  const nextSeq = (maxSeq + 1).toString().padStart(2, "0");
+  return tag ? `INV-${currentYear}-${tag}${nextSeq}` : `INV-${currentYear}-${nextSeq.padStart(3, "0")}`;
 }
 
-export function getNextPONo(purchaseOrders = []) {
-  let maxSeq = 0;
+export function getNextPONo(purchaseOrders = [], vendorName = "") {
   const currentYear = new Date().getFullYear().toString().slice(-2);
+  const tag = getPartyTag(vendorName);
+  let maxSeq = 0;
+
   purchaseOrders.forEach(po => {
-    const raw = String(po.poNumber || po.voucherNo || po.id || "");
+    const raw = String(po.poNumber || po.voucherNo || po.id || "").toUpperCase().trim();
+    if (tag) {
+      const match = raw.match(new RegExp(`^PO-${currentYear}-${tag}([0-9]+)`, "i")) ||
+                    raw.match(new RegExp(`^PO-${currentYear}-${tag}-([0-9]+)`, "i"));
+      if (match) {
+        const num = parseInt(match[1], 10);
+        if (num > maxSeq) maxSeq = num;
+      }
+    } else {
+      const match = raw.match(/[0-9]+$/);
+      if (match) {
+        const num = parseInt(match[0], 10);
+        if (num > maxSeq) maxSeq = num;
+      }
+    }
+  });
+
+  const nextSeq = (maxSeq + 1).toString().padStart(2, "0");
+  return tag ? `PO-${currentYear}-${tag}${nextSeq}` : `PO-${currentYear}-${nextSeq.padStart(3, "0")}`;
+}
+
+export function getNextRONo(releaseOrders = [], partyName = "") {
+  const currentYear = new Date().getFullYear().toString().slice(-2);
+  const tag = getPartyTag(partyName);
+  let maxSeq = 0;
+
+  releaseOrders.forEach(ro => {
+    const raw = String(ro.roNumber || ro.voucherNo || ro.id || "").toUpperCase().trim();
+    if (tag) {
+      const match = raw.match(new RegExp(`^RO-${currentYear}-${tag}([0-9]+)`, "i")) ||
+                    raw.match(new RegExp(`^RO-${currentYear}-${tag}-([0-9]+)`, "i"));
+      if (match) {
+        const num = parseInt(match[1], 10);
+        if (num > maxSeq) maxSeq = num;
+      }
+    } else {
+      const match = raw.match(/[0-9]+$/);
+      if (match) {
+        const num = parseInt(match[0], 10);
+        if (num > maxSeq) maxSeq = num;
+      }
+    }
+  });
+
+  const nextSeq = (maxSeq + 1).toString().padStart(2, "0");
+  return tag ? `RO-${currentYear}-${tag}${nextSeq}` : `RO-${currentYear}-${nextSeq.padStart(3, "0")}`;
+}
+
+export function getNextExpenseNo(expenses = [], partyName = "") {
+  const currentYear = new Date().getFullYear().toString().slice(-2);
+  const tag = getPartyTag(partyName);
+  let maxSeq = 0;
+
+  expenses.forEach(e => {
+    const raw = String(e.expenseNo || e.refNo || e.id || "").toUpperCase().trim();
+    if (tag) {
+      const match = raw.match(new RegExp(`^EXP-${currentYear}-${tag}([0-9]+)`, "i"));
+      if (match) {
+        const num = parseInt(match[1], 10);
+        if (num > maxSeq) maxSeq = num;
+      }
+    } else {
+      const match = raw.match(/[0-9]+$/);
+      if (match) {
+        const num = parseInt(match[0], 10);
+        if (num > maxSeq) maxSeq = num;
+      }
+    }
+  });
+
+  const nextSeq = (maxSeq + 1).toString().padStart(2, "0");
+  return tag ? `EXP-${currentYear}-${tag}${nextSeq}` : `EXP-${currentYear}-${nextSeq.padStart(3, "0")}`;
+}
+
+export function getNextVoucherNo(type = "PV", vouchers = [], via = "Cash", partyName = "") {
+  const currentYear = new Date().getFullYear().toString().slice(-2);
+  let prefix = type;
+  if (type === "PV") prefix = via === "Cash" ? "CPV" : "BPV";
+  else if (type === "RV") prefix = via === "Cash" ? "CRV" : "BRV";
+  else if (type === "CTV") prefix = "CTV";
+  else if (type === "JV") prefix = "JV";
+  else if (type === "SV") prefix = "SV";
+  else if (type === "CV") prefix = "CV";
+
+  const isPartyApplicable = ["BPV", "CPV", "BRV", "CRV", "PV", "RV"].includes(prefix);
+  const tag = isPartyApplicable ? getPartyTag(partyName) : "";
+
+  let maxSeq = 0;
+  vouchers.forEach(v => {
+    const raw = String(v.voucherNo || v.id || "").toUpperCase().trim();
+    if (tag) {
+      const match = raw.match(new RegExp(`^${prefix}-${currentYear}-${tag}([0-9]+)`, "i")) ||
+                    raw.match(new RegExp(`^${prefix}-${currentYear}-${tag}-([0-9]+)`, "i"));
+      if (match) {
+        const num = parseInt(match[1], 10);
+        if (num > maxSeq) maxSeq = num;
+      }
+    } else if (raw.startsWith(prefix)) {
+      const match = raw.match(/[0-9]+$/);
+      if (match) {
+        const num = parseInt(match[0], 10);
+        if (num > maxSeq) maxSeq = num;
+      }
+    }
+  });
+
+  const nextSeq = (maxSeq + 1).toString().padStart(2, "0");
+  if (tag) {
+    return `${prefix}-${currentYear}-${tag}${nextSeq}`;
+  }
+  return `${prefix}-${currentYear}-${nextSeq}`;
+}
+
+export function getNextClientCode(clients = []) {
+  let maxSeq = 0;
+  clients.forEach(c => {
+    const raw = String(c.clientCode || c.code || c.id || "");
     const match = raw.match(/\d+$/);
     if (match) {
       const num = parseInt(match[0], 10);
@@ -90,7 +234,21 @@ export function getNextPONo(purchaseOrders = []) {
     }
   });
   const nextSeq = (maxSeq + 1).toString().padStart(3, "0");
-  return `PO-${currentYear}-${nextSeq}`;
+  return `CLI-${nextSeq}`;
+}
+
+export function getNextVendorCode(vendors = []) {
+  let maxSeq = 0;
+  vendors.forEach(v => {
+    const raw = String(v.vendorCode || v.code || v.id || "");
+    const match = raw.match(/\d+$/);
+    if (match) {
+      const num = parseInt(match[0], 10);
+      if (num > maxSeq) maxSeq = num;
+    }
+  });
+  const nextSeq = (maxSeq + 1).toString().padStart(3, "0");
+  return `VEN-${nextSeq}`;
 }
 
 export function getNextProjectCode(projects = []) {
@@ -105,61 +263,6 @@ export function getNextProjectCode(projects = []) {
   });
   const nextSeq = (maxSeq + 1).toString().padStart(3, "0");
   return `PRJ-${nextSeq}`;
-}
-
-export function getNextExpenseNo(expenses = []) {
-  let maxSeq = 0;
-  const currentYear = new Date().getFullYear().toString().slice(-2);
-  expenses.forEach(e => {
-    const raw = String(e.expenseNo || e.refNo || e.id || "");
-    const match = raw.match(/\d+$/);
-    if (match) {
-      const num = parseInt(match[0], 10);
-      if (num > maxSeq) maxSeq = num;
-    }
-  });
-  const nextSeq = (maxSeq + 1).toString().padStart(3, "0");
-  return `EXP-${currentYear}-${nextSeq}`;
-}
-
-export function getNextRONo(releaseOrders = []) {
-  let maxSeq = 0;
-  const currentYear = new Date().getFullYear().toString().slice(-2);
-  releaseOrders.forEach(ro => {
-    const raw = String(ro.roNumber || ro.voucherNo || ro.id || "");
-    const match = raw.match(/\d+$/);
-    if (match) {
-      const num = parseInt(match[0], 10);
-      if (num > maxSeq) maxSeq = num;
-    }
-  });
-  const nextSeq = (maxSeq + 1).toString().padStart(3, "0");
-  return `RO-${currentYear}-${nextSeq}`;
-}
-
-export function getNextVoucherNo(type = "PV", vouchers = [], via = "Cash") {
-  const currentYear = new Date().getFullYear().toString().slice(-2);
-  let prefix = type;
-  if (type === "PV") prefix = via === "Cash" ? "CPV" : "BPV";
-  else if (type === "RV") prefix = via === "Cash" ? "CRV" : "BRV";
-  else if (type === "CTV") prefix = "CTV";
-  else if (type === "JV") prefix = "JV";
-  else if (type === "SV") prefix = "SV";
-  else if (type === "CV") prefix = "CV";
-
-  let maxSeq = 0;
-  vouchers.forEach(v => {
-    const raw = String(v.voucherNo || v.id || "");
-    if (raw.toUpperCase().startsWith(prefix.toUpperCase())) {
-      const match = raw.match(/\d+$/);
-      if (match) {
-        const num = parseInt(match[0], 10);
-        if (num > maxSeq) maxSeq = num;
-      }
-    }
-  });
-  const nextSeq = (maxSeq + 1).toString().padStart(3, "0");
-  return `${prefix}-${currentYear}-${nextSeq}`;
 }
 
 /* Global Live System Date Reference */
@@ -2169,10 +2272,10 @@ export default function App() {
       setClients(list => list.map(c => c.id === editingClient.id ? { ...c, ...clientData } : c));
       postAuditLog("UPDATE_CLIENT", `Updated Client Master record: ${clientData.name}`);
     } else {
-      const codeNum = (clients.length + 1).toString().padStart(3, "0");
+      const clientCode = clientData.clientCode || getNextClientCode(clients);
       const newClient = {
         id: uid(),
-        clientCode: `CLI-${codeNum}`,
+        clientCode,
         ...clientData,
         createdAt: TODAY.toISOString().slice(0, 10)
       };
@@ -2197,10 +2300,10 @@ export default function App() {
       setVendors(list => list.map(v => v.id === editingVendor.id ? { ...v, ...vendorData } : v));
       postAuditLog("UPDATE_VENDOR", `Updated Vendor Master record: ${vendorData.name}`);
     } else {
-      const codeNum = (vendors.length + 1).toString().padStart(3, "0");
+      const vendorCode = vendorData.vendorCode || getNextVendorCode(vendors);
       const newVendor = {
         id: uid(),
-        vendorCode: `VEN-${codeNum}`,
+        vendorCode,
         ...vendorData,
         createdAt: TODAY.toISOString().slice(0, 10)
       };
@@ -2222,7 +2325,7 @@ export default function App() {
 
   /* Financial Actions */
   function addInvoice(data) {
-    const finalInvoiceNo = data.invoiceNo || getNextInvoiceNo(invoices);
+    const finalInvoiceNo = data.invoiceNo || getNextInvoiceNo(invoices, data.client);
     const inv = { ...data, id: uid(), invoiceNo: finalInvoiceNo, paid: false, paidVia: null };
     setInvoices(list => [inv, ...list]);
     
@@ -2328,7 +2431,7 @@ export default function App() {
   }
 
   function addPO(poData) {
-    const finalPONo = poData.poNumber || getNextPONo(purchaseOrders);
+    const finalPONo = poData.poNumber || getNextPONo(purchaseOrders, poData.vendor);
     const po = { id: uid(), poNumber: finalPONo, ...poData, status: "Draft" };
     setPurchaseOrders(list => [po, ...list]);
     setShowPOForm(false);
@@ -2340,7 +2443,7 @@ export default function App() {
   }
 
   function addRO(roData) {
-    const finalRONo = roData.roNumber || getNextRONo(releaseOrders);
+    const finalRONo = roData.roNumber || getNextRONo(releaseOrders, roData.client || roData.vendor);
     const ro = { id: uid(), roNumber: finalRONo, ...roData, status: roData.status || "Issued" };
     setReleaseOrders(list => [ro, ...list]);
     setShowROForm(false);
@@ -2406,8 +2509,8 @@ export default function App() {
     });
   }
 
-  function makeVoucherNo(type, via = "Cash") {
-    return getNextVoucherNo(type, vouchers, via);
+  function makeVoucherNo(type, via = "Cash", partyName = "") {
+    return getNextVoucherNo(type, vouchers, via, partyName);
   }
 
   function createVoucher(type, payload = {}) {
@@ -2422,7 +2525,7 @@ export default function App() {
       applyWht, whtRate, whtAmount
     } = payload;
 
-    const voucherNo = customVoucherNo || getNextVoucherNo(type, vouchers, via);
+    const voucherNo = customVoucherNo || getNextVoucherNo(type, vouchers, via, party || vendor);
     let journalLines = lines;
 
     if (type === "PV") {
@@ -2552,7 +2655,7 @@ export default function App() {
     } = payload;
 
     const existingVoucher = vouchers.find(v => v.id === voucherId);
-    const voucherNo = customVoucherNo || existingVoucher?.voucherNo || getNextVoucherNo(type, vouchers, via);
+    const voucherNo = customVoucherNo || existingVoucher?.voucherNo || getNextVoucherNo(type, vouchers, via, party || vendor);
     let journalLines = lines;
 
     if (type === "PV") {
@@ -9140,7 +9243,7 @@ function ModalShell({ title, onClose, width, maxWidth, style = {}, children }) {
 }
 
 function InvoiceModal({ initialData, projects = [], clients = [], invoices = [], onClose, onSubmit }) {
-  const [invoiceNo, setInvoiceNo] = useState(initialData?.invoiceNo || initialData?.voucherNo || getNextInvoiceNo(invoices));
+  const [invoiceNo, setInvoiceNo] = useState(initialData?.invoiceNo || initialData?.voucherNo || getNextInvoiceNo(invoices, initialData?.client));
   const [docHeading, setDocHeading] = useState(
     initialData?.docHeading || (initialData?.applySst ? "SALES TAX INVOICE (15% SST)" : "SALES INVOICE")
   );
@@ -9520,11 +9623,23 @@ function InvoiceModal({ initialData, projects = [], clients = [], invoices = [],
   const netTotalPayable = grossAmountWithComm + sstVal - whtVal;
   const valid = client && description && grandTotal > 0;
 
+  const handleClientChange = (selectedClient) => {
+    setClient(selectedClient);
+    if (!initialData && selectedClient) {
+      setInvoiceNo(getNextInvoiceNo(invoices, selectedClient));
+    }
+  };
+
   const handleProjectSelect = (id) => {
     setProjectId(id);
     const prj = projects.find(p => p.id === id);
     if (prj) {
-      if (prj.client) setClient(prj.client);
+      if (prj.client) {
+        setClient(prj.client);
+        if (!initialData) {
+          setInvoiceNo(getNextInvoiceNo(invoices, prj.client));
+        }
+      }
       if (!description) setDescription(`${prj.name} — Billing`);
     }
   };
@@ -9542,7 +9657,7 @@ function InvoiceModal({ initialData, projects = [], clients = [], invoices = [],
           <input
             value={invoiceNo}
             onChange={e => setInvoiceNo(e.target.value)}
-            placeholder="e.g. INV-26-001"
+            placeholder="e.g. INV-26-IM01"
             style={{ fontWeight: 700, color: "var(--primary)" }}
           />
         </div>
@@ -9558,7 +9673,7 @@ function InvoiceModal({ initialData, projects = [], clients = [], invoices = [],
         </div>
         <div className="field" style={{ margin: 0 }}>
           <label>Client Name *</label>
-          <select value={client} onChange={e => setClient(e.target.value)}>
+          <select value={client} onChange={e => handleClientChange(e.target.value)}>
             <option value="">— Select a Client —</option>
             {clients.map(c => (
               <option key={c.id} value={c.name}>{c.name}</option>
@@ -10582,7 +10697,7 @@ function PayExpenseModal({ expense, bankAccounts = [], onClose, onSubmit }) {
 }
 
 function POModal({ initialData, projects = [], vendors = [], purchaseOrders = [], onClose, onSubmit }) {
-  const [poNumber, setPoNumber] = useState(initialData?.poNumber || initialData?.voucherNo || getNextPONo(purchaseOrders));
+  const [poNumber, setPoNumber] = useState(initialData?.poNumber || initialData?.voucherNo || getNextPONo(purchaseOrders, initialData?.vendor));
   const [vendor, setVendor] = useState(initialData?.vendor || "");
   const [isCustomVendor, setIsCustomVendor] = useState(() => {
     if (initialData?.vendor && !vendors.some(v => v.name === initialData.vendor)) return true;
@@ -10844,6 +10959,16 @@ function POModal({ initialData, projects = [], vendors = [], purchaseOrders = []
       setIsCustomVendor(false);
       setVendor(val);
       setCustomVendorName(val);
+      if (!initialData && val) {
+        setPoNumber(getNextPONo(purchaseOrders, val));
+      }
+    }
+  };
+
+  const handleCustomVendorNameChange = (val) => {
+    setCustomVendorName(val);
+    if (!initialData && val.trim().length >= 2) {
+      setPoNumber(getNextPONo(purchaseOrders, val));
     }
   };
 
@@ -10862,7 +10987,7 @@ function POModal({ initialData, projects = [], vendors = [], purchaseOrders = []
           <input
             value={poNumber}
             onChange={e => setPoNumber(e.target.value)}
-            placeholder="e.g. PO-26-001"
+            placeholder="e.g. PO-26-IA01"
             style={{ fontWeight: 700, color: "var(--primary)" }}
           />
         </div>
@@ -10878,7 +11003,7 @@ function POModal({ initialData, projects = [], vendors = [], purchaseOrders = []
           {isCustomVendor ? (
             <input
               value={customVendorName}
-              onChange={e => setCustomVendorName(e.target.value)}
+              onChange={e => handleCustomVendorNameChange(e.target.value)}
               placeholder="e.g. Al-Madina Printing Press"
               autoFocus
             />
@@ -11354,7 +11479,7 @@ function PayPOModal({ po, bankAccounts = [], onClose, onSubmit }) {
 }
 
 function ROModal({ initialData, projects = [], vendors = [], clients = [], releaseOrders = [], onClose, onSubmit }) {
-  const [roNumber, setRoNumber] = useState(initialData?.roNumber || initialData?.voucherNo || getNextRONo(releaseOrders));
+  const [roNumber, setRoNumber] = useState(initialData?.roNumber || initialData?.voucherNo || getNextRONo(releaseOrders, initialData?.client || initialData?.vendor));
   const [vendor, setVendor] = useState(initialData?.vendor || "");
   const [isCustomVendor, setIsCustomVendor] = useState(() => {
     if (initialData?.vendor && !vendors.some(v => v.name === initialData.vendor)) return true;
@@ -11725,11 +11850,23 @@ function ROModal({ initialData, projects = [], vendors = [], clients = [], relea
     }
   };
 
+  const handleClientChange = (val) => {
+    setClient(val);
+    if (!initialData && val) {
+      setRoNumber(getNextRONo(releaseOrders, val));
+    }
+  };
+
   const handleProjectSelect = (id) => {
     setProjectId(id);
     const prj = projects.find(p => p.id === id);
     if (prj) {
-      if (prj.client && !client) setClient(prj.client);
+      if (prj.client) {
+        setClient(prj.client);
+        if (!initialData) {
+          setRoNumber(getNextRONo(releaseOrders, prj.client));
+        }
+      }
       if (prj.name && !campaignTitle) setCampaignTitle(prj.name);
     }
   };
@@ -11749,7 +11886,7 @@ function ROModal({ initialData, projects = [], vendors = [], clients = [], relea
           <input
             value={roNumber}
             onChange={e => setRoNumber(e.target.value)}
-            placeholder="e.g. RO-26-001"
+            placeholder="e.g. RO-26-IM01"
             style={{ fontWeight: 700, color: "var(--primary)" }}
           />
         </div>
@@ -11783,7 +11920,7 @@ function ROModal({ initialData, projects = [], vendors = [], clients = [], relea
         {/* 2. CLIENT / BRAND */}
         <div className="field" style={{ margin: 0 }}>
           <label>Client / Brand *</label>
-          <select value={client} onChange={e => setClient(e.target.value)}>
+          <select value={client} onChange={e => handleClientChange(e.target.value)}>
             <option value="">— Select Client —</option>
             {clients.map(c => (
               <option key={c.id} value={c.name}>{c.name}</option>
@@ -12680,7 +12817,7 @@ function VoucherModal({
 }) {
   const [type, setType] = useState(voucherToEdit?.type || defaultType || "PV");
   const [via, setVia] = useState(voucherToEdit?.via || (voucherToEdit?.receiveMode === "cash" || voucherToEdit?.paymentMode === "Petty Cash" ? "Cash" : "Bank"));
-  const [voucherNo, setVoucherNo] = useState(voucherToEdit?.voucherNo || (() => getNextVoucherNo(defaultType || "PV", vouchers, "Cash")));
+  const [voucherNo, setVoucherNo] = useState(voucherToEdit?.voucherNo || (() => getNextVoucherNo(defaultType || "PV", vouchers, "Cash", voucherToEdit?.party)));
   const [projectId, setProjectId] = useState(voucherToEdit?.projectId || "");
   const [description, setDescription] = useState(voucherToEdit?.description || "");
   const [date, setDate] = useState(voucherToEdit?.date || TODAY_STR);
@@ -12753,14 +12890,14 @@ function VoucherModal({
       currentVia = rvReceiveMode === "Cash" ? "Cash" : "Bank";
       setVia(currentVia);
     }
-    setVoucherNo(getNextVoucherNo(newType, vouchers, currentVia));
+    setVoucherNo(getNextVoucherNo(newType, vouchers, currentVia, party));
     if (newType === "PV" && whtRate === 3) setWhtRate(1);
     if (newType === "RV" && whtRate === 1) setWhtRate(3);
   };
 
   const handleViaChange = (newVia) => {
     setVia(newVia);
-    setVoucherNo(getNextVoucherNo(type, vouchers, newVia));
+    setVoucherNo(getNextVoucherNo(type, vouchers, newVia, party));
   };
 
   // Real bank accounts list (excluding petty cash)
@@ -12799,6 +12936,9 @@ function VoucherModal({
       const clientObj = clients.find(c => c.name === cName);
       setSelectedClientId(clientObj?.id || "");
       setParty(cName);
+      if (!voucherToEdit && cName) {
+        setVoucherNo(getNextVoucherNo(type, vouchers, via, cName));
+      }
     }
   };
 
@@ -12813,6 +12953,9 @@ function VoucherModal({
       const vendorObj = vendors.find(v => v.name === vName);
       setSelectedVendorId(vendorObj?.id || "");
       setParty(vName);
+      if (!voucherToEdit && vName) {
+        setVoucherNo(getNextVoucherNo(type, vouchers, via, vName));
+      }
     }
   };
 
@@ -13054,6 +13197,14 @@ function VoucherModal({
     }
   }
 
+  const handleCustomPartyChange = (val) => {
+    setCustomPartyName(val);
+    setParty(val);
+    if (!voucherToEdit && val.trim().length >= 2) {
+      setVoucherNo(getNextVoucherNo(type, vouchers, via, val));
+    }
+  };
+
   return (
     <ModalShell title={voucherToEdit ? `✏️ Edit Financial Voucher — ${voucherNo}` : `Generate Financial Voucher (${VOUCHER_TYPES[type] || type})`} onClose={onClose}>
       <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: 12, marginBottom: 14 }}>
@@ -13071,7 +13222,7 @@ function VoucherModal({
           <input
             value={voucherNo}
             onChange={e => setVoucherNo(e.target.value)}
-            placeholder="e.g. BPV-26-001"
+            placeholder="e.g. BPV-26-IA01 / BRV-26-IM01"
             style={{ fontWeight: 700, color: "var(--primary)" }}
           />
         </div>
@@ -13101,7 +13252,7 @@ function VoucherModal({
           ) : (
             <input
               value={customPartyName}
-              onChange={e => { setCustomPartyName(e.target.value); setParty(e.target.value); }}
+              onChange={e => handleCustomPartyChange(e.target.value)}
               placeholder="Enter Custom Client / Payer Name"
               autoFocus
             />
@@ -13132,7 +13283,7 @@ function VoucherModal({
           ) : (
             <input
               value={customPartyName}
-              onChange={e => { setCustomPartyName(e.target.value); setParty(e.target.value); }}
+              onChange={e => handleCustomPartyChange(e.target.value)}
               placeholder="Enter Custom Payee / Staff / Vendor Name"
               autoFocus
             />
