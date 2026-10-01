@@ -7,6 +7,7 @@ export default function GlobalSearchBar({
   vendors = [],
   projects = [],
   invoices = [],
+  govtInvoices = [],
   expenses = [],
   vouchers = [],
   documents = [],
@@ -84,6 +85,29 @@ export default function GlobalSearchBar({
           subtitle: `Client: ${i.client} • Amount: PKR ${(i.totalAmount || i.amount).toLocaleString()}`,
           tab: "invoices",
           raw: i
+        });
+      }
+    });
+
+    // Search Govt Invoices
+    govtInvoices.forEach(g => {
+      const invNo = g.invoiceNo || g.id || "";
+      const roNo = g.roNumber || "";
+      const dept = g.clientName || g.client || "";
+      const caption = g.caption || "";
+      const newsStr = Array.isArray(g.items) ? g.items.map(it => it.newspaper).join(" ") : "";
+      if (invNo.toLowerCase().includes(q) ||
+          roNo.toLowerCase().includes(q) ||
+          dept.toLowerCase().includes(q) ||
+          caption.toLowerCase().includes(q) ||
+          newsStr.toLowerCase().includes(q)) {
+        results.push({
+          type: "Govt Invoice",
+          id: g.id,
+          title: `${invNo} (RO: ${roNo || "N/A"})`,
+          subtitle: `${dept} • ${g.isSalesTaxInvoice !== false ? "Sales Tax Invoice" : "Invoice"} • PKR ${(g.totalGross || 0).toLocaleString()}`,
+          tab: "govt-clients",
+          raw: g
         });
       }
     });

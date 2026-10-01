@@ -28,6 +28,8 @@ import ProjectFinancialDashboard from "./components/ProjectFinancialDashboard.js
 import AiDocumentDuplicateModal from "./components/AiDocumentDuplicateModal.jsx";
 import GlobalSearchBar from "./components/GlobalSearchBar.jsx";
 import StaffAuditTimeline from "./components/StaffAuditTimeline.jsx";
+import GovtInvoiceModal from "./components/GovtInvoiceModal.jsx";
+import GovtInvoicePrintModal from "./components/GovtInvoicePrintModal.jsx";
 
 /* ---------- HELPERS & FORMATTERS ---------- */
 
@@ -689,6 +691,7 @@ const ALL_MODULE_TABS = [
   { key: "vendors", label: "Vendors Master", category: "MASTER DATA" },
   { key: "projects", label: "Projects & Financials", category: "MASTER DATA" },
   { key: "invoices", label: "Invoices & AR", category: "TRANSACTIONS" },
+  { key: "govt-clients", label: "Government Clients", category: "TRANSACTIONS" },
   { key: "release-orders", label: "Release Orders (RO)", category: "TRANSACTIONS" },
   { key: "purchase-orders", label: "Purchase Orders", category: "TRANSACTIONS" },
   { key: "expenses", label: "Expenses & AP", category: "TRANSACTIONS" },
@@ -1251,6 +1254,12 @@ export default function App() {
   const [releaseOrders, setReleaseOrders] = useState(() => getInitialState("releaseOrders", []));
   const [showROForm, setShowROForm] = useState(false);
   const [editingRO, setEditingRO] = useState(null);
+  const [govtInvoices, setGovtInvoices] = useState(() => getInitialState("govtInvoices", []));
+  const [showGovtInvoiceModal, setShowGovtInvoiceModal] = useState(false);
+  const [editingGovtInvoice, setEditingGovtInvoice] = useState(null);
+  const [printingGovtInvoice, setPrintingGovtInvoice] = useState(null);
+  const [govtSearchQuery, setGovtSearchQuery] = useState("");
+  const [govtFilterStatus, setGovtFilterStatus] = useState("all");
   const [projects, setProjects] = useState(() => getInitialState("projects", seedData.projects || []));
   const [bankAccounts, setBankAccounts] = useState(() => getInitialState("bankAccounts", seedData.bankAccounts || []));
   const [hoardings, setHoardings] = useState(() => getInitialState("hoardings", seedData.hoardings || []));
@@ -1444,6 +1453,7 @@ export default function App() {
     if (Array.isArray(bData.expenses)) setExpenses(bData.expenses);
     if (Array.isArray(bData.purchaseOrders)) setPurchaseOrders(bData.purchaseOrders);
     if (Array.isArray(bData.releaseOrders)) setReleaseOrders(bData.releaseOrders);
+    if (Array.isArray(bData.govtInvoices)) setGovtInvoices(bData.govtInvoices);
     if (Array.isArray(bData.projects)) setProjects(bData.projects);
     if (Array.isArray(bData.bankAccounts)) setBankAccounts(bData.bankAccounts);
     if (Array.isArray(bData.hoardings)) setHoardings(bData.hoardings);
@@ -1638,6 +1648,7 @@ export default function App() {
           expenses,
           purchaseOrders,
           releaseOrders,
+          govtInvoices,
           projects,
           bankAccounts,
           hoardings,
@@ -1660,7 +1671,7 @@ export default function App() {
       console.error("Auto-save to localStorage failed:", e);
     }
   }, [
-    journal, invoices, expenses, purchaseOrders, releaseOrders, projects, bankAccounts,
+    journal, invoices, expenses, purchaseOrders, releaseOrders, govtInvoices, projects, bankAccounts,
     hoardings, inventoryItems, inventoryLogs, vouchers, documents,
     employees, leaveRequests, payrollRuns, usersList, clients, vendors, auditLogs, monthlyAttendance, currentUser
   ]);
@@ -1686,6 +1697,8 @@ export default function App() {
           invoices,
           expenses,
           purchaseOrders,
+          releaseOrders,
+          govtInvoices,
           projects,
           bankAccounts,
           hoardings,
@@ -1749,6 +1762,8 @@ export default function App() {
         if (Array.isArray(backupData.invoices)) setInvoices(backupData.invoices);
         if (Array.isArray(backupData.expenses)) setExpenses(backupData.expenses);
         if (Array.isArray(backupData.purchaseOrders)) setPurchaseOrders(backupData.purchaseOrders);
+        if (Array.isArray(backupData.releaseOrders)) setReleaseOrders(backupData.releaseOrders);
+        if (Array.isArray(backupData.govtInvoices)) setGovtInvoices(backupData.govtInvoices);
         if (Array.isArray(backupData.projects)) setProjects(backupData.projects);
         if (Array.isArray(backupData.bankAccounts)) setBankAccounts(backupData.bankAccounts);
         if (Array.isArray(backupData.hoardings)) setHoardings(backupData.hoardings);
@@ -1793,6 +1808,7 @@ export default function App() {
         setExpenses([]);
         setPurchaseOrders([]);
         setReleaseOrders([]);
+        setGovtInvoices([]);
         setProjects([]);
         setClients([]);
         setVendors([]);
@@ -2290,6 +2306,102 @@ export default function App() {
     }
 
     postEntry(TODAY.toISOString().slice(0, 10), `Payment received - ${inv.client}`, lines, "PMT-" + (inv.invoiceNo || inv.id.toUpperCase()));
+  }
+
+  /* Government Clients & DIPR Invoicing Actions */
+  function handleSaveGovtInvoice(formData) {
+    const isEdit = govtInvoices.some(g => g.id === formData.id);
+    let finalInv = { ...formData };
+    if (!finalInv.id) {
+      finalInv.id = uid();
+    }
+    
+    // Auto-calculate financial totals for persistence and reporting
+    const commRate = finalInv.agencyCommissionRate || 15;
+    const sstRate = finalInv.isSalesTaxInvoice !== false ? (finalInv.sstRate || 15) : 0;
+    const whtRate = finalInv.whtRate || 10;
+    
+    let totalGross = 0;
+    (finalInv.items || []).forEach(it => {
+      totalGross += (Number(it.ratePerCm) || 0) * (Number(it.size) || 0);
+    });
+    const commAmount = totalGross * (commRate / 100);
+    const sstAmount = finalInv.isSalesTaxInvoice !== false ? (commAmount * (sstRate / 100)) : 0;
+    const commWithSst = commAmount + sstAmount;
+    const whtAmount = commWithSst * (whtRate / 100);
+    const netCheque = commWithSst - whtAmount;
+    
+    finalInv.totalGross = totalGross;
+    finalInv.commissionAmount = commAmount;
+    finalInv.sstAmount = sstAmount;
+    finalInv.commWithSst = commWithSst;
+    finalInv.whtAmount = whtAmount;
+    finalInv.netChequeAmount = netCheque;
+    
+    if (isEdit) {
+      setGovtInvoices(list => list.map(g => g.id === finalInv.id ? finalInv : g));
+      postAuditLog("UPDATE_GOVT_INVOICE", `Updated Govt Invoice: ${finalInv.invoiceNo} (${finalInv.clientName})`);
+    } else {
+      setGovtInvoices(list => [finalInv, ...list]);
+      // Post General Ledger accounting entry for Agency Commission & SST
+      const lines = [
+        { account: "ar", debit: commWithSst, credit: 0, memo: `Receivable from ${finalInv.clientName}` },
+        { account: "revenue", debit: 0, credit: commAmount, memo: `Govt Agency Commission (${commRate}%)` },
+      ];
+      if (sstAmount > 0) {
+        lines.push({ account: "srb_payable", debit: 0, credit: sstAmount, memo: `SRB Sales Tax Payable (${sstRate}%)` });
+      }
+      postEntry(
+        finalInv.date || TODAY_STR,
+        `Govt Print Media Invoice - ${finalInv.invoiceNo} (${finalInv.clientName}, RO: ${finalInv.roNumber || 'N/A'})`,
+        lines,
+        finalInv.invoiceNo
+      );
+      postAuditLog("CREATE_GOVT_INVOICE", `Created Govt Invoice: ${finalInv.invoiceNo} (${finalInv.clientName}) - Gross: Rs ${Math.round(totalGross).toLocaleString()}`);
+    }
+    
+    setShowGovtInvoiceModal(false);
+    setEditingGovtInvoice(null);
+  }
+
+  function handleDeleteGovtInvoice(id) {
+    const target = govtInvoices.find(g => g.id === id);
+    if (!target) return;
+    if (window.confirm(`Are you sure you want to delete Government Invoice '${target.invoiceNo}'?`)) {
+      setGovtInvoices(list => list.filter(g => g.id !== id));
+      postAuditLog("DELETE_GOVT_INVOICE", `Deleted Govt Invoice: ${target.invoiceNo}`);
+    }
+  }
+
+  function handleMarkGovtInvoicePaid(inv, via = "Bank", bankAccountId = "bank-hbl") {
+    const selectedBank = via === "Cash" ? "bank-cash-park-tower" : (bankAccountId || "bank-hbl");
+    setGovtInvoices(list => list.map(g => g.id === inv.id ? {
+      ...g,
+      paid: true,
+      paidVia: via,
+      bankAccountId: selectedBank,
+      paidDate: TODAY_STR
+    } : g));
+    
+    const commWithSst = inv.commWithSst || ((inv.commissionAmount || 0) + (inv.sstAmount || 0));
+    const wht = inv.whtAmount || (commWithSst * 0.10);
+    const netCheque = inv.netChequeAmount || (commWithSst - wht);
+    
+    const lines = [
+      { account: via === "Cash" ? "cash" : "bank", bankAccountId: selectedBank, debit: netCheque, credit: 0, memo: "Govt Cheque Cleared / Deposited" },
+      { account: "ar", debit: 0, credit: commWithSst, memo: `Settle Govt Receivable - ${inv.clientName}` },
+    ];
+    if (wht > 0) {
+      lines.push({ account: "wht_receivable", debit: wht, credit: 0, memo: "10% Income Tax WHT Withheld at Source by Govt Treasury" });
+    }
+    
+    postEntry(
+      TODAY_STR,
+      `Govt Cheque Received & Cleared - ${inv.invoiceNo} (${inv.clientName})`,
+      lines,
+      `PMT-${inv.invoiceNo}`
+    );
+    postAuditLog("PAY_GOVT_INVOICE", `Marked Govt Invoice as Paid: ${inv.invoiceNo} - Net Cheque: Rs ${Math.round(netCheque).toLocaleString()}`);
   }
 
   function recordSrbRemittance() {
@@ -3753,6 +3865,7 @@ export default function App() {
     { key: "vendors", label: "Vendors Master", icon: Truck },
     { key: "projects", label: "Projects", icon: Briefcase },
     { key: "invoices", label: "Invoices", icon: FileText },
+    { key: "govt-clients", label: "Govt Clients", icon: Landmark },
     { key: "release-orders", label: "Release Orders (RO)", icon: ScrollText },
     { key: "purchase-orders", label: "Purchase Orders", icon: ShoppingCart },
     { key: "expenses", label: "Expenses", icon: Receipt },
@@ -3902,6 +4015,7 @@ export default function App() {
               vendors={vendors}
               projects={projects}
               invoices={invoices}
+              govtInvoices={govtInvoices}
               expenses={expenses}
               vouchers={vouchers}
               documents={documents}
@@ -5725,6 +5839,416 @@ export default function App() {
                   </table>
                 </div>
               </div>
+            </>
+          )}
+
+          {tab === "govt-clients" && (
+            <>
+              {(() => {
+                const filteredGovt = govtInvoices.filter(inv => {
+                  const matchStatus = govtFilterStatus === "all" || (govtFilterStatus === "paid" ? inv.paid : !inv.paid);
+                  const q = govtSearchQuery.toLowerCase().trim();
+                  const newsStr = Array.isArray(inv.items) ? inv.items.map(it => it.newspaper).join(" ") : "";
+                  const matchQuery = !q || (
+                    (inv.invoiceNo && inv.invoiceNo.toLowerCase().includes(q)) ||
+                    (inv.roNumber && inv.roNumber.toLowerCase().includes(q)) ||
+                    (inv.clientName && inv.clientName.toLowerCase().includes(q)) ||
+                    (inv.caption && inv.caption.toLowerCase().includes(q)) ||
+                    newsStr.toLowerCase().includes(q)
+                  );
+                  return matchStatus && matchQuery;
+                });
+
+                // Calculate KPIs across all govt invoices
+                const totalInvoicesCount = govtInvoices.length;
+                let sumGross = 0;
+                let sumMedia85 = 0;
+                let sumCommission = 0;
+                let sumSst = 0;
+                let sumWht = 0;
+                let sumNetCheque = 0;
+                let sumPaidNet = 0;
+                let sumPendingNet = 0;
+
+                govtInvoices.forEach(inv => {
+                  const gross = Number(inv.totalGross) || 0;
+                  const comm = Number(inv.commissionAmount) || (gross * 0.15);
+                  const sst = Number(inv.sstAmount) || 0;
+                  const commWithSst = Number(inv.commWithSst) || (comm + sst);
+                  const wht = Number(inv.whtAmount) || (commWithSst * 0.10);
+                  const net = Number(inv.netChequeAmount) || (commWithSst - wht);
+                  const media85 = gross * 0.85;
+
+                  sumGross += gross;
+                  sumMedia85 += media85;
+                  sumCommission += comm;
+                  sumSst += sst;
+                  sumWht += wht;
+                  sumNetCheque += net;
+                  if (inv.paid) {
+                    sumPaidNet += net;
+                  } else {
+                    sumPendingNet += net;
+                  }
+                });
+
+                return (
+                  <div>
+                    {/* Header with Title and Create Button */}
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, flexWrap: "wrap", gap: 12 }}>
+                      <div>
+                        <div className="section-title" style={{ margin: 0, display: "flex", alignItems: "center", gap: 8 }}>
+                          <Landmark size={20} color="#D4AF37" />
+                          <span>Government Clients & Invoicing</span>
+                          <span style={{ fontSize: 11, background: "rgba(212, 175, 55, 0.18)", color: "#B8860B", padding: "3px 8px", borderRadius: 6, fontWeight: 700 }}>
+                            DIPR Print Media Billing
+                          </span>
+                        </div>
+                        <p style={{ margin: "4px 0 0 0", fontSize: 12.5, color: "var(--ink-muted)" }}>
+                          Manage Sindh & Federal Government Department Advertising, 85/15 Media Tariff Settlements & Dual Sales Tax Invoices
+                        </p>
+                      </div>
+                      <div style={{ display: "flex", gap: 8 }}>
+                        <button
+                          className="btn btn-primary"
+                          style={{
+                            background: "linear-gradient(135deg, #B8860B 0%, #D4AF37 100%)",
+                            color: "#FFFFFF",
+                            fontWeight: 700,
+                            boxShadow: "0 4px 12px rgba(184, 134, 11, 0.28)",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 6
+                          }}
+                          onClick={() => {
+                            setEditingGovtInvoice(null);
+                            setShowGovtInvoiceModal(true);
+                          }}
+                        >
+                          <Plus size={15} /> New Govt Invoice
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* KPI Metrics Cards */}
+                    <div className="grid-kpi" style={{ marginBottom: 16 }}>
+                      <div className="card-kpi">
+                        <div className="kpi-label">Govt Invoices</div>
+                        <div className="kpi-value">{totalInvoicesCount}</div>
+                        <div className="kpi-sub">Total Bills Processed</div>
+                      </div>
+                      <div className="card-kpi">
+                        <div className="kpi-label">100% Gross Media Billing</div>
+                        <div className="kpi-value" style={{ color: "#3B82F6" }}>{pkr(sumGross)}</div>
+                        <div className="kpi-sub">Total DIPR Classified Budget</div>
+                      </div>
+                      <div className="card-kpi">
+                        <div className="kpi-label">Newspaper Share (85%)</div>
+                        <div className="kpi-value" style={{ color: "#8B5CF6" }}>{pkr(sumMedia85)}</div>
+                        <div className="kpi-sub">Less 1.5% Newspaper WHT</div>
+                      </div>
+                      <div className="card-kpi">
+                        <div className="kpi-label">Agency Commission (15%)</div>
+                        <div className="kpi-value" style={{ color: "var(--green)" }}>{pkr(sumCommission)}</div>
+                        <div className="kpi-sub">AdPulse Net Media Revenue</div>
+                      </div>
+                      <div className="card-kpi">
+                        <div className="kpi-label">SRB Sales Tax (15%)</div>
+                        <div className="kpi-value" style={{ color: "var(--rose)" }}>{pkr(sumSst)}</div>
+                        <div className="kpi-sub">Sindh Sales Tax on Comm.</div>
+                      </div>
+                      <div className="card-kpi">
+                        <div className="kpi-label">Pending Govt Cheques</div>
+                        <div className="kpi-value" style={{ color: "#F59E0B" }}>{pkr(sumPendingNet)}</div>
+                        <div className="kpi-sub">Net Agency Cheques Awaiting</div>
+                      </div>
+                    </div>
+
+                    {/* Filter and Search Bar */}
+                    <div className="card" style={{ padding: "12px 16px", marginBottom: 16, display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center", justifyContent: "space-between" }}>
+                      <div style={{ display: "flex", gap: 12, flex: 1, minWidth: 260, alignItems: "center" }}>
+                        <div style={{ position: "relative", flex: 1, maxWidth: 360 }}>
+                          <input
+                            type="text"
+                            placeholder="Search by RO #, Invoice #, Dept, Newspaper..."
+                            value={govtSearchQuery}
+                            onChange={e => setGovtSearchQuery(e.target.value)}
+                            style={{
+                              width: "100%",
+                              padding: "8px 12px 8px 32px",
+                              borderRadius: 6,
+                              border: "1px solid var(--rule)",
+                              fontSize: 13,
+                              background: "var(--bg-input, var(--card))",
+                              color: "var(--ink)"
+                            }}
+                          />
+                          <Search size={15} style={{ position: "absolute", left: 10, top: 10, color: "var(--ink-muted)" }} />
+                          {govtSearchQuery && (
+                            <button
+                              onClick={() => setGovtSearchQuery("")}
+                              style={{ position: "absolute", right: 8, top: 8, background: "none", border: "none", cursor: "pointer", color: "var(--ink-muted)" }}
+                            >
+                              <X size={14} />
+                            </button>
+                          )}
+                        </div>
+
+                        <select
+                          value={govtFilterStatus}
+                          onChange={e => setGovtFilterStatus(e.target.value)}
+                          style={{
+                            padding: "8px 12px",
+                            borderRadius: 6,
+                            border: "1px solid var(--rule)",
+                            fontSize: 13,
+                            background: "var(--bg-input, var(--card))",
+                            color: "var(--ink)",
+                            cursor: "pointer"
+                          }}
+                        >
+                          <option value="all">All Payment Status</option>
+                          <option value="pending">Pending Cheques</option>
+                          <option value="paid">Paid & Cleared</option>
+                        </select>
+                      </div>
+
+                      <div style={{ fontSize: 12.5, color: "var(--ink-muted)" }}>
+                        Showing <strong>{filteredGovt.length}</strong> of <strong>{govtInvoices.length}</strong> invoices
+                      </div>
+                    </div>
+
+                    {/* Invoices List Table */}
+                    <div className="card">
+                      {filteredGovt.length === 0 ? (
+                        <div style={{ padding: "48px 24px", textAlign: "center" }}>
+                          <div style={{ width: 56, height: 56, borderRadius: "50%", background: "rgba(212, 175, 55, 0.12)", color: "#B8860B", display: "inline-flex", alignItems: "center", justifyContent: "center", marginBottom: 12 }}>
+                            <Landmark size={28} />
+                          </div>
+                          <h3 style={{ margin: "0 0 6px 0", fontSize: 16 }}>No Government Invoices Found</h3>
+                          <p style={{ margin: "0 0 16px 0", fontSize: 13, color: "var(--ink-muted)", maxWidth: 440, marginLeft: "auto", marginRight: "auto" }}>
+                            {govtSearchQuery || govtFilterStatus !== "all"
+                              ? "No invoices match your active filters. Try adjusting your search query."
+                              : "Start by creating your first Government Print Media Invoice with automated 85/15 Tariff Breakdown & Dual Sales Tax styling."}
+                          </p>
+                          <button
+                            className="btn btn-primary"
+                            style={{ background: "linear-gradient(135deg, #B8860B 0%, #D4AF37 100%)", color: "#FFFFFF", fontWeight: 700 }}
+                            onClick={() => {
+                              setEditingGovtInvoice(null);
+                              setShowGovtInvoiceModal(true);
+                            }}
+                          >
+                            <Plus size={15} /> Create First Govt Invoice
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="table-responsive">
+                          <table>
+                            <thead>
+                              <tr>
+                                <th>Invoice & RO Details</th>
+                                <th>Govt Department</th>
+                                <th>Type</th>
+                                <th style={{ textAlign: "center" }}>Newspapers</th>
+                                <th style={{ textAlign: "right" }}>100% Gross</th>
+                                <th style={{ textAlign: "right" }}>85% Media</th>
+                                <th style={{ textAlign: "right" }}>15% Comm.</th>
+                                <th style={{ textAlign: "right" }}>15% SST</th>
+                                <th style={{ textAlign: "right" }}>10% WHT</th>
+                                <th style={{ textAlign: "right" }}>Agency Net Cheque</th>
+                                <th style={{ textAlign: "center" }}>Status</th>
+                                <th style={{ textAlign: "right" }}>Actions</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {filteredGovt.map(inv => {
+                                const gross = Number(inv.totalGross) || 0;
+                                const media85 = gross * 0.85;
+                                const comm = Number(inv.commissionAmount) || (gross * 0.15);
+                                const sst = Number(inv.sstAmount) || 0;
+                                const wht = Number(inv.whtAmount) || 0;
+                                const net = Number(inv.netChequeAmount) || (comm + sst - wht);
+                                const isSalesTax = inv.isSalesTaxInvoice !== false;
+                                const itemCount = Array.isArray(inv.items) ? inv.items.length : 0;
+
+                                return (
+                                  <tr key={inv.id}>
+                                    <td>
+                                      <div style={{ fontWeight: 700, color: "var(--ink)" }}>{inv.invoiceNo || "AD-S000"}</div>
+                                      <div style={{ fontSize: 11.5, color: "var(--ink-muted)", marginTop: 2 }}>
+                                        <span style={{ fontWeight: 600, color: "#2563EB" }}>RO: {inv.roNumber || "—"}</span>
+                                        {inv.roDate && <span> &middot; {fmtDate(inv.roDate)}</span>}
+                                      </div>
+                                      {inv.caption && (
+                                        <div style={{ fontSize: 11, color: "var(--ink-muted)", fontStyle: "italic", marginTop: 1, maxWidth: 180, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }} title={inv.caption}>
+                                          {inv.caption}
+                                        </div>
+                                      )}
+                                    </td>
+                                    <td>
+                                      <div style={{ fontWeight: 600, color: "var(--ink)", maxWidth: 220 }}>{inv.clientName || inv.client || "Govt Department"}</div>
+                                      <div style={{ fontSize: 11, color: "var(--ink-muted)", marginTop: 2 }}>
+                                        NTN: {inv.ntn || "9031600-2"} &middot; STN: {inv.stn || "S-9031600-2"}
+                                      </div>
+                                    </td>
+                                    <td>
+                                      {isSalesTax ? (
+                                        <span style={{
+                                          display: "inline-block",
+                                          padding: "3px 7px",
+                                          borderRadius: 4,
+                                          fontSize: 10.5,
+                                          fontWeight: 750,
+                                          background: "rgba(147, 51, 234, 0.14)",
+                                          color: "#9333EA",
+                                          border: "1px solid rgba(147, 51, 234, 0.3)"
+                                        }}>
+                                          SALES TAX INVOICE
+                                        </span>
+                                      ) : (
+                                        <span style={{
+                                          display: "inline-block",
+                                          padding: "3px 7px",
+                                          borderRadius: 4,
+                                          fontSize: 10.5,
+                                          fontWeight: 700,
+                                          background: "rgba(59, 130, 246, 0.12)",
+                                          color: "#2563EB",
+                                          border: "1px solid rgba(59, 130, 246, 0.25)"
+                                        }}>
+                                          INVOICE
+                                        </span>
+                                      )}
+                                    </td>
+                                    <td style={{ textAlign: "center" }}>
+                                      <span
+                                        style={{
+                                          display: "inline-flex",
+                                          alignItems: "center",
+                                          gap: 4,
+                                          padding: "2px 8px",
+                                          borderRadius: 12,
+                                          fontSize: 11.5,
+                                          background: "var(--surface)",
+                                          border: "1px solid var(--rule)",
+                                          cursor: "pointer"
+                                        }}
+                                        title={Array.isArray(inv.items) ? inv.items.map(i => `${i.newspaper} (${i.ratePerCm}x${i.size})`).join("\n") : ""}
+                                      >
+                                        <Newspaper size={12} /> {itemCount} Papers
+                                      </span>
+                                    </td>
+                                    <td className="mono" style={{ textAlign: "right", color: "var(--ink-muted)" }}>{pkr(gross)}</td>
+                                    <td className="mono" style={{ textAlign: "right", color: "#8B5CF6" }}>{pkr(media85)}</td>
+                                    <td className="mono" style={{ textAlign: "right", color: "var(--green)" }}>{pkr(comm)}</td>
+                                    <td className="mono" style={{ textAlign: "right", color: sst > 0 ? "var(--rose)" : "var(--ink-muted)" }}>
+                                      {sst > 0 ? pkr(sst) : "—"}
+                                    </td>
+                                    <td className="mono" style={{ textAlign: "right", color: "var(--green)" }}>{pkr(wht)}</td>
+                                    <td className="mono" style={{ textAlign: "right", fontWeight: 700, color: "var(--ink)" }}>{pkr(net)}</td>
+                                    <td style={{ textAlign: "center" }}>
+                                      {inv.paid ? (
+                                        <span style={{
+                                          display: "inline-flex",
+                                          alignItems: "center",
+                                          gap: 4,
+                                          padding: "3px 8px",
+                                          borderRadius: 12,
+                                          fontSize: 11,
+                                          fontWeight: 700,
+                                          background: "rgba(16, 185, 129, 0.14)",
+                                          color: "#059669",
+                                          border: "1px solid rgba(16, 185, 129, 0.3)"
+                                        }}>
+                                          <CheckCircle2 size={12} /> Cleared
+                                        </span>
+                                      ) : (
+                                        <span style={{
+                                          display: "inline-flex",
+                                          alignItems: "center",
+                                          gap: 4,
+                                          padding: "3px 8px",
+                                          borderRadius: 12,
+                                          fontSize: 11,
+                                          fontWeight: 700,
+                                          background: "rgba(245, 158, 11, 0.14)",
+                                          color: "#D97706",
+                                          border: "1px solid rgba(245, 158, 11, 0.3)"
+                                        }}>
+                                          <Clock size={12} /> Pending Cheque
+                                        </span>
+                                      )}
+                                    </td>
+                                    <td style={{ textAlign: "right" }}>
+                                      <div style={{ display: "inline-flex", gap: 4, alignItems: "center" }}>
+                                        {!inv.paid && (
+                                          <button
+                                            className="btn"
+                                            style={{
+                                              padding: "4px 8px",
+                                              fontSize: 11.5,
+                                              background: "rgba(16, 185, 129, 0.12)",
+                                              color: "#059669",
+                                              border: "1px solid rgba(16, 185, 129, 0.3)",
+                                              fontWeight: 600
+                                            }}
+                                            onClick={() => handleMarkGovtInvoicePaid(inv)}
+                                            title="Mark Govt Cheque Cleared in Bank"
+                                          >
+                                            <Check size={12} /> Receive Cheque
+                                          </button>
+                                        )}
+                                        <button
+                                          className="btn"
+                                          style={{
+                                            padding: "4px 8px",
+                                            fontSize: 11.5,
+                                            background: "rgba(212, 175, 55, 0.14)",
+                                            color: "#B8860B",
+                                            border: "1px solid rgba(212, 175, 55, 0.35)",
+                                            fontWeight: 600,
+                                            display: "inline-flex",
+                                            alignItems: "center",
+                                            gap: 4
+                                          }}
+                                          onClick={() => setPrintingGovtInvoice(inv)}
+                                          title="Print AdPulse Sales Tax Invoice & Govt 85/15 Sanction Sheet"
+                                        >
+                                          <Printer size={13} /> Print
+                                        </button>
+                                        <button
+                                          className="btn"
+                                          style={{ padding: "4px 6px", fontSize: 12 }}
+                                          onClick={() => {
+                                            setEditingGovtInvoice(inv);
+                                            setShowGovtInvoiceModal(true);
+                                          }}
+                                          title="Edit Government Invoice"
+                                        >
+                                          <Edit size={13} />
+                                        </button>
+                                        <button
+                                          className="btn"
+                                          style={{ padding: "4px 6px", fontSize: 12, color: "var(--rose)" }}
+                                          onClick={() => handleDeleteGovtInvoice(inv.id)}
+                                          title="Delete Government Invoice"
+                                        >
+                                          <Trash2 size={13} />
+                                        </button>
+                                      </div>
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })()}
             </>
           )}
 
@@ -8538,6 +9062,24 @@ export default function App() {
       )}
       {showClientModal && <ClientMasterModal clients={clients} client={editingClient} onClose={() => { setShowClientModal(false); setEditingClient(null); }} onSave={handleSaveClient} />}
       {showVendorModal && <VendorMasterModal vendors={vendors} vendor={editingVendor} onClose={() => { setShowVendorModal(false); setEditingVendor(null); }} onSave={handleSaveVendor} />}
+      {showGovtInvoiceModal && (
+        <GovtInvoiceModal
+          initialData={editingGovtInvoice}
+          clients={clients}
+          govtInvoices={govtInvoices}
+          onClose={() => {
+            setShowGovtInvoiceModal(false);
+            setEditingGovtInvoice(null);
+          }}
+          onSubmit={handleSaveGovtInvoice}
+        />
+      )}
+      {printingGovtInvoice && (
+        <GovtInvoicePrintModal
+          invoice={printingGovtInvoice}
+          onClose={() => setPrintingGovtInvoice(null)}
+        />
+      )}
       
       {/* FULL-WINDOW CLIENT & VENDOR STATEMENT MODALS */}
       {activeStatementClientId && (
