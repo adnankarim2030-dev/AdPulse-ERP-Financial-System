@@ -333,12 +333,17 @@ export default function GovtInvoicePrintModal({ invoice, onClose }) {
             padding: 0 !important;
             width: 100% !important;
             max-width: 100% !important;
-            min-height: 940px !important;
+            min-height: 278mm !important;
+            max-height: 282mm !important;
+            height: 280mm !important;
             display: flex !important;
             flex-direction: column !important;
             justify-content: space-between !important;
             page-break-after: avoid !important;
             page-break-inside: avoid !important;
+            margin: 0 !important;
+            box-sizing: border-box !important;
+            overflow: visible !important;
           }
           .invoice-footer-banner {
             background: #A81C1C !important;
@@ -441,7 +446,7 @@ export default function GovtInvoicePrintModal({ invoice, onClose }) {
               position: "relative",
               boxSizing: "border-box",
               width: "100%",
-              minHeight: "920px",
+              minHeight: "1050px",
               display: "flex",
               flexDirection: "column",
               justifyContent: "space-between"
@@ -743,7 +748,7 @@ export default function GovtInvoicePrintModal({ invoice, onClose }) {
               position: "relative",
               boxSizing: "border-box",
               width: "100%",
-              minHeight: "920px",
+              minHeight: "1050px",
               display: "flex",
               flexDirection: "column",
               justifyContent: "space-between"
