@@ -751,19 +751,19 @@ const SEED_USERS = [
 /* ---------- REAL FINANCIAL DATA SEED FUNCTIONS ---------- */
 
 function seedClients() {
-  return Array.isArray(REAL_CLIENTS) ? REAL_CLIENTS : [];
+  return [];
 }
 
 function seedVendors() {
-  return Array.isArray(REAL_VENDORS) ? REAL_VENDORS : [];
+  return [];
 }
 
 function seedProjects() {
-  return Array.isArray(REAL_PROJECTS) ? REAL_PROJECTS : [];
+  return [];
 }
 
 function seedInvoices() {
-  return Array.isArray(REAL_INVOICES) ? REAL_INVOICES : [];
+  return [];
 }
 
 function seedReleaseOrders() {
@@ -771,100 +771,49 @@ function seedReleaseOrders() {
 }
 
 function seedExpenses() {
-  return Array.isArray(REAL_EXPENSES) ? REAL_EXPENSES : [];
+  return [];
 }
 
 function seedVouchers() {
-  return Array.isArray(REAL_VOUCHERS) ? REAL_VOUCHERS : [];
+  return [];
 }
 
 function seedJournal() {
-  return Array.isArray(REAL_JOURNAL) ? REAL_JOURNAL : [];
+  return [];
 }
 
 function seedAuditLogs() {
-  return [
-    { id: "aud-001", userId: "u-ceo", userName: "AdPulseCEO", role: "CEO", action: "System Synchronized with 35 Client & 23 Vendor Real Ledgers", module: "Ledger", recordType: "Ledger", recordId: "sys-init", timestamp: "2026-07-01T09:00:00Z" }
-  ];
+  return [];
 }
 
 function seedBankAccounts() {
   return [
-    { id: "bank-hbl", bankName: "Habib Bank Limited (HBL)", accountTitle: "AdPulse IMC PVT LTD (Main Ops)", accountNumber: "0014-2289-1001", iban: "PK36HABB00001422891001", accountType: "Current Account", branch: "Shahrah-e-Faisal Branch", openingBalance: 1250000, color: "#059669" },
-    { id: "bank-mcb", bankName: "MCB Bank Ltd", accountTitle: "AdPulse Financial Services", accountNumber: "0088-1122-3344", iban: "PK91MUCB008811223344", accountType: "Corporate Account", branch: "II Chundrigar Road Branch", openingBalance: 850000, color: "#0284C7" },
-    { id: "bank-meezan", bankName: "Meezan Bank Ltd", accountTitle: "AdPulse Media (Islamic Business)", accountNumber: "0102-0304-0506", iban: "PK55MEZN010203040506", accountType: "Islamic Current", branch: "Clifton Block 5 Branch", openingBalance: 400000, color: "#B8860B" },
-    { id: "bank-cash", bankName: "Petty Cash Vault", accountTitle: "Office Petty Cash Custodian", accountNumber: "CASH-VAULT-01", iban: "N/A (Cash in Hand)", accountType: "Petty Cash", branch: "Main Office Counter", openingBalance: 75000, color: "#D97706" },
+    { id: "bank-hbl", bankName: "Habib Bank Limited (HBL)", accountTitle: "AdPulse IMC PVT LTD (Main Ops)", accountNumber: "0014-2289-1001", iban: "PK36HABB00001422891001", accountType: "Current Account", branch: "Shahrah-e-Faisal Branch", openingBalance: 0, color: "#059669" },
+    { id: "bank-mcb", bankName: "MCB Bank Ltd", accountTitle: "AdPulse Financial Services", accountNumber: "0088-1122-3344", iban: "PK91MUCB008811223344", accountType: "Corporate Account", branch: "II Chundrigar Road Branch", openingBalance: 0, color: "#0284C7" },
+    { id: "bank-meezan", bankName: "Meezan Bank Ltd", accountTitle: "AdPulse Media (Islamic Business)", accountNumber: "0102-0304-0506", iban: "PK55MEZN010203040506", accountType: "Islamic Current", branch: "Clifton Block 5 Branch", openingBalance: 0, color: "#B8860B" },
+    { id: "bank-cash-park-tower", bankName: "Petty Cash - Park Tower Office", accountTitle: "Park Tower Office Petty Cash", accountNumber: "PC-PT-01", iban: "N/A (Cash in Hand - Park Tower)", accountType: "Petty Cash", branch: "Park Tower Office, Clifton", openingBalance: 0, color: "#D97706" },
+    { id: "bank-cash-gulshan", bankName: "Petty Cash - Gulshan Office", accountTitle: "Gulshan Office Petty Cash", accountNumber: "PC-GO-02", iban: "N/A (Cash in Hand - Gulshan)", accountType: "Petty Cash", branch: "Gulshan-e-Iqbal Office", openingBalance: 0, color: "#E11D48" },
   ];
 }
 
 function seedHoardings() {
-  return [
-    { id: uid(), name: "Shahrah-e-Faisal Site 1", area: "Shahrah-e-Faisal", size: "20x40 ft", pricePerMonth: 150000, status: "Available", project: "", client: "" },
-    { id: uid(), name: "Tariq Road Junction", area: "Tariq Road", size: "10x20 ft", pricePerMonth: 60000, status: "Available", project: "", client: "" },
-    { id: uid(), name: "Clifton Beach View Billboard", area: "Clifton", size: "30x60 ft", pricePerMonth: 280000, status: "Available", project: "", client: "" },
-    { id: uid(), name: "North Nazimabad Chowrangi", area: "North Nazimabad", size: "15x30 ft", pricePerMonth: 95000, status: "Maintenance", project: "", client: "" },
-    { id: uid(), name: "II Chundrigar Financial Hub", area: "II Chundrigar", size: "25x50 ft", pricePerMonth: 200000, status: "Available", project: "", client: "" },
-    { id: uid(), name: "Gulshan-e-Iqbal Flyover", area: "Gulshan-e-Iqbal", size: "12x24 ft", pricePerMonth: 70000, status: "Available", project: "", client: "" },
-  ];
+  return [];
 }
 
 function seedInventoryItems() {
-  return [
-    { id: uid(), sku: "SKU-PRN-001", name: "Frontlit Star Vinyl Roll (10ft x 100ft)", category: "Printing & Vinyl", unit: "Rolls", quantity: 18, minQuantity: 5, unitCost: 18500, warehouse: "Korangi Warehouse A", lastUpdated: "2026-07-20", description: "320gsm premium glossy vinyl roll for outdoor hoardings" },
-    { id: uid(), sku: "SKU-PRN-002", name: "Backlit Flex Banner Film (8ft x 100ft)", category: "Printing & Vinyl", unit: "Rolls", quantity: 4, minQuantity: 5, unitCost: 22000, warehouse: "Korangi Warehouse A", lastUpdated: "2026-07-18", description: "240gsm high-translucency backlit film for illuminated signboards" },
-    { id: uid(), sku: "SKU-PRN-003", name: "Acrylic Sheets Clear (4ft x 8ft x 3mm)", category: "Printing & Vinyl", unit: "Sheets", quantity: 35, minQuantity: 10, unitCost: 4800, warehouse: "Site Area Depot", lastUpdated: "2026-07-15", description: "Clear cast acrylic sheet for indoor & outdoor signage" },
-    { id: uid(), sku: "SKU-EQP-001", name: "Sony FX3 Cinema Camera Body Kit", category: "Production Equipment", unit: "Units", quantity: 3, minQuantity: 1, unitCost: 950000, warehouse: "Studio HQ Vault", lastUpdated: "2026-07-10", description: "4K Full-Frame Cinema Line Camera for TVC shoots" },
-    { id: uid(), sku: "SKU-EQP-002", name: "Aputure LS 600d Pro LED Daylight Light", category: "Production Equipment", unit: "Units", quantity: 5, minQuantity: 2, unitCost: 420000, warehouse: "Studio HQ Vault", lastUpdated: "2026-07-12", description: "600W high-output LED video fixture with Bowens mount" },
-    { id: uid(), sku: "SKU-EQP-003", name: "Sennheiser EW-D Wireless Mic Set", category: "Production Equipment", unit: "Sets", quantity: 2, minQuantity: 2, unitCost: 185000, warehouse: "Studio HQ Vault", lastUpdated: "2026-07-08", description: "Digital wireless handheld & lavalier audio kit" },
-    { id: uid(), sku: "SKU-MER-001", name: "Roll-up Standee Metallic Frame (2ft x 5ft)", category: "Event & BTL Merchandise", unit: "Pcs", quantity: 40, minQuantity: 15, unitCost: 3200, warehouse: "Site Area Depot", lastUpdated: "2026-07-14", description: "Aluminum retractable banner stand mechanism" },
-    { id: uid(), sku: "SKU-MER-002", name: "Branded Promotional Canopy Tent (10ft x 10ft)", category: "Event & BTL Merchandise", unit: "Sets", quantity: 8, minQuantity: 3, unitCost: 35000, warehouse: "Korangi Warehouse B", lastUpdated: "2026-07-11", description: "Waterproof pop-up gazebos for BTL outdoor activations" },
-    { id: uid(), sku: "SKU-OOH-001", name: "200W Waterproof LED Floodlight Fixtures", category: "OOH & Hardware Assets", unit: "Units", quantity: 26, minQuantity: 8, unitCost: 12500, warehouse: "Operations Hub", lastUpdated: "2026-07-19", description: "IP66 outdoor spotlight for night billboard illumination" },
-    { id: uid(), sku: "SKU-OOH-002", name: "Heavy Duty Iron Angle Frames (20ft)", category: "OOH & Hardware Assets", unit: "Pcs", quantity: 15, minQuantity: 5, unitCost: 16500, warehouse: "Operations Hub", lastUpdated: "2026-07-05", description: "Galvanized steel structural support angles" },
-    { id: uid(), sku: "SKU-OFF-001", name: "HP LaserJet Pro Toner Cartridge (85A)", category: "Office & Admin Supplies", unit: "Pcs", quantity: 12, minQuantity: 4, unitCost: 4500, warehouse: "Main Office Supply Room", lastUpdated: "2026-07-01", description: "High-yield black print cartridge for office billing" }
-  ];
+  return [];
 }
 
-function seedInventoryLogs(items) {
-  const findItem = sku => items.find(i => i.sku === sku) || items[0];
-  const vinyl = findItem("SKU-PRN-001");
-  const camera = findItem("SKU-EQP-001");
-  const standee = findItem("SKU-MER-001");
-  return [
-    { id: uid(), itemId: vinyl?.id || "i1", itemName: vinyl?.name || "Vinyl Roll", sku: "SKU-PRN-001", type: "Stock In", quantity: 20, unitCost: 18500, totalCost: 370000, date: "2026-07-01", reference: "PO-001", notes: "Received shipment from Al-Madina Printing Materials" },
-    { id: uid(), itemId: vinyl?.id || "i1", itemName: vinyl?.name || "Vinyl Roll", sku: "SKU-PRN-001", type: "Stock Out", quantity: 2, unitCost: 18500, totalCost: 37000, date: "2026-07-10", reference: "PRJ-002", projectName: "Ramzan Drive Billboards", notes: "Issued for Ramzan Drive hoarding prints" },
-    { id: uid(), itemId: camera?.id || "i2", itemName: camera?.name || "Sony FX3 Camera", sku: "SKU-EQP-001", type: "Stock In", quantity: 3, unitCost: 950000, totalCost: 2850000, date: "2026-07-05", reference: "PO-004", notes: "Procured from Sony Official Distributor Pakistan" },
-    { id: uid(), itemId: standee?.id || "i3", itemName: standee?.name || "Roll-up Standee Frame", sku: "SKU-MER-001", type: "Stock Out", quantity: 10, unitCost: 3200, totalCost: 32000, date: "2026-07-16", reference: "PRJ-004", projectName: "Summer Brand Launch", notes: "Issued for BTL venue setup" },
-  ];
+function seedInventoryLogs() {
+  return [];
 }
 
 function seedEmployees() {
-  return [
-    { id: uid(), code: empCode(1), name: "Ayesha Farooq", department: "Creative", designation: "Creative Director", email: "ayesha.farooq@adpulse.pk", phone: "0300-1234567", joinDate: "2022-03-01", status: "Active", salary: 285000, cnic: "42101-1234567-1", bankAccount: "PK-HBL-00112233", leaveBalance: 16 },
-    { id: uid(), code: empCode(2), name: "Bilal Sheikh", department: "Digital Marketing", designation: "Digital Marketing Manager", email: "bilal.sheikh@adpulse.pk", phone: "0301-2345678", joinDate: "2022-08-15", status: "Active", salary: 220000, cnic: "42101-2345678-2", bankAccount: "PK-UBL-00223344", leaveBalance: 12 },
-    { id: uid(), code: empCode(3), name: "Zainab Hussain", department: "Client Servicing", designation: "Account Manager", email: "zainab.hussain@adpulse.pk", phone: "0302-3456789", joinDate: "2023-01-10", status: "Active", salary: 165000, cnic: "42101-3456789-3", bankAccount: "PK-MCB-00334455", leaveBalance: 18 },
-    { id: uid(), code: empCode(4), name: "Hamza Qureshi", department: "OOH Operations", designation: "Operations Executive", email: "hamza.qureshi@adpulse.pk", phone: "0303-4567890", joinDate: "2021-11-20", status: "On Leave", salary: 140000, cnic: "42101-4567890-4", bankAccount: "PK-ABL-00445566", leaveBalance: 6 },
-    { id: uid(), code: empCode(5), name: "Sana Malik", department: "Production", designation: "Production Coordinator", email: "sana.malik@adpulse.pk", phone: "0304-5678901", joinDate: "2023-06-05", status: "Active", salary: 130000, cnic: "42101-5678901-5", bankAccount: "PK-HBL-00556677", leaveBalance: 20 },
-    { id: uid(), code: empCode(6), name: "Faisal Ahmed", department: "Accounts & Finance", designation: "Accounts Officer", email: "faisal.ahmed@adpulse.pk", phone: "0305-6789012", joinDate: "2020-04-12", status: "Active", salary: 155000, cnic: "42101-6789012-6", bankAccount: "PK-UBL-00667788", leaveBalance: 9 },
-    { id: uid(), code: empCode(7), name: "Mehak Raza", department: "HR & Admin", designation: "HR Executive", email: "mehak.raza@adpulse.pk", phone: "0306-7890123", joinDate: "2024-02-18", status: "Active", salary: 120000, cnic: "42101-7890123-7", bankAccount: "PK-MCB-00778899", leaveBalance: 19 },
-    { id: uid(), code: empCode(8), name: "Usman Tariq", department: "Digital Marketing", designation: "Graphic Designer", email: "usman.tariq@adpulse.pk", phone: "0307-8901234", joinDate: "2023-09-01", status: "Terminated", salary: 95000, cnic: "42101-8901234-8", bankAccount: "PK-ABL-00889900", leaveBalance: 0 },
-  ];
+  return [];
 }
 
-function seedMonthlyAttendance(employeesList = []) {
-  const empArray = Array.isArray(employeesList) && employeesList.length > 0 ? employeesList : seedEmployees();
-  const res = {};
-  empArray.forEach(emp => {
-    const days = {};
-    for (let d = 1; d <= 31; d++) {
-      const dayNum = d % 7;
-      if (dayNum === 0) days[d] = "OFF";
-      else if (d % 11 === 0) days[d] = "L";
-      else if (d % 17 === 0) days[d] = "A";
-      else days[d] = "P";
-    }
-    res[emp.id] = days;
-  });
-  return res;
+function seedMonthlyAttendance() {
+  return {};
 }
 
 function buildInitialJournal(invoices, expenses, vouchers) {
@@ -1015,16 +964,11 @@ function buildInitialJournal(invoices, expenses, vouchers) {
 }
 
 function seedLeaveRequests() {
-  return [
-    { id: uid(), employeeId: "emp-104", employeeName: "Hamza Qureshi", leaveType: "Sick Leave", startDate: "2026-08-10", endDate: "2026-08-15", days: 5, reason: "Medical Recovery", status: "Approved" },
-    { id: uid(), employeeId: "emp-107", employeeName: "Mehak Raza", leaveType: "Casual Leave", startDate: "2026-08-20", endDate: "2026-08-22", days: 2, reason: "Family Function", status: "Pending" }
-  ];
+  return [];
 }
 
 function seedPayrollRuns() {
-  return [
-    { id: "pay-2026-07", month: "July 2026", runDate: "2026-07-31", totalEmployees: 8, grossPayroll: 1310000, totalDeductions: 65000, netPayroll: 1245000, status: "Processed" }
-  ];
+  return [];
 }
 
 function buildInitialData() {
@@ -1032,40 +976,23 @@ function buildInitialData() {
 }
 
 function buildSeedDemoData() {
-  const clients = (typeof REAL_CLIENTS !== "undefined" && Array.isArray(REAL_CLIENTS) && REAL_CLIENTS.length > 0) ? REAL_CLIENTS : seedClients();
-  const vendors = (typeof REAL_VENDORS !== "undefined" && Array.isArray(REAL_VENDORS) && REAL_VENDORS.length > 0) ? REAL_VENDORS : seedVendors();
-  const projects = (typeof REAL_PROJECTS !== "undefined" && Array.isArray(REAL_PROJECTS) && REAL_PROJECTS.length > 0) ? REAL_PROJECTS : seedProjects();
-  const invoices = (typeof REAL_INVOICES !== "undefined" && Array.isArray(REAL_INVOICES) && REAL_INVOICES.length > 0) ? REAL_INVOICES : seedInvoices();
-  const expenses = (typeof REAL_EXPENSES !== "undefined" && Array.isArray(REAL_EXPENSES) && REAL_EXPENSES.length > 0) ? REAL_EXPENSES : seedExpenses();
-  const vouchers = (typeof REAL_VOUCHERS !== "undefined" && Array.isArray(REAL_VOUCHERS) && REAL_VOUCHERS.length > 0) ? REAL_VOUCHERS : seedVouchers();
-  const auditLogs = seedAuditLogs();
-  const bankAccounts = seedBankAccounts();
-  const hoardings = seedHoardings();
-  const employees = seedEmployees();
-  const inventoryItems = seedInventoryItems();
-  const inventoryLogs = seedInventoryLogs(inventoryItems);
-  const leaveRequests = seedLeaveRequests();
-  const payrollRuns = seedPayrollRuns();
-  const monthlyAttendance = seedMonthlyAttendance(employees);
-  const journal = (typeof REAL_JOURNAL !== "undefined" && Array.isArray(REAL_JOURNAL) && REAL_JOURNAL.length > 0) ? REAL_JOURNAL : buildInitialJournal(invoices, expenses, vouchers);
-
   return {
-    clients,
-    vendors,
-    projects,
-    invoices,
-    expenses,
-    vouchers,
-    auditLogs,
-    bankAccounts,
-    hoardings,
-    employees,
-    inventoryItems,
-    inventoryLogs,
-    leaveRequests,
-    payrollRuns,
-    monthlyAttendance,
-    journal,
+    clients: seedClients(),
+    vendors: seedVendors(),
+    projects: seedProjects(),
+    invoices: seedInvoices(),
+    expenses: seedExpenses(),
+    vouchers: seedVouchers(),
+    auditLogs: seedAuditLogs(),
+    bankAccounts: seedBankAccounts(),
+    hoardings: seedHoardings(),
+    employees: seedEmployees(),
+    inventoryItems: seedInventoryItems(),
+    inventoryLogs: seedInventoryLogs(),
+    leaveRequests: seedLeaveRequests(),
+    payrollRuns: seedPayrollRuns(),
+    monthlyAttendance: seedMonthlyAttendance(),
+    journal: seedJournal(),
     documents: []
   };
 }
@@ -1281,7 +1208,7 @@ export default function App() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   /* Financial & Operations state */
-  const STORAGE_KEY = "adpulse_erp_financial_clean_v20_real_excel";
+  const STORAGE_KEY = "adpulse_erp_production_clean_v22";
 
   // Auto purge legacy localStorage versions so browser unconditionally loads fresh 100% audited Excel data
   try {
@@ -1885,7 +1812,9 @@ export default function App() {
         setBankAccounts([
           { id: "bank-hbl", bankName: "Habib Bank Limited (HBL)", accountTitle: "AdPulse IMC PVT LTD (Main Ops)", accountNumber: "0014-2289-1001", iban: "PK36HABB00001422891001", accountType: "Current Account", branch: "Shahrah-e-Faisal Branch", openingBalance: 0, color: "#059669" },
           { id: "bank-mcb", bankName: "MCB Bank Ltd", accountTitle: "AdPulse Financial Services", accountNumber: "0088-1122-3344", iban: "PK91MUCB008811223344", accountType: "Corporate Account", branch: "II Chundrigar Road Branch", openingBalance: 0, color: "#0284C7" },
-          { id: "bank-cash", bankName: "Petty Cash Vault", accountTitle: "Office Petty Cash Custodian", accountNumber: "CASH-VAULT-01", iban: "N/A (Cash in Hand)", accountType: "Petty Cash", branch: "Main Office Counter", openingBalance: 0, color: "#D97706" }
+          { id: "bank-meezan", bankName: "Meezan Bank Ltd", accountTitle: "AdPulse Media (Islamic Business)", accountNumber: "0102-0304-0506", iban: "PK55MEZN010203040506", accountType: "Islamic Current", branch: "Clifton Block 5 Branch", openingBalance: 0, color: "#B8860B" },
+          { id: "bank-cash-park-tower", bankName: "Petty Cash - Park Tower Office", accountTitle: "Park Tower Office Petty Cash", accountNumber: "PC-PT-01", iban: "N/A (Cash in Hand - Park Tower)", accountType: "Petty Cash", branch: "Park Tower Office, Clifton", openingBalance: 0, color: "#D97706" },
+          { id: "bank-cash-gulshan", bankName: "Petty Cash - Gulshan Office", accountTitle: "Gulshan Office Petty Cash", accountNumber: "PC-GO-02", iban: "N/A (Cash in Hand - Gulshan)", accountType: "Petty Cash", branch: "Gulshan-e-Iqbal Office", openingBalance: 0, color: "#E11D48" },
         ]);
         setUsersList(SEED_USERS);
         localStorage.removeItem(STORAGE_KEY);
@@ -6297,8 +6226,8 @@ export default function App() {
                   let netMovement = 0;
                   journal.forEach(entry => {
                     entry.lines?.forEach(l => {
-                      if (b.id === "bank-cash" || b.accountType === "Petty Cash") {
-                        if (l.account === "cash" && (l.bankAccountId === b.id || (!l.bankAccountId && b.id === "bank-cash"))) {
+                      if (b.accountType === "Petty Cash" || b.id.startsWith("bank-cash")) {
+                        if (l.account === "cash" && (l.bankAccountId === b.id || (!l.bankAccountId && b.id === "bank-cash-park-tower"))) {
                           netMovement += (Number(l.debit) || 0) - (Number(l.credit) || 0);
                         }
                       } else {
@@ -6312,8 +6241,8 @@ export default function App() {
                   // Check if journal has an opening balance entry for this account
                   const hasOpeningInJournal = journal.some(entry =>
                     entry.lines?.some(l => {
-                      const matchesAcc = (b.id === "bank-cash" || b.accountType === "Petty Cash")
-                        ? (l.account === "cash" && (l.bankAccountId === b.id || (!l.bankAccountId && b.id === "bank-cash")))
+                      const matchesAcc = (b.accountType === "Petty Cash" || b.id.startsWith("bank-cash"))
+                        ? (l.account === "cash" && (l.bankAccountId === b.id || (!l.bankAccountId && b.id === "bank-cash-park-tower")))
                         : (l.account === "bank" && (l.bankAccountId === b.id || (!l.bankAccountId && b.id === "bank-hbl")));
                       return matchesAcc && (entry.reference?.startsWith("OB-") || entry.description?.toLowerCase().includes("opening balance"));
                     })
@@ -6333,7 +6262,7 @@ export default function App() {
                   entry.lines?.forEach((line, lineIdx) => {
                     let lineBankId = line.bankAccountId;
                     if (!lineBankId) {
-                      lineBankId = line.account === "cash" ? "bank-cash" : (line.account === "bank" ? "bank-hbl" : null);
+                      lineBankId = line.account === "cash" ? "bank-cash-park-tower" : (line.account === "bank" ? "bank-hbl" : null);
                     }
 
                     if (!lineBankId && line.account !== "cash" && line.account !== "bank") return;
@@ -6341,12 +6270,10 @@ export default function App() {
                     let isMatch = false;
                     if (cashBankFilter === "all") {
                       isMatch = (line.account === "cash" || line.account === "bank");
-                    } else if (cashBankFilter === "cash" || cashBankFilter === "bank-cash") {
-                      isMatch = (line.account === "cash" || lineBankId === "bank-cash");
+                    } else if (cashBankFilter === "cash") {
+                      isMatch = (line.account === "cash");
                     } else {
-                      if (line.account === "bank") {
-                        isMatch = (lineBankId === cashBankFilter);
-                      }
+                      isMatch = (lineBankId === cashBankFilter);
                     }
 
                     const debit = Number(line.debit) || 0;
@@ -6571,13 +6498,13 @@ export default function App() {
 
                     <div className="card" style={{ padding: "12px 16px", marginBottom: 16, display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
                       <div className="field" style={{ margin: 0, flex: 1, minWidth: 220 }}>
-                        <label>Filter Ledger by Bank Account</label>
+                        <label>Filter Ledger by Cash / Bank Account</label>
                         <select value={cashBankFilter} onChange={e => setCashBankFilter(e.target.value)}>
-                          <option value="all">All Cash & Bank Accounts ({pkr(totalLiquidity)})</option>
-                          <option value="cash">Petty Cash Vault Only ({pkr(accountBalances.find(x => x.id === "bank-cash" || x.accountType === "Petty Cash")?.liveBalance || 0)})</option>
-                          {bankAccounts.filter(b => b.id !== "bank-cash" && b.accountType !== "Petty Cash").map(b => (
+                          <option value="all">All Cash &amp; Bank Accounts ({pkr(totalLiquidity)})</option>
+                          <option value="cash">All Petty Cash Vaults Combined</option>
+                          {bankAccounts.map(b => (
                             <option key={b.id} value={b.id}>
-                              {b.bankName} — {b.accountNumber} ({pkr(accountBalances.find(x => x.id === b.id)?.liveBalance || 0)})
+                              {b.bankName} {b.accountNumber ? `— ${b.accountNumber}` : ""} ({pkr(accountBalances.find(x => x.id === b.id)?.liveBalance || 0)})
                             </option>
                           ))}
                         </select>
@@ -10355,7 +10282,13 @@ function ExpenseModal({ initialData, projects = [], vendors = [], expenses = [],
   const [status, setStatus] = useState(initialData?.status || "paid");
   const [paidVia, setPaidVia] = useState(initialData?.paidVia || "Cash");
   const realBanks = useMemo(() => bankAccounts.filter(b => b.id !== "bank-cash" && b.accountType !== "Petty Cash"), [bankAccounts]);
+  const pettyCashAccounts = useMemo(() => bankAccounts.filter(b => b.accountType === "Petty Cash" || b.id.startsWith("bank-cash")), [bankAccounts]);
   const [selectedBankId, setSelectedBankId] = useState(initialData?.bankAccountId || realBanks[0]?.id || "bank-hbl");
+  const [selectedCashAccountId, setSelectedCashAccountId] = useState(
+    initialData?.bankAccountId && pettyCashAccounts.some(c => c.id === initialData.bankAccountId)
+      ? initialData.bankAccountId
+      : (pettyCashAccounts[0]?.id || "bank-cash-park-tower")
+  );
 
   // Filtered subcategories based on category
   const currentCategoryObj = EXPENSE_CLASSIFICATION[category] || EXPENSE_CLASSIFICATION["Office & Administration"];
@@ -10577,6 +10510,15 @@ function ExpenseModal({ initialData, projects = [], vendors = [], expenses = [],
                 </select>
               </div>
             )}
+            {paidVia === "Cash" && pettyCashAccounts.length > 0 && (
+              <div className="field" style={{ flex: 1.2, minWidth: 160 }}><label>Petty Cash Vault</label>
+                <select value={selectedCashAccountId} onChange={e => setSelectedCashAccountId(e.target.value)}>
+                  {pettyCashAccounts.map(b => (
+                    <option key={b.id} value={b.id}>{b.bankName} ({b.branch || b.accountTitle})</option>
+                  ))}
+                </select>
+              </div>
+            )}
           </>
         )}
       </div>
@@ -10588,7 +10530,7 @@ function ExpenseModal({ initialData, projects = [], vendors = [], expenses = [],
             projectId, vendor: effectiveVendor, category, subcategory, accountKey: glKey,
             description, refNo, amount: Number(amount), date, status,
             paidVia: status === "paid" ? paidVia : null,
-            bankAccountId: status === "paid" ? (paidVia === "Cash" ? "bank-cash" : selectedBankId) : null
+            bankAccountId: status === "paid" ? (paidVia === "Cash" ? selectedCashAccountId : selectedBankId) : null
           };
           onSubmit(initialData ? { ...initialData, ...expData } : expData);
         }}>
@@ -10665,13 +10607,16 @@ function PayExpenseModal({ expense, bankAccounts = [], onClose, onSubmit }) {
   const [date, setDate] = useState(TODAY_STR);
   const [paidVia, setPaidVia] = useState("Bank");
   const realBanks = useMemo(() => bankAccounts.filter(b => b.id !== "bank-cash" && b.accountType !== "Petty Cash"), [bankAccounts]);
+  const pettyCashAccounts = useMemo(() => bankAccounts.filter(b => b.accountType === "Petty Cash" || b.id.startsWith("bank-cash")), [bankAccounts]);
   const [selectedBankId, setSelectedBankId] = useState(realBanks[0]?.id || "bank-hbl");
+  const [selectedCashAccountId, setSelectedCashAccountId] = useState(pettyCashAccounts[0]?.id || "bank-cash-park-tower");
+
   return (
     <ModalShell title="Pay Accounts Payable" onClose={onClose}>
       <div style={{ marginBottom: 16, fontSize: 14, color: "var(--ink-muted)" }}>
         Paying vendor <strong>{expense.vendor}</strong> for amount <strong>{pkr(expense.amount)}</strong>.
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: paidVia === "Bank" && realBanks.length > 0 ? "1fr 1fr 1.2fr" : "1fr 1fr", gap: 10, marginBottom: 14 }}>
+      <div style={{ display: "grid", gridTemplateColumns: (paidVia === "Bank" && realBanks.length > 0) || (paidVia === "Cash" && pettyCashAccounts.length > 0) ? "1fr 1fr 1.2fr" : "1fr 1fr", gap: 10, marginBottom: 14 }}>
         <div className="field" style={{ margin: 0 }}><label>Payment Date</label><input type="date" value={date} onChange={e => setDate(e.target.value)} /></div>
         <div className="field" style={{ margin: 0 }}><label>Pay Via</label>
           <select value={paidVia} onChange={e => setPaidVia(e.target.value)}>
@@ -10687,9 +10632,18 @@ function PayExpenseModal({ expense, bankAccounts = [], onClose, onSubmit }) {
             </select>
           </div>
         )}
+        {paidVia === "Cash" && pettyCashAccounts.length > 0 && (
+          <div className="field" style={{ margin: 0 }}><label>Petty Cash Vault</label>
+            <select value={selectedCashAccountId} onChange={e => setSelectedCashAccountId(e.target.value)}>
+              {pettyCashAccounts.map(b => (
+                <option key={b.id} value={b.id}>{b.bankName} ({b.branch || b.accountTitle})</option>
+              ))}
+            </select>
+          </div>
+        )}
       </div>
       <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 6 }}
-        onClick={() => onSubmit(expense.id, paidVia, date, paidVia === "Cash" ? "bank-cash" : selectedBankId)}>
+        onClick={() => onSubmit(expense.id, paidVia, date, paidVia === "Cash" ? selectedCashAccountId : selectedBankId)}>
         Post Payment & Clear AP
       </button>
     </ModalShell>
@@ -11447,13 +11401,16 @@ function PayPOModal({ po, bankAccounts = [], onClose, onSubmit }) {
   const [date, setDate] = useState(TODAY_STR);
   const [paidVia, setPaidVia] = useState("Bank");
   const realBanks = useMemo(() => bankAccounts.filter(b => b.id !== "bank-cash" && b.accountType !== "Petty Cash"), [bankAccounts]);
+  const pettyCashAccounts = useMemo(() => bankAccounts.filter(b => b.accountType === "Petty Cash" || b.id.startsWith("bank-cash")), [bankAccounts]);
   const [selectedBankId, setSelectedBankId] = useState(realBanks[0]?.id || "bank-hbl");
+  const [selectedCashAccountId, setSelectedCashAccountId] = useState(pettyCashAccounts[0]?.id || "bank-cash-park-tower");
+
   return (
     <ModalShell title="Pay Purchase Order" onClose={onClose}>
       <div style={{ marginBottom: 16, fontSize: 14, color: "var(--ink-muted)" }}>
         Paying vendor <strong>{po.vendor}</strong> for amount <strong>{pkr(po.amount)}</strong>.
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: paidVia === "Bank" && realBanks.length > 0 ? "1fr 1fr 1.2fr" : "1fr 1fr", gap: 10, marginBottom: 14 }}>
+      <div style={{ display: "grid", gridTemplateColumns: (paidVia === "Bank" && realBanks.length > 0) || (paidVia === "Cash" && pettyCashAccounts.length > 0) ? "1fr 1fr 1.2fr" : "1fr 1fr", gap: 10, marginBottom: 14 }}>
         <div className="field" style={{ margin: 0 }}><label>Payment Date</label><input type="date" value={date} onChange={e => setDate(e.target.value)} /></div>
         <div className="field" style={{ margin: 0 }}><label>Pay Via</label>
           <select value={paidVia} onChange={e => setPaidVia(e.target.value)}>
@@ -11469,9 +11426,18 @@ function PayPOModal({ po, bankAccounts = [], onClose, onSubmit }) {
             </select>
           </div>
         )}
+        {paidVia === "Cash" && pettyCashAccounts.length > 0 && (
+          <div className="field" style={{ margin: 0 }}><label>Petty Cash Vault</label>
+            <select value={selectedCashAccountId} onChange={e => setSelectedCashAccountId(e.target.value)}>
+              {pettyCashAccounts.map(b => (
+                <option key={b.id} value={b.id}>{b.bankName} ({b.branch || b.accountTitle})</option>
+              ))}
+            </select>
+          </div>
+        )}
       </div>
       <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 6 }}
-        onClick={() => onSubmit(po.id, paidVia, date, paidVia === "Cash" ? "bank-cash" : selectedBankId)}>
+        onClick={() => onSubmit(po.id, paidVia, date, paidVia === "Cash" ? selectedCashAccountId : selectedBankId)}>
         Post Payment & Clear AP
       </button>
     </ModalShell>
@@ -12902,22 +12868,32 @@ function VoucherModal({
 
   // Real bank accounts list (excluding petty cash)
   const realBankAccounts = useMemo(() => {
-    return bankAccounts.filter(b => b.id !== "bank-cash" && b.accountType !== "Petty Cash");
+    return bankAccounts.filter(b => b.accountType !== "Petty Cash" && !b.id.startsWith("bank-cash"));
   }, [bankAccounts]);
 
-  const [selectedBankId, setSelectedBankId] = useState(realBankAccounts[0]?.id || "bank-hbl");
+  const pettyCashAccounts = useMemo(() => {
+    return bankAccounts.filter(b => b.accountType === "Petty Cash" || b.id.startsWith("bank-cash"));
+  }, [bankAccounts]);
+
+  const [selectedBankId, setSelectedBankId] = useState(
+    voucherToEdit?.bankAccountId && realBankAccounts.some(b => b.id === voucherToEdit.bankAccountId)
+      ? voucherToEdit.bankAccountId
+      : (realBankAccounts[0]?.id || "bank-hbl")
+  );
+
+  const [selectedCashAccountId, setSelectedCashAccountId] = useState(
+    voucherToEdit?.bankAccountId && pettyCashAccounts.some(b => b.id === voucherToEdit.bankAccountId)
+      ? voucherToEdit.bankAccountId
+      : (pettyCashAccounts[0]?.id || "bank-cash-park-tower")
+  );
 
   // All accounts list for Contra Transfer (Cash + Bank Accounts)
   const allAccountsForContra = useMemo(() => {
-    const list = [...bankAccounts];
-    if (!list.some(b => b.id === "bank-cash")) {
-      list.unshift({ id: "bank-cash", bankName: "Petty Cash Vault", accountTitle: "Office Petty Cash Custodian", accountNumber: "CASH-VAULT-01", accountType: "Petty Cash" });
-    }
-    return list;
+    return bankAccounts;
   }, [bankAccounts]);
 
-  const [sourceBankId, setSourceBankId] = useState(allAccountsForContra[0]?.id || "bank-cash");
-  const [targetBankId, setTargetBankId] = useState(allAccountsForContra[1]?.id || realBankAccounts[0]?.id || "bank-hbl");
+  const [sourceBankId, setSourceBankId] = useState(voucherToEdit?.sourceBankId || allAccountsForContra[0]?.id || "bank-cash-park-tower");
+  const [targetBankId, setTargetBankId] = useState(voucherToEdit?.targetBankId || allAccountsForContra[1]?.id || realBankAccounts[0]?.id || "bank-hbl");
 
   const handleCategoryChange = (newCat) => {
     setCategory(newCat);
@@ -13139,7 +13115,7 @@ function VoucherModal({
         whtAmount: whtVal,
         category, subcategory, accountKey: glKey,
         via: isCash ? "Cash" : "Bank",
-        bankAccountId: isCash ? "bank-cash" : selectedBankId,
+        bankAccountId: isCash ? selectedCashAccountId : selectedBankId,
       });
     } else if (type === "RV") {
       const isPdc = rvReceiveMode === "PDC";
@@ -13164,7 +13140,7 @@ function VoucherModal({
         chequeNo: rvChequeNo,
         chequeDate: rvChequeDate,
         drawnBank: rvDrawnBank,
-        bankAccountId: isPdc ? selectedBankId : (via === "Cash" ? "bank-cash" : selectedBankId),
+        bankAccountId: isPdc ? selectedBankId : (rvReceiveMode === "Cash" || via === "Cash" ? selectedCashAccountId : selectedBankId),
         targetBankId: selectedBankId,
         settleAR
       });
@@ -13191,7 +13167,7 @@ function VoucherModal({
         voucherNo,
         projectId, date, party: effectiveParty, description, amount: Number(amount),
         category, subcategory, accountKey: glKey, via,
-        bankAccountId: via === "Cash" ? "bank-cash" : selectedBankId,
+        bankAccountId: via === "Cash" ? selectedCashAccountId : selectedBankId,
         settleAR
       });
     }
@@ -13457,8 +13433,17 @@ function VoucherModal({
               </div>
             </div>
           ) : (
-            <div style={{ background: "rgba(217, 119, 6, 0.08)", border: "1px solid rgba(217, 119, 6, 0.2)", padding: "8px 12px", borderRadius: 6, marginBottom: 12, fontSize: 12, color: "#D97706" }}>
-              💵 <b>Disbursement Source:</b> Office Petty Cash Custodian (CASH-VAULT-01).
+            <div className="card" style={{ padding: "10px 14px", marginBottom: 12, background: "rgba(217, 119, 6, 0.05)", border: "1px solid rgba(217, 119, 6, 0.2)", borderRadius: 8 }}>
+              <div className="field" style={{ margin: 0 }}>
+                <label>Disbursing Petty Cash Vault / Branch Office *</label>
+                <select value={selectedCashAccountId} onChange={e => setSelectedCashAccountId(e.target.value)}>
+                  {pettyCashAccounts.map(b => (
+                    <option key={b.id} value={b.id}>
+                      {b.bankName} — {b.branch || b.accountTitle} ({b.accountNumber})
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
           )}
 
@@ -13647,6 +13632,19 @@ function VoucherModal({
                 {realBankAccounts.map(b => (
                   <option key={b.id} value={b.id}>
                     {b.bankName} — {b.accountTitle} ({b.accountNumber})
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {rvReceiveMode === "Cash" && (
+            <div className="field">
+              <label>Select Receiving Petty Cash Vault / Office</label>
+              <select value={selectedCashAccountId} onChange={e => setSelectedCashAccountId(e.target.value)}>
+                {pettyCashAccounts.map(b => (
+                  <option key={b.id} value={b.id}>
+                    {b.bankName} — {b.branch || b.accountTitle} ({b.accountNumber})
                   </option>
                 ))}
               </select>
