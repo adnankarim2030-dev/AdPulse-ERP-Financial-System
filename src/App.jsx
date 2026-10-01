@@ -1280,7 +1280,7 @@ export default function App() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   /* Financial & Operations state */
-  const STORAGE_KEY = "adpulse_erp_production_clean_v22";
+  const STORAGE_KEY = "adpulse_erp_production_clean_v23";
 
   // Auto purge legacy localStorage versions so browser unconditionally loads fresh 100% audited Excel data
   try {
@@ -3966,6 +3966,9 @@ export default function App() {
     } else {
       if (!allowed.includes("release-orders")) {
         allowed.push("release-orders");
+      }
+      if (!allowed.includes("govt-clients")) {
+        allowed.push("govt-clients");
       }
     }
     let items = ALL_NAV_ITEMS.filter(n => allowed.includes(n.key) || (isCeoUser && n.key === "ceo-dashboard"));
