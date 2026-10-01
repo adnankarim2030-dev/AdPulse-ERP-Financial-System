@@ -30,6 +30,7 @@ import GlobalSearchBar from "./components/GlobalSearchBar.jsx";
 import StaffAuditTimeline from "./components/StaffAuditTimeline.jsx";
 import GovtInvoiceModal from "./components/GovtInvoiceModal.jsx";
 import GovtInvoicePrintModal from "./components/GovtInvoicePrintModal.jsx";
+import PettyCashOpeningModal from "./components/PettyCashOpeningModal.jsx";
 
 /* ---------- HELPERS & FORMATTERS ---------- */
 
@@ -270,7 +271,7 @@ const uid = (() => { let n = 1000; return () => (n++).toString(36); })();
 
 const ACCOUNTS = {
   cash: { code: "1110", name: "Cash Account (In Hand)", type: "asset", category: "Current Assets" },
-  bank: { code: "1120", name: "Bank Account (HBL/MCB)", type: "asset", category: "Current Assets" },
+  bank: { code: "1120", name: "Bank Accounts (Operational)", type: "asset", category: "Current Assets" },
   ar: { code: "1130", name: "Accounts Receivable (Clients)", type: "asset", category: "Current Assets" },
   wht_receivable: { code: "1140", name: "WHT Receivable (Advance Tax)", type: "asset", category: "Current Assets" },
   cheques_in_hand: { code: "1150", name: "Cheques in Hand / PDC Receivable", type: "asset", category: "Current Assets" },
@@ -834,8 +835,8 @@ function seedGovtInvoices() {
       whtAmount: 1860.60,
       netChequeAmount: 16745.40,
       paid: true,
-      paidVia: "Bank",
-      bankAccountId: "bank-hbl",
+      paidVia: "Cash",
+      bankAccountId: "bank-cash-park-tower",
       paidDate: "2026-03-15"
     }
   ];
@@ -859,9 +860,6 @@ function seedAuditLogs() {
 
 function seedBankAccounts() {
   return [
-    { id: "bank-hbl", bankName: "Habib Bank Limited (HBL)", accountTitle: "AdPulse IMC PVT LTD (Main Ops)", accountNumber: "0014-2289-1001", iban: "PK36HABB00001422891001", accountType: "Current Account", branch: "Shahrah-e-Faisal Branch", openingBalance: 0, color: "#059669" },
-    { id: "bank-mcb", bankName: "MCB Bank Ltd", accountTitle: "AdPulse Financial Services", accountNumber: "0088-1122-3344", iban: "PK91MUCB008811223344", accountType: "Corporate Account", branch: "II Chundrigar Road Branch", openingBalance: 0, color: "#0284C7" },
-    { id: "bank-meezan", bankName: "Meezan Bank Ltd", accountTitle: "AdPulse Media (Islamic Business)", accountNumber: "0102-0304-0506", iban: "PK55MEZN010203040506", accountType: "Islamic Current", branch: "Clifton Block 5 Branch", openingBalance: 0, color: "#B8860B" },
     { id: "bank-cash-park-tower", bankName: "Petty Cash - Park Tower Office", accountTitle: "Park Tower Office Petty Cash", accountNumber: "PC-PT-01", iban: "N/A (Cash in Hand - Park Tower)", accountType: "Petty Cash", branch: "Park Tower Office, Clifton", openingBalance: 0, color: "#D97706" },
     { id: "bank-cash-gulshan", bankName: "Petty Cash - Gulshan Office", accountTitle: "Gulshan Office Petty Cash", accountNumber: "PC-GO-02", iban: "N/A (Cash in Hand - Gulshan)", accountType: "Petty Cash", branch: "Gulshan-e-Iqbal Office", openingBalance: 0, color: "#E11D48" },
   ];
@@ -907,7 +905,7 @@ function buildInitialJournal(invoices, expenses, vouchers) {
       lines,
     });
     if (inv.paid) {
-      const bId = inv.bankAccountId || (inv.paidVia === "Cash" ? "bank-cash" : "bank-hbl");
+      const bId = inv.bankAccountId || (inv.paidVia === "Cash" ? "bank-cash-park-tower" : null);
       entries.push({
         id: uid(), date: inv.dueDate, reference: "PMT-" + (inv.invoiceNo || inv.id.toUpperCase()),
         description: `Payment received - ${inv.client}`,
@@ -921,7 +919,7 @@ function buildInitialJournal(invoices, expenses, vouchers) {
 
   expenses.forEach(exp => {
     const glAccKey = exp.accountKey || getGLAccountKeyForSubcategory(exp.category, exp.subcategory) || "expense";
-    const bId = exp.status === "paid" ? (exp.bankAccountId || (exp.paidVia === "Cash" ? "bank-cash" : "bank-hbl")) : undefined;
+    const bId = exp.status === "paid" ? (exp.bankAccountId || (exp.paidVia === "Cash" ? "bank-cash-park-tower" : null)) : undefined;
     entries.push({
       id: uid(), date: exp.date, reference: exp.expenseNo || ("EXP-" + exp.id.toUpperCase()),
       description: `${exp.vendor} (${exp.category}${exp.subcategory ? ' → ' + exp.subcategory : ''})`,
@@ -933,7 +931,7 @@ function buildInitialJournal(invoices, expenses, vouchers) {
   });
 
   (vouchers || []).forEach(v => {
-    const vBankId = v.bankAccountId || (v.via === "Cash" ? "bank-cash" : "bank-hbl");
+    const vBankId = v.bankAccountId || (v.via === "Cash" ? "bank-cash-park-tower" : null);
     if (v.type === "RV") {
       const isChequeInHand = v.isPdc || v.receiveMode === "pdc" || v.receiveMode === "PDC";
       const depositAccount = isChequeInHand ? "cheques_in_hand" : (v.via === "Cash" ? "cash" : "bank");
@@ -1015,10 +1013,10 @@ function buildInitialJournal(invoices, expenses, vouchers) {
         ]
       });
     } else if (v.type === "CTV") {
-      const srcBankId = v.sourceBankId || "bank-cash";
-      const tgtBankId = v.targetBankId || "bank-hbl";
-      const srcAcc = (srcBankId === "bank-cash") ? "cash" : "bank";
-      const tgtAcc = (tgtBankId === "bank-cash") ? "cash" : "bank";
+      const srcBankId = v.sourceBankId || "bank-cash-park-tower";
+      const tgtBankId = v.targetBankId || null;
+      const srcAcc = (srcBankId?.startsWith("bank-cash") || srcBankId === "bank-cash") ? "cash" : "bank";
+      const tgtAcc = (tgtBankId?.startsWith("bank-cash") || tgtBankId === "bank-cash") ? "cash" : "bank";
       entries.push({
         id: uid(), date: v.date, reference: v.voucherNo || ("CTV-" + v.id.toUpperCase()),
         description: `Contra Transfer - ${v.description || (srcBankId + ' to ' + tgtBankId)}`,
@@ -1280,7 +1278,7 @@ export default function App() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   /* Financial & Operations state */
-  const STORAGE_KEY = "adpulse_erp_production_clean_v23";
+  const STORAGE_KEY = "adpulse_erp_production_clean_v24";
 
   // Auto purge legacy localStorage versions so browser unconditionally loads fresh 100% audited Excel data
   try {
@@ -1338,7 +1336,19 @@ export default function App() {
   const [govtSearchQuery, setGovtSearchQuery] = useState("");
   const [govtFilterStatus, setGovtFilterStatus] = useState("all");
   const [projects, setProjects] = useState(() => getInitialState("projects", seedData.projects || []));
-  const [bankAccounts, setBankAccounts] = useState(() => getInitialState("bankAccounts", seedData.bankAccounts || []));
+  const [bankAccounts, setBankAccounts] = useState(() => {
+    const raw = getInitialState("bankAccounts", seedData.bankAccounts || []);
+    const filtered = (raw || []).filter(b => 
+      b.id !== "bank-hbl" && 
+      b.id !== "bank-mcb" && 
+      b.id !== "bank-meezan" &&
+      !b.bankName?.toLowerCase().includes("meezan") &&
+      !b.bankName?.toLowerCase().includes("mcb") &&
+      !b.bankName?.toLowerCase().includes("habib bank")
+    );
+    return filtered.length > 0 ? filtered : seedBankAccounts();
+  });
+  const [showPettyCashOpeningModal, setShowPettyCashOpeningModal] = useState(false);
   const [hoardings, setHoardings] = useState(() => getInitialState("hoardings", seedData.hoardings || []));
   const [inventoryItems, setInventoryItems] = useState(() => getInitialState("inventoryItems", seedData.inventoryItems || []));
   const [inventoryLogs, setInventoryLogs] = useState(() => getInitialState("inventoryLogs", seedData.inventoryLogs || []));
@@ -1899,9 +1909,6 @@ export default function App() {
         setInventoryItems([]);
         setEmployees([]);
         setBankAccounts([
-          { id: "bank-hbl", bankName: "Habib Bank Limited (HBL)", accountTitle: "AdPulse IMC PVT LTD (Main Ops)", accountNumber: "0014-2289-1001", iban: "PK36HABB00001422891001", accountType: "Current Account", branch: "Shahrah-e-Faisal Branch", openingBalance: 0, color: "#059669" },
-          { id: "bank-mcb", bankName: "MCB Bank Ltd", accountTitle: "AdPulse Financial Services", accountNumber: "0088-1122-3344", iban: "PK91MUCB008811223344", accountType: "Corporate Account", branch: "II Chundrigar Road Branch", openingBalance: 0, color: "#0284C7" },
-          { id: "bank-meezan", bankName: "Meezan Bank Ltd", accountTitle: "AdPulse Media (Islamic Business)", accountNumber: "0102-0304-0506", iban: "PK55MEZN010203040506", accountType: "Islamic Current", branch: "Clifton Block 5 Branch", openingBalance: 0, color: "#B8860B" },
           { id: "bank-cash-park-tower", bankName: "Petty Cash - Park Tower Office", accountTitle: "Park Tower Office Petty Cash", accountNumber: "PC-PT-01", iban: "N/A (Cash in Hand - Park Tower)", accountType: "Petty Cash", branch: "Park Tower Office, Clifton", openingBalance: 0, color: "#D97706" },
           { id: "bank-cash-gulshan", bankName: "Petty Cash - Gulshan Office", accountTitle: "Gulshan Office Petty Cash", accountNumber: "PC-GO-02", iban: "N/A (Cash in Hand - Gulshan)", accountType: "Petty Cash", branch: "Gulshan-e-Iqbal Office", openingBalance: 0, color: "#E11D48" },
         ]);
@@ -2368,7 +2375,8 @@ export default function App() {
   }
 
   function markPaid(inv, via, bankAccountId) {
-    const selectedBank = via === "Cash" ? "bank-cash" : (bankAccountId || "bank-hbl");
+    const defaultBank = bankAccounts.find(b => b.accountType !== "Petty Cash" && !b.id.startsWith("bank-cash"))?.id || bankAccounts[0]?.id || null;
+    const selectedBank = via === "Cash" ? "bank-cash-park-tower" : (bankAccountId || defaultBank);
     setInvoices(list => list.map(i => i.id === inv.id ? { ...i, paid: true, paidVia: via, bankAccountId: selectedBank } : i));
     const totalBilled = inv.totalAmount || inv.amount;
     const wht = inv.applyWht ? (inv.whtAmount || 0) : 0;
@@ -2450,8 +2458,9 @@ export default function App() {
     }
   }
 
-  function handleMarkGovtInvoicePaid(inv, via = "Bank", bankAccountId = "bank-hbl") {
-    const selectedBank = via === "Cash" ? "bank-cash-park-tower" : (bankAccountId || "bank-hbl");
+  function handleMarkGovtInvoicePaid(inv, via = "Bank", bankAccountId = null) {
+    const defaultBank = bankAccounts.find(b => b.accountType !== "Petty Cash" && !b.id.startsWith("bank-cash"))?.id || bankAccounts[0]?.id || null;
+    const selectedBank = via === "Cash" ? "bank-cash-park-tower" : (bankAccountId || defaultBank);
     setGovtInvoices(list => list.map(g => g.id === inv.id ? {
       ...g,
       paid: true,
@@ -2490,10 +2499,11 @@ export default function App() {
       alert("Insufficient cash/bank balance to remit SRB Sales Tax.");
       return;
     }
+    const defaultBank = bankAccounts.find(b => b.accountType !== "Petty Cash" && !b.id.startsWith("bank-cash"))?.id || bankAccounts[0]?.id || null;
     const today = TODAY.toISOString().slice(0, 10);
     postEntry(today, `Sindh Sales Tax (SRB) Remittance`, [
       { account: "srb_payable", debit: srbPayableBalance, credit: 0 },
-      { account: "bank", bankAccountId: "bank-hbl", debit: 0, credit: srbPayableBalance },
+      { account: "bank", bankAccountId: defaultBank, debit: 0, credit: srbPayableBalance },
     ], "SRB-REMIT");
     alert(`Successfully posted remittance of ${pkr(srbPayableBalance)} to SRB.`);
   }
@@ -2502,7 +2512,8 @@ export default function App() {
     const { projectId, vendor, category, subcategory, accountKey, description, refNo, amount, date, status, paidVia, bankAccountId } = data;
     const glAccKey = accountKey || getGLAccountKeyForSubcategory(category, subcategory) || "expense";
     const finalExpNo = data.expenseNo || data.refNo || getNextExpenseNo(expenses);
-    const selectedBank = status === "paid" ? (paidVia === "Cash" ? "bank-cash" : (bankAccountId || "bank-hbl")) : null;
+    const defaultBank = bankAccounts.find(b => b.accountType !== "Petty Cash" && !b.id.startsWith("bank-cash"))?.id || bankAccounts[0]?.id || null;
+    const selectedBank = status === "paid" ? (paidVia === "Cash" ? "bank-cash-park-tower" : (bankAccountId || defaultBank)) : null;
     const exp = {
       id: uid(),
       expenseNo: finalExpNo,
@@ -2531,7 +2542,8 @@ export default function App() {
   function payExpense(expenseId, paymentVia, paymentDate, bankAccountId) {
     const exp = expenses.find(e => e.id === expenseId);
     if (!exp || exp.status === "paid") return;
-    const selectedBank = paymentVia === "Cash" ? "bank-cash" : (bankAccountId || "bank-hbl");
+    const defaultBank = bankAccounts.find(b => b.accountType !== "Petty Cash" && !b.id.startsWith("bank-cash"))?.id || bankAccounts[0]?.id || null;
+    const selectedBank = paymentVia === "Cash" ? "bank-cash-park-tower" : (bankAccountId || defaultBank);
     setExpenses(list => list.map(e => e.id === expenseId ? { ...e, status: "paid", paidVia: paymentVia, bankAccountId: selectedBank } : e));
     postEntry(paymentDate, `Payment to ${exp.vendor} (${exp.category})`, [
       { account: "ap", debit: exp.amount, credit: 0 },
@@ -2603,7 +2615,8 @@ export default function App() {
     const po = purchaseOrders.find(p => p.id === id);
     if (!po) return;
     setPOStatus(id, "Paid");
-    const selectedBank = paymentVia === "Cash" ? "bank-cash" : (bankAccountId || "bank-hbl");
+    const defaultBank = bankAccounts.find(b => b.accountType !== "Petty Cash" && !b.id.startsWith("bank-cash"))?.id || bankAccounts[0]?.id || null;
+    const selectedBank = paymentVia === "Cash" ? "bank-cash-park-tower" : (bankAccountId || defaultBank);
     const poRef = po.poNumber || `PO-${po.id.slice(0, 4).toUpperCase()}`;
     postEntry(paymentDate, `Payment for ${poRef} to ${po.vendor}`, [
       { account: "ap", debit: po.amount, credit: 0 },
@@ -2646,7 +2659,8 @@ export default function App() {
       const glKey = accountKey || getGLAccountKeyForSubcategory(category, subcategory) || "expense";
       const isCash = via === "Cash" || paymentMode === "Petty Cash";
       const paymentAccount = isCash ? "cash" : "bank";
-      const bAccountId = isCash ? "bank-cash" : (bankAccountId || bankAccounts.find(b => b.accountType !== "Petty Cash")?.id || "bank-hbl");
+      const defaultBank = bankAccounts.find(b => b.accountType !== "Petty Cash" && !b.id.startsWith("bank-cash"))?.id || bankAccounts[0]?.id || null;
+      const bAccountId = isCash ? "bank-cash-park-tower" : (bankAccountId || defaultBank);
       const memoText = subcategory ? `${category} → ${subcategory}` : (category || "Payment");
       
       const billAmt = Number(amount) || 0;
@@ -2677,7 +2691,8 @@ export default function App() {
     } else if (type === "RV") {
       const isChequeInHand = isPdc || receiveMode === "pdc" || receiveMode === "PDC";
       const depositAccount = isChequeInHand ? "cheques_in_hand" : (via === "Cash" ? "cash" : "bank");
-      const bAccountId = isChequeInHand ? null : (via === "Cash" ? "bank-cash" : (bankAccountId || bankAccounts.find(b => b.accountType !== "Petty Cash")?.id || "bank-hbl"));
+      const defaultBank = bankAccounts.find(b => b.accountType !== "Petty Cash" && !b.id.startsWith("bank-cash"))?.id || bankAccounts[0]?.id || null;
+      const bAccountId = isChequeInHand ? null : (via === "Cash" ? "bank-cash-park-tower" : (bankAccountId || defaultBank));
       
       const grossAmt = Number(amount) || 0;
       const whtAmt = applyWht ? (Number(whtAmount) || 0) : 0;
@@ -2776,7 +2791,8 @@ export default function App() {
       const glKey = accountKey || getGLAccountKeyForSubcategory(category, subcategory) || "expense";
       const isCash = via === "Cash" || paymentMode === "Petty Cash";
       const paymentAccount = isCash ? "cash" : "bank";
-      const bAccountId = isCash ? "bank-cash" : (bankAccountId || bankAccounts.find(b => b.accountType !== "Petty Cash")?.id || "bank-hbl");
+      const defaultBank = bankAccounts.find(b => b.accountType !== "Petty Cash" && !b.id.startsWith("bank-cash"))?.id || bankAccounts[0]?.id || null;
+      const bAccountId = isCash ? "bank-cash-park-tower" : (bankAccountId || defaultBank);
       const memoText = subcategory ? `${category} → ${subcategory}` : (category || "Payment");
       
       const billAmt = Number(amount) || 0;
@@ -2807,7 +2823,8 @@ export default function App() {
     } else if (type === "RV") {
       const isChequeInHand = isPdc || receiveMode === "pdc" || receiveMode === "PDC";
       const depositAccount = isChequeInHand ? "cheques_in_hand" : (via === "Cash" ? "cash" : "bank");
-      const bAccountId = isChequeInHand ? null : (via === "Cash" ? "bank-cash" : (bankAccountId || bankAccounts.find(b => b.accountType !== "Petty Cash")?.id || "bank-hbl"));
+      const defaultBank = bankAccounts.find(b => b.accountType !== "Petty Cash" && !b.id.startsWith("bank-cash"))?.id || bankAccounts[0]?.id || null;
+      const bAccountId = isChequeInHand ? null : (via === "Cash" ? "bank-cash-park-tower" : (bankAccountId || defaultBank));
       
       const grossAmt = Number(amount) || 0;
       const whtAmt = applyWht ? (Number(whtAmount) || 0) : 0;
@@ -2938,10 +2955,11 @@ export default function App() {
     setShowVoucherForm(true);
   }
 
-  function clearPdcCheque(voucherId, clearanceDate = TODAY_STR, targetBankId = "bank-hbl") {
+  function clearPdcCheque(voucherId, clearanceDate = TODAY_STR, targetBankId = null) {
     const vch = vouchers.find(v => v.id === voucherId);
     if (!vch) return;
-    const tgtBank = bankAccounts.find(b => b.id === targetBankId) || bankAccounts.find(b => b.accountType !== "Petty Cash") || bankAccounts[0];
+    const defaultBank = bankAccounts.find(b => b.accountType !== "Petty Cash" && !b.id.startsWith("bank-cash")) || bankAccounts[0];
+    const tgtBank = bankAccounts.find(b => b.id === targetBankId) || defaultBank;
     const netAmt = Number(vch.netAmount !== undefined ? vch.netAmount : vch.amount) || 0;
     const clrDate = clearanceDate || TODAY_STR;
     const memo = `PDC Cleared in ${tgtBank?.bankName || 'Bank'}: ${vch.party} (Chq #${vch.chequeNo || vch.voucherNo})`;
@@ -3284,35 +3302,94 @@ export default function App() {
   }
 
   function createBankAccount(data) {
+    const isCash = data.accountType === "Petty Cash" || (data.id && data.id.startsWith("bank-cash"));
     const newAccount = {
-      id: "bank-" + uid(),
+      id: data.id || ("bank-" + (isCash ? "cash-" : "") + uid()),
       bankName: data.bankName,
       accountTitle: data.accountTitle,
-      accountNumber: data.accountNumber,
-      iban: data.iban || "N/A",
-      accountType: data.accountType || "Current Account",
-      branch: data.branch || "Karachi Branch",
+      accountNumber: data.accountNumber || (isCash ? "PC-01" : "N/A"),
+      iban: data.iban || (isCash ? "N/A (Cash in Hand)" : "N/A"),
+      accountType: data.accountType || (isCash ? "Petty Cash" : "Current Account"),
+      branch: data.branch || (isCash ? "Office Cash Vault" : "Karachi Branch"),
       openingBalance: Number(data.openingBalance) || 0,
-      color: data.color || "#0284C7"
+      color: data.color || (isCash ? "#D97706" : "#0284C7")
     };
     setBankAccounts(list => [...list, newAccount]);
     setShowBankAccountModal(false);
 
     if (newAccount.openingBalance > 0) {
       postEntry(TODAY.toISOString().slice(0, 10), `Opening Balance — ${newAccount.bankName}`, [
-        { account: "bank", bankAccountId: newAccount.id, debit: newAccount.openingBalance, credit: 0 },
-        { account: "equity", debit: 0, credit: newAccount.openingBalance }
+        { account: isCash ? "cash" : "bank", bankAccountId: newAccount.id, debit: newAccount.openingBalance, credit: 0, memo: "Opening Balance" },
+        { account: "equity", debit: 0, credit: newAccount.openingBalance, memo: "Owner's Equity / Opening Balance Equity" }
       ], "OB-" + newAccount.id.toUpperCase());
     }
   }
 
   function updateBankAccount(updated) {
-    setBankAccounts(list => list.map(b => b.id === updated.id ? updated : b));
+    const isCash = updated.accountType === "Petty Cash" || updated.id.startsWith("bank-cash");
+    const opBal = Number(updated.openingBalance) || 0;
+    const obRef = "OB-" + updated.id.toUpperCase();
+
+    // Sync journal OB- entry for this account
+    setJournal(prev => {
+      const filtered = prev.filter(e => e.reference !== obRef);
+      if (opBal > 0) {
+        const newObEntry = {
+          id: uid(),
+          date: TODAY.toISOString().slice(0, 10),
+          reference: obRef,
+          description: `Opening Balance — ${updated.bankName}`,
+          lines: [
+            { account: isCash ? "cash" : "bank", bankAccountId: updated.id, debit: opBal, credit: 0, memo: "Opening Balance" },
+            { account: "equity", debit: 0, credit: opBal, memo: "Owner's Equity / Opening Balance Equity" }
+          ]
+        };
+        return [newObEntry, ...filtered];
+      }
+      return filtered;
+    });
+
+    setBankAccounts(list => list.map(b => b.id === updated.id ? { ...updated, openingBalance: opBal } : b));
     setEditingBankAccount(null);
+    setShowBankAccountModal(false);
+  }
+
+  function handleSaveAllOpeningBalances(updatedAccounts) {
+    setBankAccounts(updatedAccounts);
+    
+    // Sync GL for each account
+    setJournal(prev => {
+      let nextJournal = [...prev];
+      updatedAccounts.forEach(acc => {
+        const isCash = acc.accountType === "Petty Cash" || acc.id.startsWith("bank-cash");
+        const opBal = Number(acc.openingBalance) || 0;
+        const obRef = "OB-" + acc.id.toUpperCase();
+        
+        // Remove existing OB entry for this account
+        nextJournal = nextJournal.filter(e => e.reference !== obRef);
+        
+        // If opening balance > 0, insert fresh OB entry
+        if (opBal > 0) {
+          nextJournal.unshift({
+            id: uid(),
+            date: TODAY.toISOString().slice(0, 10),
+            reference: obRef,
+            description: `Opening Balance — ${acc.bankName}`,
+            lines: [
+              { account: isCash ? "cash" : "bank", bankAccountId: acc.id, debit: opBal, credit: 0, memo: "Opening Balance" },
+              { account: "equity", debit: 0, credit: opBal, memo: "Owner's Equity / Opening Balance Equity" }
+            ]
+          });
+        }
+      });
+      return nextJournal;
+    });
   }
 
   function deleteBankAccount(account) {
     if (window.confirm(`Are you sure you want to remove ${account.bankName} (${account.accountNumber})?`)) {
+      const obRef = "OB-" + account.id.toUpperCase();
+      setJournal(prev => prev.filter(e => e.reference !== obRef));
       setBankAccounts(list => list.filter(b => b.id !== account.id));
     }
   }
@@ -3341,7 +3418,8 @@ export default function App() {
 
 
   function addProjectCost(project, { vendor, description, amount, date, paidVia, bankAccountId }) {
-    const selectedBank = paidVia === "Cash" ? "bank-cash" : (bankAccountId || "bank-hbl");
+    const defaultBank = bankAccounts.find(b => b.accountType !== "Petty Cash" && !b.id.startsWith("bank-cash"))?.id || bankAccounts[0]?.id || null;
+    const selectedBank = paidVia === "Cash" ? "bank-cash-park-tower" : (bankAccountId || defaultBank);
     const exp = {
       id: uid(), vendor, description, category: project.type, amount, date, paidVia, bankAccountId: selectedBank, projectId: project.id,
     };
@@ -3426,11 +3504,12 @@ export default function App() {
     const run = { id: uid(), month, runDate, employeeCount: entries.length, totalGross, totalDeductions, totalNet, entries };
     setPayrollRuns(list => [run, ...list]);
 
-    const exp = { id: uid(), vendor: `Payroll — ${month}`, category: "Payroll", description: `Salaries for ${entries.length} employees`, amount: totalNet, date: runDate, paidVia: "Bank", bankAccountId: "bank-hbl" };
+    const defaultBank = bankAccounts.find(b => b.accountType !== "Petty Cash" && !b.id.startsWith("bank-cash"))?.id || bankAccounts[0]?.id || null;
+    const exp = { id: uid(), vendor: `Payroll — ${month}`, category: "Payroll", description: `Salaries for ${entries.length} employees`, amount: totalNet, date: runDate, paidVia: "Bank", bankAccountId: defaultBank };
     setExpenses(list => [exp, ...list]);
     postEntry(runDate, `Payroll — ${month} (${entries.length} employees)`, [
       { account: "expense", debit: totalNet, credit: 0, memo: "Payroll" },
-      { account: "bank", bankAccountId: "bank-hbl", debit: 0, credit: totalNet },
+      { account: "bank", bankAccountId: defaultBank, debit: 0, credit: totalNet },
     ], "PR-" + exp.id.toUpperCase());
     setPayrollConfirm(false);
   }
@@ -3701,7 +3780,7 @@ export default function App() {
           totalAmount,
           currency: "PKR",
           paymentMode: "Bank",
-          bankAccountId: bankAccounts.find(b => b.accountType !== "Petty Cash")?.id || "bank-hbl",
+          bankAccountId: bankAccounts.find(b => b.accountType !== "Petty Cash" && !b.id.startsWith("bank-cash"))?.id || null,
           description: "Media Production, Placement & Digital Campaigns",
           poNumber: "PO-" + Math.floor(Math.random() * 900 + 100),
         };
@@ -3754,8 +3833,9 @@ export default function App() {
     const subcategory = extracted.subcategory || "Meta / Facebook Ads";
     const glKey = getGLAccountKeyForSubcategory(category, subcategory) || "expense";
 
+    const defaultBank = bankAccounts.find(b => b.accountType !== "Petty Cash" && !b.id.startsWith("bank-cash"))?.id || bankAccounts[0]?.id || null;
     const paymentMode = extracted.paymentMode || "Bank";
-    const bankAccountId = paymentMode === "Cash" ? "bank-cash" : (extracted.bankAccountId || "bank-hbl");
+    const bankAccountId = paymentMode === "Cash" ? "bank-cash-park-tower" : (extracted.bankAccountId || defaultBank);
     const docRef = extracted.documentNumber || `DOC-${doc.id.toUpperCase().slice(0, 6)}`;
     const date = extracted.date || TODAY.toISOString().slice(0, 10);
     const dueDate = extracted.dueDate || new Date(Date.now() + 15 * 86400000).toISOString().slice(0, 10);
@@ -6822,6 +6902,7 @@ export default function App() {
             <>
               {(() => {
                 // 1. Calculate Live Balances for each bank account & petty cash
+                const defaultRealBankId = bankAccounts.find(x => x.accountType !== "Petty Cash" && !x.id.startsWith("bank-cash"))?.id || bankAccounts[0]?.id;
                 const accountBalances = bankAccounts.map(b => {
                   let netMovement = 0;
                   journal.forEach(entry => {
@@ -6831,7 +6912,7 @@ export default function App() {
                           netMovement += (Number(l.debit) || 0) - (Number(l.credit) || 0);
                         }
                       } else {
-                        if (l.account === "bank" && (l.bankAccountId === b.id || (!l.bankAccountId && b.id === "bank-hbl"))) {
+                        if (l.account === "bank" && (l.bankAccountId === b.id || (!l.bankAccountId && b.id === defaultRealBankId))) {
                           netMovement += (Number(l.debit) || 0) - (Number(l.credit) || 0);
                         }
                       }
@@ -6843,7 +6924,7 @@ export default function App() {
                     entry.lines?.some(l => {
                       const matchesAcc = (b.accountType === "Petty Cash" || b.id.startsWith("bank-cash"))
                         ? (l.account === "cash" && (l.bankAccountId === b.id || (!l.bankAccountId && b.id === "bank-cash-park-tower")))
-                        : (l.account === "bank" && (l.bankAccountId === b.id || (!l.bankAccountId && b.id === "bank-hbl")));
+                        : (l.account === "bank" && (l.bankAccountId === b.id || (!l.bankAccountId && b.id === defaultRealBankId)));
                       return matchesAcc && (entry.reference?.startsWith("OB-") || entry.description?.toLowerCase().includes("opening balance"));
                     })
                   );
@@ -6862,7 +6943,7 @@ export default function App() {
                   entry.lines?.forEach((line, lineIdx) => {
                     let lineBankId = line.bankAccountId;
                     if (!lineBankId) {
-                      lineBankId = line.account === "cash" ? "bank-cash-park-tower" : (line.account === "bank" ? "bank-hbl" : null);
+                      lineBankId = line.account === "cash" ? "bank-cash-park-tower" : (line.account === "bank" ? defaultRealBankId : null);
                     }
 
                     if (!lineBankId && line.account !== "cash" && line.account !== "bank") return;
@@ -6902,11 +6983,17 @@ export default function App() {
                   <>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, flexWrap: "wrap", gap: 12 }}>
                       <div className="section-title" style={{ margin: 0 }}>
-                        <Landmark size={18} color="var(--gold)" /> Multiple Bank Accounts & Liquidity Position
+                        <Landmark size={18} color="var(--gold)" /> Multiple Bank Accounts &amp; Liquidity Position
                       </div>
                       <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                         <button className="btn btn-primary" onClick={() => { setEditingBankAccount(null); setShowBankAccountModal(true); }}>
                           <Plus size={14} /> Add Bank Account
+                        </button>
+                        <button className="btn" style={{ borderColor: "#D97706", color: "#D97706", display: "inline-flex", alignItems: "center", gap: 5 }} onClick={() => { setEditingBankAccount({ accountType: "Petty Cash", bankName: "Petty Cash - ", branch: "Office Cash Vault" }); setShowBankAccountModal(true); }}>
+                          <Plus size={14} /> Add Petty Cash Vault
+                        </button>
+                        <button className="btn" style={{ background: "rgba(217, 119, 6, 0.12)", color: "#D97706", borderColor: "#D97706", fontWeight: 700, display: "inline-flex", alignItems: "center", gap: 6 }} onClick={() => setShowPettyCashOpeningModal(true)}>
+                          <Wallet size={14} /> 💵 Set Opening Balance
                         </button>
                         <button className="btn" onClick={() => { setVoucherDefaultType("PV"); setShowVoucherForm(true); }}>
                           Payment Voucher
@@ -6920,24 +7007,43 @@ export default function App() {
                       </div>
                     </div>
 
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 14, marginBottom: 20 }}>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 14, marginBottom: 20 }}>
                       {accountBalances.map(b => (
-                        <div key={b.id} className="card" style={{ padding: 16, borderLeft: `4px solid ${b.color || "var(--gold)"}` }}>
+                        <div key={b.id} className="card" style={{ padding: 16, borderLeft: `4px solid ${b.color || (b.accountType === "Petty Cash" ? "#D97706" : "var(--gold)")}`, position: "relative" }}>
                           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
                             <div>
-                              <div style={{ fontWeight: 700, fontSize: 14, color: "var(--ink)" }}>{b.bankName}</div>
+                              <div style={{ fontWeight: 700, fontSize: 14, color: "var(--ink)", display: "flex", alignItems: "center", gap: 6 }}>
+                                <span>{b.accountType === "Petty Cash" || b.id.startsWith("bank-cash") ? "💵" : "🏦"}</span>
+                                <span>{b.bankName}</span>
+                              </div>
                               <div style={{ fontSize: 11.5, color: "var(--ink-muted)" }}>{b.accountTitle}</div>
                             </div>
-                            <span className="badge-mini" style={{ background: "var(--bg)", border: "1px solid var(--rule)" }}>{b.accountType}</span>
+                            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                              <span className="badge-mini" style={{ background: "var(--bg)", border: "1px solid var(--rule)", fontSize: 10.5 }}>{b.accountType}</span>
+                              <button className="btn" style={{ padding: "3px 6px", fontSize: 11 }} onClick={() => { setEditingBankAccount(b); setShowBankAccountModal(true); }} title="Edit Account / Opening Balance">
+                                <Edit size={12} />
+                              </button>
+                              <button className="btn" style={{ padding: "3px 6px", fontSize: 11, color: "var(--rose)" }} onClick={() => deleteBankAccount(b)} title="Delete Account">
+                                <Trash2 size={12} />
+                              </button>
+                            </div>
                           </div>
-                          <div className="mono" style={{ fontSize: 11, color: "var(--gold)", marginBottom: 8, fontWeight: 600 }}>
-                            {b.accountNumber}
+                          <div className="mono" style={{ fontSize: 11, color: "var(--gold)", marginBottom: 4, fontWeight: 600 }}>
+                            {b.accountNumber} {b.iban && b.iban !== "N/A" ? `• ${b.iban}` : ""}
                           </div>
-                          <div style={{ fontSize: 11, color: "var(--ink-muted)", marginBottom: 10, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                          <div style={{ fontSize: 11, color: "var(--ink-muted)", marginBottom: 8, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                             {b.branch}
                           </div>
-                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", borderTop: "1px solid var(--rule)", paddingTop: 10 }}>
-                            <span style={{ fontSize: 11.5, color: "var(--ink-muted)" }}>Live Balance:</span>
+
+                          <div style={{ background: "rgba(0,0,0,0.02)", padding: "5px 8px", borderRadius: 6, marginBottom: 8, fontSize: 11.5, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                            <span style={{ color: "var(--ink-muted)" }}>Opening Balance:</span>
+                            <span className="mono" style={{ fontWeight: 600, color: (b.openingBalance || 0) > 0 ? "var(--ink)" : "var(--ink-muted)" }}>
+                              {pkr(b.openingBalance || 0)}
+                            </span>
+                          </div>
+
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", borderTop: "1px solid var(--rule)", paddingTop: 8 }}>
+                            <span style={{ fontSize: 11.5, color: "var(--ink-muted)", fontWeight: 600 }}>Live Net Balance:</span>
                             <span className="mono" style={{ fontSize: 15, fontWeight: 700, color: b.liveBalance >= 0 ? "var(--jade)" : "var(--rose)" }}>
                               {pkr(b.liveBalance)}
                             </span>
@@ -9345,6 +9451,14 @@ export default function App() {
           onSubmit={editingBankAccount ? updateBankAccount : createBankAccount}
         />
       )}
+      {showPettyCashOpeningModal && (
+        <PettyCashOpeningModal
+          bankAccounts={bankAccounts}
+          onSaveBalances={handleSaveAllOpeningBalances}
+          onAddNewVault={createBankAccount}
+          onClose={() => setShowPettyCashOpeningModal(false)}
+        />
+      )}
     </div>
   );
 }
@@ -10901,7 +11015,7 @@ function ExpenseModal({ initialData, projects = [], vendors = [], expenses = [],
   const [paidVia, setPaidVia] = useState(initialData?.paidVia || "Cash");
   const realBanks = useMemo(() => bankAccounts.filter(b => b.id !== "bank-cash" && b.accountType !== "Petty Cash"), [bankAccounts]);
   const pettyCashAccounts = useMemo(() => bankAccounts.filter(b => b.accountType === "Petty Cash" || b.id.startsWith("bank-cash")), [bankAccounts]);
-  const [selectedBankId, setSelectedBankId] = useState(initialData?.bankAccountId || realBanks[0]?.id || "bank-hbl");
+  const [selectedBankId, setSelectedBankId] = useState(initialData?.bankAccountId || realBanks[0]?.id || "");
   const [selectedCashAccountId, setSelectedCashAccountId] = useState(
     initialData?.bankAccountId && pettyCashAccounts.some(c => c.id === initialData.bankAccountId)
       ? initialData.bankAccountId
@@ -11226,7 +11340,7 @@ function PayExpenseModal({ expense, bankAccounts = [], onClose, onSubmit }) {
   const [paidVia, setPaidVia] = useState("Bank");
   const realBanks = useMemo(() => bankAccounts.filter(b => b.id !== "bank-cash" && b.accountType !== "Petty Cash"), [bankAccounts]);
   const pettyCashAccounts = useMemo(() => bankAccounts.filter(b => b.accountType === "Petty Cash" || b.id.startsWith("bank-cash")), [bankAccounts]);
-  const [selectedBankId, setSelectedBankId] = useState(realBanks[0]?.id || "bank-hbl");
+  const [selectedBankId, setSelectedBankId] = useState(realBanks[0]?.id || "");
   const [selectedCashAccountId, setSelectedCashAccountId] = useState(pettyCashAccounts[0]?.id || "bank-cash-park-tower");
 
   return (
@@ -12020,7 +12134,7 @@ function PayPOModal({ po, bankAccounts = [], onClose, onSubmit }) {
   const [paidVia, setPaidVia] = useState("Bank");
   const realBanks = useMemo(() => bankAccounts.filter(b => b.id !== "bank-cash" && b.accountType !== "Petty Cash"), [bankAccounts]);
   const pettyCashAccounts = useMemo(() => bankAccounts.filter(b => b.accountType === "Petty Cash" || b.id.startsWith("bank-cash")), [bankAccounts]);
-  const [selectedBankId, setSelectedBankId] = useState(realBanks[0]?.id || "bank-hbl");
+  const [selectedBankId, setSelectedBankId] = useState(realBanks[0]?.id || "");
   const [selectedCashAccountId, setSelectedCashAccountId] = useState(pettyCashAccounts[0]?.id || "bank-cash-park-tower");
 
   return (
@@ -13222,67 +13336,106 @@ function StockMovementModal({ initialItem, items, projects, onClose, onSubmit })
 }
 
 function BankAccountModal({ initialData, onClose, onSubmit }) {
+  const isPettyCashInitial = initialData?.accountType === "Petty Cash" || (initialData?.id && initialData.id.startsWith("bank-cash"));
   const [bankName, setBankName] = useState(initialData?.bankName || "");
   const [accountTitle, setAccountTitle] = useState(initialData?.accountTitle || "");
-  const [accountNumber, setAccountNumber] = useState(initialData?.accountNumber || "");
-  const [iban, setIban] = useState(initialData?.iban || "");
-  const [accountType, setAccountType] = useState(initialData?.accountType || "Current Account");
-  const [branch, setBranch] = useState(initialData?.branch || "");
+  const [accountNumber, setAccountNumber] = useState(initialData?.accountNumber || (isPettyCashInitial ? "PC-01" : ""));
+  const [iban, setIban] = useState(initialData?.iban || (isPettyCashInitial ? "N/A" : ""));
+  const [accountType, setAccountType] = useState(initialData?.accountType || (isPettyCashInitial ? "Petty Cash" : "Current Account"));
+  const [branch, setBranch] = useState(initialData?.branch || (isPettyCashInitial ? "Office Cash Vault" : ""));
   const [openingBalance, setOpeningBalance] = useState(initialData?.openingBalance !== undefined ? initialData.openingBalance : "");
-  const [color, setColor] = useState(initialData?.color || "#059669");
+  const [color, setColor] = useState(initialData?.color || (isPettyCashInitial ? "#D97706" : "#0284C7"));
 
-  const valid = bankName && accountTitle && accountNumber;
+  const isCash = accountType === "Petty Cash";
+  const valid = bankName.trim() && accountTitle.trim() && (isCash || accountNumber.trim());
 
   return (
-    <ModalShell title={initialData ? "Edit Bank Account Details" : "Register New Bank Account"} onClose={onClose}>
+    <ModalShell title={initialData ? (isCash ? "Edit Petty Cash Vault" : "Edit Bank Account Details") : (isCash ? "Register New Petty Cash Vault" : "Register New Bank Account")} onClose={onClose}>
       <div className="field">
-        <label>Bank Name</label>
-        <input value={bankName} onChange={e => setBankName(e.target.value)} placeholder="e.g. Habib Bank Limited / Allied Bank" />
+        <label>{isCash ? "Petty Cash Vault / Office Name *" : "Bank Name *"}</label>
+        <input value={bankName} onChange={e => setBankName(e.target.value)} placeholder={isCash ? "e.g. Petty Cash - Park Tower Office" : "e.g. Bank Alfalah / Allied Bank / Standard Chartered"} />
       </div>
 
       <div className="field">
-        <label>Account Title</label>
-        <input value={accountTitle} onChange={e => setAccountTitle(e.target.value)} placeholder="e.g. AdPulse IMC PVT LTD (Main Ops)" />
+        <label>{isCash ? "Vault Custodian / Account Title *" : "Account Title *"}</label>
+        <input value={accountTitle} onChange={e => setAccountTitle(e.target.value)} placeholder={isCash ? "e.g. Park Tower Office Petty Cash (Admin)" : "e.g. AdPulse IMC PVT LTD (Main Ops)"} />
       </div>
 
       <div style={{ display: "flex", gap: 10 }}>
         <div className="field" style={{ flex: 1 }}>
-          <label>Account Number</label>
-          <input value={accountNumber} onChange={e => setAccountNumber(e.target.value)} placeholder="e.g. 0014-2289-1001" />
+          <label>{isCash ? "Vault Code / Ref #" : "Account Number *"}</label>
+          <input value={accountNumber} onChange={e => setAccountNumber(e.target.value)} placeholder={isCash ? "e.g. PC-PT-01" : "e.g. 0014-2289-1001"} />
         </div>
-        <div className="field" style={{ flex: 1 }}>
-          <label>IBAN (Optional)</label>
-          <input value={iban} onChange={e => setIban(e.target.value)} placeholder="e.g. PK36HABB00001422891001" />
-        </div>
+        {!isCash && (
+          <div className="field" style={{ flex: 1 }}>
+            <label>IBAN (Optional)</label>
+            <input value={iban} onChange={e => setIban(e.target.value)} placeholder="e.g. PK36ALFH00001422891001" />
+          </div>
+        )}
       </div>
 
       <div style={{ display: "flex", gap: 10 }}>
         <div className="field" style={{ flex: 1 }}>
           <label>Account Type</label>
-          <select value={accountType} onChange={e => setAccountType(e.target.value)}>
+          <select value={accountType} onChange={e => {
+            const nextType = e.target.value;
+            setAccountType(nextType);
+            if (nextType === "Petty Cash") {
+              if (!color || color === "#0284C7" || color === "#059669") setColor("#D97706");
+              if (!accountNumber) setAccountNumber("PC-" + Math.floor(100 + Math.random() * 900));
+            }
+          }}>
             <option>Current Account</option>
             <option>Corporate Account</option>
             <option>Savings Account</option>
             <option>Islamic Current</option>
-            <option>Petty Cash</option>
+            <option value="Petty Cash">💵 Petty Cash (Cash Vault)</option>
           </select>
         </div>
-        {!initialData && (
-          <div className="field" style={{ flex: 1 }}>
-            <label>Opening Balance (PKR)</label>
-            <input type="number" value={openingBalance} onChange={e => setOpeningBalance(e.target.value)} placeholder="0" />
-          </div>
-        )}
+        <div className="field" style={{ flex: 1 }}>
+          <label>Opening Balance (PKR)</label>
+          <input
+            type="number"
+            className="mono"
+            style={{ fontWeight: 700 }}
+            value={openingBalance}
+            onChange={e => setOpeningBalance(e.target.value)}
+            placeholder={isCash ? "e.g. 50000" : "0"}
+          />
+          {Number(openingBalance) > 0 && (
+            <div style={{ fontSize: 11, color: "#059669", marginTop: 2, fontWeight: 600 }}>
+              Rs {Number(openingBalance).toLocaleString("en-PK")}
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="field">
-        <label>Branch Name & Location</label>
-        <input value={branch} onChange={e => setBranch(e.target.value)} placeholder="e.g. Shahrah-e-Faisal Branch, Karachi" />
+        <label>{isCash ? "Branch / Physical Location" : "Branch Name & Location"}</label>
+        <input value={branch} onChange={e => setBranch(e.target.value)} placeholder={isCash ? "e.g. Park Tower Office, Clifton Karachi" : "e.g. Shahrah-e-Faisal Branch, Karachi"} />
       </div>
 
-      <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 6 }} disabled={!valid}
-        onClick={() => valid && onSubmit(initialData ? { ...initialData, bankName, accountTitle, accountNumber, iban, accountType, branch, color } : { bankName, accountTitle, accountNumber, iban, accountType, branch, openingBalance: Number(openingBalance) || 0, color })}>
-        {initialData ? "Save Bank Changes" : "Register Bank Account"}
+      <button
+        className="btn btn-primary"
+        style={{ width: "100%", justifyContent: "center", marginTop: 6, background: isCash ? "#D97706" : "var(--gold)", borderColor: isCash ? "#D97706" : "var(--gold)" }}
+        disabled={!valid}
+        onClick={() => {
+          if (!valid) return;
+          const payload = {
+            ...(initialData || {}),
+            bankName: bankName.trim(),
+            accountTitle: accountTitle.trim(),
+            accountNumber: accountNumber.trim() || (isCash ? "PC-01" : "N/A"),
+            iban: iban.trim() || (isCash ? "N/A (Cash in Hand)" : "N/A"),
+            accountType,
+            branch: branch.trim() || (isCash ? "Office Cash Vault" : "Karachi Branch"),
+            openingBalance: Number(openingBalance) || 0,
+            color
+          };
+          onSubmit(payload);
+        }}
+      >
+        {initialData ? (isCash ? "Save Petty Cash Vault" : "Save Bank Changes") : (isCash ? "Register Petty Cash Vault" : "Register Bank Account")}
       </button>
     </ModalShell>
   );
@@ -13290,7 +13443,7 @@ function BankAccountModal({ initialData, onClose, onSubmit }) {
 
 function ClearPdcModal({ voucher, bankAccounts = [], onClose, onClear }) {
   const realBanks = bankAccounts.filter(b => b.id !== "bank-cash" && b.accountType !== "Petty Cash");
-  const [bankId, setBankId] = useState(voucher.targetBankId || realBanks[0]?.id || "bank-hbl");
+  const [bankId, setBankId] = useState(voucher.targetBankId || realBanks[0]?.id || "");
   const [clearDate, setClearDate] = useState(TODAY_STR);
   const netAmt = Number(voucher.netAmount !== undefined ? voucher.netAmount : voucher.amount) || 0;
 
@@ -13496,7 +13649,7 @@ function VoucherModal({
   const [selectedBankId, setSelectedBankId] = useState(
     voucherToEdit?.bankAccountId && realBankAccounts.some(b => b.id === voucherToEdit.bankAccountId)
       ? voucherToEdit.bankAccountId
-      : (realBankAccounts[0]?.id || "bank-hbl")
+      : (realBankAccounts[0]?.id || "")
   );
 
   const [selectedCashAccountId, setSelectedCashAccountId] = useState(
@@ -13511,7 +13664,7 @@ function VoucherModal({
   }, [bankAccounts]);
 
   const [sourceBankId, setSourceBankId] = useState(voucherToEdit?.sourceBankId || allAccountsForContra[0]?.id || "bank-cash-park-tower");
-  const [targetBankId, setTargetBankId] = useState(voucherToEdit?.targetBankId || allAccountsForContra[1]?.id || realBankAccounts[0]?.id || "bank-hbl");
+  const [targetBankId, setTargetBankId] = useState(voucherToEdit?.targetBankId || allAccountsForContra[1]?.id || realBankAccounts[0]?.id || allAccountsForContra[0]?.id || "");
 
   const handleCategoryChange = (newCat) => {
     setCategory(newCat);

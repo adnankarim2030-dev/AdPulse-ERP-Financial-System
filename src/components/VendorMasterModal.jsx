@@ -229,7 +229,7 @@ export default function VendorMasterModal({ vendor, vendors, onClose, onSave }) 
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14 }}>
                 <div className="field">
                   <label className="field-label" style={{ fontWeight: 700, fontSize: 12.5, color: "#334155" }}>Bank Name</label>
-                  <input type="text" className="input" placeholder="e.g. Meezan Bank" value={formData.bankName} onChange={e => handleChange("bankName", e.target.value)} style={{ padding: "9px 12px", fontSize: 13, borderRadius: 8 }} />
+                  <input type="text" className="input" placeholder="e.g. Bank Alfalah / Allied Bank" value={formData.bankName} onChange={e => handleChange("bankName", e.target.value)} style={{ padding: "9px 12px", fontSize: 13, borderRadius: 8 }} />
                 </div>
 
                 <div className="field">
