@@ -28,10 +28,6 @@ import ProjectFinancialDashboard from "./components/ProjectFinancialDashboard.js
 import AiDocumentDuplicateModal from "./components/AiDocumentDuplicateModal.jsx";
 import GlobalSearchBar from "./components/GlobalSearchBar.jsx";
 import StaffAuditTimeline from "./components/StaffAuditTimeline.jsx";
-import {
-  REAL_CLIENTS, REAL_VENDORS, REAL_PROJECTS,
-  REAL_INVOICES, REAL_EXPENSES, REAL_VOUCHERS, REAL_JOURNAL
-} from "./data/realLedgerSeedData.js";
 
 /* ---------- HELPERS & FORMATTERS ---------- */
 
