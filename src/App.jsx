@@ -769,6 +769,78 @@ function seedReleaseOrders() {
   return [];
 }
 
+function seedGovtInvoices() {
+  return [
+    {
+      id: "govt-inv-01",
+      invoiceNo: "AD-S372",
+      date: "2026-03-02",
+      clientName: "INFORMATION DEPARTMENT / GOVT OF SINDH",
+      client: "INFORMATION DEPARTMENT / GOVT OF SINDH",
+      roNumber: "INF/KRY/3215/26",
+      roDate: "2026-03-01",
+      caption: "NOTICE INVITING BIDS",
+      ntn: "9031600-2",
+      stn: "S-9031600-2",
+      isSalesTaxInvoice: true,
+      agencyCommissionRate: 15,
+      sstRate: 15,
+      whtRate: 10,
+      mediaShareRate: 85,
+      newspaperWhtRate: 1.5,
+      items: [
+        { id: "1", newspaper: "AAS", ratePerCm: 500.96, size: 130, position: "ORD - B/W", publishDate: "2026-03-01" },
+        { id: "2", newspaper: "DAILY TIMES", ratePerCm: 215.24, size: 130, position: "ORD - B/W", publishDate: "2026-03-01" },
+        { id: "3", newspaper: "EXPRESS", ratePerCm: 374.05, size: 130, position: "ORD - B/W", publishDate: "2026-03-01" },
+        { id: "4", newspaper: "MILLAN", ratePerCm: 504.50, size: 130, position: "ORD - B/W", publishDate: "2026-03-01" },
+        { id: "5", newspaper: "MOOMAL", ratePerCm: 404.66, size: 130, position: "ORD - B/W", publishDate: "2026-03-01" },
+        { id: "6", newspaper: "PAHENJI AKHBAR", ratePerCm: 511.80, size: 130, position: "ORD - B/W", publishDate: "2026-03-01" },
+      ],
+      totalGross: 326457.30,
+      commissionAmount: 48968.60,
+      sstAmount: 7345.29,
+      commWithSst: 56313.89,
+      whtAmount: 5631.39,
+      netChequeAmount: 50682.50,
+      paid: false,
+      paidVia: null
+    },
+    {
+      id: "govt-inv-02",
+      invoiceNo: "AD-S375",
+      date: "2026-03-10",
+      clientName: "INFORMATION DEPARTMENT / GOVT OF SINDH",
+      client: "INFORMATION DEPARTMENT / GOVT OF SINDH",
+      roNumber: "INF/KRY/3420/26",
+      roDate: "2026-03-08",
+      caption: "CORRIGENDUM - EXTENSION OF TENDER SUBMISSION DATE",
+      ntn: "9031600-2",
+      stn: "S-9031600-2",
+      isSalesTaxInvoice: false,
+      agencyCommissionRate: 15,
+      sstRate: 15,
+      whtRate: 10,
+      mediaShareRate: 85,
+      newspaperWhtRate: 1.5,
+      items: [
+        { id: "1", newspaper: "DAWN", ratePerCm: 620.50, size: 80, position: "ORD - B/W", publishDate: "2026-03-08" },
+        { id: "2", newspaper: "JANG", ratePerCm: 550.00, size: 80, position: "ORD - B/W", publishDate: "2026-03-08" },
+        { id: "3", newspaper: "KAWISH", ratePerCm: 380.00, size: 80, position: "ORD - B/W", publishDate: "2026-03-08" },
+      ],
+      totalGross: 124040.00,
+      commissionAmount: 18606.00,
+      sstAmount: 0,
+      commWithSst: 18606.00,
+      whtAmount: 1860.60,
+      netChequeAmount: 16745.40,
+      paid: true,
+      paidVia: "Bank",
+      bankAccountId: "bank-hbl",
+      paidDate: "2026-03-15"
+    }
+  ];
+}
+
 function seedExpenses() {
   return [];
 }
@@ -992,6 +1064,7 @@ function buildSeedDemoData() {
     payrollRuns: seedPayrollRuns(),
     monthlyAttendance: seedMonthlyAttendance(),
     journal: seedJournal(),
+    govtInvoices: seedGovtInvoices(),
     documents: []
   };
 }
@@ -1254,7 +1327,11 @@ export default function App() {
   const [releaseOrders, setReleaseOrders] = useState(() => getInitialState("releaseOrders", []));
   const [showROForm, setShowROForm] = useState(false);
   const [editingRO, setEditingRO] = useState(null);
-  const [govtInvoices, setGovtInvoices] = useState(() => getInitialState("govtInvoices", []));
+  const [govtInvoices, setGovtInvoices] = useState(() => {
+    const saved = getInitialState("govtInvoices", null);
+    if (saved && Array.isArray(saved) && saved.length > 0) return saved;
+    return seedGovtInvoices();
+  });
   const [showGovtInvoiceModal, setShowGovtInvoiceModal] = useState(false);
   const [editingGovtInvoice, setEditingGovtInvoice] = useState(null);
   const [printingGovtInvoice, setPrintingGovtInvoice] = useState(null);
