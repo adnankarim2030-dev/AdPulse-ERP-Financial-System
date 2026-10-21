@@ -267,7 +267,24 @@ export function getNextProjectCode(projects = []) {
 /* Global Live System Date Reference */
 const TODAY = new Date();
 const TODAY_STR = TODAY.toISOString().slice(0, 10);
-const uid = (() => { let n = 1000; return () => (n++).toString(36); })();
+const uid = (() => {
+  let n = Math.floor(Math.random() * 9000) + 1000;
+  return () => Date.now().toString(36) + "-" + (n++).toString(36);
+})();
+
+function ensureUniqueIds(arr, prefix = "rec") {
+  if (!Array.isArray(arr)) return [];
+  const seen = new Set();
+  return arr.map((item, idx) => {
+    if (!item || typeof item !== "object") return item;
+    let currentId = item.id ? String(item.id) : `${prefix}-${idx}-${uid()}`;
+    if (seen.has(currentId)) {
+      currentId = `${currentId}-u${idx}-${uid()}`;
+    }
+    seen.add(currentId);
+    return currentId === item.id ? item : { ...item, id: currentId };
+  });
+}
 
 const ACCOUNTS = {
   cash: { code: "1110", name: "Cash Account (In Hand)", type: "asset", category: "Current Assets" },
@@ -1318,11 +1335,11 @@ export default function App() {
   };
 
   const [usersList, setUsersList] = useState(() => SEED_USERS);
-  const [journal, setJournal] = useState(() => getInitialState("journal", seedData.journal || []));
-  const [invoices, setInvoices] = useState(() => getInitialState("invoices", seedData.invoices || []));
-  const [expenses, setExpenses] = useState(() => getInitialState("expenses", seedData.expenses || []));
-  const [purchaseOrders, setPurchaseOrders] = useState(() => getInitialState("purchaseOrders", []));
-  const [releaseOrders, setReleaseOrders] = useState(() => getInitialState("releaseOrders", []));
+  const [journal, setJournal] = useState(() => ensureUniqueIds(getInitialState("journal", seedData.journal || []), "jrn"));
+  const [invoices, setInvoices] = useState(() => ensureUniqueIds(getInitialState("invoices", seedData.invoices || []), "inv"));
+  const [expenses, setExpenses] = useState(() => ensureUniqueIds(getInitialState("expenses", seedData.expenses || []), "exp"));
+  const [purchaseOrders, setPurchaseOrders] = useState(() => ensureUniqueIds(getInitialState("purchaseOrders", []), "po"));
+  const [releaseOrders, setReleaseOrders] = useState(() => ensureUniqueIds(getInitialState("releaseOrders", []), "ro"));
   const [showROForm, setShowROForm] = useState(false);
   const [editingRO, setEditingRO] = useState(null);
   const [govtInvoices, setGovtInvoices] = useState(() => {
@@ -1352,7 +1369,7 @@ export default function App() {
   const [hoardings, setHoardings] = useState(() => getInitialState("hoardings", seedData.hoardings || []));
   const [inventoryItems, setInventoryItems] = useState(() => getInitialState("inventoryItems", seedData.inventoryItems || []));
   const [inventoryLogs, setInventoryLogs] = useState(() => getInitialState("inventoryLogs", seedData.inventoryLogs || []));
-  const [vouchers, setVouchers] = useState(() => getInitialState("vouchers", seedData.vouchers || []));
+  const [vouchers, setVouchers] = useState(() => ensureUniqueIds(getInitialState("vouchers", seedData.vouchers || []), "vch"));
   const [documents, setDocuments] = useState(() => getInitialState("documents", []));
   const [employees, setEmployees] = useState(() => getInitialState("employees", seedData.employees || []));
   const [leaveRequests, setLeaveRequests] = useState(() => getInitialState("leaveRequests", seedData.leaveRequests || []));
@@ -1420,6 +1437,11 @@ export default function App() {
   const [showBankAccountModal, setShowBankAccountModal] = useState(false);
   const [editingBankAccount, setEditingBankAccount] = useState(null);
   const [cashBankFilter, setCashBankFilter] = useState("all");
+  const [cashBankDateFrom, setCashBankDateFrom] = useState("");
+  const [cashBankDateTo, setCashBankDateTo] = useState("");
+  const [cashBankDatePreset, setCashBankDatePreset] = useState("all");
+  const [cashBankSortOrder, setCashBankSortOrder] = useState("asc");
+  const [cashBankSearch, setCashBankSearch] = useState("");
 
   const [showVoucherForm, setShowVoucherForm] = useState(false);
   const [editingVoucher, setEditingVoucher] = useState(null);
@@ -1535,18 +1557,18 @@ export default function App() {
     if (!bData) return;
     isApplyingRemote.current = true;
 
-    if (Array.isArray(bData.journal)) setJournal(bData.journal);
-    if (Array.isArray(bData.invoices)) setInvoices(bData.invoices);
-    if (Array.isArray(bData.expenses)) setExpenses(bData.expenses);
-    if (Array.isArray(bData.purchaseOrders)) setPurchaseOrders(bData.purchaseOrders);
-    if (Array.isArray(bData.releaseOrders)) setReleaseOrders(bData.releaseOrders);
+    if (Array.isArray(bData.journal)) setJournal(ensureUniqueIds(bData.journal, "jrn"));
+    if (Array.isArray(bData.invoices)) setInvoices(ensureUniqueIds(bData.invoices, "inv"));
+    if (Array.isArray(bData.expenses)) setExpenses(ensureUniqueIds(bData.expenses, "exp"));
+    if (Array.isArray(bData.purchaseOrders)) setPurchaseOrders(ensureUniqueIds(bData.purchaseOrders, "po"));
+    if (Array.isArray(bData.releaseOrders)) setReleaseOrders(ensureUniqueIds(bData.releaseOrders, "ro"));
     if (Array.isArray(bData.govtInvoices)) setGovtInvoices(bData.govtInvoices);
     if (Array.isArray(bData.projects)) setProjects(bData.projects);
     if (Array.isArray(bData.bankAccounts)) setBankAccounts(bData.bankAccounts);
     if (Array.isArray(bData.hoardings)) setHoardings(bData.hoardings);
     if (Array.isArray(bData.inventoryItems)) setInventoryItems(bData.inventoryItems);
     if (Array.isArray(bData.inventoryLogs)) setInventoryLogs(bData.inventoryLogs);
-    if (Array.isArray(bData.vouchers)) setVouchers(bData.vouchers);
+    if (Array.isArray(bData.vouchers)) setVouchers(ensureUniqueIds(bData.vouchers, "vch"));
     if (Array.isArray(bData.documents)) setDocuments(bData.documents);
     if (Array.isArray(bData.employees)) setEmployees(bData.employees);
     if (Array.isArray(bData.leaveRequests)) setLeaveRequests(bData.leaveRequests);
@@ -2660,7 +2682,8 @@ export default function App() {
       const isCash = via === "Cash" || paymentMode === "Petty Cash";
       const paymentAccount = isCash ? "cash" : "bank";
       const defaultBank = bankAccounts.find(b => b.accountType !== "Petty Cash" && !b.id.startsWith("bank-cash"))?.id || bankAccounts[0]?.id || null;
-      const bAccountId = isCash ? "bank-cash-park-tower" : (bankAccountId || defaultBank);
+      const isSelectedCashAcc = bankAccountId && (bankAccountId.startsWith("bank-cash") || bankAccounts.find(b => b.id === bankAccountId)?.accountType === "Petty Cash");
+      const bAccountId = isCash ? (isSelectedCashAcc ? bankAccountId : "bank-cash-park-tower") : (bankAccountId || defaultBank);
       const memoText = subcategory ? `${category} → ${subcategory}` : (category || "Payment");
       
       const billAmt = Number(amount) || 0;
@@ -2671,7 +2694,7 @@ export default function App() {
 
       const payingBankObj = bankAccounts.find(b => b.id === bAccountId);
       const paidMemo = isCash 
-        ? "Paid via Petty Cash Vault" 
+        ? `Paid via ${payingBankObj?.bankName || 'Petty Cash Vault'}` 
         : `Paid via ${paymentMode || 'Bank'}${instrumentNo ? ` #${instrumentNo}` : ""} (${payingBankObj?.bankName || 'Bank'})`;
 
       journalLines = [
@@ -2692,7 +2715,8 @@ export default function App() {
       const isChequeInHand = isPdc || receiveMode === "pdc" || receiveMode === "PDC";
       const depositAccount = isChequeInHand ? "cheques_in_hand" : (via === "Cash" ? "cash" : "bank");
       const defaultBank = bankAccounts.find(b => b.accountType !== "Petty Cash" && !b.id.startsWith("bank-cash"))?.id || bankAccounts[0]?.id || null;
-      const bAccountId = isChequeInHand ? null : (via === "Cash" ? "bank-cash-park-tower" : (bankAccountId || defaultBank));
+      const isSelectedCashAcc = bankAccountId && (bankAccountId.startsWith("bank-cash") || bankAccounts.find(b => b.id === bankAccountId)?.accountType === "Petty Cash");
+      const bAccountId = isChequeInHand ? null : (via === "Cash" ? (isSelectedCashAcc ? bankAccountId : "bank-cash-park-tower") : (bankAccountId || defaultBank));
       
       const grossAmt = Number(amount) || 0;
       const whtAmt = applyWht ? (Number(whtAmount) || 0) : 0;
@@ -2792,7 +2816,8 @@ export default function App() {
       const isCash = via === "Cash" || paymentMode === "Petty Cash";
       const paymentAccount = isCash ? "cash" : "bank";
       const defaultBank = bankAccounts.find(b => b.accountType !== "Petty Cash" && !b.id.startsWith("bank-cash"))?.id || bankAccounts[0]?.id || null;
-      const bAccountId = isCash ? "bank-cash-park-tower" : (bankAccountId || defaultBank);
+      const isSelectedCashAcc = bankAccountId && (bankAccountId.startsWith("bank-cash") || bankAccounts.find(b => b.id === bankAccountId)?.accountType === "Petty Cash");
+      const bAccountId = isCash ? (isSelectedCashAcc ? bankAccountId : "bank-cash-park-tower") : (bankAccountId || defaultBank);
       const memoText = subcategory ? `${category} → ${subcategory}` : (category || "Payment");
       
       const billAmt = Number(amount) || 0;
@@ -2803,7 +2828,7 @@ export default function App() {
 
       const payingBankObj = bankAccounts.find(b => b.id === bAccountId);
       const paidMemo = isCash 
-        ? "Paid via Petty Cash Vault" 
+        ? `Paid via ${payingBankObj?.bankName || 'Petty Cash Vault'}` 
         : `Paid via ${paymentMode || 'Bank'}${instrumentNo ? ` #${instrumentNo}` : ""} (${payingBankObj?.bankName || 'Bank'})`;
 
       journalLines = [
@@ -2824,7 +2849,8 @@ export default function App() {
       const isChequeInHand = isPdc || receiveMode === "pdc" || receiveMode === "PDC";
       const depositAccount = isChequeInHand ? "cheques_in_hand" : (via === "Cash" ? "cash" : "bank");
       const defaultBank = bankAccounts.find(b => b.accountType !== "Petty Cash" && !b.id.startsWith("bank-cash"))?.id || bankAccounts[0]?.id || null;
-      const bAccountId = isChequeInHand ? null : (via === "Cash" ? "bank-cash-park-tower" : (bankAccountId || defaultBank));
+      const isSelectedCashAcc = bankAccountId && (bankAccountId.startsWith("bank-cash") || bankAccounts.find(b => b.id === bankAccountId)?.accountType === "Petty Cash");
+      const bAccountId = isChequeInHand ? null : (via === "Cash" ? (isSelectedCashAcc ? bankAccountId : "bank-cash-park-tower") : (bankAccountId || defaultBank));
       
       const grossAmt = Number(amount) || 0;
       const whtAmt = applyWht ? (Number(whtAmount) || 0) : 0;
@@ -6904,15 +6930,24 @@ export default function App() {
                 // 1. Calculate Live Balances for each bank account & petty cash
                 const defaultRealBankId = bankAccounts.find(x => x.accountType !== "Petty Cash" && !x.id.startsWith("bank-cash"))?.id || bankAccounts[0]?.id;
                 const accountBalances = bankAccounts.map(b => {
+                  const isCashVault = b.accountType === "Petty Cash" || b.id.startsWith("bank-cash");
                   let netMovement = 0;
                   journal.forEach(entry => {
                     entry.lines?.forEach(l => {
-                      if (b.accountType === "Petty Cash" || b.id.startsWith("bank-cash")) {
-                        if (l.account === "cash" && (l.bankAccountId === b.id || (!l.bankAccountId && b.id === "bank-cash-park-tower"))) {
+                      if (l.account !== "cash" && l.account !== "bank") return;
+                      const effectiveType = (l.account === "cash" || entry.reference?.startsWith("CPV-") || entry.reference?.startsWith("CRV-")) ? "cash" : "bank";
+                      if (isCashVault) {
+                        const resolvedCashId = (l.bankAccountId && (l.bankAccountId.startsWith("bank-cash") || bankAccounts.find(x => x.id === l.bankAccountId)?.accountType === "Petty Cash"))
+                          ? l.bankAccountId
+                          : "bank-cash-park-tower";
+                        if (effectiveType === "cash" && resolvedCashId === b.id) {
                           netMovement += (Number(l.debit) || 0) - (Number(l.credit) || 0);
                         }
                       } else {
-                        if (l.account === "bank" && (l.bankAccountId === b.id || (!l.bankAccountId && b.id === defaultRealBankId))) {
+                        const resolvedBankId = (l.bankAccountId && !l.bankAccountId.startsWith("bank-cash") && bankAccounts.find(x => x.id === l.bankAccountId)?.accountType !== "Petty Cash")
+                          ? l.bankAccountId
+                          : defaultRealBankId;
+                        if (effectiveType === "bank" && resolvedBankId === b.id) {
                           netMovement += (Number(l.debit) || 0) - (Number(l.credit) || 0);
                         }
                       }
@@ -6922,39 +6957,104 @@ export default function App() {
                   // Check if journal has an opening balance entry for this account
                   const hasOpeningInJournal = journal.some(entry =>
                     entry.lines?.some(l => {
-                      const matchesAcc = (b.accountType === "Petty Cash" || b.id.startsWith("bank-cash"))
-                        ? (l.account === "cash" && (l.bankAccountId === b.id || (!l.bankAccountId && b.id === "bank-cash-park-tower")))
-                        : (l.account === "bank" && (l.bankAccountId === b.id || (!l.bankAccountId && b.id === defaultRealBankId)));
+                      if (l.account !== "cash" && l.account !== "bank") return false;
+                      const effectiveType = (l.account === "cash" || entry.reference?.startsWith("CPV-") || entry.reference?.startsWith("CRV-")) ? "cash" : "bank";
+                      const matchesAcc = isCashVault
+                        ? (effectiveType === "cash" && ((l.bankAccountId && (l.bankAccountId.startsWith("bank-cash") || bankAccounts.find(x => x.id === l.bankAccountId)?.accountType === "Petty Cash")) ? l.bankAccountId === b.id : b.id === "bank-cash-park-tower"))
+                        : (effectiveType === "bank" && ((l.bankAccountId && !l.bankAccountId.startsWith("bank-cash") && bankAccounts.find(x => x.id === l.bankAccountId)?.accountType !== "Petty Cash") ? l.bankAccountId === b.id : b.id === defaultRealBankId));
                       return matchesAcc && (entry.reference?.startsWith("OB-") || entry.description?.toLowerCase().includes("opening balance"));
                     })
                   );
                   const baseOpening = hasOpeningInJournal ? 0 : (Number(b.openingBalance) || 0);
-                  return { ...b, liveBalance: baseOpening + netMovement };
+                  return { ...b, hasOpeningInJournal, baseOpening, liveBalance: baseOpening + netMovement };
                 });
 
                 const totalLiquidity = accountBalances.reduce((s, b) => s + b.liveBalance, 0);
+                const totalBanksOnly = accountBalances
+                  .filter(b => b.accountType !== "Petty Cash" && !b.id.startsWith("bank-cash"))
+                  .reduce((s, b) => s + b.liveBalance, 0);
+                const totalCashOnly = accountBalances
+                  .filter(b => b.accountType === "Petty Cash" || b.id.startsWith("bank-cash"))
+                  .reduce((s, b) => s + b.liveBalance, 0);
 
                 // 2. Build sorted transactions list for the ledger table
-                const sortedJournal = [...journal].sort((a, b) => new Date(a.date) - new Date(b.date));
-                const ledgerRows = [];
+                const selectedAccountObj = bankAccounts.find(b => b.id === cashBankFilter);
+                const isFilterPettyCashAccount = selectedAccountObj
+                  ? (selectedAccountObj.accountType === "Petty Cash" || selectedAccountObj.id.startsWith("bank-cash"))
+                  : cashBankFilter.startsWith("bank-cash");
+
+                const sortedJournal = [...journal].sort((a, b) => {
+                  const da = new Date(a.date || "2026-01-01").getTime();
+                  const db = new Date(b.date || "2026-01-01").getTime();
+                  if (da !== db) return da - db;
+                  const aIsOb = (a.reference?.startsWith("OB-") || a.description?.toLowerCase().includes("opening balance")) ? 0 : 1;
+                  const bIsOb = (b.reference?.startsWith("OB-") || b.description?.toLowerCase().includes("opening balance")) ? 0 : 1;
+                  return aIsOb - bIsOb;
+                });
+
+                const earliestDate = sortedJournal[0]?.date || TODAY_STR;
+                const allMatchedRows = [];
                 let runningBalance = 0;
 
-                sortedJournal.forEach(entry => {
-                  entry.lines?.forEach((line, lineIdx) => {
-                    let lineBankId = line.bankAccountId;
-                    if (!lineBankId) {
-                      lineBankId = line.account === "cash" ? "bank-cash-park-tower" : (line.account === "bank" ? defaultRealBankId : null);
-                    }
+                // Include synthetic opening balance rows for any matched account whose openingBalance is not yet in journal
+                accountBalances.forEach((b, bIdx) => {
+                  if (b.baseOpening > 0) {
+                    const isCashAcc = b.accountType === "Petty Cash" || b.id.startsWith("bank-cash");
+                    let includeOb = false;
+                    if (cashBankFilter === "all") includeOb = true;
+                    else if (cashBankFilter === "cash") includeOb = isCashAcc;
+                    else if (cashBankFilter === "banks_only") includeOb = !isCashAcc;
+                    else includeOb = (b.id === cashBankFilter);
 
-                    if (!lineBankId && line.account !== "cash" && line.account !== "bank") return;
+                    if (includeOb) {
+                      runningBalance += b.baseOpening;
+                      allMatchedRows.push({
+                        key: `synth-ob-${cashBankFilter}-${b.id}-${bIdx}`,
+                        date: earliestDate,
+                        reference: `OB-${b.id.toUpperCase()}`,
+                        bankId: b.id,
+                        bankName: b.bankName,
+                        bankColor: b.color || (isCashAcc ? "#D97706" : "var(--gold)"),
+                        description: `Opening Balance — ${b.bankName}`,
+                        memo: "Opening Balance",
+                        debit: b.baseOpening,
+                        credit: 0,
+                        runningBalance
+                      });
+                    }
+                  }
+                });
+
+                sortedJournal.forEach((entry, entryIdx) => {
+                  entry.lines?.forEach((line, lineIdx) => {
+                    if (line.account !== "cash" && line.account !== "bank") return;
+
+                    const effectiveLineType = (line.account === "cash" || entry.reference?.startsWith("CPV-") || entry.reference?.startsWith("CRV-"))
+                      ? "cash"
+                      : "bank";
+
+                    let lineBankId = line.bankAccountId;
+                    if (effectiveLineType === "cash") {
+                      const validCash = lineBankId && (lineBankId.startsWith("bank-cash") || bankAccounts.find(x => x.id === lineBankId)?.accountType === "Petty Cash");
+                      lineBankId = validCash ? lineBankId : "bank-cash-park-tower";
+                    } else {
+                      const validBank = lineBankId && !lineBankId.startsWith("bank-cash") && bankAccounts.find(x => x.id === lineBankId)?.accountType !== "Petty Cash";
+                      lineBankId = validBank ? lineBankId : defaultRealBankId;
+                    }
 
                     let isMatch = false;
                     if (cashBankFilter === "all") {
-                      isMatch = (line.account === "cash" || line.account === "bank");
+                      isMatch = true;
                     } else if (cashBankFilter === "cash") {
-                      isMatch = (line.account === "cash");
+                      isMatch = (effectiveLineType === "cash");
+                    } else if (cashBankFilter === "banks_only") {
+                      isMatch = (effectiveLineType === "bank");
                     } else {
-                      isMatch = (lineBankId === cashBankFilter);
+                      if (isFilterPettyCashAccount) {
+                        isMatch = (effectiveLineType === "cash" && lineBankId === cashBankFilter);
+                      } else {
+                        isMatch = (effectiveLineType === "bank" && lineBankId === cashBankFilter);
+                      }
                     }
 
                     const debit = Number(line.debit) || 0;
@@ -6963,12 +7063,13 @@ export default function App() {
                     if (isMatch && (debit > 0 || credit > 0)) {
                       runningBalance += (debit - credit);
                       const bankInfo = bankAccounts.find(b => b.id === lineBankId);
-                      ledgerRows.push({
-                        key: `${entry.id}-${lineIdx}`,
+                      allMatchedRows.push({
+                        key: `${cashBankFilter}-${entry.id || entryIdx}-${entryIdx}-${lineIdx}`,
                         date: entry.date,
                         reference: entry.reference || "—",
-                        bankName: bankInfo?.bankName || (line.account === "cash" ? "Petty Cash Vault" : "Bank Account"),
-                        bankColor: bankInfo?.color || "var(--gold)",
+                        bankId: lineBankId,
+                        bankName: bankInfo?.bankName || (effectiveLineType === "cash" ? "Petty Cash Vault" : "Bank Account"),
+                        bankColor: bankInfo?.color || (effectiveLineType === "cash" ? "#D97706" : "var(--gold)"),
                         description: entry.description || line.memo || "Transaction",
                         memo: line.memo,
                         debit,
@@ -6978,6 +7079,92 @@ export default function App() {
                     }
                   });
                 });
+
+                // 3. Apply Date-Wise Filtering (From Date / To Date) & Search
+                let openingBroughtForward = 0;
+                let priorRowsCount = 0;
+                const dateFilteredRows = [];
+
+                allMatchedRows.forEach(row => {
+                  const rDate = row.date || "";
+                  if (cashBankDateFrom && rDate < cashBankDateFrom) {
+                    openingBroughtForward = row.runningBalance;
+                    priorRowsCount++;
+                    return;
+                  }
+                  if (cashBankDateTo && rDate > cashBankDateTo) {
+                    return;
+                  }
+                  dateFilteredRows.push(row);
+                });
+
+                if (cashBankDateFrom && priorRowsCount > 0) {
+                  dateFilteredRows.unshift({
+                    key: `bf-${cashBankFilter}-${cashBankDateFrom}`,
+                    date: cashBankDateFrom,
+                    reference: "B/F-BAL",
+                    bankId: cashBankFilter,
+                    bankName: selectedAccountObj?.bankName || (cashBankFilter === "cash" ? "Petty Cash Vaults" : cashBankFilter === "banks_only" ? "Bank Accounts" : "All Accounts"),
+                    bankColor: selectedAccountObj?.color || "var(--gold)",
+                    description: `Opening Balance Brought Forward (Prior to ${fmtDate(cashBankDateFrom)})`,
+                    memo: `${priorRowsCount} prior transaction(s) before selected date range`,
+                    debit: openingBroughtForward > 0 ? openingBroughtForward : 0,
+                    credit: openingBroughtForward < 0 ? Math.abs(openingBroughtForward) : 0,
+                    runningBalance: openingBroughtForward,
+                    isBroughtForward: true
+                  });
+                }
+
+                const searchClean = cashBankSearch.trim().toLowerCase();
+                const searchedRows = searchClean
+                  ? dateFilteredRows.filter(r =>
+                      r.isBroughtForward ||
+                      r.reference?.toLowerCase().includes(searchClean) ||
+                      r.description?.toLowerCase().includes(searchClean) ||
+                      r.memo?.toLowerCase().includes(searchClean) ||
+                      r.bankName?.toLowerCase().includes(searchClean) ||
+                      r.date?.includes(searchClean)
+                    )
+                  : dateFilteredRows;
+
+                const periodDeposits = searchedRows.filter(r => !r.isBroughtForward).reduce((s, r) => s + (r.debit || 0), 0);
+                const periodPayments = searchedRows.filter(r => !r.isBroughtForward).reduce((s, r) => s + (r.credit || 0), 0);
+                const periodClosingBalance = searchedRows.length > 0
+                  ? searchedRows[searchedRows.length - 1].runningBalance
+                  : openingBroughtForward;
+
+                const ledgerRows = cashBankSortOrder === "desc" ? [...searchedRows].reverse() : searchedRows;
+
+                const applyDatePreset = (preset) => {
+                  setCashBankDatePreset(preset);
+                  const now = new Date();
+                  const toIso = (d) => d.toISOString().slice(0, 10);
+                  if (preset === "all") {
+                    setCashBankDateFrom("");
+                    setCashBankDateTo("");
+                  } else if (preset === "today") {
+                    const t = toIso(now);
+                    setCashBankDateFrom(t);
+                    setCashBankDateTo(t);
+                  } else if (preset === "this_week") {
+                    const day = now.getDay();
+                    const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+                    const start = new Date(now);
+                    start.setDate(diff);
+                    setCashBankDateFrom(toIso(start));
+                    setCashBankDateTo(toIso(now));
+                  } else if (preset === "this_month") {
+                    const start = new Date(now.getFullYear(), now.getMonth(), 1);
+                    const end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+                    setCashBankDateFrom(toIso(start));
+                    setCashBankDateTo(toIso(end));
+                  } else if (preset === "last_month") {
+                    const start = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+                    const end = new Date(now.getFullYear(), now.getMonth(), 0);
+                    setCashBankDateFrom(toIso(start));
+                    setCashBankDateTo(toIso(end));
+                  }
+                };
 
                 return (
                   <>
@@ -7008,48 +7195,71 @@ export default function App() {
                     </div>
 
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 14, marginBottom: 20 }}>
-                      {accountBalances.map(b => (
-                        <div key={b.id} className="card" style={{ padding: 16, borderLeft: `4px solid ${b.color || (b.accountType === "Petty Cash" ? "#D97706" : "var(--gold)")}`, position: "relative" }}>
-                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
-                            <div>
-                              <div style={{ fontWeight: 700, fontSize: 14, color: "var(--ink)", display: "flex", alignItems: "center", gap: 6 }}>
-                                <span>{b.accountType === "Petty Cash" || b.id.startsWith("bank-cash") ? "💵" : "🏦"}</span>
-                                <span>{b.bankName}</span>
+                      {accountBalances.map(b => {
+                        const isSelectedCard = cashBankFilter === b.id;
+                        return (
+                          <div
+                            key={b.id}
+                            className="card"
+                            onClick={() => setCashBankFilter(isSelectedCard ? "all" : b.id)}
+                            style={{
+                              padding: 16,
+                              borderLeft: `4px solid ${b.color || (b.accountType === "Petty Cash" ? "#D97706" : "var(--gold)")}`,
+                              border: isSelectedCard ? `2px solid ${b.color || "var(--gold)"}` : undefined,
+                              borderLeftWidth: 5,
+                              background: isSelectedCard ? "rgba(2, 132, 199, 0.04)" : undefined,
+                              position: "relative",
+                              cursor: "pointer",
+                              transition: "all 0.15s ease"
+                            }}
+                            title="Click to filter ledger for this account"
+                          >
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
+                              <div>
+                                <div style={{ fontWeight: 700, fontSize: 14, color: "var(--ink)", display: "flex", alignItems: "center", gap: 6 }}>
+                                  <span>{b.accountType === "Petty Cash" || b.id.startsWith("bank-cash") ? "💵" : "🏦"}</span>
+                                  <span>{b.bankName}</span>
+                                </div>
+                                <div style={{ fontSize: 11.5, color: "var(--ink-muted)" }}>{b.accountTitle}</div>
                               </div>
-                              <div style={{ fontSize: 11.5, color: "var(--ink-muted)" }}>{b.accountTitle}</div>
+                              <div style={{ display: "flex", alignItems: "center", gap: 4 }} onClick={e => e.stopPropagation()}>
+                                {isSelectedCard && (
+                                  <span className="badge-mini" style={{ background: "#DCFCE7", color: "#166534", border: "1px solid #16A34A", fontSize: 10, fontWeight: 700 }}>
+                                    ✓ Active
+                                  </span>
+                                )}
+                                <span className="badge-mini" style={{ background: "var(--bg)", border: "1px solid var(--rule)", fontSize: 10.5 }}>{b.accountType}</span>
+                                <button className="btn" style={{ padding: "3px 6px", fontSize: 11 }} onClick={() => { setEditingBankAccount(b); setShowBankAccountModal(true); }} title="Edit Account / Opening Balance">
+                                  <Edit size={12} />
+                                </button>
+                                <button className="btn" style={{ padding: "3px 6px", fontSize: 11, color: "var(--rose)" }} onClick={() => deleteBankAccount(b)} title="Delete Account">
+                                  <Trash2 size={12} />
+                                </button>
+                              </div>
                             </div>
-                            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                              <span className="badge-mini" style={{ background: "var(--bg)", border: "1px solid var(--rule)", fontSize: 10.5 }}>{b.accountType}</span>
-                              <button className="btn" style={{ padding: "3px 6px", fontSize: 11 }} onClick={() => { setEditingBankAccount(b); setShowBankAccountModal(true); }} title="Edit Account / Opening Balance">
-                                <Edit size={12} />
-                              </button>
-                              <button className="btn" style={{ padding: "3px 6px", fontSize: 11, color: "var(--rose)" }} onClick={() => deleteBankAccount(b)} title="Delete Account">
-                                <Trash2 size={12} />
-                              </button>
+                            <div className="mono" style={{ fontSize: 11, color: "var(--gold)", marginBottom: 4, fontWeight: 600 }}>
+                              {b.accountNumber} {b.iban && b.iban !== "N/A" ? `• ${b.iban}` : ""}
+                            </div>
+                            <div style={{ fontSize: 11, color: "var(--ink-muted)", marginBottom: 8, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                              {b.branch}
+                            </div>
+
+                            <div style={{ background: "rgba(0,0,0,0.02)", padding: "5px 8px", borderRadius: 6, marginBottom: 8, fontSize: 11.5, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                              <span style={{ color: "var(--ink-muted)" }}>Opening Balance:</span>
+                              <span className="mono" style={{ fontWeight: 600, color: (b.openingBalance || 0) > 0 ? "var(--ink)" : "var(--ink-muted)" }}>
+                                {pkr(b.openingBalance || 0)}
+                              </span>
+                            </div>
+
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", borderTop: "1px solid var(--rule)", paddingTop: 8 }}>
+                              <span style={{ fontSize: 11.5, color: "var(--ink-muted)", fontWeight: 600 }}>Live Net Balance:</span>
+                              <span className="mono" style={{ fontSize: 15, fontWeight: 700, color: b.liveBalance >= 0 ? "var(--jade)" : "var(--rose)" }}>
+                                {pkr(b.liveBalance)}
+                              </span>
                             </div>
                           </div>
-                          <div className="mono" style={{ fontSize: 11, color: "var(--gold)", marginBottom: 4, fontWeight: 600 }}>
-                            {b.accountNumber} {b.iban && b.iban !== "N/A" ? `• ${b.iban}` : ""}
-                          </div>
-                          <div style={{ fontSize: 11, color: "var(--ink-muted)", marginBottom: 8, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                            {b.branch}
-                          </div>
-
-                          <div style={{ background: "rgba(0,0,0,0.02)", padding: "5px 8px", borderRadius: 6, marginBottom: 8, fontSize: 11.5, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                            <span style={{ color: "var(--ink-muted)" }}>Opening Balance:</span>
-                            <span className="mono" style={{ fontWeight: 600, color: (b.openingBalance || 0) > 0 ? "var(--ink)" : "var(--ink-muted)" }}>
-                              {pkr(b.openingBalance || 0)}
-                            </span>
-                          </div>
-
-                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", borderTop: "1px solid var(--rule)", paddingTop: 8 }}>
-                            <span style={{ fontSize: 11.5, color: "var(--ink-muted)", fontWeight: 600 }}>Live Net Balance:</span>
-                            <span className="mono" style={{ fontSize: 15, fontWeight: 700, color: b.liveBalance >= 0 ? "var(--jade)" : "var(--rose)" }}>
-                              {pkr(b.liveBalance)}
-                            </span>
-                          </div>
-                        </div>
-                      ))}
+                        );
+                      })}
 
                       {(() => {
                         const pdcVchs = vouchers.filter(v => v.type === "RV" && v.isPdc);
@@ -7079,7 +7289,12 @@ export default function App() {
                         );
                       })()}
 
-                      <div className="card" style={{ padding: 16, background: "var(--gold-glow)", border: "1px solid var(--gold)" }}>
+                      <div
+                        className="card"
+                        style={{ padding: 16, background: "var(--gold-glow)", border: "1px solid var(--gold)", cursor: "pointer" }}
+                        onClick={() => setCashBankFilter("all")}
+                        title="Click to view all Cash & Bank accounts combined"
+                      >
                         <div style={{ fontWeight: 700, fontSize: 14, color: "var(--gold)", marginBottom: 4 }}>Total Liquidity Position</div>
                         <div style={{ fontSize: 11.5, color: "var(--ink-muted)", marginBottom: 12 }}>Combined Total Cash + Bank Balances</div>
                         <div className="mono" style={{ fontSize: 20, fontWeight: 800, color: "var(--ink)" }}>
@@ -7150,7 +7365,7 @@ export default function App() {
                                       </td>
                                       <td>
                                         <span className="badge-mini">
-                                          {targetBankObj?.bankName || "HBL"}
+                                          {targetBankObj?.bankName || "Bank Account"}
                                         </span>
                                       </td>
                                       <td>
@@ -7202,18 +7417,138 @@ export default function App() {
                       );
                     })()}
 
-                    <div className="card" style={{ padding: "12px 16px", marginBottom: 16, display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
-                      <div className="field" style={{ margin: 0, flex: 1, minWidth: 220 }}>
-                        <label>Filter Ledger by Cash / Bank Account</label>
-                        <select value={cashBankFilter} onChange={e => setCashBankFilter(e.target.value)}>
-                          <option value="all">All Cash &amp; Bank Accounts ({pkr(totalLiquidity)})</option>
-                          <option value="cash">All Petty Cash Vaults Combined</option>
-                          {bankAccounts.map(b => (
-                            <option key={b.id} value={b.id}>
-                              {b.bankName} {b.accountNumber ? `— ${b.accountNumber}` : ""} ({pkr(accountBalances.find(x => x.id === b.id)?.liveBalance || 0)})
-                            </option>
+                    <div className="card" style={{ padding: "14px 16px", marginBottom: 16 }}>
+                      <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "flex-end" }}>
+                        <div className="field" style={{ margin: 0, flex: "2 1 260px" }}>
+                          <label>Filter Ledger by Cash / Bank Account</label>
+                          <select value={cashBankFilter} onChange={e => setCashBankFilter(e.target.value)}>
+                            <option value="all">All Cash &amp; Bank Accounts ({pkr(totalLiquidity)})</option>
+                            <option value="banks_only">🏦 All Bank Accounts Only ({pkr(totalBanksOnly)})</option>
+                            <option value="cash">💵 All Petty Cash Vaults Combined ({pkr(totalCashOnly)})</option>
+                            <optgroup label="Operational Bank Accounts">
+                              {bankAccounts
+                                .filter(b => b.accountType !== "Petty Cash" && !b.id.startsWith("bank-cash"))
+                                .map(b => (
+                                  <option key={b.id} value={b.id}>
+                                    🏦 {b.bankName} {b.accountNumber ? `— ${b.accountNumber}` : ""} ({pkr(accountBalances.find(x => x.id === b.id)?.liveBalance || 0)})
+                                  </option>
+                                ))}
+                            </optgroup>
+                            <optgroup label="Petty Cash Vaults">
+                              {bankAccounts
+                                .filter(b => b.accountType === "Petty Cash" || b.id.startsWith("bank-cash"))
+                                .map(b => (
+                                  <option key={b.id} value={b.id}>
+                                    💵 {b.bankName} {b.accountNumber ? `— ${b.accountNumber}` : ""} ({pkr(accountBalances.find(x => x.id === b.id)?.liveBalance || 0)})
+                                  </option>
+                                ))}
+                            </optgroup>
+                          </select>
+                        </div>
+
+                        <div className="field" style={{ margin: 0, flex: "1 1 145px" }}>
+                          <label>From Date (Date Wise)</label>
+                          <input
+                            type="date"
+                            value={cashBankDateFrom}
+                            onChange={e => {
+                              setCashBankDateFrom(e.target.value);
+                              setCashBankDatePreset("custom");
+                            }}
+                          />
+                        </div>
+
+                        <div className="field" style={{ margin: 0, flex: "1 1 145px" }}>
+                          <label>To Date (Date Wise)</label>
+                          <input
+                            type="date"
+                            value={cashBankDateTo}
+                            onChange={e => {
+                              setCashBankDateTo(e.target.value);
+                              setCashBankDatePreset("custom");
+                            }}
+                          />
+                        </div>
+
+                        <div className="field" style={{ margin: 0, flex: "1 1 165px" }}>
+                          <label>Date Sort Order</label>
+                          <select value={cashBankSortOrder} onChange={e => setCashBankSortOrder(e.target.value)}>
+                            <option value="asc">Date Wise: Oldest First (↑)</option>
+                            <option value="desc">Date Wise: Newest First (↓)</option>
+                          </select>
+                        </div>
+
+                        <div className="field" style={{ margin: 0, flex: "1.2 1 180px" }}>
+                          <label>Search Voucher / Particulars</label>
+                          <input
+                            type="text"
+                            placeholder="Voucher #, Cheque #, Note..."
+                            value={cashBankSearch}
+                            onChange={e => setCashBankSearch(e.target.value)}
+                          />
+                        </div>
+                      </div>
+
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 10, marginTop: 12, paddingTop: 10, borderTop: "1px solid var(--rule)" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+                          <span style={{ fontSize: 11.5, fontWeight: 700, color: "var(--ink-muted)", marginRight: 2 }}>📅 Quick Date Filter:</span>
+                          {[
+                            { key: "all", label: "All Dates" },
+                            { key: "today", label: "Today" },
+                            { key: "this_week", label: "This Week" },
+                            { key: "this_month", label: "This Month" },
+                            { key: "last_month", label: "Last Month" }
+                          ].map(p => (
+                            <button
+                              key={p.key}
+                              type="button"
+                              className={"btn" + (cashBankDatePreset === p.key ? " btn-primary" : "")}
+                              style={{ padding: "3px 10px", fontSize: 11.5 }}
+                              onClick={() => applyDatePreset(p.key)}
+                            >
+                              {p.label}
+                            </button>
                           ))}
-                        </select>
+                          {(cashBankFilter !== "all" || cashBankDateFrom || cashBankDateTo || cashBankSearch) && (
+                            <button
+                              type="button"
+                              className="btn"
+                              style={{ padding: "3px 10px", fontSize: 11.5, color: "var(--rose)", borderColor: "var(--rose)" }}
+                              onClick={() => {
+                                setCashBankFilter("all");
+                                setCashBankDateFrom("");
+                                setCashBankDateTo("");
+                                setCashBankDatePreset("all");
+                                setCashBankSearch("");
+                              }}
+                            >
+                              ✕ Reset Filters
+                            </button>
+                          )}
+                        </div>
+
+                        <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap", fontSize: 12 }}>
+                          {cashBankDateFrom && priorRowsCount > 0 && (
+                            <div>
+                              <span style={{ color: "var(--ink-muted)" }}>Opening (B/F): </span>
+                              <strong className="mono">{pkr(openingBroughtForward)}</strong>
+                            </div>
+                          )}
+                          <div>
+                            <span style={{ color: "var(--ink-muted)" }}>Deposits (In): </span>
+                            <strong className="mono" style={{ color: "var(--emerald)" }}>{pkr(periodDeposits)}</strong>
+                          </div>
+                          <div>
+                            <span style={{ color: "var(--ink-muted)" }}>Payments (Out): </span>
+                            <strong className="mono" style={{ color: "var(--rose)" }}>{pkr(periodPayments)}</strong>
+                          </div>
+                          <div style={{ background: "rgba(2, 132, 199, 0.08)", padding: "3px 9px", borderRadius: 6 }}>
+                            <span style={{ color: "var(--ink-muted)", fontWeight: 600 }}>Closing Balance: </span>
+                            <strong className="mono" style={{ color: periodClosingBalance >= 0 ? "var(--jade)" : "var(--rose)" }}>
+                              {pkr(periodClosingBalance)}
+                            </strong>
+                          </div>
+                        </div>
                       </div>
                     </div>
 
@@ -7231,9 +7566,12 @@ export default function App() {
                               <th style={{ textAlign: "right" }}>Running Balance</th>
                             </tr>
                           </thead>
-                          <tbody>
-                            {ledgerRows.map((row) => (
-                              <tr key={row.key}>
+                          <tbody key={`tbody-${cashBankFilter}-${cashBankDateFrom}-${cashBankDateTo}-${cashBankSortOrder}`}>
+                            {ledgerRows.map((row, idx) => (
+                              <tr
+                                key={`${row.key}-${idx}`}
+                                style={row.isBroughtForward ? { background: "rgba(217, 119, 6, 0.07)", fontWeight: 600 } : undefined}
+                              >
                                 <td className="mono" style={{ fontSize: 12.5 }}>{fmtDate(row.date)}</td>
                                 <td className="mono" style={{ fontWeight: 600, color: "var(--gold)", fontSize: 12 }}>{row.reference}</td>
                                 <td>
@@ -7242,16 +7580,16 @@ export default function App() {
                                   </span>
                                 </td>
                                 <td>
-                                  <div style={{ fontWeight: 500 }}>{row.description}</div>
+                                  <div style={{ fontWeight: row.isBroughtForward ? 700 : 500 }}>{row.description}</div>
                                   {row.memo && row.memo !== row.description && (
                                     <div style={{ fontSize: 11, color: "var(--ink-muted)" }}>{row.memo}</div>
                                   )}
                                 </td>
                                 <td className="mono" style={{ textAlign: "right", color: "var(--emerald)", fontWeight: 600 }}>
-                                  {row.debit > 0 ? pkr(row.debit) : "—"}
+                                  {!row.isBroughtForward && row.debit > 0 ? pkr(row.debit) : "—"}
                                 </td>
                                 <td className="mono" style={{ textAlign: "right", color: "var(--rose)", fontWeight: 600 }}>
-                                  {row.credit > 0 ? pkr(row.credit) : "—"}
+                                  {!row.isBroughtForward && row.credit > 0 ? pkr(row.credit) : "—"}
                                 </td>
                                 <td className="mono" style={{ textAlign: "right", fontWeight: 700, color: row.runningBalance >= 0 ? "var(--jade)" : "var(--rose)" }}>
                                   {pkr(row.runningBalance)}
@@ -7262,7 +7600,7 @@ export default function App() {
                             {ledgerRows.length === 0 && (
                               <tr>
                                 <td colSpan={7} style={{ textAlign: "center", padding: 25, color: "var(--ink-muted)" }}>
-                                  No transactions found for the selected bank account filter.
+                                  No transactions found for the selected account and date filter.
                                 </td>
                               </tr>
                             )}
@@ -8335,8 +8673,8 @@ export default function App() {
             {/* Sub-Tab 1: Journal Entries List & Reversal */}
             {ledgerSubTab === "entries" && (
               <>
-                {journal.map(e => (
-                  <div className="card" key={e.id} style={{ padding: 16, marginBottom: 12 }}>
+                {journal.map((e, eIdx) => (
+                  <div className="card" key={`${e.id || "jrn"}-${eIdx}`} style={{ padding: 16, marginBottom: 12 }}>
                     <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10, flexWrap: "wrap", gap: 8, alignItems: "center" }}>
                       <div>
                         <span style={{ fontWeight: 700, fontSize: 15, marginRight: 10 }}>{e.description}</span>
