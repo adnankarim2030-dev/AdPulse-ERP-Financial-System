@@ -794,6 +794,7 @@ export default function VendorStatementView({
 
     // Prior Payments / Direct Settlements (Debits)
     vouchers.filter(v => isVendorMatch(v) && isProjectMatch(v) && v.date < dateFrom && (v.type === "PV" || v.type === "CV")).forEach(v => {
+      if (v.isPdc && v.pdcStatus === "Bounced") return;
       opening -= Number(v.amount) || 0;
     });
 
@@ -825,19 +826,31 @@ export default function VendorStatementView({
     vouchers.filter(v => isVendorMatch(v) && isProjectMatch(v) && v.date >= dateFrom && v.date <= dateTo && (v.type === "PV" || v.type === "CV")).forEach(v => {
       const proj = projects.find(p => p.id === v.projectId);
       const isDirect = v.type === "CV";
-      const typeLabel = isDirect ? "Direct Settlement" : "Vendor Payment";
-      const defaultDesc = isDirect
-        ? `Direct Settlement by Client (${v.party || "Client"})${v.instrumentNo ? ` [${v.paymentMode || 'Inst'} #${v.instrumentNo}]` : ""}`
-        : (v.description || `Vendor Payment${v.paymentMode ? ` [${v.paymentMode}${v.instrumentNo ? ` #${v.instrumentNo}` : ''}]` : ''}`);
+      const isPdcBounced = v.isPdc && v.pdcStatus === "Bounced";
+      let typeLabel = isDirect ? "Direct Settlement" : "Vendor Payment";
+      if (v.isPdc) typeLabel = isPdcBounced ? "Cheque Bounced" : "PDC Issued";
+
+      const chqRef = v.chequeNo || v.instrumentNo || "PDC";
+      const chqDue = v.chequeDate || v.instrumentDate || v.date;
+      let defaultDesc = "";
+      if (isDirect) {
+        defaultDesc = `Direct Settlement by Client (${v.party || "Client"})${v.instrumentNo ? ` [${v.paymentMode || 'Inst'} #${v.instrumentNo}]` : ""}`;
+      } else if (v.isPdc) {
+        defaultDesc = isPdcBounced
+          ? `Issued PDC Returned / Cancelled [Chq #${chqRef}] (${v.bounceReason || "Return"})`
+          : (v.description || `Post-Dated Cheque Issued [Chq #${chqRef}] (Due: ${chqDue})`);
+      } else {
+        defaultDesc = v.description || `Vendor Payment${v.paymentMode ? ` [${v.paymentMode}${v.instrumentNo ? ` #${v.instrumentNo}` : ''}]` : ''}`;
+      }
 
       const gross = Number(v.grossAmount) || Number(v.amount) || 0;
-      const comm = Number(v.commAmount) || 0;
-      const commRate = Number(v.commRate) || 0;
+      const comm = Number(v.agencyCommissionAmount !== undefined ? v.agencyCommissionAmount : v.commAmount) || 0;
+      const commRate = Number(v.agencyCommissionRate !== undefined ? v.agencyCommissionRate : v.commRate) || 0;
       const sst = Number(v.sstAmount) || 0;
       const sstRate = Number(v.sstRate) || 0;
       const wht = Number(v.whtAmount) || 0;
       const whtRate = Number(v.whtRate) || 0;
-      const net = Number(v.netAmount) || Number(v.amount) || 0;
+      const net = Number(v.netAmount !== undefined ? v.netAmount : v.amount) || 0;
 
       let taxBreakdown = null;
       if (isDirect) {
@@ -859,9 +872,9 @@ export default function VendorStatementView({
           wht,
           whtRate,
           net,
-          mode: v.paymentMode || (v.chequeNo ? "Cross Cheque" : "Bank Transfer"),
+          mode: v.isPdc ? `Post-Dated Cheque (Due: ${chqDue})` : (v.paymentMode || (v.chequeNo ? "Cross Cheque" : "Bank Transfer")),
           instrumentNo: v.instrumentNo || v.chequeNo,
-          bank: v.bankAccount || v.bank
+          bank: v.drawnBank || v.bankAccount || v.bank
         };
       }
 
@@ -871,9 +884,9 @@ export default function VendorStatementView({
         ref: v.voucherNo || ((isDirect ? "CV-" : "PV-") + v.id.toUpperCase()),
         type: typeLabel,
         project: proj ? proj.name : defaultDesc,
-        debit: Number(v.amount) || 0,
+        debit: isPdcBounced ? 0 : (Number(v.amount) || 0),
         credit: 0,
-        status: v.status || "Posted",
+        status: v.isPdc ? (v.pdcStatus === "In-Hand" ? "PDC Pending" : v.pdcStatus) : (v.status || "Posted"),
         taxBreakdown,
         raw: v
       });
