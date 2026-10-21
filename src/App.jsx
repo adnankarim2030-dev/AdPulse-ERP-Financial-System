@@ -1,4 +1,5 @@
-import React, { useState, useMemo, useRef } from "react";
+import React, { useState, useMemo, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import {
   LayoutDashboard, FileText, Receipt, BookOpenText, BarChart3,
   Plus, X, CheckCircle2, Clock, AlertCircle, Wallet, Landmark, ShoppingCart,
@@ -10240,18 +10241,22 @@ export default function App() {
         />
       )}
 
-      {/* SYSTEM-WIDE "PROCESS COMPLETE / SAVED" CONFIRMATION POPUP */}
-      {successPopup && (
+      {/* SYSTEM-WIDE "PROCESS COMPLETE / SAVED" CONFIRMATION POPUP (RENDERED VIA BODY PORTAL) */}
+      {successPopup && typeof document !== "undefined" && createPortal(
         <div 
           className="modal-backdrop" 
           style={{ 
-            zIndex: 100000, 
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 999999, 
             display: "flex", 
             alignItems: "center", 
             justifyContent: "center",
             background: "rgba(15, 23, 42, 0.65)",
-            backdropFilter: "blur(4px)",
-            animation: "fadeIn 0.18s ease-out"
+            backdropFilter: "blur(4px)"
           }}
           onClick={() => setSuccessPopup(null)}
         >
@@ -10264,10 +10269,9 @@ export default function App() {
               textAlign: "center",
               borderRadius: 18,
               border: "1.5px solid #10B981",
-              boxShadow: "0 20px 50px -10px rgba(16, 185, 129, 0.35), 0 10px 25px rgba(0, 0, 0, 0.2)",
+              boxShadow: "0 25px 50px -12px rgba(16, 185, 129, 0.4), 0 10px 25px rgba(0, 0, 0, 0.25)",
               background: "#FFFFFF",
-              position: "relative",
-              animation: "scaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1)"
+              position: "relative"
             }}
             onClick={e => e.stopPropagation()}
           >
@@ -10374,7 +10378,8 @@ export default function App() {
                 borderColor: "#059669",
                 boxShadow: "0 4px 14px rgba(16, 185, 129, 0.35)",
                 borderRadius: 10,
-                gap: 8
+                gap: 8,
+                cursor: "pointer"
               }}
               onClick={() => setSuccessPopup(null)}
               autoFocus
@@ -10383,7 +10388,8 @@ export default function App() {
               Done
             </button>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
