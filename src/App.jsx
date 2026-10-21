@@ -1553,6 +1553,24 @@ export default function App() {
   });
 
   const [backupNotification, setBackupNotification] = useState(null);
+  const [successPopup, setSuccessPopup] = useState(null);
+  const successPopupTimerRef = React.useRef(null);
+
+  const triggerSuccessPopup = React.useCallback(({ title = "Process Complete — Saved Successfully!", message = "Your record has been saved to the system.", code = "", module = "AdPulse ERP" }) => {
+    if (successPopupTimerRef.current) clearTimeout(successPopupTimerRef.current);
+    setSuccessPopup({
+      id: Date.now(),
+      title,
+      message,
+      code,
+      module,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+    });
+    successPopupTimerRef.current = setTimeout(() => {
+      setSuccessPopup(null);
+    }, 4500);
+  }, []);
+
   const [supabaseConfig, setSupabaseConfigState] = useState(() => getSupabaseConfig());
   const [isSyncingCloud, setIsSyncingCloud] = useState(false);
   const [cloudSyncStatus, setCloudSyncStatus] = useState("synced"); // "synced" | "syncing" | "pulling" | "error"
@@ -1626,7 +1644,7 @@ export default function App() {
         timestamp: new Date().toISOString(),
         lastSavedBy: currentUser ? `${currentUser.name} (${currentUser.role})` : "Admin",
         data: {
-          journal, invoices, expenses, purchaseOrders, releaseOrders, projects,
+          journal, invoices, expenses, purchaseOrders, releaseOrders, govtInvoices, projects,
           bankAccounts, hoardings, inventoryItems, inventoryLogs,
           vouchers, documents, employees, leaveRequests, payrollRuns, usersList,
           clients, vendors, auditLogs, monthlyAttendance
@@ -1728,7 +1746,7 @@ export default function App() {
 
     return () => clearTimeout(timer);
   }, [
-    journal, invoices, expenses, purchaseOrders, releaseOrders, projects, bankAccounts,
+    journal, invoices, expenses, purchaseOrders, releaseOrders, govtInvoices, projects, bankAccounts,
     hoardings, inventoryItems, inventoryLogs, vouchers, documents,
     employees, leaveRequests, payrollRuns, usersList, clients, vendors, auditLogs, monthlyAttendance
   ]);
@@ -2303,16 +2321,34 @@ export default function App() {
 
   function handleResetPassword(email, newPass) {
     setUsersList(list => list.map(u => u.email.toLowerCase() === email.toLowerCase() ? { ...u, password: newPass } : u));
+    triggerSuccessPopup({
+      title: "Password Reset Complete!",
+      message: `Password for staff account "${email}" has been updated successfully.`,
+      code: "SECURED",
+      module: "Admin Settings"
+    });
   }
 
   function handleAddUser(newUser) {
     setUsersList(list => [newUser, ...list]);
     setShowAddUserForm(false);
+    triggerSuccessPopup({
+      title: "Done! Staff User Created",
+      message: `User account for "${newUser.name}" (${newUser.role}) has been registered and saved.`,
+      code: newUser.email,
+      module: "Admin Settings"
+    });
   }
 
   function handleUpdateUser(updated) {
     setUsersList(list => list.map(u => u.id === updated.id ? updated : u));
     setEditingUser(null);
+    triggerSuccessPopup({
+      title: "Staff User Updated!",
+      message: `User profile & module permissions for "${updated.name}" have been saved.`,
+      code: updated.email,
+      module: "Admin Settings"
+    });
   }
 
   function handleDeleteUser(id) {
@@ -2326,6 +2362,12 @@ export default function App() {
     if (editingClient) {
       setClients(list => list.map(c => c.id === editingClient.id ? { ...c, ...clientData } : c));
       postAuditLog("UPDATE_CLIENT", `Updated Client Master record: ${clientData.name}`);
+      triggerSuccessPopup({
+        title: "Process Complete — Client Updated!",
+        message: `Client Master record for "${clientData.name}" has been updated and saved successfully.`,
+        code: editingClient.clientCode || clientData.clientCode || "CLIENT-UPDATED",
+        module: "Clients Master"
+      });
     } else {
       const clientCode = clientData.clientCode || getNextClientCode(clients);
       const newClient = {
@@ -2336,6 +2378,12 @@ export default function App() {
       };
       setClients(list => [newClient, ...list]);
       postAuditLog("CREATE_CLIENT", `Registered New Client Master: ${newClient.name} (${newClient.clientCode})`);
+      triggerSuccessPopup({
+        title: "Process Complete — Client Registered!",
+        message: `New Client "${newClient.name}" has been registered and saved in Clients Master.`,
+        code: newClient.clientCode,
+        module: "Clients Master"
+      });
     }
     setShowClientModal(false);
     setEditingClient(null);
@@ -2354,6 +2402,12 @@ export default function App() {
     if (editingVendor) {
       setVendors(list => list.map(v => v.id === editingVendor.id ? { ...v, ...vendorData } : v));
       postAuditLog("UPDATE_VENDOR", `Updated Vendor Master record: ${vendorData.name}`);
+      triggerSuccessPopup({
+        title: "Process Complete — Vendor Updated!",
+        message: `Vendor Master record for "${vendorData.name}" has been updated and saved successfully.`,
+        code: editingVendor.vendorCode || vendorData.vendorCode || "VENDOR-UPDATED",
+        module: "Vendors Master"
+      });
     } else {
       const vendorCode = vendorData.vendorCode || getNextVendorCode(vendors);
       const newVendor = {
@@ -2364,6 +2418,12 @@ export default function App() {
       };
       setVendors(list => [newVendor, ...list]);
       postAuditLog("CREATE_VENDOR", `Registered New Vendor Master: ${newVendor.name} (${newVendor.vendorCode})`);
+      triggerSuccessPopup({
+        title: "Process Complete — Vendor Registered!",
+        message: `New Vendor "${newVendor.name}" has been registered and saved in Vendors Master.`,
+        code: newVendor.vendorCode,
+        module: "Vendors Master"
+      });
     }
     setShowVendorModal(false);
     setEditingVendor(null);
@@ -2397,11 +2457,23 @@ export default function App() {
     
     postEntry(inv.issueDate || TODAY_STR, `Invoice ${finalInvoiceNo} - ${inv.client} (${inv.description})`, lines, finalInvoiceNo);
     setShowInvoiceForm(false);
+    triggerSuccessPopup({
+      title: "Process Complete — Invoice Saved!",
+      message: `Client Invoice for "${inv.client}" (${pkr(totalAmount)}) has been created and posted to General Ledger.`,
+      code: finalInvoiceNo,
+      module: "Invoices"
+    });
   }
 
   function updateInvoice(updated) {
     setInvoices(list => list.map(i => i.id === updated.id ? updated : i));
     setEditingInvoice(null);
+    triggerSuccessPopup({
+      title: "Process Complete — Invoice Updated!",
+      message: `Invoice details for "${updated.client}" (${pkr(updated.totalAmount || updated.amount)}) have been updated.`,
+      code: updated.invoiceNo || updated.id,
+      module: "Invoices"
+    });
   }
 
   function markPaid(inv, via, bankAccountId) {
@@ -2421,6 +2493,12 @@ export default function App() {
     }
 
     postEntry(TODAY.toISOString().slice(0, 10), `Payment received - ${inv.client}`, lines, "PMT-" + (inv.invoiceNo || inv.id.toUpperCase()));
+    triggerSuccessPopup({
+      title: "Payment Received & Posted!",
+      message: `Invoice for "${inv.client}" marked as PAID (${pkr(totalBilled)}) via ${via}.`,
+      code: inv.invoiceNo || inv.id,
+      module: "Invoices"
+    });
   }
 
   /* Government Clients & DIPR Invoicing Actions */
@@ -2456,6 +2534,12 @@ export default function App() {
     if (isEdit) {
       setGovtInvoices(list => list.map(g => g.id === finalInv.id ? finalInv : g));
       postAuditLog("UPDATE_GOVT_INVOICE", `Updated Govt Invoice: ${finalInv.invoiceNo} (${finalInv.clientName})`);
+      triggerSuccessPopup({
+        title: "Process Complete — Govt Invoice Updated!",
+        message: `Government Print Media Invoice for "${finalInv.clientName}" (Gross: ${pkr(totalGross)}) has been updated.`,
+        code: finalInv.invoiceNo,
+        module: "Govt Clients"
+      });
     } else {
       setGovtInvoices(list => [finalInv, ...list]);
       // Post General Ledger accounting entry for Agency Commission & SST
@@ -2473,6 +2557,12 @@ export default function App() {
         finalInv.invoiceNo
       );
       postAuditLog("CREATE_GOVT_INVOICE", `Created Govt Invoice: ${finalInv.invoiceNo} (${finalInv.clientName}) - Gross: Rs ${Math.round(totalGross).toLocaleString()}`);
+      triggerSuccessPopup({
+        title: "Process Complete — Govt Invoice Saved!",
+        message: `Government Invoice for "${finalInv.clientName}" (Gross: ${pkr(totalGross)}, Net Cheque: ${pkr(netCheque)}) has been posted.`,
+        code: finalInv.invoiceNo,
+        module: "Govt Clients"
+      });
     }
     
     setShowGovtInvoiceModal(false);
@@ -2518,6 +2608,12 @@ export default function App() {
       `PMT-${inv.invoiceNo}`
     );
     postAuditLog("PAY_GOVT_INVOICE", `Marked Govt Invoice as Paid: ${inv.invoiceNo} - Net Cheque: Rs ${Math.round(netCheque).toLocaleString()}`);
+    triggerSuccessPopup({
+      title: "Govt Cheque Cleared & Posted!",
+      message: `Government Invoice "${inv.invoiceNo}" (${inv.clientName}) marked as PAID (${pkr(netCheque)}).`,
+      code: `PMT-${inv.invoiceNo}`,
+      module: "Govt Clients"
+    });
   }
 
   function recordSrbRemittance() {
@@ -2531,11 +2627,17 @@ export default function App() {
     }
     const defaultBank = bankAccounts.find(b => b.accountType !== "Petty Cash" && !b.id.startsWith("bank-cash"))?.id || bankAccounts[0]?.id || null;
     const today = TODAY.toISOString().slice(0, 10);
+    const remittedAmt = srbPayableBalance;
     postEntry(today, `Sindh Sales Tax (SRB) Remittance`, [
-      { account: "srb_payable", debit: srbPayableBalance, credit: 0 },
-      { account: "bank", bankAccountId: defaultBank, debit: 0, credit: srbPayableBalance },
+      { account: "srb_payable", debit: remittedAmt, credit: 0 },
+      { account: "bank", bankAccountId: defaultBank, debit: 0, credit: remittedAmt },
     ], "SRB-REMIT");
-    alert(`Successfully posted remittance of ${pkr(srbPayableBalance)} to SRB.`);
+    triggerSuccessPopup({
+      title: "SRB Sales Tax Remittance Posted!",
+      message: `Successfully posted remittance of ${pkr(remittedAmt)} to Sindh Revenue Board (SRB).`,
+      code: "SRB-REMIT",
+      module: "Tax & Ledger"
+    });
   }
 
   function addExpense(data) {
@@ -2567,6 +2669,12 @@ export default function App() {
       { account: status === "paid" ? (paidVia === "Cash" ? "cash" : "bank") : "ap", bankAccountId: selectedBank, debit: 0, credit: Number(amount) },
     ], finalExpNo);
     setShowExpenseForm(false);
+    triggerSuccessPopup({
+      title: "Process Complete — Expense Saved!",
+      message: `Expense for "${vendor}" (${pkr(amount)} — ${memoText}) has been recorded and posted to Ledger.`,
+      code: finalExpNo,
+      module: "Expenses"
+    });
   }
 
   function payExpense(expenseId, paymentVia, paymentDate, bankAccountId) {
@@ -2579,11 +2687,23 @@ export default function App() {
       { account: "ap", debit: exp.amount, credit: 0 },
       { account: paymentVia === "Cash" ? "cash" : "bank", bankAccountId: selectedBank, debit: 0, credit: exp.amount },
     ], "PMT-" + (exp.expenseNo || exp.id.toUpperCase()));
+    triggerSuccessPopup({
+      title: "Process Complete — Expense Paid!",
+      message: `Payment of ${pkr(exp.amount)} to "${exp.vendor}" has been recorded via ${paymentVia}.`,
+      code: exp.expenseNo || exp.id,
+      module: "Expenses"
+    });
   }
 
   function updateExpense(updated) {
     setExpenses(list => list.map(e => e.id === updated.id ? updated : e));
     setEditingExpense(null);
+    triggerSuccessPopup({
+      title: "Process Complete — Expense Updated!",
+      message: `Expense record for "${updated.vendor}" (${pkr(updated.amount)}) has been updated.`,
+      code: updated.expenseNo || updated.refNo || "EXP-UPDATED",
+      module: "Expenses"
+    });
   }
 
   function addPO(poData) {
@@ -2591,11 +2711,23 @@ export default function App() {
     const po = { id: uid(), poNumber: finalPONo, ...poData, status: "Draft" };
     setPurchaseOrders(list => [po, ...list]);
     setShowPOForm(false);
+    triggerSuccessPopup({
+      title: "Process Complete — PO Created!",
+      message: `Purchase Order for "${poData.vendor}" (${pkr(poData.amount)}) has been saved.`,
+      code: finalPONo,
+      module: "Purchase Orders"
+    });
   }
 
   function updatePO(updated) {
     setPurchaseOrders(list => list.map(p => p.id === updated.id ? updated : p));
     setEditingPO(null);
+    triggerSuccessPopup({
+      title: "Process Complete — PO Updated!",
+      message: `Purchase Order for "${updated.vendor}" (${pkr(updated.amount)}) has been updated.`,
+      code: updated.poNumber || "PO-UPDATED",
+      module: "Purchase Orders"
+    });
   }
 
   function addRO(roData) {
@@ -2603,15 +2735,33 @@ export default function App() {
     const ro = { id: uid(), roNumber: finalRONo, ...roData, status: roData.status || "Issued" };
     setReleaseOrders(list => [ro, ...list]);
     setShowROForm(false);
+    triggerSuccessPopup({
+      title: "Process Complete — Release Order Saved!",
+      message: `Release Order for "${roData.vendor || roData.publication || roData.client || 'Publication'}" has been issued and saved.`,
+      code: finalRONo,
+      module: "Release Orders (RO)"
+    });
   }
 
   function updateRO(updated) {
     setReleaseOrders(list => list.map(r => r.id === updated.id ? updated : r));
     setEditingRO(null);
+    triggerSuccessPopup({
+      title: "Process Complete — Release Order Updated!",
+      message: `Release Order "${updated.roNumber || ''}" details have been updated.`,
+      code: updated.roNumber || "RO-UPDATED",
+      module: "Release Orders (RO)"
+    });
   }
 
   function setROStatus(id, newStatus) {
     setReleaseOrders(list => list.map(r => r.id === id ? { ...r, status: newStatus } : r));
+    triggerSuccessPopup({
+      title: "Release Order Status Updated!",
+      message: `Release Order status changed to "${newStatus}".`,
+      code: newStatus.toUpperCase(),
+      module: "Release Orders (RO)"
+    });
   }
 
   function deleteRO(id) {
@@ -2638,7 +2788,12 @@ export default function App() {
       status: "unpaid",
       paidVia: null
     });
-    // Link somehow? We can just add it.
+    triggerSuccessPopup({
+      title: "PO Received & Converted to Bill!",
+      message: `Purchase Order for "${po.vendor}" (${pkr(po.amount)}) has been billed to Accounts Payable.`,
+      code: po.poNumber || "PO-BILLED",
+      module: "Purchase Orders"
+    });
   }
 
   function payPO(id, paymentVia, paymentDate, bankAccountId) {
@@ -2663,6 +2818,12 @@ export default function App() {
         }
         return e;
       });
+    });
+    triggerSuccessPopup({
+      title: "Process Complete — PO Paid!",
+      message: `Payment of ${pkr(po.amount)} for "${po.vendor}" has been posted via ${paymentVia}.`,
+      code: poRef,
+      module: "Purchase Orders"
     });
   }
 
@@ -2805,6 +2966,12 @@ export default function App() {
     setVouchers(v => [vRecord, ...v]);
     setShowVoucherForm(false);
     setEditingVoucher(null);
+    triggerSuccessPopup({
+      title: `Process Complete — ${type} Voucher Saved!`,
+      message: `${type} Voucher for "${party || vendor || 'Counterparty'}" (${pkr(vRecord.netAmount)}) has been posted to General Ledger.`,
+      code: voucherNo,
+      module: "Vouchers"
+    });
     return voucherNo;
   }
 
@@ -2990,6 +3157,12 @@ export default function App() {
 
     setShowVoucherForm(false);
     setEditingVoucher(null);
+    triggerSuccessPopup({
+      title: `Process Complete — ${type} Voucher Updated!`,
+      message: `${type} Voucher for "${party || vendor || 'Counterparty'}" (${pkr(netAmount !== undefined ? netAmount : amount)}) has been updated in General Ledger.`,
+      code: voucherNo,
+      module: "Vouchers"
+    });
     return voucherNo;
   }
 
@@ -3044,6 +3217,12 @@ export default function App() {
       recordId: vch.id,
       timestamp: new Date().toISOString()
     });
+    triggerSuccessPopup({
+      title: isPv ? "Issued PDC Encashed & Posted!" : "PDC Cheque Cleared & Posted!",
+      message: `Post-Dated Cheque #${chqRef} for "${vch.party}" (${pkr(netAmt)}) has been settled in ${tgtBank?.bankName || 'Bank'}.`,
+      code: `CLR-${vch.voucherNo || chqRef}`,
+      module: "PDC Register"
+    });
   }
 
   function bouncePdcCheque(voucherId, bounceDate = TODAY_STR, reason = "Payment Stopped / Insufficient Funds") {
@@ -3089,6 +3268,12 @@ export default function App() {
       recordId: vch.id,
       timestamp: new Date().toISOString()
     });
+    triggerSuccessPopup({
+      title: "PDC Cheque Marked as Bounced / Returned",
+      message: `Cheque #${chqRef} for "${vch.party}" (${pkr(netAmt)}) has been reversed in General Ledger.`,
+      code: `BNC-${vch.voucherNo || chqRef}`,
+      module: "PDC Register"
+    });
   }
 
 
@@ -3098,11 +3283,23 @@ export default function App() {
     const newSite = { id: uid(), status: "Available", project: "", client: "", ...siteData };
     setHoardings(list => [newSite, ...list]);
     setShowHoardingForm(false);
+    triggerSuccessPopup({
+      title: "Process Complete — Billboard Site Added!",
+      message: `OOH Billboard site "${siteData.name || siteData.area}" has been added to inventory.`,
+      code: siteData.size || "OOH-SITE",
+      module: "OOH Advertising"
+    });
   }
 
   function updateHoarding(updated) {
     setHoardings(list => list.map(h => h.id === updated.id ? updated : h));
     setEditingHoarding(null);
+    triggerSuccessPopup({
+      title: "Process Complete — Billboard Site Updated!",
+      message: `OOH Billboard site "${updated.name}" details have been saved.`,
+      code: updated.size || "OOH-UPDATED",
+      module: "OOH Advertising"
+    });
   }
 
   function removeHoarding(id) {
@@ -3146,12 +3343,24 @@ export default function App() {
 
     setBookingHoarding(null);
     setSitePickerProject(null);
+    triggerSuccessPopup({
+      title: "Process Complete — Billboard Site Booked!",
+      message: `OOH Site "${hoarding.name}" has been booked for "${targetClient}" (${targetProjectName}).`,
+      code: "BOOKED",
+      module: "OOH Advertising"
+    });
   }
 
   function releaseHoarding(hoarding) {
     setHoardings(list => list.map(h => h.id === hoarding.id
       ? { ...h, status: "Available", client: "", project: "", projectId: null, bookedFrom: null, bookedTo: null }
       : h));
+    triggerSuccessPopup({
+      title: "Billboard Site Released!",
+      message: `OOH Site "${hoarding.name}" is now marked as Available.`,
+      code: "AVAILABLE",
+      module: "OOH Advertising"
+    });
   }
 
   function createProject({ client, type, name, description, startDate, endDate, oohSites, totalOohSqft, printingItems, totalSqft, budget }) {
@@ -3269,6 +3478,12 @@ export default function App() {
 
     setShowProjectForm(false);
     setSelectedProjectId(proj.id);
+    triggerSuccessPopup({
+      title: "Process Complete — Project Created!",
+      message: `Project "${name}" for "${client}" has been registered and saved.`,
+      code: projectCode,
+      module: "Projects"
+    });
     return proj;
   }
 
@@ -3292,10 +3507,22 @@ export default function App() {
       return inv;
     }));
     setEditingProject(null);
+    triggerSuccessPopup({
+      title: "Process Complete — Project Updated!",
+      message: `Project "${updated.name}" (${updated.client}) details have been saved.`,
+      code: updated.projectCode || "PRJ-UPDATED",
+      module: "Projects"
+    });
   }
 
   function updateProjectStatus(projectId, status) {
     setProjects(list => list.map(p => p.id === projectId ? { ...p, status } : p));
+    triggerSuccessPopup({
+      title: "Project Status Updated!",
+      message: `Project status has been updated to "${status}".`,
+      code: status.toUpperCase(),
+      module: "Projects"
+    });
   }
 
   function createInventoryItem(itemData) {
@@ -3324,11 +3551,23 @@ export default function App() {
       };
       setInventoryLogs(logs => [log, ...logs]);
     }
+    triggerSuccessPopup({
+      title: "Process Complete — Inventory Item Saved!",
+      message: `Item "${newItem.name}" (${newItem.quantity} ${newItem.unit}) has been added to Inventory.`,
+      code: newItem.sku,
+      module: "Inventory & Assets"
+    });
   }
 
   function updateInventoryItem(updated) {
     setInventoryItems(list => list.map(i => i.id === updated.id ? { ...updated, lastUpdated: TODAY.toISOString().slice(0, 10) } : i));
     setEditingInventoryItem(null);
+    triggerSuccessPopup({
+      title: "Process Complete — Inventory Item Updated!",
+      message: `Inventory item "${updated.name}" details have been saved.`,
+      code: updated.sku || "INV-UPDATED",
+      module: "Inventory & Assets"
+    });
   }
 
   function deleteInventoryItem(item) {
@@ -3369,6 +3608,12 @@ export default function App() {
     setInventoryLogs(logs => [log, ...logs]);
     setShowStockMovementModal(false);
     setStockMovementItem(null);
+    triggerSuccessPopup({
+      title: `Process Complete — ${type} Recorded!`,
+      message: `${type} of ${qty} ${item.unit} for "${item.name}" has been logged.`,
+      code: log.reference,
+      module: "Inventory & Assets"
+    });
   }
 
   function createBankAccount(data) {
@@ -3393,6 +3638,12 @@ export default function App() {
         { account: "equity", debit: 0, credit: newAccount.openingBalance, memo: "Owner's Equity / Opening Balance Equity" }
       ], "OB-" + newAccount.id.toUpperCase());
     }
+    triggerSuccessPopup({
+      title: "Process Complete — Account Saved!",
+      message: `${newAccount.bankName} (${newAccount.accountTitle}) has been added to Cash & Bank.`,
+      code: newAccount.accountNumber,
+      module: "Cash & Bank"
+    });
   }
 
   function updateBankAccount(updated) {
@@ -3422,6 +3673,12 @@ export default function App() {
     setBankAccounts(list => list.map(b => b.id === updated.id ? { ...updated, openingBalance: opBal } : b));
     setEditingBankAccount(null);
     setShowBankAccountModal(false);
+    triggerSuccessPopup({
+      title: "Process Complete — Account Updated!",
+      message: `${updated.bankName} details and opening balance (${pkr(opBal)}) have been saved.`,
+      code: updated.accountNumber,
+      module: "Cash & Bank"
+    });
   }
 
   function handleSaveAllOpeningBalances(updatedAccounts) {
@@ -3454,6 +3711,12 @@ export default function App() {
       });
       return nextJournal;
     });
+    triggerSuccessPopup({
+      title: "Process Complete — Opening Balances Saved!",
+      message: "All Cash & Bank opening balances have been saved and synced with General Ledger.",
+      code: "OB-SYNCED",
+      module: "Cash & Bank"
+    });
   }
 
   function deleteBankAccount(account) {
@@ -3484,6 +3747,12 @@ export default function App() {
       { account: "srb_payable", debit: 0, credit: sst },
     ], "INV-" + inv.id.toUpperCase());
     setBillingModalProject(null);
+    triggerSuccessPopup({
+      title: "Process Complete — Project Billing Saved!",
+      message: `Client billing of ${pkr(amount + sst)} (incl. SST) has been posted for "${project.name}".`,
+      code: project.projectCode || "PRJ-BILL",
+      module: "Projects"
+    });
   }
 
 
@@ -3499,6 +3768,12 @@ export default function App() {
       { account: paidVia === "Cash" ? "cash" : "bank", bankAccountId: selectedBank, debit: 0, credit: amount },
     ], "EXP-" + exp.id.toUpperCase());
     setCostModalProject(null);
+    triggerSuccessPopup({
+      title: "Process Complete — Project Cost Saved!",
+      message: `Direct project cost of ${pkr(amount)} (${vendor}) has been recorded for "${project.name}".`,
+      code: project.projectCode || "PRJ-COST",
+      module: "Projects"
+    });
   }
 
   function addEmployee({ name, department, designation, email, phone, joinDate, salary, cnic, bankAccount }) {
@@ -3509,16 +3784,34 @@ export default function App() {
     setEmployees(list => [emp, ...list]);
     setAttendanceToday(a => ({ ...a, [emp.id]: "Present" }));
     setShowEmployeeForm(false);
+    triggerSuccessPopup({
+      title: "Process Complete — Employee Registered!",
+      message: `${name} (${designation} — ${department}) has been registered in HR Directory.`,
+      code: emp.code,
+      module: "HR & Payroll"
+    });
   }
 
   function updateEmployee(updated) {
     setEmployees(list => list.map(e => e.id === updated.id ? updated : e));
     setEditingEmployee(null);
+    triggerSuccessPopup({
+      title: "Process Complete — Employee Updated!",
+      message: `Employee profile for "${updated.name}" has been updated and saved.`,
+      code: updated.code || "EMP-UPDATED",
+      module: "HR & Payroll"
+    });
   }
 
   function setEmployeeStatus(emp, status) {
     setEmployees(list => list.map(e => e.id === emp.id ? { ...e, status } : e));
     if (status === "Terminated") setAttendanceToday(a => ({ ...a, [emp.id]: "N/A" }));
+    triggerSuccessPopup({
+      title: "Employee Status Updated!",
+      message: `Status for "${emp.name}" has been updated to "${status}".`,
+      code: emp.code || status.toUpperCase(),
+      module: "HR & Payroll"
+    });
   }
 
   function markAttendance(empId, value) {
@@ -3535,6 +3828,12 @@ export default function App() {
     };
     setLeaveRequests(list => [req, ...list]);
     setShowLeaveForm(false);
+    triggerSuccessPopup({
+      title: "Process Complete — Leave Request Saved!",
+      message: `${type} leave request (${days} days) for "${emp.name}" has been submitted.`,
+      code: "LEAVE-REQ",
+      module: "HR & Payroll"
+    });
   }
 
   function decideLeaveRequest(req, decision) {
@@ -3551,6 +3850,12 @@ export default function App() {
         setAttendanceToday(a => ({ ...a, [req.employeeId]: "Leave" }));
       }
     }
+    triggerSuccessPopup({
+      title: `Leave Request ${decision}!`,
+      message: `Leave request for "${req.employeeName}" (${req.days} days) marked as ${decision}.`,
+      code: decision.toUpperCase(),
+      module: "HR & Payroll"
+    });
   }
 
   function runPayroll() {
@@ -3582,6 +3887,12 @@ export default function App() {
       { account: "bank", bankAccountId: defaultBank, debit: 0, credit: totalNet },
     ], "PR-" + exp.id.toUpperCase());
     setPayrollConfirm(false);
+    triggerSuccessPopup({
+      title: "Process Complete — Payroll Disbursed!",
+      message: `Monthly Payroll for ${month} (${entries.length} employees, Net: ${pkr(totalNet)}) has been processed and posted.`,
+      code: "PR-" + exp.id.toUpperCase(),
+      module: "HR & Payroll"
+    });
   }
 
   function normalizeDocNumber(docNo) {
@@ -3878,6 +4189,12 @@ export default function App() {
       : d
     ));
     setReviewingDocId(null);
+    triggerSuccessPopup({
+      title: "Document Draft Saved!",
+      message: "Extracted document OCR data has been saved as a draft.",
+      code: "DRAFT-SAVED",
+      module: "AI Documents"
+    });
   }
 
   function postDocumentToLedger(docId, customExtracted, overrideReason) {
@@ -4071,6 +4388,13 @@ export default function App() {
       recordType: "Document",
       recordId: docId,
       timestamp: new Date().toISOString()
+    });
+
+    triggerSuccessPopup({
+      title: "Process Complete — Document Posted!",
+      message: `Document for "${extracted.party}" (${pkr(totalAmt)}) converted and posted to ERP General Ledger.`,
+      code: docRef,
+      module: "AI Documents"
     });
 
     setReviewingDocId(null);
@@ -9914,6 +10238,152 @@ export default function App() {
           onAddNewVault={createBankAccount}
           onClose={() => setShowPettyCashOpeningModal(false)}
         />
+      )}
+
+      {/* SYSTEM-WIDE "PROCESS COMPLETE / SAVED" CONFIRMATION POPUP */}
+      {successPopup && (
+        <div 
+          className="modal-backdrop" 
+          style={{ 
+            zIndex: 100000, 
+            display: "flex", 
+            alignItems: "center", 
+            justifyContent: "center",
+            background: "rgba(15, 23, 42, 0.65)",
+            backdropFilter: "blur(4px)",
+            animation: "fadeIn 0.18s ease-out"
+          }}
+          onClick={() => setSuccessPopup(null)}
+        >
+          <div 
+            className="modal-content"
+            style={{ 
+              maxWidth: 460, 
+              width: "92%",
+              padding: "28px 24px 22px", 
+              textAlign: "center",
+              borderRadius: 18,
+              border: "1.5px solid #10B981",
+              boxShadow: "0 20px 50px -10px rgba(16, 185, 129, 0.35), 0 10px 25px rgba(0, 0, 0, 0.2)",
+              background: "#FFFFFF",
+              position: "relative",
+              animation: "scaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1)"
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            {/* Top Close icon */}
+            <button
+              onClick={() => setSuccessPopup(null)}
+              style={{
+                position: "absolute",
+                top: 14,
+                right: 14,
+                background: "transparent",
+                border: "none",
+                cursor: "pointer",
+                color: "#94A3B8",
+                padding: 4,
+                borderRadius: 6
+              }}
+              title="Close (Esc)"
+            >
+              <X size={18} />
+            </button>
+
+            {/* Animated Green Badge */}
+            <div style={{
+              width: 68,
+              height: 68,
+              borderRadius: "50%",
+              background: "linear-gradient(135deg, #10B981 0%, #059669 100%)",
+              color: "#FFFFFF",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              margin: "0 auto 16px",
+              boxShadow: "0 8px 20px rgba(16, 185, 129, 0.4)",
+              border: "4px solid #D1FAE5"
+            }}>
+              <CheckCircle2 size={38} strokeWidth={2.5} />
+            </div>
+
+            {/* Module Tag */}
+            <div style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "3px 10px", borderRadius: 20, background: "#ECFDF5", border: "1px solid #A7F3D0", marginBottom: 10 }}>
+              <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#059669" }} />
+              <span style={{ fontSize: 11, fontWeight: 800, color: "#065F46", textTransform: "uppercase", letterSpacing: 0.5 }}>
+                {successPopup.module || "AdPulse ERP"} &bull; PROCESS COMPLETE
+              </span>
+            </div>
+
+            {/* Title */}
+            <h3 style={{ margin: "0 0 8px", fontSize: 19, fontWeight: 800, color: "#0F172A" }}>
+              {successPopup.title}
+            </h3>
+
+            {/* Record Code Tag */}
+            {successPopup.code && (
+              <div style={{ margin: "4px 0 10px" }}>
+                <span className="mono" style={{
+                  fontSize: 13,
+                  fontWeight: 800,
+                  color: "#0284C7",
+                  background: "#F0F9FF",
+                  padding: "4px 12px",
+                  borderRadius: 8,
+                  border: "1px solid #BAE6FD",
+                  display: "inline-block"
+                }}>
+                  #{successPopup.code}
+                </span>
+              </div>
+            )}
+
+            {/* Message */}
+            <p style={{ fontSize: 13.5, color: "#475569", lineHeight: 1.5, margin: "0 0 18px", padding: "0 8px" }}>
+              {successPopup.message}
+            </p>
+
+            {/* Cloud Auto-Saved Subtext */}
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 6,
+              fontSize: 11.5,
+              color: "#059669",
+              background: "#F0FDF4",
+              padding: "7px 12px",
+              borderRadius: 8,
+              border: "1px solid #DCFCE7",
+              marginBottom: 18
+            }}>
+              <Check size={14} strokeWidth={3} />
+              <span>Auto-saved to Local Storage &amp; Live Cloud Sync Queue</span>
+            </div>
+
+            {/* Done Action Button */}
+            <button
+              className="btn btn-primary"
+              style={{
+                width: "100%",
+                padding: "11px 0",
+                fontSize: 14.5,
+                fontWeight: 800,
+                justifyContent: "center",
+                background: "linear-gradient(135deg, #10B981 0%, #059669 100%)",
+                borderColor: "#059669",
+                boxShadow: "0 4px 14px rgba(16, 185, 129, 0.35)",
+                borderRadius: 10,
+                gap: 8
+              }}
+              onClick={() => setSuccessPopup(null)}
+              autoFocus
+            >
+              <Check size={17} strokeWidth={3} />
+              Done
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );
