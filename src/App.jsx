@@ -31,6 +31,7 @@ import StaffAuditTimeline from "./components/StaffAuditTimeline.jsx";
 import GovtInvoiceModal from "./components/GovtInvoiceModal.jsx";
 import GovtInvoicePrintModal from "./components/GovtInvoicePrintModal.jsx";
 import PettyCashOpeningModal from "./components/PettyCashOpeningModal.jsx";
+import CashBankStatementPrintModal, { exportCashBankStatementToExcel } from "./components/CashBankStatementPrintModal.jsx";
 
 /* ---------- HELPERS & FORMATTERS ---------- */
 
@@ -1448,6 +1449,7 @@ export default function App() {
   const [cashBankDatePreset, setCashBankDatePreset] = useState("all");
   const [cashBankSortOrder, setCashBankSortOrder] = useState("asc");
   const [cashBankSearch, setCashBankSearch] = useState("");
+  const [showCashBankPrintModal, setShowCashBankPrintModal] = useState(false);
 
   const [showVoucherForm, setShowVoucherForm] = useState(false);
   const [editingVoucher, setEditingVoucher] = useState(null);
@@ -7233,6 +7235,13 @@ export default function App() {
                         <button className="btn" onClick={() => { setVoucherDefaultType("CTV"); setShowVoucherForm(true); }}>
                           Contra Transfer
                         </button>
+                        <button
+                          className="btn"
+                          style={{ background: "#0284C7", color: "#FFFFFF", borderColor: "#0284C7", fontWeight: 700, display: "inline-flex", alignItems: "center", gap: 6 }}
+                          onClick={() => setShowCashBankPrintModal(true)}
+                        >
+                          <Printer size={14} /> Print Statement
+                        </button>
                       </div>
                     </div>
 
@@ -7599,9 +7608,67 @@ export default function App() {
                               {pkr(periodClosingBalance)}
                             </strong>
                           </div>
+                          <button
+                            type="button"
+                            className="btn btn-primary"
+                            style={{ padding: "5px 12px", fontSize: 12, fontWeight: 700, background: "#0284C7", borderColor: "#0284C7", color: "#FFFFFF", display: "inline-flex", alignItems: "center", gap: 5 }}
+                            onClick={() => setShowCashBankPrintModal(true)}
+                          >
+                            <Printer size={13} /> Print / Preview Statement
+                          </button>
+                          <button
+                            type="button"
+                            className="btn"
+                            style={{ padding: "5px 11px", fontSize: 12, fontWeight: 700, background: "#059669", borderColor: "#059669", color: "#FFFFFF", display: "inline-flex", alignItems: "center", gap: 5 }}
+                            onClick={() => {
+                              const accLabel = selectedAccountObj
+                                ? `${selectedAccountObj.bankName}${selectedAccountObj.accountNumber ? ` — ${selectedAccountObj.accountNumber}` : ""}`
+                                : cashBankFilter === "banks_only"
+                                ? "All Bank Accounts Combined"
+                                : cashBankFilter === "cash"
+                                ? "All Petty Cash Vaults Combined"
+                                : "All Cash & Bank Accounts Combined";
+                              exportCashBankStatementToExcel({
+                                accountLabel: accLabel,
+                                accountObj: selectedAccountObj,
+                                dateFrom: cashBankDateFrom,
+                                dateTo: cashBankDateTo,
+                                openingBalance: openingBroughtForward,
+                                totalDeposits: periodDeposits,
+                                totalPayments: periodPayments,
+                                closingBalance: periodClosingBalance,
+                                rows: ledgerRows
+                              });
+                            }}
+                          >
+                            <Download size={13} /> Excel
+                          </button>
                         </div>
                       </div>
                     </div>
+
+                    {showCashBankPrintModal && (
+                      <CashBankStatementPrintModal
+                        accountLabel={
+                          selectedAccountObj
+                            ? `${selectedAccountObj.bankName}${selectedAccountObj.accountNumber ? ` — ${selectedAccountObj.accountNumber}` : ""}`
+                            : cashBankFilter === "banks_only"
+                            ? "All Bank Accounts Combined"
+                            : cashBankFilter === "cash"
+                            ? "All Petty Cash Vaults Combined"
+                            : "All Cash & Bank Accounts Combined"
+                        }
+                        accountObj={selectedAccountObj || null}
+                        dateFrom={cashBankDateFrom}
+                        dateTo={cashBankDateTo}
+                        openingBalance={openingBroughtForward}
+                        totalDeposits={periodDeposits}
+                        totalPayments={periodPayments}
+                        closingBalance={periodClosingBalance}
+                        rows={ledgerRows}
+                        onClose={() => setShowCashBankPrintModal(false)}
+                      />
+                    )}
 
                     <div className="card">
                       <div className="table-responsive">
