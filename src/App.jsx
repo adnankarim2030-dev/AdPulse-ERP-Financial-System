@@ -16652,10 +16652,40 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
     if (doc.applySst) return doc.taxIncluded ? "SALES TAX INVOICE (15% SST INCLUDED)" : "SALES TAX INVOICE (15% SST)";
     return "SALES INVOICE";
   });
-  const [specialNote, setSpecialNote] = useState(
-    doc.notes || doc.specialNotes || doc.specialNote || doc.note ||
-    `• ABOVE MENTIONED AMOUNT IS BASED ON NET. ALL TAXES WOULD BE CHARGED OVER & ABOVE.\n• PAYMENT TO BE MADE IN THE FAVOR OF "ADPULSE IMC (PRIVATE) LTD"\n• NTN: A0654656-8 / STRN: SA054896-8`
-  );
+  const isRV = doc.type === "RV" || docTitle.includes("RECEIPT") || (doc.voucherNo && String(doc.voucherNo).toUpperCase().includes("RV"));
+  const isPV = doc.type === "PV" || doc.type === "EXPENSE" || docTitle.includes("PAYMENT") || (doc.voucherNo && String(doc.voucherNo).toUpperCase().includes("PV"));
+  const isCV = doc.type === "CV" || docTitle.includes("SETTLEMENT");
+  const isCTV = doc.type === "CTV" || docTitle.includes("CONTRA");
+  const isJV = doc.type === "JV" || docTitle.includes("JOURNAL");
+  const isPO = doc.type === "PURCHASE ORDER" || docTitle.includes("PURCHASE ORDER");
+  const isRO = doc.type === "RELEASE ORDER" || docTitle.includes("RELEASE ORDER");
+
+  const defaultSpecialNote = (() => {
+    if (doc.notes || doc.specialNotes || doc.specialNote || doc.note) {
+      return doc.notes || doc.specialNotes || doc.specialNote || doc.note;
+    }
+    if (isPV) {
+      const modeStr = doc.paymentMode || (doc.via === "Cash" ? "Petty Cash Vault" : "Bank");
+      const instStr = (doc.instrumentNo || doc.chequeNo) ? ` — Instrument / Cheque # ${doc.instrumentNo || doc.chequeNo}` : "";
+      const dtStr = (doc.instrumentDate || doc.chequeDate) ? ` (Date: ${doc.instrumentDate || doc.chequeDate})` : "";
+      const bankStr = doc.drawnBank ? ` | Bank: ${doc.drawnBank}` : "";
+      const catStr = doc.category ? `${doc.category}${doc.subcategory ? ` → ${doc.subcategory}` : ""}` : "Vendor / Operating Payment";
+      return `• PAYMENT STATUS: ${doc.isPdc && doc.pdcStatus === "In-Hand" ? "POST-DATED CHEQUE (PDC) ISSUED" : "PAID / DISBURSED"} VIA ${modeStr.toUpperCase()}${instStr}${dtStr}${bankStr}\n• EXPENSE HEAD / CLASSIFICATION: ${catStr.toUpperCase()}\n• ACKNOWLEDGEMENT: RECEIVED THE ABOVE NET AMOUNT FROM "ADPULSE IMC (PRIVATE) LTD" TOWARDS SETTLEMENT OF ACCOUNT / BILL.`;
+    }
+    if (isRV) {
+      const modeStr = doc.isPdc ? `POST-DATED CHEQUE (CHQ # ${doc.chequeNo || "PDC"}, MATURITY: ${doc.chequeDate || doc.date})` : (doc.via === "Cash" ? "CASH VAULT" : "BANK DEPOSIT / TRANSFER");
+      return `• RECEIPT STATUS: OFFICIAL PAYMENT ACKNOWLEDGEMENT RECEIVED VIA ${modeStr}\n• ISSUED BY: "ADPULSE IMC (PRIVATE) LTD" (SRB # S9940258-8 / NTN # 9940258-8)\n• CHEQUES / INSTRUMENTS ARE SUBJECT TO REALIZATION IN BANK.`;
+    }
+    if (isCV) {
+      return `• DIRECT CLIENT-TO-VENDOR SETTLEMENT VOUCHER (AP DEBITED / AR CREDITED)\n• CLIENT: ${(doc.party || "CLIENT").toUpperCase()} ➔ VENDOR: ${(doc.vendor || doc.category || "VENDOR").toUpperCase()}\n• RECORDED BY "ADPULSE IMC (PRIVATE) LTD"`;
+    }
+    if (isCTV) {
+      return `• INTERNAL CONTRA TREASURY TRANSFER BETWEEN CASH & BANK ACCOUNTS\n• AUTHORIZED BY "ADPULSE IMC (PRIVATE) LTD" ACCOUNTS DEPARTMENT`;
+    }
+    return `• ABOVE MENTIONED AMOUNT IS BASED ON NET. ALL TAXES WOULD BE CHARGED OVER & ABOVE.\n• PAYMENT TO BE MADE IN THE FAVOR OF "ADPULSE IMC (PRIVATE) LTD"\n• NTN: 9940258-8 / SRB: S9940258-8`;
+  })();
+
+  const [specialNote, setSpecialNote] = useState(defaultSpecialNote);
 
   // Dynamic calculations from line items
   const oohSites = doc.oohSites && doc.oohSites.length > 0 ? doc.oohSites : [];
@@ -16675,7 +16705,7 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
     ? oohCalculatedNet
     : (Number(doc.grossAmount) || Number(doc.amount) || 0);
 
-  // Checkbox Flags & Breakdown Hierarchy (Matching Invoice Configuration)
+  // Checkbox Flags & Breakdown Hierarchy (Matching Invoice & Voucher Configuration)
   const hasDiscount = Boolean(doc.applyDiscount && Number(doc.discountAmount) > 0);
   const discountVal = hasDiscount ? Number(doc.discountAmount) : 0;
 
@@ -16690,13 +16720,11 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
   const agencyCommissionVal = hasCommission
     ? (doc.agencyCommissionAmount !== undefined ? Number(doc.agencyCommissionAmount) : (totalAmountAfterDiscount * (commRate / 100)))
     : 0;
-  const isLessCommission = doc.commissionType === "less" || doc.isLessCommission;
+  // On Payment Vouchers (PV), agency commission is ALWAYS deducted (Less: Commission) from the vendor bill
+  const isLessCommission = isPV || doc.commissionType === "less" || doc.isLessCommission;
   const grossAmountWithComm = isLessCommission
     ? (totalAmountAfterDiscount - agencyCommissionVal)
     : (totalAmountAfterDiscount + agencyCommissionVal);
-
-  const isRV = doc.type === "RV" || docTitle.includes("RECEIPT") || (doc.voucherNo && String(doc.voucherNo).toUpperCase().includes("RV"));
-  const isPV = doc.type === "PV" || docTitle.includes("PAYMENT") || (doc.voucherNo && String(doc.voucherNo).toUpperCase().includes("PV"));
 
   const hasSst = Boolean(doc.applySst);
   const sstRatePct = doc.sstRate !== undefined ? Number(doc.sstRate) : (isRV ? 13 : 15);
@@ -16758,11 +16786,14 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
     const valStyle = { border: "1px solid #000000", padding: "7px 6px", textAlign: "center", verticalAlign: "middle", fontWeight: 800, boxSizing: "border-box", fontSize: 12, whiteSpace: "nowrap" };
 
     if (isRV) {
+      const rvFinalLabel = doc.isPdc && doc.pdcStatus === "In-Hand"
+        ? `NET PDC CHEQUE RECEIVED (IN-HAND — DUE: ${fmtDocDate(doc.chequeDate || doc.date)})`
+        : "NET AMOUNT RECEIVED / DEPOSITED";
       return (
         <React.Fragment>
-          {/* 1. GROSS SETTLEMENT AMOUNT */}
+          {/* 1. GROSS RECEIPT / SETTLEMENT AMOUNT */}
           <tr>
-            <td colSpan={colSpanAmount} style={labelStyle}>GROSS SETTLEMENT AMOUNT</td>
+            <td colSpan={colSpanAmount} style={labelStyle}>GROSS RECEIPT AMOUNT</td>
             <td style={valStyle}>{pkr(grandTotal)}</td>
           </tr>
 
@@ -16789,7 +16820,7 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
           {/* 4. NET RECEIVED / DEPOSIT AMOUNT */}
           <tr style={{ background: "#F1F5F9", fontWeight: 800 }}>
             <td colSpan={colSpanAmount} style={{ border: "1px solid #000000", padding: "8px 12px", fontSize: 12.5, textAlign: "right", verticalAlign: "middle", boxSizing: "border-box", fontWeight: 800, whiteSpace: "nowrap" }}>
-              NET RECEIVED / DEPOSIT AMOUNT
+              {rvFinalLabel}
             </td>
             <td style={{ border: "1px solid #000000", padding: "8px 6px", textAlign: "center", verticalAlign: "middle", fontSize: 12.5, color: "#059669", boxSizing: "border-box", fontWeight: 800, whiteSpace: "nowrap" }}>
               {pkr(finalPayable)}
@@ -16798,6 +16829,95 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
         </React.Fragment>
       );
     }
+
+    if (isPV) {
+      const pvFinalLabel = doc.isPdc && doc.pdcStatus === "In-Hand"
+        ? `NET POST-DATED CHEQUE (PDC) ISSUED (DUE: ${fmtDocDate(doc.chequeDate || doc.instrumentDate || doc.date)})`
+        : "NET AMOUNT PAID / DISBURSED";
+      return (
+        <React.Fragment>
+          {/* 1. VENDOR BILL / GROSS AMOUNT */}
+          <tr>
+            <td colSpan={colSpanAmount} style={labelStyle}>VENDOR BILL / GROSS AMOUNT</td>
+            <td style={valStyle}>{pkr(grandTotal)}</td>
+          </tr>
+
+          {/* 2. LESS: AGENCY COMMISSION */}
+          {hasCommission && (
+            <React.Fragment>
+              <tr>
+                <td colSpan={colSpanAmount} style={{ ...labelStyle, color: "#0284C7" }}>
+                  LESS: AGENCY COMMISSION ({commRate}%)
+                </td>
+                <td style={{ ...valStyle, color: "#0284C7" }}>- {pkr(agencyCommissionVal)}</td>
+              </tr>
+              <tr>
+                <td colSpan={colSpanAmount} style={{ ...labelStyle, background: "#F8FAFC" }}>GROSS AMOUNT AFTER COMMISSION</td>
+                <td style={{ ...valStyle, background: "#F8FAFC" }}>{pkr(grossAmountWithComm)}</td>
+              </tr>
+            </React.Fragment>
+          )}
+
+          {/* 3. ADD: INPUT SST / GST */}
+          {hasSst && (
+            <tr>
+              <td colSpan={colSpanAmount} style={{ ...labelStyle, color: "#A81C1C" }}>
+                ADD: INPUT SALES TAX / SST ({sstRatePct}%)
+              </td>
+              <td style={{ ...valStyle, color: "#A81C1C" }}>+ {pkr(sstAmt)}</td>
+            </tr>
+          )}
+
+          {/* 4. LESS: WHT WITHHELD FROM VENDOR */}
+          {hasWht && (
+            <tr>
+              <td colSpan={colSpanAmount} style={{ ...labelStyle, color: "#059669" }}>
+                LESS: WITHHOLDING TAX (WHT) DEDUCTED ({whtRatePct}%)
+              </td>
+              <td style={{ ...valStyle, color: "#059669" }}>- {pkr(whtAmt)}</td>
+            </tr>
+          )}
+
+          {/* 5. NET AMOUNT PAID / DISBURSED */}
+          <tr style={{ background: "#F1F5F9", fontWeight: 800 }}>
+            <td colSpan={colSpanAmount} style={{ border: "1px solid #000000", padding: "8px 12px", fontSize: 12.5, textAlign: "right", verticalAlign: "middle", boxSizing: "border-box", fontWeight: 800, whiteSpace: "nowrap" }}>
+              {pvFinalLabel}
+            </td>
+            <td style={{ border: "1px solid #000000", padding: "8px 6px", textAlign: "center", verticalAlign: "middle", fontSize: 12.5, color: "#059669", boxSizing: "border-box", fontWeight: 800, whiteSpace: "nowrap" }}>
+              {pkr(finalPayable)}
+            </td>
+          </tr>
+        </React.Fragment>
+      );
+    }
+
+    if (isCV || isCTV || isJV) {
+      const voucherFinalLabel = isCV
+        ? "NET AMOUNT SETTLED (CLIENT ➔ VENDOR)"
+        : isCTV
+        ? "TOTAL AMOUNT TRANSFERRED"
+        : "TOTAL JOURNAL VOUCHER AMOUNT";
+      return (
+        <React.Fragment>
+          <tr>
+            <td colSpan={colSpanAmount} style={labelStyle}>TOTAL AMOUNT</td>
+            <td style={valStyle}>{pkr(grandTotal)}</td>
+          </tr>
+          <tr style={{ background: "#F1F5F9", fontWeight: 800 }}>
+            <td colSpan={colSpanAmount} style={{ border: "1px solid #000000", padding: "8px 12px", fontSize: 12.5, textAlign: "right", verticalAlign: "middle", boxSizing: "border-box", fontWeight: 800, whiteSpace: "nowrap" }}>
+              {voucherFinalLabel}
+            </td>
+            <td style={{ border: "1px solid #000000", padding: "8px 6px", textAlign: "center", verticalAlign: "middle", fontSize: 12.5, color: "#0F172A", boxSizing: "border-box", fontWeight: 800, whiteSpace: "nowrap" }}>
+              {pkr(finalPayable)}
+            </td>
+          </tr>
+        </React.Fragment>
+      );
+    }
+
+    const finalInvoiceLabel = (isPO || isRO)
+      ? "TOTAL ORDER AMOUNT"
+      : (doc.status === "paid" ? "GRAND TOTAL (PAID)" : "GRAND TOTAL PAYABLE");
 
     const showHierarchy = hasDiscount || hasCommission || hasSst;
 
@@ -16880,7 +17000,7 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
               </tr>
             )}
             <tr style={{ background: "#F1F5F9", fontWeight: 800 }}>
-              <td colSpan={colSpanAmount} style={{ border: "1px solid #000000", padding: "8px 12px", fontSize: 12.5, textAlign: "right", verticalAlign: "middle", boxSizing: "border-box", fontWeight: 800, whiteSpace: "nowrap" }}>GRAND TOTAL PAYABLE</td>
+              <td colSpan={colSpanAmount} style={{ border: "1px solid #000000", padding: "8px 12px", fontSize: 12.5, textAlign: "right", verticalAlign: "middle", boxSizing: "border-box", fontWeight: 800, whiteSpace: "nowrap" }}>{finalInvoiceLabel}</td>
               <td style={{ border: "1px solid #000000", padding: "8px 6px", textAlign: "center", verticalAlign: "middle", fontSize: 12.5, color: "#0F172A", boxSizing: "border-box", fontWeight: 800, whiteSpace: "nowrap" }}>{pkr(finalPayable)}</td>
             </tr>
           </React.Fragment>
@@ -17295,22 +17415,42 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
             {/* CLIENT / PARTY, PROJECT & SERVICE INFO CARD */}
             <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 16, display: "grid", gridTemplateColumns: "1fr 1.2fr 1fr", gap: 10, alignItems: "center", background: "#F8FAFC", padding: "10px 14px", border: "1px solid #000000", borderRadius: 6, boxSizing: "border-box" }}>
               <div style={{ wordBreak: "break-word", textAlign: "left" }}>
-                {(docTitle.includes("PURCHASE") || docTitle.includes("RELEASE") || doc.type === "PV" || doc.type === "EXPENSE") ? "VENDOR / PARTY:" : (docTitle.includes("RECEIPT") || doc.type === "RV" ? "RECEIVED FROM:" : "CLIENT:")} <span style={{ fontWeight: 700, color: "#0F172A" }}>{(doc.client || doc.party || doc.vendor || doc.payee || "CLIENT / PARTY").toUpperCase()}</span>
+                {isPV ? "PAID TO (VENDOR / PAYEE):" : (isPO || isRO) ? "VENDOR / PARTY:" : isRV ? "RECEIVED FROM:" : "CLIENT:"}{" "}
+                <span style={{ fontWeight: 700, color: "#0F172A" }}>{(doc.client || doc.party || doc.vendor || doc.payee || "CLIENT / PARTY").toUpperCase()}</span>
               </div>
               <div style={{ wordBreak: "break-word", textAlign: "left" }}>
-                PROJECT / SCOPE: <span style={{ fontWeight: 700, color: "#0F172A" }}>{(doc.projectName || doc.project || (doc.description ? doc.description.replace(/^OOH Advertising\s*—\s*/i, "").replace(/\s*\(\d+\s*sites\)$/i, "") : "PROJECT SCOPE")).toUpperCase()}</span>
+                {isPV || isRV ? (
+                  <>
+                    PAYMENT MODE / REF:{" "}
+                    <span style={{ fontWeight: 700, color: "#0F172A" }}>
+                      {(doc.isPdc ? `POST-DATED CHEQUE #${doc.chequeNo || doc.instrumentNo || "PDC"} (DUE: ${fmtDocDate(doc.chequeDate || doc.instrumentDate || doc.date)})` : `${doc.paymentMode || doc.via || "BANK / CASH"}${(doc.instrumentNo || doc.chequeNo) ? ` #${doc.instrumentNo || doc.chequeNo}` : ""}`).toUpperCase()}
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    PROJECT / SCOPE: <span style={{ fontWeight: 700, color: "#0F172A" }}>{(doc.projectName || doc.project || (doc.description ? doc.description.replace(/^OOH Advertising\s*—\s*/i, "").replace(/\s*\(\d+\s*sites\)$/i, "") : "PROJECT SCOPE")).toUpperCase()}</span>
+                  </>
+                )}
               </div>
               <div style={{ wordBreak: "break-word", textAlign: "right" }}>
-                SERVICE / TYPE: <span style={{ fontWeight: 700, color: "#A81C1C" }}>{(() => {
-                  const svc = doc.serviceCategory;
-                  if (svc && svc.toUpperCase() !== "INVOICE") return svc.toUpperCase();
-                  const typ = doc.type;
-                  if (typ && typ.toUpperCase() !== "INVOICE" && typ.toUpperCase() !== "SALES TAX INVOICE") return typ.toUpperCase();
-                  if (template === "OOH") return "OOH ADVERTISING";
-                  if (template === "PRINTING") return "PRINTING & INSTALLATION";
-                  if (template === "NEWSPAPER") return "NEWSPAPER / PRINT MEDIA & PUBLICATION";
-                  return "COMMERCIAL SERVICE";
-                })()}</span>
+                {isPV && doc.category ? (
+                  <>
+                    EXPENSE HEAD: <span style={{ fontWeight: 700, color: "#A81C1C" }}>{`${doc.category}${doc.subcategory ? ` → ${doc.subcategory}` : ""}`.toUpperCase()}</span>
+                  </>
+                ) : (
+                  <>
+                    SERVICE / TYPE: <span style={{ fontWeight: 700, color: "#A81C1C" }}>{(() => {
+                      const svc = doc.serviceCategory;
+                      if (svc && svc.toUpperCase() !== "INVOICE") return svc.toUpperCase();
+                      const typ = doc.type;
+                      if (typ && typ.toUpperCase() !== "INVOICE" && typ.toUpperCase() !== "SALES TAX INVOICE") return typ.toUpperCase();
+                      if (template === "OOH") return "OOH ADVERTISING";
+                      if (template === "PRINTING") return "PRINTING & INSTALLATION";
+                      if (template === "NEWSPAPER") return "NEWSPAPER / PRINT MEDIA & PUBLICATION";
+                      return "COMMERCIAL SERVICE";
+                    })()}</span>
+                  </>
+                )}
               </div>
             </div>
 
@@ -17797,9 +17937,9 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
                   <thead>
                     <tr>
                       <th style={thStyle}>S #</th>
-                      <th style={thStyle}>DESCRIPTION / SCOPE PARTICULARS</th>
+                      <th style={thStyle}>{isPV || isRV || isCV || isCTV || isJV ? "PARTICULARS / VOUCHER DESCRIPTION" : "DESCRIPTION / SCOPE PARTICULARS"}</th>
                       <th style={thStyle}>QTY</th>
-                      <th style={thStyle}>RATE (PKR)</th>
+                      <th style={thStyle}>{isPV ? "BILL AMOUNT (PKR)" : isRV ? "GROSS AMOUNT (PKR)" : "RATE (PKR)"}</th>
                       <th style={thStyle}>AMOUNT (PKR)</th>
                     </tr>
                   </thead>
@@ -17808,6 +17948,14 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
                       <td style={{ ...tdCenter, fontWeight: 700 }}>1</td>
                       <td style={tdLeft}>
                         <div style={{ fontWeight: 700, fontSize: 12 }}>{doc.description || "Media & Production Scope"}</div>
+                        {(isPV || isRV) && (doc.paymentMode || doc.instrumentNo || doc.chequeNo) && (
+                          <div style={{ fontSize: 10.5, color: "#000000", marginTop: 3 }}>
+                            <b>Instrument:</b> {doc.isPdc ? "Post-Dated Cheque (PDC)" : (doc.paymentMode || doc.via || "Bank / Cash")}
+                            {(doc.instrumentNo || doc.chequeNo) ? ` — #${doc.instrumentNo || doc.chequeNo}` : ""}
+                            {(doc.instrumentDate || doc.chequeDate) ? ` | Date: ${fmtDocDate(doc.instrumentDate || doc.chequeDate)}` : ""}
+                            {doc.drawnBank ? ` | Bank: ${doc.drawnBank}` : ""}
+                          </div>
+                        )}
                         {doc.projectCode && <div style={{ fontSize: 10, color: "#64748B", marginTop: 2 }}>Project Reference: {doc.projectCode}</div>}
                       </td>
                       <td style={{ ...tdCenter, fontWeight: 700 }}>1</td>
@@ -17822,7 +17970,7 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
 
             {/* AMOUNT IN WORDS */}
             <div style={{ fontSize: 12, fontStyle: "italic", marginBottom: 12, background: "#F8FAFC", padding: "8px 12px", border: "1px solid #000000", borderRadius: 4 }}>
-              Amount in words: <b style={{ fontStyle: "normal", color: "#000000" }}>{amountInWords(totalAmt)}</b>
+              {isPV ? "Net Amount Paid in words:" : isRV ? "Net Amount Received in words:" : "Amount in words:"} <b style={{ fontStyle: "normal", color: "#000000" }}>{amountInWords(totalAmt)}</b>
             </div>
 
             {/* SPECIAL NOTES & TERMS SECTION */}
