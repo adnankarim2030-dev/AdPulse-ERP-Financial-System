@@ -2965,6 +2965,26 @@ export default function App() {
       applyWht, whtRate, whtAmount
     };
     setVouchers(v => [vRecord, ...v]);
+
+    // Automatically settle Client Invoice when an RV (Receipt Voucher) is created
+    if (type === "RV") {
+      const clientName = (party || "").trim().toLowerCase();
+      const recAmt = Number(netAmount !== undefined ? netAmount : amount) || 0;
+      setInvoices(list => {
+        let remaining = recAmt;
+        return list.map(inv => {
+          if (!inv.paid && ((clientId && inv.clientId === clientId) || (inv.client && inv.client.trim().toLowerCase() === clientName))) {
+            const invTotal = Number(inv.totalAmount || inv.amount) || 0;
+            if (remaining >= invTotal || Math.abs(remaining - invTotal) < 5) {
+              remaining -= invTotal;
+              return { ...inv, paid: true, paidVia: via || (isPdcVoucher ? "PDC Cheque" : "Bank"), bankAccountId: bankAccountId || null };
+            }
+          }
+          return inv;
+        });
+      });
+    }
+
     setShowVoucherForm(false);
     setEditingVoucher(null);
     triggerSuccessPopup({
@@ -6344,12 +6364,7 @@ export default function App() {
                           <td className="mono" style={{ textAlign: "right", fontWeight: 600 }}>{pkr(inv.totalAmount || inv.amount)}</td>
                           <td><StatusBadge status={inv.status} /></td>
                           <td style={{ display: "flex", gap: 4 }}>
-                            {!inv.paid && (
-                              <button className="btn" style={{ padding: "4px 8px", fontSize: 12 }} onClick={() => markPaid(inv, "Bank")}>
-                                Mark Paid
-                              </button>
-                            )}
-                            <button className="btn" style={{ padding: "4px 6px", fontSize: 12 }} onClick={() => setEditingInvoice(inv)}>
+                            <button className="btn" style={{ padding: "4px 6px", fontSize: 12 }} onClick={() => setEditingInvoice(inv)} title="Edit Invoice">
                               <Edit size={13} />
                             </button>
                             <button className="btn" style={{ padding: "4px 7px", fontSize: 12 }}
@@ -10835,9 +10850,13 @@ function ModalShell({ title, onClose, width, maxWidth, style = {}, children }) {
 
 function InvoiceModal({ initialData, projects = [], clients = [], invoices = [], onClose, onSubmit }) {
   const [invoiceNo, setInvoiceNo] = useState(initialData?.invoiceNo || initialData?.voucherNo || getNextInvoiceNo(invoices, initialData?.client));
-  const [docHeading, setDocHeading] = useState(
-    initialData?.docHeading || (initialData?.applySst ? "SALES TAX INVOICE (15% SST)" : "SALES INVOICE")
-  );
+  const [docHeading, setDocHeading] = useState(() => {
+    if (initialData?.docHeading) {
+      if (initialData.docHeading === "SALES INVOICE") return initialData.applySst ? "SALES TAX INVOICE" : "INVOICE";
+      return initialData.docHeading;
+    }
+    return initialData?.applySst ? "SALES TAX INVOICE" : "INVOICE";
+  });
   const [projectId, setProjectId] = useState(initialData?.projectId || "");
   const [client, setClient] = useState(initialData?.client || "");
   const [description, setDescription] = useState(initialData?.description || "");
@@ -10940,10 +10959,10 @@ function InvoiceModal({ initialData, projects = [], clients = [], invoices = [],
         };
       });
     }
-    return [{ location: "", width: "", height: "", sqft: 0, fromDate: issueDate || "", toDate: dueDate || "", days: 30, rate: "", amount: 0 }];
+    return [{ location: "", width: "", height: "", sqft: 0, fromDate: "", toDate: "", days: 30, rate: "", amount: 0 }];
   });
 
-  const addOohSite = () => setOohSites([...oohSites, { location: "", width: "", height: "", sqft: 0, fromDate: issueDate || "", toDate: dueDate || "", days: 30, rate: "", amount: 0 }]);
+  const addOohSite = () => setOohSites([...oohSites, { location: "", width: "", height: "", sqft: 0, fromDate: "", toDate: "", days: 30, rate: "", amount: 0 }]);
 
   const updateOohSite = (index, field, value) => {
     const updated = [...oohSites];
@@ -11255,8 +11274,8 @@ function InvoiceModal({ initialData, projects = [], clients = [], invoices = [],
         <div className="field" style={{ margin: 0 }}>
           <label style={{ color: "#D97706", fontWeight: 700 }}>Document Title / Header *</label>
           <select value={docHeading} onChange={e => handleDocHeadingChange(e.target.value)} style={{ fontWeight: 700 }}>
-            <option value="SALES INVOICE">SALES INVOICE (Standard)</option>
-            <option value="SALES TAX INVOICE (15% SST)">SALES TAX INVOICE (15% SST)</option>
+            <option value="INVOICE">INVOICE (Standard / Non-Tax)</option>
+            <option value="SALES TAX INVOICE">SALES TAX INVOICE (with SST)</option>
             <option value="SALES TAX INVOICE (15% SST INCLUDED)">SALES TAX INVOICE (15% SST INCLUDED)</option>
             <option value="COMMERCIAL INVOICE">COMMERCIAL INVOICE</option>
             <option value="PROFORMA INVOICE">PROFORMA INVOICE</option>
@@ -11374,18 +11393,16 @@ function InvoiceModal({ initialData, projects = [], clients = [], invoices = [],
                       <td style={{ padding: "6px 8px" }}>
                         <input
                           type="date"
-                          required
-                          style={{ width: "100%", padding: "10px 8px", fontSize: 12.5, borderRadius: 6, border: site.fromDate ? "1px solid #94A3B8" : "1.5px solid #DC2626", background: site.fromDate ? "transparent" : "#FEF2F2" }}
-                          value={site.fromDate}
+                          style={{ width: "100%", padding: "10px 8px", fontSize: 12.5, borderRadius: 6, border: "1px solid #CBD5E1", background: "transparent" }}
+                          value={site.fromDate || ""}
                           onChange={e => updateOohSite(idx, "fromDate", e.target.value)}
                         />
                       </td>
                       <td style={{ padding: "6px 8px" }}>
                         <input
                           type="date"
-                          required
-                          style={{ width: "100%", padding: "10px 8px", fontSize: 12.5, borderRadius: 6, border: site.toDate ? "1px solid #94A3B8" : "1.5px solid #DC2626", background: site.toDate ? "transparent" : "#FEF2F2" }}
-                          value={site.toDate}
+                          style={{ width: "100%", padding: "10px 8px", fontSize: 12.5, borderRadius: 6, border: "1px solid #CBD5E1", background: "transparent" }}
+                          value={site.toDate || ""}
                           onChange={e => updateOohSite(idx, "toDate", e.target.value)}
                         />
                       </td>
@@ -11729,7 +11746,24 @@ function InvoiceModal({ initialData, projects = [], clients = [], invoices = [],
         <div style={{ display: "flex", flexDirection: "column", gap: 8, padding: "10px 12px", background: applySst ? "#F0FDF4" : "#F8FAFC", borderRadius: 6, border: applySst ? "1px solid #BBF7D0" : "1px solid #E2E8F0" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
             <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 700, cursor: "pointer", userSelect: "none", color: applySst ? "#15803D" : "var(--ink)" }}>
-              <input type="checkbox" checked={applySst} onChange={e => setApplySst(e.target.checked)} />
+              <input
+                type="checkbox"
+                checked={applySst}
+                onChange={e => {
+                  const checked = e.target.checked;
+                  setApplySst(checked);
+                  if (checked) {
+                    if (docHeading === "INVOICE" || docHeading === "SALES INVOICE" || !docHeading) {
+                      setDocHeading("SALES TAX INVOICE");
+                    }
+                    if (!sstRate) setSstRate("15");
+                  } else {
+                    if (docHeading.includes("TAX")) {
+                      setDocHeading("INVOICE");
+                    }
+                  }
+                }}
+              />
               Apply Sales Tax (SST / Tax)
             </label>
             {applySst && (
@@ -12377,10 +12411,10 @@ function POModal({ initialData, projects = [], vendors = [], purchaseOrders = []
         };
       });
     }
-    return [{ location: "", width: "", height: "", sqft: 0, fromDate: issueDate || "", toDate: expectedDate || "", days: 30, rate: "", amount: 0 }];
+    return [{ location: "", width: "", height: "", sqft: 0, fromDate: "", toDate: "", days: 30, rate: "", amount: 0 }];
   });
 
-  const addOohSite = () => setOohSites([...oohSites, { location: "", width: "", height: "", sqft: 0, fromDate: issueDate || "", toDate: expectedDate || "", days: 30, rate: "", amount: 0 }]);
+  const addOohSite = () => setOohSites([...oohSites, { location: "", width: "", height: "", sqft: 0, fromDate: "", toDate: "", days: 30, rate: "", amount: 0 }]);
 
   const updateOohSite = (index, field, value) => {
     const updated = [...oohSites];
@@ -13878,7 +13912,24 @@ function ROModal({ initialData, projects = [], vendors = [], clients = [], relea
         <div style={{ display: "flex", flexDirection: "column", gap: 8, padding: "10px 12px", background: applySst ? "#F0FDF4" : "#F8FAFC", borderRadius: 6, border: applySst ? "1px solid #BBF7D0" : "1px solid #E2E8F0" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
             <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 700, cursor: "pointer", userSelect: "none", color: applySst ? "#15803D" : "var(--ink)" }}>
-              <input type="checkbox" checked={applySst} onChange={e => setApplySst(e.target.checked)} />
+              <input
+                type="checkbox"
+                checked={applySst}
+                onChange={e => {
+                  const checked = e.target.checked;
+                  setApplySst(checked);
+                  if (checked) {
+                    if (docHeading === "INVOICE" || docHeading === "SALES INVOICE" || !docHeading) {
+                      setDocHeading("SALES TAX INVOICE");
+                    }
+                    if (!sstRate) setSstRate("15");
+                  } else {
+                    if (docHeading.includes("TAX")) {
+                      setDocHeading("INVOICE");
+                    }
+                  }
+                }}
+              />
               Apply Sales Tax (SST / Tax)
             </label>
             {applySst && (
@@ -16831,7 +16882,6 @@ function ProjectDetailModal({ project, invoices, expenses, sites, onClose, onSta
                     <td className="mono" style={{ textAlign: "right" }}>{pkr(inv.amount)}</td>
                     <td><StatusBadge status={inv.status} /></td>
                     <td style={{ display: "flex", gap: 4 }}>
-                      {!inv.paid && <button className="btn" style={{ padding: "4px 8px", fontSize: 12 }} onClick={() => onMarkPaid(inv)}>Mark Paid</button>}
                       <button className="btn" style={{ padding: "4px 7px", fontSize: 12 }}
                         onClick={() => onPrint({
                           ...inv,
@@ -17124,9 +17174,12 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
     if (doc.type === "JV") return "JOURNAL VOUCHER (JV)";
     if (doc.type === "CTV") return "CONTRA TRANSFER VOUCHER (CTV)";
     if (doc.type === "CV") return "CLIENT VENDOR SETTLEMENT (CV)";
-    if (doc.docHeading) return doc.docHeading;
-    if (doc.applySst) return doc.taxIncluded ? "SALES TAX INVOICE (15% SST INCLUDED)" : "SALES TAX INVOICE (15% SST)";
-    return "SALES INVOICE";
+    if (doc.docHeading) {
+      if (doc.docHeading === "SALES INVOICE") return "INVOICE";
+      return doc.docHeading;
+    }
+    if (doc.applySst) return "SALES TAX INVOICE";
+    return "INVOICE";
   });
   const isRV = doc.type === "RV" || docTitle.includes("RECEIPT") || (doc.voucherNo && String(doc.voucherNo).toUpperCase().includes("RV"));
   const isPV = doc.type === "PV" || doc.type === "EXPENSE" || docTitle.includes("PAYMENT") || (doc.voucherNo && String(doc.voucherNo).toUpperCase().includes("PV"));
@@ -17257,7 +17310,7 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
     }
   };
 
-  const renderTotals = (colSpanAmount) => {
+  const renderTotals = (colSpanAmount, hasSubtotalRow = false) => {
     const labelStyle = { border: "1px solid #000000", padding: "7px 12px", fontWeight: 800, textAlign: "right", verticalAlign: "middle", boxSizing: "border-box", fontSize: 11.5, whiteSpace: "nowrap" };
     const valStyle = { border: "1px solid #000000", padding: "7px 6px", textAlign: "center", verticalAlign: "middle", fontWeight: 800, boxSizing: "border-box", fontSize: 12, whiteSpace: "nowrap" };
 
@@ -17393,94 +17446,77 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
 
     const finalInvoiceLabel = (isPO || isRO)
       ? "TOTAL ORDER AMOUNT"
-      : (doc.status === "paid" ? "GRAND TOTAL (PAID)" : "GRAND TOTAL PAYABLE");
-
-    const showHierarchy = hasDiscount || hasCommission || hasSst;
+      : (doc.status === "paid" ? "GRAND TOTAL (PAID)" : "GRAND TOTAL");
 
     return (
       <React.Fragment>
-        {showHierarchy ? (
+        {/* 1. TOTAL AMOUNT (Only rendered if not already displayed in the table subtotal row right above) */}
+        {!hasSubtotalRow && (
+          <tr>
+            <td colSpan={colSpanAmount} style={labelStyle}>TOTAL AMOUNT</td>
+            <td style={valStyle}>{pkr(grandTotal)}</td>
+          </tr>
+        )}
+
+        {/* 2. DISCOUNT (if checked) */}
+        {hasDiscount && (
+          <tr>
+            <td colSpan={colSpanAmount} style={{ ...labelStyle, color: "#DC2626" }}>
+              LESS: DISCOUNT {doc.discountPercent ? `(${doc.discountPercent}%)` : ""}
+            </td>
+            <td style={{ ...valStyle, color: "#DC2626" }}>- {pkr(discountVal)}</td>
+          </tr>
+        )}
+
+        {/* 3. AGENCY COMMISSION (if checked) */}
+        {hasCommission && (
           <React.Fragment>
-            {/* 1. GRAND TOTAL (Before Discount) */}
             <tr>
-              <td colSpan={colSpanAmount} style={labelStyle}>GRAND TOTAL</td>
-              <td style={valStyle}>{pkr(grandTotal)}</td>
+              <td colSpan={colSpanAmount} style={{ ...labelStyle, color: isLessCommission ? "#DC2626" : "#0284C7" }}>
+                {isLessCommission ? `LESS: AGENCY COMMISSION (${commRate}%)` : `AGENCY COMMISSION (${commRate}%)`}
+              </td>
+              <td style={{ ...valStyle, color: isLessCommission ? "#DC2626" : "#0284C7" }}>
+                {isLessCommission ? `- ${pkr(agencyCommissionVal)}` : `+ ${pkr(agencyCommissionVal)}`}
+              </td>
             </tr>
-
-            {/* 2. DISCOUNT (if checked) */}
-            {hasDiscount && (
-              <tr>
-                <td colSpan={colSpanAmount} style={{ ...labelStyle, color: "#DC2626" }}>DISCOUNT {doc.discountPercent ? `(${doc.discountPercent}%)` : ""}</td>
-                <td style={{ ...valStyle, color: "#DC2626" }}>({pkr(discountVal)})</td>
-              </tr>
-            )}
-
-            {/* 3. TOTAL AMOUNT (After Discount) - show if discount was applied or if commission follows */}
-            {(hasDiscount || hasCommission) && (
-              <tr>
-                <td colSpan={colSpanAmount} style={{ ...labelStyle, background: "#F8FAFC" }}>TOTAL AMOUNT</td>
-                <td style={{ ...valStyle, background: "#F8FAFC" }}>{pkr(totalAmountAfterDiscount)}</td>
-              </tr>
-            )}
-
-            {/* 4. AGENCY COMMISSION (if checked) */}
-            {hasCommission && (
-              <React.Fragment>
-                <tr>
-                  <td colSpan={colSpanAmount} style={{ ...labelStyle, color: isLessCommission ? "#DC2626" : "#0284C7" }}>
-                    {isLessCommission ? `LESS: AGENCY COMMISSION ${commRate}%` : `AGENCY COMMISSION ${commRate}%`}
-                  </td>
-                  <td style={{ ...valStyle, color: isLessCommission ? "#DC2626" : "#0284C7" }}>
-                    {isLessCommission ? `(${pkr(agencyCommissionVal)})` : pkr(agencyCommissionVal)}
-                  </td>
-                </tr>
-                <tr>
-                  <td colSpan={colSpanAmount} style={{ ...labelStyle, background: "#F8FAFC" }}>GROSS AMOUNT</td>
-                  <td style={{ ...valStyle, background: "#F8FAFC" }}>{pkr(grossAmountWithComm)}</td>
-                </tr>
-              </React.Fragment>
-            )}
-
-            {/* 5. SST (if checked) */}
             {hasSst && (
               <tr>
-                <td colSpan={colSpanAmount} style={{ ...labelStyle, color: "#A81C1C" }}>{isSstOnComm ? `SST ${sstRatePct}% (ON COMMISSION)` : `SST ${sstRatePct}%`}</td>
-                <td style={{ ...valStyle, color: "#A81C1C" }}>{pkr(sstAmt)}</td>
+                <td colSpan={colSpanAmount} style={{ ...labelStyle, background: "#F8FAFC" }}>GROSS AMOUNT</td>
+                <td style={{ ...valStyle, background: "#F8FAFC" }}>{pkr(grossAmountWithComm)}</td>
               </tr>
             )}
-
-            {/* 6. WHT (if checked) */}
-            {hasWht && (
-              <tr>
-                <td colSpan={colSpanAmount} style={{ ...labelStyle, color: "#059669" }}>LESS: WHT DEDUCTION ({whtRatePct}%)</td>
-                <td style={{ ...valStyle, color: "#059669" }}>- {pkr(whtAmt)}</td>
-              </tr>
-            )}
-
-            {/* 7. NET AMOUNT */}
-            <tr style={{ background: "#F1F5F9", fontWeight: 800 }}>
-              <td colSpan={colSpanAmount} style={{ border: "1px solid #000000", padding: "8px 12px", fontSize: 12.5, textAlign: "right", verticalAlign: "middle", boxSizing: "border-box", fontWeight: 800, whiteSpace: "nowrap" }}>NET AMOUNT</td>
-              <td style={{ border: "1px solid #000000", padding: "8px 6px", textAlign: "center", verticalAlign: "middle", fontSize: 12.5, color: "#0F172A", boxSizing: "border-box", fontWeight: 800, whiteSpace: "nowrap" }}>{pkr(finalPayable)}</td>
-            </tr>
-          </React.Fragment>
-        ) : (
-          <React.Fragment>
-            <tr>
-              <td colSpan={colSpanAmount} style={labelStyle}>TOTAL AMOUNT</td>
-              <td style={valStyle}>{pkr(grandTotal)}</td>
-            </tr>
-            {hasWht && (
-              <tr>
-                <td colSpan={colSpanAmount} style={{ ...labelStyle, color: "#059669" }}>LESS: WHT DEDUCTION ({whtRatePct}%)</td>
-                <td style={{ ...valStyle, color: "#059669" }}>- {pkr(whtAmt)}</td>
-              </tr>
-            )}
-            <tr style={{ background: "#F1F5F9", fontWeight: 800 }}>
-              <td colSpan={colSpanAmount} style={{ border: "1px solid #000000", padding: "8px 12px", fontSize: 12.5, textAlign: "right", verticalAlign: "middle", boxSizing: "border-box", fontWeight: 800, whiteSpace: "nowrap" }}>{finalInvoiceLabel}</td>
-              <td style={{ border: "1px solid #000000", padding: "8px 6px", textAlign: "center", verticalAlign: "middle", fontSize: 12.5, color: "#0F172A", boxSizing: "border-box", fontWeight: 800, whiteSpace: "nowrap" }}>{pkr(finalPayable)}</td>
-            </tr>
           </React.Fragment>
         )}
+
+        {/* 4. SINDH SALES TAX (SST) (if checked) */}
+        {hasSst && (
+          <tr>
+            <td colSpan={colSpanAmount} style={{ ...labelStyle, color: "#A81C1C" }}>
+              ADD: SINDH SALES TAX (SST {sstRatePct}%){isSstOnComm ? " ON COMMISSION" : ""}
+            </td>
+            <td style={{ ...valStyle, color: "#A81C1C" }}>+ {pkr(sstAmt)}</td>
+          </tr>
+        )}
+
+        {/* 5. WITHHOLDING TAX (WHT) (if checked) */}
+        {hasWht && (
+          <tr>
+            <td colSpan={colSpanAmount} style={{ ...labelStyle, color: "#059669" }}>
+              LESS: WITHHOLDING TAX (WHT {whtRatePct}%)
+            </td>
+            <td style={{ ...valStyle, color: "#059669" }}>- {pkr(whtAmt)}</td>
+          </tr>
+        )}
+
+        {/* 6. FINAL GRAND TOTAL */}
+        <tr style={{ background: "#F1F5F9", fontWeight: 800 }}>
+          <td colSpan={colSpanAmount} style={{ border: "1px solid #000000", padding: "8px 12px", fontSize: 12.5, textAlign: "right", verticalAlign: "middle", boxSizing: "border-box", fontWeight: 800, whiteSpace: "nowrap" }}>
+            {finalInvoiceLabel}
+          </td>
+          <td style={{ border: "1px solid #000000", padding: "8px 6px", textAlign: "center", verticalAlign: "middle", fontSize: 12.5, color: "#0F172A", boxSizing: "border-box", fontWeight: 800, whiteSpace: "nowrap" }}>
+            {pkr(finalPayable)}
+          </td>
+        </tr>
       </React.Fragment>
     );
   };
@@ -17755,23 +17791,23 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
               </span>
               <select value={template} onChange={e => setTemplate(e.target.value)} style={{ background: "#0F172A", color: "#fff", border: "1.5px solid #475569", borderRadius: 8, padding: "6px 12px", fontSize: 13, fontWeight: 600 }}>
                 <option value="GENERAL" style={{ background: "#1E293B", color: "#FFFFFF" }}>General / Standard Agency Invoice</option>
-                <option value="OOH" style={{ background: "#1E293B", color: "#FFFFFF" }}>OOH Billboards Sales Tax Invoice</option>
+                <option value="OOH" style={{ background: "#1E293B", color: "#FFFFFF" }}>OOH Billboard Invoice</option>
                 <option value="PRINTING" style={{ background: "#1E293B", color: "#FFFFFF" }}>OOH Printing &amp; Installation Invoice</option>
                 <option value="NEWSPAPER" style={{ background: "#1E293B", color: "#FFFFFF" }}>Newspaper / Print Media Publication</option>
                 <option value="PRINT_MEDIA" style={{ background: "#1E293B", color: "#FFFFFF" }}>Print Media Sales Tax Invoice</option>
                 <option value="ELECTRONIC" style={{ background: "#1E293B", color: "#FFFFFF" }}>Electronic Media / TV Spot Schedule (RO)</option>
                 <option value="DIGITAL" style={{ background: "#1E293B", color: "#FFFFFF" }}>Digital Media Campaign Schedule (RO)</option>
                 <option value="RADIO" style={{ background: "#1E293B", color: "#FFFFFF" }}>Radio / FM Broadcast Schedule (RO)</option>
-                <option value="EVENT" style={{ background: "#1E293B", color: "#FFFFFF" }}>Sales Tax Event Invoice</option>
+                <option value="EVENT" style={{ background: "#1E293B", color: "#FFFFFF" }}>Event Invoice</option>
               </select>
 
-              {/* HEADING / TITLE SELECTOR (SALE INVOICE vs SALES TAX INVOICE vs PO/RO/VOUCHERS) */}
+              {/* HEADING / TITLE SELECTOR (INVOICE vs SALES TAX INVOICE vs PO/RO/VOUCHERS) */}
               <div style={{ display: "flex", alignItems: "center", gap: 6, background: "#0F172A", padding: "4px 8px", borderRadius: 8, border: "1px solid #D97706" }}>
                 <span style={{ fontSize: 11, color: "#FBBF24", fontWeight: 700 }}>Title:</span>
                 <select value={docTitle} onChange={e => setDocTitle(e.target.value)} style={{ background: "transparent", border: "none", color: "#FDE68A", fontSize: 12.5, fontWeight: 700, cursor: "pointer" }}>
-                  <option value="SALES INVOICE" style={{ background: "#1E293B", color: "#FFFFFF" }}>SALES INVOICE (Standard / Commercial)</option>
+                  <option value="INVOICE" style={{ background: "#1E293B", color: "#FFFFFF" }}>INVOICE (Standard / Non-Tax)</option>
+                  <option value="SALES TAX INVOICE" style={{ background: "#1E293B", color: "#FFFFFF" }}>SALES TAX INVOICE</option>
                   <option value="SALES TAX INVOICE (15% SST)" style={{ background: "#1E293B", color: "#FFFFFF" }}>SALES TAX INVOICE (15% SST)</option>
-                  <option value="SALES TAX INVOICE (15% SST INCLUDED)" style={{ background: "#1E293B", color: "#FFFFFF" }}>SALES TAX INVOICE (15% SST INCLUDED)</option>
                   <option value="COMMERCIAL INVOICE" style={{ background: "#1E293B", color: "#FFFFFF" }}>COMMERCIAL INVOICE</option>
                   <option value="PROFORMA INVOICE" style={{ background: "#1E293B", color: "#FFFFFF" }}>PROFORMA INVOICE</option>
                   <option value="TAX INVOICE" style={{ background: "#1E293B", color: "#FFFFFF" }}>TAX INVOICE</option>
@@ -18085,10 +18121,10 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
                         <td style={{ border: "1px solid #000000", padding: "7px 4px", textAlign: "center", verticalAlign: "middle", fontWeight: 800, fontSize: 12, color: "#0369A1", whiteSpace: "nowrap", boxSizing: "border-box" }}>
                           {doc.printingItems && doc.printingItems.length > 0 ? doc.printingItems.reduce((s, i) => s + (Number(i.totalSqFt) || 0), 0).toFixed(1) : "120.0"} <span style={{ fontSize: 9 }}>SQ.FT</span>
                         </td>
-                        <td colSpan={2} style={{ border: "1px solid #000000", padding: "7px 8px", textAlign: "right", verticalAlign: "middle", fontSize: 11.5, color: "#475569", fontWeight: 800, whiteSpace: "nowrap", boxSizing: "border-box" }}>Subtotal:</td>
+                        <td colSpan={2} style={{ border: "1px solid #000000", padding: "7px 8px", textAlign: "right", verticalAlign: "middle", fontSize: 11.5, color: "#475569", fontWeight: 800, whiteSpace: "nowrap", boxSizing: "border-box" }}>TOTAL AMOUNT:</td>
                         <td style={{ border: "1px solid #000000", padding: "7px 4px", textAlign: "center", verticalAlign: "middle", fontWeight: 800, fontSize: 12, whiteSpace: "nowrap", boxSizing: "border-box" }}>{pkr(netAmt)}</td>
                       </tr>
-                      {renderTotals(7)}
+                      {renderTotals(7, true)}
                     </tbody>
                   </table>
                 );
@@ -18129,8 +18165,8 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
                             <td style={tdLeft}>{site.location || site.name || `OOH Site #${idx + 1}`}</td>
                             <td style={tdCenter}>{site.width && site.height ? `${site.width}x${site.height}` : (site.size || "10x20")}</td>
                             <td style={{ ...tdCenter, fontWeight: 700, color: "#0284C7" }}>{Number(site.sqft || (site.width && site.height ? site.width * site.height : 200)).toLocaleString("en-US")}</td>
-                            <td style={tdCenter}>{fmtDocDate(site.fromDate || doc.date || TODAY)}</td>
-                            <td style={tdCenter}>{fmtDocDate(site.toDate || doc.dueDate || TODAY)}</td>
+                            <td style={tdCenter}>{site.fromDate ? fmtDocDate(site.fromDate) : "—"}</td>
+                            <td style={tdCenter}>{site.toDate ? fmtDocDate(site.toDate) : "—"}</td>
                             <td style={{ ...tdCenter, fontWeight: 700 }}>{site.days || site.duration || 30}</td>
                             <td style={tdCenter}>{pkr(site.rate || site.pricePerMonth || 0)}</td>
                             <td style={{ ...tdCenter, fontWeight: 700 }}>{pkr(site.amount !== undefined ? site.amount : (((Number(site.rate || site.pricePerMonth) || 0) / 30) * (Number(site.days || site.duration) || 30)))}</td>
@@ -18142,8 +18178,8 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
                           <td style={tdLeft}>{doc.description || "OOH Billboard Display"}</td>
                           <td style={tdCenter}>10x20</td>
                           <td style={{ ...tdCenter, fontWeight: 700, color: "#0284C7" }}>200</td>
-                          <td style={tdCenter}>{fmtDocDate(doc.date || TODAY)}</td>
-                          <td style={tdCenter}>{fmtDocDate(doc.dueDate || TODAY)}</td>
+                          <td style={tdCenter}>{doc.fromDate ? fmtDocDate(doc.fromDate) : "—"}</td>
+                          <td style={tdCenter}>{doc.toDate ? fmtDocDate(doc.toDate) : "—"}</td>
                           <td style={{ ...tdCenter, fontWeight: 700 }}>30</td>
                           <td style={tdCenter}>{pkr(netAmt)}</td>
                           <td style={{ ...tdCenter, fontWeight: 700 }}>{pkr(netAmt)}</td>
@@ -18157,13 +18193,13 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
                           {oohCalculatedSqft > 0 ? oohCalculatedSqft.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 1 }) : (doc.oohSites && doc.oohSites.length > 0 ? doc.oohSites.reduce((s, i) => s + (Number(i.sqft) || 0), 0).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 1 }) : "200")}
                         </td>
                         <td colSpan={4} style={{ border: "1px solid #000000", padding: "7px 8px", textAlign: "right", verticalAlign: "middle", fontSize: 11.5, fontWeight: 800, color: "#334155", whiteSpace: "nowrap", boxSizing: "border-box" }}>
-                          TOTAL NET AMOUNT:
+                          TOTAL AMOUNT:
                         </td>
                         <td style={{ border: "1px solid #000000", padding: "7px 4px", textAlign: "center", verticalAlign: "middle", color: "#0F172A", fontWeight: 800, fontSize: 12, whiteSpace: "nowrap", boxSizing: "border-box" }}>
                           {pkr(netAmt)}
                         </td>
                       </tr>
-                      {renderTotals(8)}
+                      {renderTotals(8, true)}
                     </tbody>
                   </table>
                 );
