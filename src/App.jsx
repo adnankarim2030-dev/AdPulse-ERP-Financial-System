@@ -1903,6 +1903,25 @@ export default function App() {
           localStorage.removeItem("adpulse_system_state_v1");
         } catch(e) {}
         setLastBackupTime(null);
+        if (isSupabaseConfigured()) {
+          pushStateToSupabase({
+            system: "AdPulse ERP Financial System",
+            version: "1.0.0",
+            timestamp: new Date().toISOString(),
+            lastSavedBy: currentUser ? `${currentUser.name} (${currentUser.role})` : "Admin",
+            data: {
+              journal: [], invoices: [], expenses: [], purchaseOrders: [], releaseOrders: [], govtInvoices: [], projects: [],
+              bankAccounts: [
+                { id: "bank-al-habib", bankName: "Bank AL Habib Limited", accountTitle: "Adpulse IMC (Pvt) Ltd", accountNumber: "1001-0081-012345-01-1", iban: "PK65BAHL1001008101234501", accountType: "Bank Account", branch: "Main Branch, Karachi", openingBalance: 0, color: "#059669" },
+                { id: "bank-cash-park-tower", bankName: "Petty Cash - Park Tower Office", accountTitle: "Park Tower Office Petty Cash", accountNumber: "PC-PT-01", iban: "N/A (Cash in Hand - Park Tower)", accountType: "Petty Cash", branch: "Park Tower Office, Clifton", openingBalance: 0, color: "#D97706" },
+                { id: "bank-cash-gulshan", bankName: "Petty Cash - Gulshan Office", accountTitle: "Gulshan Office Petty Cash", accountNumber: "PC-GO-02", iban: "N/A (Cash in Hand - Gulshan)", accountType: "Petty Cash", branch: "Gulshan-e-Iqbal Office", openingBalance: 0, color: "#E11D48" },
+              ],
+              hoardings: [], inventoryItems: [], inventoryLogs: [],
+              vouchers: [], documents: [], employees: [], leaveRequests: [], payrollRuns: [], usersList: SEED_USERS,
+              clients: [], vendors: [], auditLogs: [], monthlyAttendance: {}
+            }
+          }).catch(e => console.warn("Supabase clean push:", e));
+        }
         setBackupNotification({
           type: "success",
           text: "✨ All sample demo data removed! System is now 100% clean and ready for your real data entry."
