@@ -791,75 +791,7 @@ function seedReleaseOrders() {
 }
 
 function seedGovtInvoices() {
-  return [
-    {
-      id: "govt-inv-01",
-      invoiceNo: "AD-S372",
-      date: "2026-03-02",
-      clientName: "INFORMATION DEPARTMENT / GOVT OF SINDH",
-      client: "INFORMATION DEPARTMENT / GOVT OF SINDH",
-      roNumber: "INF/KRY/3215/26",
-      roDate: "2026-03-01",
-      caption: "NOTICE INVITING BIDS",
-      ntn: "9031600-2",
-      stn: "S-9031600-2",
-      isSalesTaxInvoice: true,
-      agencyCommissionRate: 15,
-      sstRate: 15,
-      whtRate: 10,
-      mediaShareRate: 85,
-      newspaperWhtRate: 1.5,
-      items: [
-        { id: "1", newspaper: "AAS", ratePerCm: 500.96, size: 130, position: "ORD - B/W", publishDate: "2026-03-01" },
-        { id: "2", newspaper: "DAILY TIMES", ratePerCm: 215.24, size: 130, position: "ORD - B/W", publishDate: "2026-03-01" },
-        { id: "3", newspaper: "EXPRESS", ratePerCm: 374.05, size: 130, position: "ORD - B/W", publishDate: "2026-03-01" },
-        { id: "4", newspaper: "MILLAN", ratePerCm: 504.50, size: 130, position: "ORD - B/W", publishDate: "2026-03-01" },
-        { id: "5", newspaper: "MOOMAL", ratePerCm: 404.66, size: 130, position: "ORD - B/W", publishDate: "2026-03-01" },
-        { id: "6", newspaper: "PAHENJI AKHBAR", ratePerCm: 511.80, size: 130, position: "ORD - B/W", publishDate: "2026-03-01" },
-      ],
-      totalGross: 326457.30,
-      commissionAmount: 48968.60,
-      sstAmount: 7345.29,
-      commWithSst: 56313.89,
-      whtAmount: 5631.39,
-      netChequeAmount: 50682.50,
-      paid: false,
-      paidVia: null
-    },
-    {
-      id: "govt-inv-02",
-      invoiceNo: "AD-S375",
-      date: "2026-03-10",
-      clientName: "INFORMATION DEPARTMENT / GOVT OF SINDH",
-      client: "INFORMATION DEPARTMENT / GOVT OF SINDH",
-      roNumber: "INF/KRY/3420/26",
-      roDate: "2026-03-08",
-      caption: "CORRIGENDUM - EXTENSION OF TENDER SUBMISSION DATE",
-      ntn: "9031600-2",
-      stn: "S-9031600-2",
-      isSalesTaxInvoice: false,
-      agencyCommissionRate: 15,
-      sstRate: 15,
-      whtRate: 10,
-      mediaShareRate: 85,
-      newspaperWhtRate: 1.5,
-      items: [
-        { id: "1", newspaper: "DAWN", ratePerCm: 620.50, size: 80, position: "ORD - B/W", publishDate: "2026-03-08" },
-        { id: "2", newspaper: "JANG", ratePerCm: 550.00, size: 80, position: "ORD - B/W", publishDate: "2026-03-08" },
-        { id: "3", newspaper: "KAWISH", ratePerCm: 380.00, size: 80, position: "ORD - B/W", publishDate: "2026-03-08" },
-      ],
-      totalGross: 124040.00,
-      commissionAmount: 18606.00,
-      sstAmount: 0,
-      commWithSst: 18606.00,
-      whtAmount: 1860.60,
-      netChequeAmount: 16745.40,
-      paid: true,
-      paidVia: "Cash",
-      bankAccountId: "bank-cash-park-tower",
-      paidDate: "2026-03-15"
-    }
-  ];
+  return [];
 }
 
 function seedExpenses() {
@@ -880,6 +812,7 @@ function seedAuditLogs() {
 
 function seedBankAccounts() {
   return [
+    { id: "bank-al-habib", bankName: "Bank AL Habib Limited", accountTitle: "Adpulse IMC (Pvt) Ltd", accountNumber: "1001-0081-012345-01-1", iban: "PK65BAHL1001008101234501", accountType: "Bank Account", branch: "Main Branch, Karachi", openingBalance: 0, color: "#059669" },
     { id: "bank-cash-park-tower", bankName: "Petty Cash - Park Tower Office", accountTitle: "Park Tower Office Petty Cash", accountNumber: "PC-PT-01", iban: "N/A (Cash in Hand - Park Tower)", accountType: "Petty Cash", branch: "Park Tower Office, Clifton", openingBalance: 0, color: "#D97706" },
     { id: "bank-cash-gulshan", bankName: "Petty Cash - Gulshan Office", accountTitle: "Gulshan Office Petty Cash", accountNumber: "PC-GO-02", iban: "N/A (Cash in Hand - Gulshan)", accountType: "Petty Cash", branch: "Gulshan-e-Iqbal Office", openingBalance: 0, color: "#E11D48" },
   ];
@@ -1303,7 +1236,7 @@ export default function App() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   /* Financial & Operations state */
-  const STORAGE_KEY = "adpulse_erp_production_clean_v24";
+  const STORAGE_KEY = "adpulse_erp_production_clean_v25";
 
   // Auto purge legacy localStorage versions so browser unconditionally loads fresh 100% audited Excel data
   try {
@@ -1369,7 +1302,7 @@ export default function App() {
       b.id !== "bank-meezan" &&
       !b.bankName?.toLowerCase().includes("meezan") &&
       !b.bankName?.toLowerCase().includes("mcb") &&
-      !b.bankName?.toLowerCase().includes("habib bank")
+      (!b.bankName?.toLowerCase().includes("habib bank") || b.bankName?.toLowerCase().includes("al habib"))
     );
     return filtered.length > 0 ? filtered : seedBankAccounts();
   });
@@ -1958,6 +1891,7 @@ export default function App() {
         setInventoryItems([]);
         setEmployees([]);
         setBankAccounts([
+          { id: "bank-al-habib", bankName: "Bank AL Habib Limited", accountTitle: "Adpulse IMC (Pvt) Ltd", accountNumber: "1001-0081-012345-01-1", iban: "PK65BAHL1001008101234501", accountType: "Bank Account", branch: "Main Branch, Karachi", openingBalance: 0, color: "#059669" },
           { id: "bank-cash-park-tower", bankName: "Petty Cash - Park Tower Office", accountTitle: "Park Tower Office Petty Cash", accountNumber: "PC-PT-01", iban: "N/A (Cash in Hand - Park Tower)", accountType: "Petty Cash", branch: "Park Tower Office, Clifton", openingBalance: 0, color: "#D97706" },
           { id: "bank-cash-gulshan", bankName: "Petty Cash - Gulshan Office", accountTitle: "Gulshan Office Petty Cash", accountNumber: "PC-GO-02", iban: "N/A (Cash in Hand - Gulshan)", accountType: "Petty Cash", branch: "Gulshan-e-Iqbal Office", openingBalance: 0, color: "#E11D48" },
         ]);
