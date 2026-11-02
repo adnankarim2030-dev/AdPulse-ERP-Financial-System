@@ -36,18 +36,23 @@ import CashBankStatementPrintModal, { exportCashBankStatementToExcel } from "./c
 
 /* ---------- HELPERS & FORMATTERS ---------- */
 
-function groupIndian(numStr) {
-  if (numStr.length <= 3) return numStr;
-  const last3 = numStr.slice(-3);
-  const rest = numStr.slice(0, -3);
-  return rest.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + "," + last3;
+function formatNumberWithCommas(num) {
+  if (num === null || num === undefined || isNaN(num)) return "0";
+  const parts = Math.abs(num).toString().split(".");
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return parts.join(".");
 }
 
 function pkr(amount) {
   if (amount === null || amount === undefined || isNaN(amount)) return "Rs 0";
-  const neg = amount < 0;
-  const whole = Math.round(Math.abs(amount)).toString();
-  return (neg ? "-Rs " : "Rs ") + groupIndian(whole);
+  const num = Number(amount);
+  const neg = num < 0;
+  // If whole number, format without decimals; if has decimals, keep up to 2 decimal places
+  const hasDecimals = Math.abs(num % 1) > 0.001;
+  const formatted = hasDecimals
+    ? formatNumberWithCommas(Number(Math.abs(num).toFixed(2)))
+    : formatNumberWithCommas(Math.round(Math.abs(num)));
+  return (neg ? "-Rs " : "Rs ") + formatted;
 }
 
 function fmtDate(d) {
