@@ -3146,6 +3146,19 @@ export default function App() {
     setShowVoucherForm(true);
   }
 
+  function handleDeleteVoucher(v) {
+    if (window.confirm(`Are you sure you want to delete Voucher ${v.voucherNo || v.id} (${v.party} — ${pkr(v.amount)})?\n\nThis will also remove its associated entry from the General Ledger.`)) {
+      setVouchers(list => list.filter(item => item.id !== v.id));
+      setJournal(list => list.filter(j => j.reference !== (v.voucherNo || v.id) && j.id !== v.id));
+      triggerSuccessPopup({
+        title: "Process Complete — Voucher Deleted!",
+        message: `Voucher ${v.voucherNo} has been deleted and removed from General Ledger.`,
+        code: v.voucherNo,
+        module: "Vouchers"
+      });
+    }
+  }
+
   function clearPdcCheque(voucherId, clearanceDate = TODAY_STR, targetBankId = null) {
     const vch = vouchers.find(v => v.id === voucherId);
     if (!vch) return;
@@ -8876,6 +8889,9 @@ export default function App() {
                                 <button className="btn" style={{ padding: "4px 7px", fontSize: 12 }} title="Print Voucher" onClick={() => setPrintDoc(v)}>
                                   <Printer size={13} />
                                 </button>
+                                <button className="btn" style={{ padding: "4px 7px", fontSize: 12, color: "var(--rose)" }} title="Delete Voucher" onClick={() => handleDeleteVoucher(v)}>
+                                  <Trash2 size={13} />
+                                </button>
                               </div>
                             </td>
                           </tr>
@@ -10197,7 +10213,13 @@ export default function App() {
         <BankAccountModal
           initialData={editingBankAccount}
           onClose={() => { setShowBankAccountModal(false); setEditingBankAccount(null); }}
-          onSubmit={editingBankAccount ? updateBankAccount : createBankAccount}
+          onSubmit={(data) => {
+            if (editingBankAccount && editingBankAccount.id) {
+              updateBankAccount(data);
+            } else {
+              createBankAccount(data);
+            }
+          }}
         />
       )}
       {showPettyCashOpeningModal && (
