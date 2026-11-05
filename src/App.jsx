@@ -38,7 +38,8 @@ import CashBankStatementPrintModal, { exportCashBankStatementToExcel } from "./c
 
 function formatNumberWithCommas(num) {
   if (num === null || num === undefined || isNaN(num)) return "0";
-  const parts = Math.abs(num).toString().split(".");
+  const numStr = typeof num === "string" ? num : num.toString();
+  const parts = numStr.split(".");
   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   return parts.join(".");
 }
@@ -47,11 +48,12 @@ function pkr(amount) {
   if (amount === null || amount === undefined || isNaN(amount)) return "Rs 0";
   const num = Number(amount);
   const neg = num < 0;
-  // If whole number, format without decimals; if has decimals, keep up to 2 decimal places
-  const hasDecimals = Math.abs(num % 1) > 0.001;
+  const absNum = Math.abs(num);
+  // Check if it has true fractional decimals
+  const hasDecimals = Math.abs(absNum - Math.round(absNum)) > 0.001;
   const formatted = hasDecimals
-    ? formatNumberWithCommas(Number(Math.abs(num).toFixed(2)))
-    : formatNumberWithCommas(Math.round(Math.abs(num)));
+    ? formatNumberWithCommas(absNum.toFixed(2))
+    : formatNumberWithCommas(Math.round(absNum));
   return (neg ? "-Rs " : "Rs ") + formatted;
 }
 
@@ -2181,18 +2183,32 @@ export default function App() {
 
   const projectStats = useMemo(() => {
     const map = {};
-    projects.forEach(p => { map[p.id] = { billed: 0, received: 0, cost: 0 }; });
+    projects.forEach(p => {
+      const opBal = Number(p.openingBalance) || 0;
+      map[p.id] = { openingBalance: opBal, billed: opBal, received: 0, cost: 0 };
+    });
     invoices.forEach(inv => {
       if (inv.projectId && map[inv.projectId]) {
-        map[inv.projectId].billed += inv.amount;
-        if (inv.paid) map[inv.projectId].received += inv.amount;
+        const invAmt = Number(inv.totalAmount || inv.amount) || 0;
+        map[inv.projectId].billed += invAmt;
+        if (inv.paid) map[inv.projectId].received += invAmt;
+      }
+    });
+    vouchers.forEach(v => {
+      if (v.projectId && map[v.projectId]) {
+        const vAmt = Number(v.netAmount !== undefined ? v.netAmount : v.amount) || 0;
+        if (v.type === "RV") {
+          map[v.projectId].received += vAmt;
+        } else if (v.type === "PV") {
+          map[v.projectId].cost += vAmt;
+        }
       }
     });
     expenses.forEach(exp => {
-      if (exp.projectId && map[exp.projectId]) map[exp.projectId].cost += exp.amount;
+      if (exp.projectId && map[exp.projectId]) map[exp.projectId].cost += (Number(exp.amount) || 0);
     });
     return map;
-  }, [projects, invoices, expenses]);
+  }, [projects, invoices, expenses, vouchers]);
 
   const projectsWithStats = useMemo(() => projects.map(p => {
     const s = projectStats[p.id] || { billed: 0, received: 0, cost: 0 };
@@ -3355,7 +3371,7 @@ export default function App() {
     });
   }
 
-  function createProject({ client, type, name, description, startDate, endDate, oohSites, totalOohSqft, printingItems, totalSqft, budget }) {
+  function createProject({ client, type, name, description, startDate, endDate, oohSites, totalOohSqft, printingItems, totalSqft, budget, openingBalance }) {
     const nextNum = projects.length > 0 ? Math.max(...projects.map(p => parseInt((p.projectCode || "PRJ-000").split("-")[1] || 0))) + 1 : 1;
     const projectCode = "PRJ-" + String(nextNum).padStart(3, '0');
 
@@ -3376,7 +3392,8 @@ export default function App() {
       totalOohSqft: isOohType ? (totalOohSqft || 0) : 0,
       printingItems: isPrintingType ? (printingItems || []) : [],
       totalSqft: isPrintingType ? (totalSqft || 0) : 0,
-      budget: budget || 0
+      budget: budget || 0,
+      openingBalance: Number(openingBalance) || 0
     };
     setProjects(list => [proj, ...list]);
     
@@ -3469,10 +3486,11 @@ export default function App() {
     }
 
     setShowProjectForm(false);
+    setEditingProject(null);
     setSelectedProjectId(proj.id);
     triggerSuccessPopup({
-      title: "Process Complete — Project Created!",
-      message: `Project "${name}" for "${client}" has been registered and saved.`,
+      title: "DONE — Project Created!",
+      message: `Project "${name}" for "${client}" has been registered and saved${Number(openingBalance) > 0 ? ` with Opening Balance of ${pkr(openingBalance)}` : ""}.`,
       code: projectCode,
       module: "Projects"
     });
@@ -3481,7 +3499,9 @@ export default function App() {
 
 
   function updateProject(updated) {
-    setProjects(list => list.map(p => p.id === updated.id ? updated : p));
+    const opBal = Number(updated.openingBalance) || 0;
+    const cleanUpdated = { ...updated, openingBalance: opBal };
+    setProjects(list => list.map(p => p.id === updated.id ? cleanUpdated : p));
     setInvoices(list => list.map(inv => {
       if (inv.projectId === updated.id) {
         const amt = updated.budget || inv.amount;
@@ -3498,10 +3518,11 @@ export default function App() {
       }
       return inv;
     }));
+    setShowProjectForm(false);
     setEditingProject(null);
     triggerSuccessPopup({
-      title: "Process Complete — Project Updated!",
-      message: `Project "${updated.name}" (${updated.client}) details have been saved.`,
+      title: "DONE — Project Updated!",
+      message: `Project "${updated.name}" (${updated.client}) details have been saved${opBal > 0 ? ` (Opening Balance: ${pkr(opBal)})` : ""}.`,
       code: updated.projectCode || "PRJ-UPDATED",
       module: "Projects"
     });
@@ -3623,6 +3644,7 @@ export default function App() {
     };
     setBankAccounts(list => [...list, newAccount]);
     setShowBankAccountModal(false);
+    setEditingBankAccount(null);
 
     if (newAccount.openingBalance > 0) {
       postEntry(TODAY.toISOString().slice(0, 10), `Opening Balance — ${newAccount.bankName}`, [
@@ -3631,7 +3653,7 @@ export default function App() {
       ], "OB-" + newAccount.id.toUpperCase());
     }
     triggerSuccessPopup({
-      title: "Process Complete — Account Saved!",
+      title: "DONE — Account Saved!",
       message: `${newAccount.bankName} (${newAccount.accountTitle}) has been added to Cash & Bank.`,
       code: newAccount.accountNumber,
       module: "Cash & Bank"
@@ -7531,7 +7553,7 @@ export default function App() {
                         <button className="btn btn-primary" onClick={() => { setEditingBankAccount(null); setShowBankAccountModal(true); }}>
                           <Plus size={14} /> Add Bank Account
                         </button>
-                        <button className="btn" style={{ borderColor: "#D97706", color: "#D97706", display: "inline-flex", alignItems: "center", gap: 5 }} onClick={() => { setEditingBankAccount({ accountType: "Petty Cash", bankName: "Petty Cash - ", branch: "Office Cash Vault" }); setShowBankAccountModal(true); }}>
+                        <button className="btn" style={{ borderColor: "#D97706", color: "#D97706", display: "inline-flex", alignItems: "center", gap: 5 }} onClick={() => { setEditingBankAccount({ accountType: "Petty Cash", bankName: "", branch: "Office Cash Vault" }); setShowBankAccountModal(true); }}>
                           <Plus size={14} /> Add Petty Cash Vault
                         </button>
                         <button className="btn" style={{ background: "rgba(217, 119, 6, 0.12)", color: "#D97706", borderColor: "#D97706", fontWeight: 700, display: "inline-flex", alignItems: "center", gap: 6 }} onClick={() => setShowPettyCashOpeningModal(true)}>
@@ -14299,6 +14321,7 @@ function StockMovementModal({ initialItem, items, projects, onClose, onSubmit })
 }
 
 function BankAccountModal({ initialData, onClose, onSubmit }) {
+  const isEditing = Boolean(initialData && initialData.id);
   const isPettyCashInitial = initialData?.accountType === "Petty Cash" || (initialData?.id && initialData.id.startsWith("bank-cash"));
   const [bankName, setBankName] = useState(initialData?.bankName || "");
   const [accountTitle, setAccountTitle] = useState(initialData?.accountTitle || "");
@@ -14313,10 +14336,10 @@ function BankAccountModal({ initialData, onClose, onSubmit }) {
   const valid = bankName.trim() && accountTitle.trim() && (isCash || accountNumber.trim());
 
   return (
-    <ModalShell title={initialData ? (isCash ? "Edit Petty Cash Vault" : "Edit Bank Account Details") : (isCash ? "Register New Petty Cash Vault" : "Register New Bank Account")} onClose={onClose}>
+    <ModalShell title={isEditing ? (isCash ? "Edit Petty Cash Vault" : "Edit Bank Account Details") : (isCash ? "Register New Petty Cash Vault" : "Register New Bank Account")} onClose={onClose}>
       <div className="field">
         <label>{isCash ? "Petty Cash Vault / Office Name *" : "Bank Name *"}</label>
-        <input value={bankName} onChange={e => setBankName(e.target.value)} placeholder={isCash ? "e.g. Petty Cash - Park Tower Office" : "e.g. Bank Alfalah / Allied Bank / Standard Chartered"} />
+        <input value={bankName} onChange={e => setBankName(e.target.value)} placeholder={isCash ? "e.g. Park Tower Cash Vault / Clifton Office" : "e.g. Bank Alfalah / Allied Bank / Standard Chartered"} />
       </div>
 
       <div className="field">
@@ -14398,7 +14421,7 @@ function BankAccountModal({ initialData, onClose, onSubmit }) {
           onSubmit(payload);
         }}
       >
-        {initialData ? (isCash ? "Save Petty Cash Vault" : "Save Bank Changes") : (isCash ? "Register Petty Cash Vault" : "Register Bank Account")}
+        {isEditing ? (isCash ? "Save Petty Cash Vault" : "Save Bank Changes") : (isCash ? "Register Petty Cash Vault" : "Register Bank Account")}
       </button>
     </ModalShell>
   );
@@ -15142,6 +15165,11 @@ function VoucherModal({
             <div className="field">
               <label>Vendor Bill Amount (PKR) *</label>
               <input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="e.g. 20000" style={{ fontWeight: 700, fontSize: 14 }} />
+              {Number(amount) > 0 && (
+                <div style={{ fontSize: 11.5, color: "#059669", fontWeight: 700, marginTop: 2 }}>
+                  {pkr(amount)}
+                </div>
+              )}
             </div>
             <div className="field">
               <label>Payment Mode / Instrument *</label>
@@ -15397,6 +15425,11 @@ function VoucherModal({
             <div className="field">
               <label>Receipt Gross Amount (PKR) *</label>
               <input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="e.g. 500000" style={{ fontWeight: 700, fontSize: 14 }} />
+              {Number(amount) > 0 && (
+                <div style={{ fontSize: 11.5, color: "#059669", fontWeight: 700, marginTop: 2 }}>
+                  {pkr(amount)}
+                </div>
+              )}
             </div>
             <div className="field">
               <label>Receipt Instrument / Method *</label>
@@ -15597,7 +15630,15 @@ function VoucherModal({
             </div>
           )}
 
-          <div className="field"><label>Transfer Amount (PKR) *</label><input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="0" /></div>
+          <div className="field">
+            <label>Transfer Amount (PKR) *</label>
+            <input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="0" style={{ fontWeight: 700, fontSize: 14 }} />
+            {Number(amount) > 0 && (
+              <div style={{ fontSize: 11.5, color: "#059669", fontWeight: 700, marginTop: 2 }}>
+                {pkr(amount)}
+              </div>
+            )}
+          </div>
 
           <div style={{ background: "rgba(14, 165, 233, 0.08)", border: "1px solid rgba(14, 165, 233, 0.2)", padding: "10px 14px", borderRadius: 8, fontSize: 12.5, color: "#0284C7", marginBottom: 14 }}>
             💡 <b>Contra Transfer Rule:</b> Debits <b>{targetBankObj?.bankName}</b> &amp; Credits <b>{sourceBankObj?.bankName}</b>. Source balance decreases, Destination balance increases. No revenue or expense created!
@@ -15636,8 +15677,14 @@ function VoucherModal({
               <input value={cvDrawnBank} onChange={e => setCvDrawnBank(e.target.value)} placeholder="e.g. HBL / Meezan Bank" />
             </div>
           </div>
-          <div className="field"><label>Settlement Amount (PKR) *</label>
+          <div className="field">
+            <label>Settlement Amount (PKR) *</label>
             <input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="e.g. 150000" style={{ fontWeight: 700, fontSize: 14 }} />
+            {Number(amount) > 0 && (
+              <div style={{ fontSize: 11.5, color: "#059669", fontWeight: 700, marginTop: 2 }}>
+                {pkr(amount)}
+              </div>
+            )}
           </div>
           <div style={{ background: "rgba(14, 165, 233, 0.08)", border: "1px solid rgba(14, 165, 233, 0.2)", padding: "10px 14px", borderRadius: 8, fontSize: 12.5, color: "#0284C7", marginBottom: 14 }}>
             💡 <b>Direct Settlement Rule:</b> Debits Accounts Payable (Vendor: <b>{effectiveCvVendor || "Vendor"}</b>) &amp; Credits Accounts Receivable (Client: <b>{effectiveCvClient || "Client"}</b>). Neither Bank nor Cash balance is touched!
@@ -16563,6 +16610,7 @@ function ProjectModal({ initialData, projects = [], clients = [], onClose, onSub
   const [description, setDescription] = useState(initialData?.description || "");
   const [startDate, setStartDate] = useState(initialData?.startDate || TODAY_STR);
   const [endDate, setEndDate] = useState(initialData?.endDate || TODAY_STR);
+  const [openingBalance, setOpeningBalance] = useState(initialData?.openingBalance !== undefined ? initialData.openingBalance : "");
 
   const valid = client && name && startDate && endDate;
 
@@ -16604,15 +16652,35 @@ function ProjectModal({ initialData, projects = [], clients = [], onClose, onSub
       <div className="field"><label>Project Title *</label><input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Q3 Brand Campaign" /></div>
       <div className="field"><label>Scope Note / Objective</label><input value={description} onChange={e => setDescription(e.target.value)} placeholder="Brief summary of creative scope" /></div>
 
+      <div className="field">
+        <label style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <span>Project Opening Balance / Previous Outstanding (PKR)</span>
+          <span style={{ fontSize: 11, color: "var(--ink-muted)" }}>Initial balance (e.g. GFS Project Opening)</span>
+        </label>
+        <input
+          type="number"
+          value={openingBalance}
+          onChange={e => setOpeningBalance(e.target.value)}
+          placeholder="0"
+          className="mono"
+          style={{ fontWeight: 700 }}
+        />
+        {Number(openingBalance) > 0 && (
+          <div style={{ fontSize: 11.5, color: "#059669", fontWeight: 700, marginTop: 3 }}>
+            {pkr(openingBalance)} Starting Balance / Previous Billed
+          </div>
+        )}
+      </div>
+
       <div style={{ display: "flex", gap: 10 }}>
         <div className="field" style={{ flex: 1 }}><label>Start Date</label><input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} /></div>
         <div className="field" style={{ flex: 1 }}><label>End Date</label><input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} /></div>
       </div>
       <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 6 }} disabled={!valid}
         onClick={() => valid && onSubmit(initialData ? {
-          ...initialData, projectCode, client, type, name, description, startDate, endDate
+          ...initialData, projectCode, client, type, name, description, startDate, endDate, openingBalance: Number(openingBalance) || 0
         } : {
-          projectCode, client, type, name, description, startDate, endDate, budget: 0, spent: 0, billed: 0, status: "Active"
+          projectCode, client, type, name, description, startDate, endDate, openingBalance: Number(openingBalance) || 0, budget: 0, spent: 0, billed: 0, status: "Active"
         })}>
         {initialData ? "Save Project Changes" : "Initialize Project"}
       </button>
@@ -16706,6 +16774,13 @@ function ProjectDetailModal({ project, invoices, expenses, sites, onClose, onSta
         {project.description && (
           <div style={{ fontSize: 13.5, color: "var(--ink-muted)", marginBottom: 14, background: "#F1F5F9", padding: "10px 14px", borderRadius: 9 }}>
             {project.description}
+          </div>
+        )}
+
+        {Number(project.openingBalance) > 0 && (
+          <div style={{ fontSize: 13, color: "#065F46", marginBottom: 14, background: "#D1FAE5", border: "1px solid #A7F3D0", padding: "8px 14px", borderRadius: 8, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <span><strong>Project Opening Balance:</strong> Starting Billed / Previous Outstanding</span>
+            <span className="mono" style={{ fontWeight: 800, fontSize: 14 }}>{pkr(project.openingBalance)}</span>
           </div>
         )}
 

@@ -20,13 +20,15 @@ export default function ProjectFinancialDashboard({
 
   // Financial Calculations
   const projectValue = Number(project.contractValue || project.budget) || 0;
+  const openingBalance = Number(project.openingBalance) || 0;
   const totalInvoiced = projectInvoices.reduce((s, i) => s + (Number(i.totalAmount || i.amount) || 0), 0);
-  const totalReceived = projectReceipts.reduce((s, v) => s + (Number(v.amount) || 0), 0);
-  const clientOutstanding = totalInvoiced - totalReceived;
+  const totalBilled = openingBalance + totalInvoiced;
+  const totalReceived = projectReceipts.reduce((s, v) => s + (Number(v.netAmount !== undefined ? v.netAmount : v.amount) || 0), 0);
+  const clientOutstanding = totalBilled - totalReceived;
 
   const totalExpense = projectExpenses.reduce((s, e) => s + (Number(e.amount) || 0), 0);
-  const projectProfit = totalInvoiced - totalExpense;
-  const profitMargin = totalInvoiced > 0 ? (projectProfit / totalInvoiced) * 100 : 0;
+  const projectProfit = totalBilled - totalExpense;
+  const profitMargin = totalBilled > 0 ? (projectProfit / totalBilled) * 100 : 0;
 
   // Vendor Cost Breakdown for this Project
   const vendorCosts = useMemo(() => {
@@ -61,9 +63,20 @@ export default function ProjectFinancialDashboard({
       ...projectExpenses.map(e => ({ date: e.date, type: "Expense", ref: e.expenseNo || ("EXP-" + e.id.toUpperCase()), party: e.vendor, debit: 0, credit: Number(e.amount) || 0, raw: e })),
       ...projectPayments.map(p => ({ date: p.date, type: "Payment", ref: p.voucherNo || ("PV-" + p.id.toUpperCase()), party: p.party, debit: Number(p.amount) || 0, credit: 0, raw: p }))
     ];
+    if (openingBalance > 0) {
+      list.unshift({
+        date: project.startDate || "2026-01-01",
+        type: "Opening Balance",
+        ref: "OB-" + (project.projectCode || "PRJ"),
+        party: project.client,
+        debit: openingBalance,
+        credit: 0,
+        raw: { isOb: true }
+      });
+    }
     list.sort((a, b) => new Date(b.date) - new Date(a.date));
     return list;
-  }, [projectInvoices, projectReceipts, projectExpenses, projectPayments]);
+  }, [projectInvoices, projectReceipts, projectExpenses, projectPayments, openingBalance, project]);
 
   const pkr = (val) => "PKR " + (Number(val) || 0).toLocaleString("en-PK", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 
@@ -78,9 +91,11 @@ export default function ProjectFinancialDashboard({
         </div>
 
         <div style={{ background: "var(--card-bg)", padding: 14, borderRadius: 10, border: "1px solid var(--rule)" }}>
-          <div style={{ fontSize: 12, color: "var(--ink-muted)", fontWeight: 600 }}>Total Invoiced</div>
-          <div style={{ fontSize: 18, fontWeight: 900, color: "#0284C7", marginTop: 4 }}>{pkr(totalInvoiced)}</div>
-          <div style={{ fontSize: 11, color: "#059669", marginTop: 4 }}>Received: {pkr(totalReceived)}</div>
+          <div style={{ fontSize: 12, color: "var(--ink-muted)", fontWeight: 600 }}>Total Billed / Revenue</div>
+          <div style={{ fontSize: 18, fontWeight: 900, color: "#0284C7", marginTop: 4 }}>{pkr(totalBilled)}</div>
+          <div style={{ fontSize: 11, color: "#059669", marginTop: 4 }}>
+            Received: {pkr(totalReceived)} {openingBalance > 0 ? `· (OB: ${pkr(openingBalance)})` : ""}
+          </div>
         </div>
 
         <div style={{ background: "var(--card-bg)", padding: 14, borderRadius: 10, border: "1px solid var(--rule)" }}>
