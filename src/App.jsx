@@ -2185,27 +2185,40 @@ export default function App() {
     const map = {};
     projects.forEach(p => {
       const opBal = Number(p.openingBalance) || 0;
-      map[p.id] = { openingBalance: opBal, billed: opBal, received: 0, cost: 0 };
+      map[p.id] = { openingBalance: opBal, billed: opBal, received: 0, cashReceived: 0, taxDeducted: 0, cost: 0, paidInvoicesTotal: 0 };
     });
     invoices.forEach(inv => {
       if (inv.projectId && map[inv.projectId]) {
         const invAmt = Number(inv.totalAmount || inv.amount) || 0;
         map[inv.projectId].billed += invAmt;
-        if (inv.paid) map[inv.projectId].received += invAmt;
+        if (inv.paid) map[inv.projectId].paidInvoicesTotal += invAmt;
       }
     });
     vouchers.forEach(v => {
       if (v.projectId && map[v.projectId]) {
-        const vAmt = Number(v.netAmount !== undefined ? v.netAmount : v.amount) || 0;
-        if (v.type === "RV") {
-          map[v.projectId].received += vAmt;
-        } else if (v.type === "PV") {
+        const isPdcBounced = v.isPdc && v.pdcStatus === "Bounced";
+        if ((v.type === "RV" || v.type === "CV") && !isPdcBounced) {
+          const grossAmt = Number(v.amount) || 0;
+          const wht = Number(v.whtAmount) || 0;
+          const sst = Number(v.sstAmount !== undefined ? v.sstAmount : v.sstWithheld) || 0;
+          const netAmt = (v.netAmount !== undefined && v.netAmount !== null && v.netAmount !== "") ? Number(v.netAmount) : Math.max(0, grossAmt - wht - sst);
+          map[v.projectId].received += grossAmt;
+          map[v.projectId].cashReceived += netAmt;
+          map[v.projectId].taxDeducted += (wht + sst);
+        } else if (v.type === "PV" && !isPdcBounced) {
+          const vAmt = Number(v.amount) || Number(v.netAmount) || 0;
           map[v.projectId].cost += vAmt;
         }
       }
     });
     expenses.forEach(exp => {
       if (exp.projectId && map[exp.projectId]) map[exp.projectId].cost += (Number(exp.amount) || 0);
+    });
+    Object.values(map).forEach(s => {
+      if (s.received === 0 && s.paidInvoicesTotal > 0) {
+        s.received = s.paidInvoicesTotal;
+        s.cashReceived = s.paidInvoicesTotal;
+      }
     });
     return map;
   }, [projects, invoices, expenses, vouchers]);
@@ -2369,7 +2382,15 @@ export default function App() {
     if (!target) return;
     if (window.confirm(`Are you sure you want to remove Client Master '${target.name}'?`)) {
       setClients(list => list.filter(c => c.id !== id));
+      if (selectedClientId === id) setSelectedClientId(null);
+      if (activeStatementClientId === id) setActiveStatementClientId(null);
       postAuditLog("DELETE_CLIENT", `Removed Client Master: ${target.name}`);
+      triggerSuccessPopup({
+        title: "DONE — Client Deleted!",
+        message: `Client Master "${target.name}" (${target.clientCode || target.id}) has been removed.`,
+        code: target.clientCode || "CLIENT-DELETED",
+        module: "Clients Master"
+      });
     }
   }
 
@@ -2409,7 +2430,15 @@ export default function App() {
     if (!target) return;
     if (window.confirm(`Are you sure you want to remove Vendor Master '${target.name}'?`)) {
       setVendors(list => list.filter(v => v.id !== id));
+      if (selectedVendorId === id) setSelectedVendorId(null);
+      if (activeStatementVendorId === id) setActiveStatementVendorId(null);
       postAuditLog("DELETE_VENDOR", `Removed Vendor Master: ${target.name}`);
+      triggerSuccessPopup({
+        title: "DONE — Vendor Deleted!",
+        message: `Vendor Master "${target.name}" (${target.vendorCode || target.id}) has been removed.`,
+        code: target.vendorCode || "VENDOR-DELETED",
+        module: "Vendors Master"
+      });
     }
   }
 
@@ -5991,11 +6020,13 @@ export default function App() {
                   </thead>
                   <tbody>
                     {clients.filter(c => !clientSearchQuery || c.name.toLowerCase().includes(clientSearchQuery.toLowerCase()) || (c.companyName && c.companyName.toLowerCase().includes(clientSearchQuery.toLowerCase())) || (c.phone && c.phone.includes(clientSearchQuery))).map(c => {
+                      const clientProjectsList = projects.filter(p => p.clientId === c.id || (p.client && p.client.toLowerCase() === c.name.toLowerCase()));
+                      const projectsOpening = clientProjectsList.reduce((s, p) => s + (Number(p.openingBalance) || 0), 0);
                       const clientInvoices = invoices.filter(i => i.clientId === c.id || (i.client && i.client.toLowerCase() === c.name.toLowerCase()));
                       const clientVouchers = vouchers.filter(v => v.clientId === c.id || (v.party && v.party.toLowerCase().includes(c.name.toLowerCase())));
                       const totalInvoiced = clientInvoices.reduce((s, i) => s + (Number(i.totalAmount || i.amount) || 0), 0);
-                      const totalReceived = clientVouchers.filter(v => v.type === "RV" || v.type === "CV").reduce((s, v) => s + (Number(v.amount) || 0), 0);
-                      const outstanding = (Number(c.openingBalance) || 0) + totalInvoiced - totalReceived;
+                      const totalReceived = clientVouchers.filter(v => (v.type === "RV" || v.type === "CV") && !(v.isPdc && v.pdcStatus === "Bounced")).reduce((s, v) => s + (Number(v.amount) || 0), 0);
+                      const outstanding = (Number(c.openingBalance) || 0) + projectsOpening + totalInvoiced - totalReceived;
 
                       return (
                         <tr key={c.id}>
@@ -6038,6 +6069,14 @@ export default function App() {
                               </button>
                               <button className="btn" style={{ fontSize: 11, padding: "2px 6px" }} onClick={() => { setEditingClient(c); setShowClientModal(true); }}>
                                 Edit
+                              </button>
+                              <button
+                                className="btn"
+                                style={{ fontSize: 11, padding: "3px 7px", color: "#DC2626", borderColor: "rgba(220, 38, 38, 0.35)", background: "rgba(220, 38, 38, 0.06)", display: "inline-flex", alignItems: "center", gap: 3 }}
+                                onClick={() => handleDeleteClient(c.id)}
+                                title={`Delete Client ${c.name}`}
+                              >
+                                <Trash2 size={12} /> Delete
                               </button>
                             </div>
                           </td>
@@ -6155,6 +6194,14 @@ export default function App() {
                               </button>
                               <button className="btn" style={{ fontSize: 11, padding: "2px 6px" }} onClick={() => { setEditingVendor(v); setShowVendorModal(true); }}>
                                 Edit
+                              </button>
+                              <button
+                                className="btn"
+                                style={{ fontSize: 11, padding: "3px 7px", color: "#DC2626", borderColor: "rgba(220, 38, 38, 0.35)", background: "rgba(220, 38, 38, 0.06)", display: "inline-flex", alignItems: "center", gap: 3 }}
+                                onClick={() => handleDeleteVendor(v.id)}
+                                title={`Delete Vendor ${v.name}`}
+                              >
+                                <Trash2 size={12} /> Delete
                               </button>
                             </div>
                           </td>
@@ -10170,6 +10217,7 @@ export default function App() {
           project={projects.find(p => p.id === projectStatementId)}
           invoices={invoices}
           expenses={expenses}
+          vouchers={vouchers}
           onClose={() => setProjectStatementId(null)}
         />
       )}
@@ -10186,6 +10234,7 @@ export default function App() {
             project={project}
             invoices={invoices.filter(i => i.projectId === project.id)}
             expenses={expenses.filter(e => e.projectId === project.id)}
+            vouchers={vouchers.filter(v => v.projectId === project.id)}
             sites={hoardings.filter(h => h.projectId === project.id)}
             onClose={() => setSelectedProjectId(null)}
             onStatusChange={status => updateProjectStatus(project.id, status)}
@@ -16744,14 +16793,115 @@ function ProjectCostModal({ project, onClose, onSubmit }) {
   );
 }
 
-function ProjectDetailModal({ project, invoices, expenses, sites, onClose, onStatusChange, onAddBilling, onAddCost, onAddSite, onReleaseSite, onMarkPaid, onPrint, onPrintProject }) {
+function ProjectDetailModal({ project, invoices = [], expenses = [], vouchers = [], sites = [], onClose, onStatusChange, onAddBilling, onAddCost, onAddSite, onReleaseSite, onMarkPaid, onPrint, onPrintProject }) {
   const invoicesWithStatus = invoices.map(inv => ({
     ...inv, status: inv.paid ? "Paid" : (new Date(inv.dueDate) < TODAY ? "Overdue" : "Unpaid"),
   }));
   const isOOH = project.type === "OOH Advertising";
+
+  // Build Project Account Ledger rows (Opening Balance + Invoices [Debit] + Receipt Vouchers w/ Tax Breakup [Credit])
+  const openingBal = Number(project.openingBalance) || 0;
+  const rawLedgerRows = [];
+  invoices.forEach(inv => {
+    const amt = Number(inv.totalAmount || inv.amount) || 0;
+    rawLedgerRows.push({
+      id: `inv-${inv.id}`,
+      date: inv.issueDate || project.startDate || TODAY_STR,
+      ref: cleanInvoiceNo(inv.invoiceNo || inv.id),
+      type: "Invoice",
+      description: inv.description || "Client Project Billing",
+      debit: amt,
+      credit: 0
+    });
+  });
+
+  const projectReceipts = vouchers.filter(v => (v.type === "RV" || v.type === "CV") && !(v.isPdc && v.pdcStatus === "Bounced"));
+  projectReceipts.forEach(v => {
+    const grossAmt = Number(v.amount) || 0;
+    const wht = Number(v.whtAmount) || 0;
+    const sst = Number(v.sstAmount !== undefined ? v.sstAmount : v.sstWithheld) || 0;
+    const netAmt = (v.netAmount !== undefined && v.netAmount !== null && v.netAmount !== "") ? Number(v.netAmount) : Math.max(0, grossAmt - wht - sst);
+    const modeStr = v.type === "CV" ? "Direct Settlement" : (v.via === "Cash" ? "Cash" : (v.paymentMode || "Bank"));
+    const refStr = v.voucherNo || ("VCH-" + v.id.toUpperCase());
+    if (v.type === "RV" && (wht > 0 || sst > 0)) {
+      rawLedgerRows.push({
+        id: `vch-${v.id}-net`,
+        date: v.date || TODAY_STR,
+        ref: refStr,
+        type: v.isPdc ? "PDC Cheque" : "Receipt",
+        description: `${v.description || "Payment Received"} — Amount Received (${modeStr}${v.instrumentNo || v.chequeNo ? ` #${v.instrumentNo || v.chequeNo}` : ""})`,
+        debit: 0,
+        credit: netAmt
+      });
+      if (wht > 0) {
+        rawLedgerRows.push({
+          id: `vch-${v.id}-wht`,
+          date: v.date || TODAY_STR,
+          ref: `${refStr}-WHT`,
+          type: "Tax Deduction (WHT)",
+          description: `Income Tax Deducted at Source — WHT${v.whtRate ? ` (${v.whtRate}%)` : ""}`,
+          debit: 0,
+          credit: wht
+        });
+      }
+      if (sst > 0) {
+        rawLedgerRows.push({
+          id: `vch-${v.id}-sst`,
+          date: v.date || TODAY_STR,
+          ref: `${refStr}-SST`,
+          type: "Tax Deduction (SST)",
+          description: `SRB Sales Tax Withheld — SST${v.sstRate ? ` (${v.sstRate}%)` : ""}`,
+          debit: 0,
+          credit: sst
+        });
+      }
+    } else {
+      rawLedgerRows.push({
+        id: `vch-${v.id}`,
+        date: v.date || TODAY_STR,
+        ref: refStr,
+        type: v.type === "CV" ? "Direct Settlement" : (v.isPdc ? "PDC Cheque" : "Receipt"),
+        description: `${v.description || "Payment Received"} (${modeStr}${v.instrumentNo || v.chequeNo ? ` #${v.instrumentNo || v.chequeNo}` : ""})`,
+        debit: 0,
+        credit: grossAmt
+      });
+    }
+  });
+
+  // Fallback if an invoice was marked Paid directly without creating an RV voucher
+  if (projectReceipts.length === 0) {
+    invoices.filter(i => i.paid).forEach(inv => {
+      const amt = Number(inv.totalAmount || inv.amount) || 0;
+      rawLedgerRows.push({
+        id: `pmt-${inv.id}`,
+        date: inv.paidDate || inv.issueDate || TODAY_STR,
+        ref: `PMT-${cleanInvoiceNo(inv.invoiceNo || inv.id)}`,
+        type: "Receipt",
+        description: `Invoice Payment Received (${inv.paidVia || "Bank"})`,
+        debit: 0,
+        credit: amt
+      });
+    });
+  }
+
+  rawLedgerRows.sort((a, b) => new Date(a.date) - new Date(b.date));
+  let ledgerRunning = openingBal;
+  const projectLedgerRows = rawLedgerRows.map(r => {
+    ledgerRunning = ledgerRunning + r.debit - r.credit;
+    return { ...r, runningBalance: ledgerRunning };
+  });
+  const ledgerTotalDebit = openingBal + rawLedgerRows.reduce((s, r) => s + r.debit, 0);
+  const ledgerTotalCredit = rawLedgerRows.reduce((s, r) => s + r.credit, 0);
+
+  const projectPayVouchers = vouchers.filter(v => v.type === "PV" && !(v.isPdc && v.pdcStatus === "Bounced"));
+  const combinedCosts = [
+    ...expenses.map(e => ({ id: e.id, vendor: e.vendor, description: e.description || "—", date: e.date, paidVia: e.paidVia || "Bank", amount: Number(e.amount) || 0 })),
+    ...projectPayVouchers.map(v => ({ id: v.id, vendor: v.party || "Vendor", description: `${v.voucherNo || "PV"} — ${v.description || ""}`, date: v.date, paidVia: v.paymentMode || v.via || "Bank", amount: Number(v.amount) || Number(v.netAmount) || 0 }))
+  ].sort((a, b) => new Date(b.date) - new Date(a.date));
+
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal" style={{ width: 700 }} onClick={e => e.stopPropagation()}>
+      <div className="modal" style={{ width: 880, maxWidth: "96vw" }} onClick={e => e.stopPropagation()}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
           <div>
             <div className="section-title" style={{ margin: 0, fontSize: 18 }}>{project.name}</div>
@@ -16777,18 +16927,86 @@ function ProjectDetailModal({ project, invoices, expenses, sites, onClose, onSta
           </div>
         )}
 
-        {Number(project.openingBalance) > 0 && (
+        {openingBal > 0 && (
           <div style={{ fontSize: 13, color: "#065F46", marginBottom: 14, background: "#D1FAE5", border: "1px solid #A7F3D0", padding: "8px 14px", borderRadius: 8, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <span><strong>Project Opening Balance:</strong> Starting Billed / Previous Outstanding</span>
-            <span className="mono" style={{ fontWeight: 800, fontSize: 14 }}>{pkr(project.openingBalance)}</span>
+            <span className="mono" style={{ fontWeight: 800, fontSize: 14 }}>{pkr(openingBal)}</span>
           </div>
         )}
 
-        <div className="grid-kpi" style={{ gridTemplateColumns: "repeat(4, 1fr)", marginBottom: 16 }}>
-          <KpiCard label="Total Billed" value={pkr(project.billed)} icon={FileText} accent="var(--jade)" />
+        <div className="grid-kpi" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", marginBottom: 16 }}>
+          <KpiCard label="Total Billed" value={pkr(project.billed)} icon={FileText} accent="#0284C7" />
+          <KpiCard label="Total Received" value={pkr(project.received)} sub={project.taxDeducted > 0 ? `Cash ${pkr(project.cashReceived)} + Tax ${pkr(project.taxDeducted)}` : undefined} icon={CheckCircle2} accent="var(--jade)" />
           <KpiCard label="Outstanding" value={pkr(project.outstanding)} icon={Landmark} accent="var(--amber)" />
           <KpiCard label="Costs Out" value={pkr(project.cost)} icon={Coins} accent="var(--rose)" />
           <KpiCard label="Net Margin" value={pkr(project.margin)} icon={TrendingUp} accent={project.margin >= 0 ? "var(--jade)" : "var(--rose)"} />
+        </div>
+
+        {/* PROJECT INDIVIDUAL LEDGER (RUNNING BALANCE STATEMENT FORMAT) */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+          <div className="section-title" style={{ margin: 0, fontSize: 15 }}>
+            <FileText size={16} color="#0284C7" /> Project Account Ledger (Running Balance)
+          </div>
+          <span style={{ fontSize: 12, color: "var(--ink-muted)" }}>
+            {projectLedgerRows.length} Transaction(s)
+          </span>
+        </div>
+        <div className="card" style={{ marginBottom: 16 }}>
+          <div className="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Reference</th>
+                  <th>Type</th>
+                  <th>Particulars / Mode</th>
+                  <th style={{ textAlign: "right" }}>Debit (PKR)</th>
+                  <th style={{ textAlign: "right" }}>Credit (PKR)</th>
+                  <th style={{ textAlign: "right" }}>Balance (PKR)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style={{ background: "var(--bg)", fontWeight: 700 }}>
+                  <td className="mono" style={{ fontSize: 12 }}>{fmtDate(project.startDate || TODAY_STR)}</td>
+                  <td className="mono" style={{ fontSize: 12, color: "#065F46" }}>OB-{project.projectCode || "PRJ"}</td>
+                  <td><span className="badge-mini" style={{ background: "#D1FAE5", color: "#065F46" }}>Opening Balance</span></td>
+                  <td>Starting Project Balance / Previous Outstanding</td>
+                  <td className="mono" style={{ textAlign: "right", color: openingBal > 0 ? "#0284C7" : "inherit" }}>{openingBal > 0 ? pkr(openingBal) : "—"}</td>
+                  <td className="mono" style={{ textAlign: "right" }}>—</td>
+                  <td className="mono" style={{ textAlign: "right", fontWeight: 800, color: "#0284C7" }}>{pkr(openingBal)}</td>
+                </tr>
+                {projectLedgerRows.map(r => (
+                  <tr key={r.id}>
+                    <td className="mono" style={{ fontSize: 12, whiteSpace: "nowrap" }}>{fmtDate(r.date)}</td>
+                    <td className="mono" style={{ fontSize: 12, fontWeight: 700 }}>{r.ref}</td>
+                    <td>
+                      <span className="badge-mini" style={{
+                        background: r.type === "Invoice" ? "rgba(2, 132, 199, 0.1)" : r.type.startsWith("Tax Deduction") ? "rgba(217, 119, 6, 0.12)" : "rgba(5, 150, 105, 0.1)",
+                        color: r.type === "Invoice" ? "#0284C7" : r.type.startsWith("Tax Deduction") ? "#B45309" : "#059669"
+                      }}>
+                        {r.type}
+                      </span>
+                    </td>
+                    <td style={{ fontSize: 12.5 }}>{r.description}</td>
+                    <td className="mono" style={{ textAlign: "right", color: r.debit > 0 ? "#0284C7" : "var(--ink-muted)", fontWeight: r.debit > 0 ? 700 : 400 }}>{r.debit > 0 ? pkr(r.debit) : "—"}</td>
+                    <td className="mono" style={{ textAlign: "right", color: r.credit > 0 ? "#059669" : "var(--ink-muted)", fontWeight: r.credit > 0 ? 700 : 400 }}>{r.credit > 0 ? pkr(r.credit) : "—"}</td>
+                    <td className="mono" style={{ textAlign: "right", fontWeight: 800, color: r.runningBalance > 0 ? "#0284C7" : "#059669" }}>{pkr(r.runningBalance)}</td>
+                  </tr>
+                ))}
+                {projectLedgerRows.length === 0 && (
+                  <tr><td colSpan={7} style={{ textAlign: "center", color: "var(--ink-muted)", padding: 12 }}>No additional invoices or receipts posted for this project yet.</td></tr>
+                )}
+              </tbody>
+              <tfoot>
+                <tr style={{ background: "var(--bg)", fontWeight: 800 }}>
+                  <td colSpan={4}>Closing Project Receivable Balance</td>
+                  <td className="mono" style={{ textAlign: "right", color: "#0284C7" }}>{pkr(ledgerTotalDebit)}</td>
+                  <td className="mono" style={{ textAlign: "right", color: "#059669" }}>{pkr(ledgerTotalCredit)}</td>
+                  <td className="mono" style={{ textAlign: "right", fontSize: 14, color: ledgerRunning > 0 ? "#0284C7" : "#059669" }}>{pkr(ledgerRunning)}</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
         </div>
 
         {isOOH && (
@@ -16983,7 +17201,7 @@ function ProjectDetailModal({ project, invoices, expenses, sites, onClose, onSta
             <table>
               <thead><tr><th>Vendor</th><th>Description</th><th>Date</th><th>Paid Via</th><th style={{ textAlign: "right" }}>Amount</th></tr></thead>
               <tbody>
-                {expenses.map(exp => (
+                {combinedCosts.map(exp => (
                   <tr key={exp.id}>
                     <td style={{ fontWeight: 600 }}>{exp.vendor}</td>
                     <td style={{ color: "var(--ink-muted)" }}>{exp.description || "—"}</td>
@@ -16992,7 +17210,7 @@ function ProjectDetailModal({ project, invoices, expenses, sites, onClose, onSta
                     <td className="mono" style={{ textAlign: "right", color: "var(--rose)" }}>{pkr(exp.amount)}</td>
                   </tr>
                 ))}
-                {expenses.length === 0 && (
+                {combinedCosts.length === 0 && (
                   <tr><td colSpan={5} style={{ textAlign: "center", color: "var(--ink-muted)", padding: 14 }}>No vendor costs logged yet.</td></tr>
                 )}
               </tbody>
@@ -18880,17 +19098,85 @@ function ClientStatementPrintModal({ clientName, invoices, projects, onClose }) 
   );
 }
 
-function ProjectStatementPrintModal({ project, invoices, expenses, onClose }) {
+function ProjectStatementPrintModal({ project, invoices = [], expenses = [], vouchers = [], onClose }) {
   const [pageSize, setPageSize] = useState("A4");
   const printRef = useRef(null);
 
+  const openingBal = Number(project.openingBalance) || 0;
   const projInvoices = invoices.filter(i => i.projectId === project.id);
   const projExpenses = expenses.filter(e => e.projectId === project.id);
-  const totalBilled = projInvoices.reduce((s, i) => s + (Number(i.totalAmount || i.amount) || 0), 0);
-  const totalCost = projExpenses.reduce((s, e) => s + (Number(e.amount) || 0), 0);
+  const projReceipts = vouchers.filter(v => v.projectId === project.id && (v.type === "RV" || v.type === "CV") && !(v.isPdc && v.pdcStatus === "Bounced"));
+  const totalBilled = openingBal + projInvoices.reduce((s, i) => s + (Number(i.totalAmount || i.amount) || 0), 0);
+  const totalReceived = projReceipts.reduce((s, v) => s + (Number(v.amount) || 0), 0);
+  const totalOutstanding = totalBilled - totalReceived;
+  const totalCost = projExpenses.reduce((s, e) => s + (Number(e.amount) || 0), 0) + vouchers.filter(v => v.projectId === project.id && v.type === "PV" && !(v.isPdc && v.pdcStatus === "Bounced")).reduce((s, v) => s + (Number(v.amount) || Number(v.netAmount) || 0), 0);
   const netMargin = totalBilled - totalCost;
 
-  const pkr = (val) => "PKR " + (Number(val) || 0).toLocaleString("en-PK", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  const rawPrintLedger = [];
+  projInvoices.forEach(inv => {
+    rawPrintLedger.push({
+      date: inv.issueDate || project.startDate,
+      ref: cleanInvoiceNo(inv.invoiceNo || inv.id),
+      type: "Invoice",
+      desc: inv.description || "Project Billing",
+      debit: Number(inv.totalAmount || inv.amount) || 0,
+      credit: 0
+    });
+  });
+  projReceipts.forEach(v => {
+    const grossAmt = Number(v.amount) || 0;
+    const wht = Number(v.whtAmount) || 0;
+    const sst = Number(v.sstAmount !== undefined ? v.sstAmount : v.sstWithheld) || 0;
+    const netAmt = (v.netAmount !== undefined && v.netAmount !== null && v.netAmount !== "") ? Number(v.netAmount) : Math.max(0, grossAmt - wht - sst);
+    const refStr = v.voucherNo || ("VCH-" + v.id.toUpperCase());
+    if (v.type === "RV" && (wht > 0 || sst > 0)) {
+      rawPrintLedger.push({
+        date: v.date,
+        ref: refStr,
+        type: "Receipt",
+        desc: `${v.description || "Payment Received"} (Net Cash/Bank)`,
+        debit: 0,
+        credit: netAmt
+      });
+      if (wht > 0) {
+        rawPrintLedger.push({
+          date: v.date,
+          ref: `${refStr}-WHT`,
+          type: "Tax Deduction (WHT)",
+          desc: `WHT Income Tax Deducted (${v.whtRate || 0}%)`,
+          debit: 0,
+          credit: wht
+        });
+      }
+      if (sst > 0) {
+        rawPrintLedger.push({
+          date: v.date,
+          ref: `${refStr}-SST`,
+          type: "Tax Deduction (SST)",
+          desc: `SRB SST Withheld (${v.sstRate || 0}%)`,
+          debit: 0,
+          credit: sst
+        });
+      }
+    } else {
+      rawPrintLedger.push({
+        date: v.date,
+        ref: refStr,
+        type: v.type === "CV" ? "Direct Settlement" : "Receipt",
+        desc: v.description || "Payment Received",
+        debit: 0,
+        credit: grossAmt
+      });
+    }
+  });
+  rawPrintLedger.sort((a, b) => new Date(a.date) - new Date(b.date));
+  let printRunning = openingBal;
+  const printLedgerRows = rawPrintLedger.map(r => {
+    printRunning = printRunning + r.debit - r.credit;
+    return { ...r, balance: printRunning };
+  });
+
+  const pkr = (val) => "PKR " + (Number(val) || 0).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 
   const handleExportPDF = () => {
     const printEl = printRef.current;
@@ -18999,72 +19285,90 @@ function ProjectStatementPrintModal({ project, invoices, expenses, onClose }) {
               </div>
             </div>
 
-            {/* 4 SUMMARY METRIC CARDS */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, marginBottom: 12 }}>
-              <div style={{ background: "#FFFFFF", padding: "6px 10px", borderRadius: 5, border: "1px solid #000000", textAlign: "center" }}>
-                <div style={{ fontSize: 8.5, color: "#475569", fontWeight: 700, textTransform: "uppercase" }}>Project Budget</div>
-                <div style={{ fontSize: 11.5, fontWeight: 800, color: "#1E293B", marginTop: 2 }}>{pkr(project.budget || totalBilled)}</div>
+            {/* 5 SUMMARY METRIC CARDS */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 6, marginBottom: 12 }}>
+              <div style={{ background: "#FFFFFF", padding: "6px 8px", borderRadius: 5, border: "1px solid #000000", textAlign: "center" }}>
+                <div style={{ fontSize: 8, color: "#475569", fontWeight: 700, textTransform: "uppercase" }}>Opening Bal.</div>
+                <div style={{ fontSize: 11, fontWeight: 800, color: "#1E293B", marginTop: 2 }}>{pkr(openingBal)}</div>
               </div>
-              <div style={{ background: "#FFFFFF", padding: "6px 10px", borderRadius: 5, border: "1px solid #000000", textAlign: "center" }}>
-                <div style={{ fontSize: 8.5, color: "#0284C7", fontWeight: 700, textTransform: "uppercase" }}>Total Billed (Net)</div>
-                <div style={{ fontSize: 11.5, fontWeight: 800, color: "#0284C7", marginTop: 2 }}>{pkr(totalBilled)}</div>
+              <div style={{ background: "#FFFFFF", padding: "6px 8px", borderRadius: 5, border: "1px solid #000000", textAlign: "center" }}>
+                <div style={{ fontSize: 8, color: "#0284C7", fontWeight: 700, textTransform: "uppercase" }}>Total Billed</div>
+                <div style={{ fontSize: 11, fontWeight: 800, color: "#0284C7", marginTop: 2 }}>{pkr(totalBilled)}</div>
               </div>
-              <div style={{ background: "#FFFFFF", padding: "6px 10px", borderRadius: 5, border: "1px solid #000000", textAlign: "center" }}>
-                <div style={{ fontSize: 8.5, color: "#DC2626", fontWeight: 700, textTransform: "uppercase" }}>Production Cost</div>
-                <div style={{ fontSize: 11.5, fontWeight: 800, color: "#DC2626", marginTop: 2 }}>{pkr(totalCost)}</div>
+              <div style={{ background: "#FFFFFF", padding: "6px 8px", borderRadius: 5, border: "1px solid #000000", textAlign: "center" }}>
+                <div style={{ fontSize: 8, color: "#059669", fontWeight: 700, textTransform: "uppercase" }}>Total Received</div>
+                <div style={{ fontSize: 11, fontWeight: 800, color: "#059669", marginTop: 2 }}>{pkr(totalReceived)}</div>
               </div>
-              <div style={{ background: "#D1FAE5", padding: "6px 10px", borderRadius: 5, border: "1.5px solid #059669", textAlign: "center" }}>
-                <div style={{ fontSize: 8.5, color: "#047857", fontWeight: 800, textTransform: "uppercase" }}>Net Margin</div>
-                <div style={{ fontSize: 12, fontWeight: 900, color: "#047857", marginTop: 2 }}>{pkr(netMargin)}</div>
+              <div style={{ background: "#FFFBEB", padding: "6px 8px", borderRadius: 5, border: "1.5px solid #D97706", textAlign: "center" }}>
+                <div style={{ fontSize: 8, color: "#B45309", fontWeight: 800, textTransform: "uppercase" }}>Outstanding</div>
+                <div style={{ fontSize: 11.5, fontWeight: 900, color: "#B45309", marginTop: 2 }}>{pkr(totalOutstanding)}</div>
+              </div>
+              <div style={{ background: "#D1FAE5", padding: "6px 8px", borderRadius: 5, border: "1.5px solid #059669", textAlign: "center" }}>
+                <div style={{ fontSize: 8, color: "#047857", fontWeight: 800, textTransform: "uppercase" }}>Net Margin</div>
+                <div style={{ fontSize: 11, fontWeight: 900, color: "#047857", marginTop: 2 }}>{pkr(netMargin)}</div>
               </div>
             </div>
 
-            {/* MILESTONES & DELIVERABLES TABLE */}
-            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 12, fontSize: 9.5, tableLayout: "fixed" }}>
+            {/* PROJECT LEDGER TABLE (OPENING + INVOICES + RECEIPTS + RUNNING BALANCE) */}
+            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 12, fontSize: 9.2, tableLayout: "fixed" }}>
               <colgroup>
-                <col style={{ width: "14%" }} />
-                <col style={{ width: "13%" }} />
-                <col style={{ width: "35%" }} />
                 <col style={{ width: "12%" }} />
-                <col style={{ width: "11%" }} />
-                <col style={{ width: "15%" }} />
+                <col style={{ width: "13%" }} />
+                <col style={{ width: "13%" }} />
+                <col style={{ width: "26%" }} />
+                <col style={{ width: "12%" }} />
+                <col style={{ width: "12%" }} />
+                <col style={{ width: "12%" }} />
               </colgroup>
               <thead>
                 <tr style={{ background: "#F1F5F9", color: "#0F172A" }}>
-                  <th style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "center", fontSize: 8.5, fontWeight: 800 }}>DATE</th>
-                  <th style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "center", fontSize: 8.5, fontWeight: 800 }}>INVOICE REF</th>
-                  <th style={{ border: "1px solid #000", padding: "5px 5px", textAlign: "left", fontSize: 8.5, fontWeight: 800 }}>MILESTONE DESCRIPTION</th>
-                  <th style={{ border: "1px solid #000", padding: "4px 3px", textAlign: "right", fontSize: 8, fontWeight: 800 }}>GROSS (PKR)</th>
-                  <th style={{ border: "1px solid #000", padding: "4px 3px", textAlign: "right", fontSize: 8, fontWeight: 800 }}>SST (15%)</th>
-                  <th style={{ border: "1px solid #000", padding: "4px 3px", textAlign: "right", fontSize: 8, fontWeight: 800 }}>NET BILLED</th>
+                  <th style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "center", fontSize: 8.2, fontWeight: 800 }}>DATE</th>
+                  <th style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "center", fontSize: 8.2, fontWeight: 800 }}>REF #</th>
+                  <th style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "center", fontSize: 8.2, fontWeight: 800 }}>TYPE</th>
+                  <th style={{ border: "1px solid #000", padding: "5px 5px", textAlign: "left", fontSize: 8.2, fontWeight: 800 }}>PARTICULARS</th>
+                  <th style={{ border: "1px solid #000", padding: "4px 3px", textAlign: "right", fontSize: 8, fontWeight: 800 }}>DEBIT</th>
+                  <th style={{ border: "1px solid #000", padding: "4px 3px", textAlign: "right", fontSize: 8, fontWeight: 800 }}>CREDIT</th>
+                  <th style={{ border: "1px solid #000", padding: "4px 3px", textAlign: "right", fontSize: 8, fontWeight: 800 }}>BALANCE</th>
                 </tr>
               </thead>
               <tbody>
-                {projInvoices.map((inv, idx) => (
-                  <tr key={inv.id || idx}>
-                    <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "center", fontSize: 9, whiteSpace: "nowrap" }}>{fmtDate(inv.issueDate)}</td>
-                    <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "center", fontWeight: 700, fontFamily: "monospace", fontSize: 8.8, whiteSpace: "nowrap" }}>{cleanInvoiceNo(inv.invoiceNo || inv.id)}</td>
-                    <td style={{ border: "1px solid #000", padding: "5px 5px", fontSize: 9, wordBreak: "break-word" }}>{inv.description}</td>
-                    <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "right", fontSize: 9, color: "#475569" }}>{pkr(inv.amount)}</td>
-                    <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "right", fontSize: 9, color: "#475569" }}>{inv.applySst ? pkr(inv.sstAmount) : "—"}</td>
-                    <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "right", fontWeight: 700, fontSize: 9.2, color: "#0F172A" }}>{pkr(inv.totalAmount || inv.amount)}</td>
+                <tr style={{ background: "#F8FAFC", fontWeight: 700 }}>
+                  <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "center", fontSize: 8.8 }}>{fmtDate(project.startDate)}</td>
+                  <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "center", fontFamily: "monospace", fontSize: 8.5 }}>OB-{project.projectCode || "PRJ"}</td>
+                  <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "center", fontSize: 8.5 }}>Opening Bal.</td>
+                  <td style={{ border: "1px solid #000", padding: "5px 5px", fontSize: 8.8 }}>Starting Project Opening Balance</td>
+                  <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "right", fontSize: 8.8 }}>{openingBal > 0 ? pkr(openingBal) : "—"}</td>
+                  <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "right", fontSize: 8.8 }}>—</td>
+                  <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "right", fontWeight: 800, fontSize: 9 }}>{pkr(openingBal)}</td>
+                </tr>
+                {printLedgerRows.map((row, idx) => (
+                  <tr key={idx}>
+                    <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "center", fontSize: 8.8, whiteSpace: "nowrap" }}>{fmtDate(row.date)}</td>
+                    <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "center", fontWeight: 700, fontFamily: "monospace", fontSize: 8.5 }}>{row.ref}</td>
+                    <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "center", fontWeight: 700, fontSize: 8.5, color: row.type === "Invoice" ? "#0284C7" : row.type.startsWith("Tax Deduction") ? "#B45309" : "#059669" }}>{row.type}</td>
+                    <td style={{ border: "1px solid #000", padding: "5px 5px", fontSize: 8.8, wordBreak: "break-word" }}>{row.desc}</td>
+                    <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "right", fontSize: 8.8, color: "#0284C7", fontWeight: row.debit > 0 ? 700 : 400 }}>{row.debit > 0 ? pkr(row.debit) : "—"}</td>
+                    <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "right", fontSize: 8.8, color: "#059669", fontWeight: row.credit > 0 ? 700 : 400 }}>{row.credit > 0 ? pkr(row.credit) : "—"}</td>
+                    <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "right", fontWeight: 800, fontSize: 9, color: "#0F172A" }}>{pkr(row.balance)}</td>
                   </tr>
                 ))}
-                {projInvoices.length === 0 && (
-                  <tr><td colSpan={6} style={{ border: "1px solid #000", textAlign: "center", padding: 14, color: "#64748B" }}>No billings logged for this project.</td></tr>
+                {printLedgerRows.length === 0 && (
+                  <tr><td colSpan={7} style={{ border: "1px solid #000", textAlign: "center", padding: 12, color: "#64748B" }}>No additional billings or receipts logged for this project.</td></tr>
                 )}
               </tbody>
               <tfoot>
                 <tr style={{ background: "#F1F5F9", fontWeight: 800 }}>
-                  <td colSpan={5} style={{ border: "1px solid #000", padding: "5px 6px", textAlign: "right", fontSize: 9.5 }}>Total Billed Project Net</td>
-                  <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "right", fontSize: 10, color: "#1E3A8A" }}>{pkr(totalBilled)}</td>
+                  <td colSpan={4} style={{ border: "1px solid #000", padding: "5px 6px", textAlign: "right", fontSize: 9.2 }}>Closing Project Receivable Balance</td>
+                  <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "right", fontSize: 9.5, color: "#0284C7" }}>{pkr(totalBilled)}</td>
+                  <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "right", fontSize: 9.5, color: "#059669" }}>{pkr(totalReceived)}</td>
+                  <td style={{ border: "1px solid #000", padding: "5px 3px", textAlign: "right", fontSize: 10, color: "#1E3A8A" }}>{pkr(totalOutstanding)}</td>
                 </tr>
               </tfoot>
             </table>
 
             {/* AMOUNT IN WORDS */}
             <div style={{ fontSize: 9.5, fontStyle: "italic", color: "#334155", marginBottom: 12, background: "#F8FAFC", padding: "5px 8px", borderRadius: 4, border: "1px solid #000" }}>
-              Total Project Billed Amount in words: <b style={{ color: "#0F172A", fontStyle: "normal" }}>{amountInWords(totalBilled)}</b>
+              Project Outstanding Balance in words: <b style={{ color: "#0F172A", fontStyle: "normal" }}>{amountInWords(totalOutstanding)}</b>
             </div>
           </div>
 

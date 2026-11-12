@@ -34,9 +34,9 @@ function exportClientStatementToExcel({ client, dateFrom, dateTo, statementData 
   let rowsHtml = `
     <tr>
       <td style="border: 1px solid #CBD5E1; padding: 6px; font-family: monospace; text-align: center;">${dateFrom}</td>
-      <td style="border: 1px solid #CBD5E1; padding: 6px; font-family: monospace; font-weight: bold; text-align: center;">OB-000</td>
+      <td style="border: 1px solid #CBD5E1; padding: 6px; font-family: monospace; font-weight: bold; text-align: center;">${statementData.openingRef || "OB-000"}</td>
       <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: center;">Opening Balance</td>
-      <td style="border: 1px solid #CBD5E1; padding: 6px;">—</td>
+      <td style="border: 1px solid #CBD5E1; padding: 6px;">${statementData.openingLabel || "—"}</td>
       <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: right;">—</td>
       <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: right;">—</td>
       <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: right; font-weight: bold; mso-number-format:'\\#\\,\\#\\#0';">${statementData.openingBalance}</td>
@@ -100,7 +100,7 @@ function exportClientStatementToExcel({ client, dateFrom, dateTo, statementData 
         <tr style="background-color: #F1F5F9; font-weight: bold;">
           <td colspan="2" style="border: 1px solid #CBD5E1; padding: 8px; text-align: center;">Opening Balance: PKR ${statementData.openingBalance.toLocaleString()}</td>
           <td colspan="2" style="border: 1px solid #CBD5E1; padding: 8px; text-align: center; color: #0284C7;">Total Invoiced (+): PKR ${statementData.totalInvoiced.toLocaleString()}</td>
-          <td colspan="2" style="border: 1px solid #CBD5E1; padding: 8px; text-align: center; color: #059669;">Total Received (-): PKR ${statementData.totalReceived.toLocaleString()}</td>
+          <td colspan="2" style="border: 1px solid #CBD5E1; padding: 8px; text-align: center; color: #059669;">Total Settled (-): PKR ${(statementData.totalCredits !== undefined ? statementData.totalCredits : statementData.totalReceived).toLocaleString()}</td>
           <td style="border: 1.5px solid #0284C7; padding: 8px; text-align: center; background-color: #E0F2FE; color: #0369A1;">Closing Outstanding: PKR ${statementData.closingBalance.toLocaleString()}</td>
         </tr>
         <tr><td colspan="7" style="height: 14px;"></td></tr>
@@ -117,7 +117,7 @@ function exportClientStatementToExcel({ client, dateFrom, dateTo, statementData 
         <tr style="background-color: #0F172A; color: #FFFFFF; font-weight: bold;">
           <td colspan="4" style="border: 1px solid #000; padding: 8px;">Closing Balance Summary</td>
           <td style="border: 1px solid #000; padding: 8px; text-align: right; color: #38BDF8; mso-number-format:'\\#\\,\\#\\#0';">${statementData.totalInvoiced}</td>
-          <td style="border: 1px solid #000; padding: 8px; text-align: right; color: #34D399; mso-number-format:'\\#\\,\\#\\#0';">${statementData.totalReceived}</td>
+          <td style="border: 1px solid #000; padding: 8px; text-align: right; color: #34D399; mso-number-format:'\\#\\,\\#\\#0';">${statementData.totalCredits !== undefined ? statementData.totalCredits : statementData.totalReceived}</td>
           <td style="border: 1px solid #000; padding: 8px; text-align: right; color: #BAE6FD; font-size: 12pt; mso-number-format:'\\#\\,\\#\\#0';">${statementData.closingBalance}</td>
         </tr>
         <tr><td colspan="7" style="height: 18px;"></td></tr>
@@ -163,7 +163,7 @@ export function ClientStatementPrintModal({ client, dateFrom, dateTo, statementD
   const [printScale, setPrintScale] = useState("100%");
   const printRef = useRef(null);
 
-  const pkr = (val) => "PKR " + (Number(val) || 0).toLocaleString("en-PK", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  const pkr = (val) => "PKR " + (Number(val) || 0).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
   const fmtDate = (d) => {
     if (!d) return "—";
     try {
@@ -459,8 +459,8 @@ export function ClientStatementPrintModal({ client, dateFrom, dateTo, statementD
                   <div style={{ fontSize: 10.5, fontWeight: 700, color: "#000000", marginTop: 2 }}>{pkr(statementData.totalInvoiced)}</div>
                 </div>
                 <div style={{ border: "1px solid #000000", padding: "5px 8px", textAlign: "center" }}>
-                  <div style={{ fontSize: 8, fontWeight: 700, textTransform: "uppercase", color: "#000000" }}>TOTAL RECEIVED (-)</div>
-                  <div style={{ fontSize: 10.5, fontWeight: 700, color: "#000000", marginTop: 2 }}>{pkr(statementData.totalReceived)}</div>
+                  <div style={{ fontSize: 8, fontWeight: 700, textTransform: "uppercase", color: "#000000" }}>TOTAL SETTLED (-)</div>
+                  <div style={{ fontSize: 10.5, fontWeight: 700, color: "#000000", marginTop: 2 }}>{pkr(statementData.totalCredits !== undefined ? statementData.totalCredits : statementData.totalReceived)}</div>
                 </div>
                 <div style={{ border: "1.5px solid #000000", padding: "5px 8px", textAlign: "center", background: "#F8FAFC" }}>
                   <div style={{ fontSize: 8, fontWeight: 800, textTransform: "uppercase", color: "#000000" }}>CLOSING OUTSTANDING</div>
@@ -469,13 +469,13 @@ export function ClientStatementPrintModal({ client, dateFrom, dateTo, statementD
               </div>
 
               {/* TAX BREAKDOWN BANNER */}
-              {statementData.totalGrossInvoiced > 0 && (
+              {(statementData.totalGrossInvoiced > 0 || statementData.totalWhtWithheld > 0 || statementData.totalSstWithheld > 0) && (
                 <div style={{ display: "flex", justifyContent: "space-between", border: "1px solid #000000", padding: "4px 8px", marginBottom: 10, fontSize: 8.5, color: "#000000" }}>
                   <span><b>Gross Invoiced:</b> {pkr(statementData.totalGrossInvoiced)}</span>
                   <span><b>Output SST (SRB/PRA):</b> {pkr(statementData.totalSstInvoiced)}</span>
                   <span><b>WHT Withheld (FBR):</b> {pkr(statementData.totalWhtWithheld)}</span>
                   <span><b>SST Withheld:</b> {pkr(statementData.totalSstWithheld)}</span>
-                  <span><b>Net Realized:</b> {pkr(statementData.totalReceived)}</span>
+                  <span><b>Net Cash Received:</b> {pkr(statementData.totalReceived)}</span>
                 </div>
               )}
 
@@ -499,7 +499,7 @@ export function ClientStatementPrintModal({ client, dateFrom, dateTo, statementD
                     <th style={{ border: "1px solid #000000", padding: "5px 3px", textAlign: "center" }}>TYPE</th>
                     <th style={{ border: "1px solid #000000", padding: "5px 5px", textAlign: "left" }}>PROJECT / PARTICULARS</th>
                     <th style={{ border: "1px solid #000000", padding: "4px 4px", textAlign: "right", lineHeight: 1.15 }}>DEBIT / INVOICED<br/>(PKR)</th>
-                    <th style={{ border: "1px solid #000000", padding: "4px 4px", textAlign: "right", lineHeight: 1.15 }}>CREDIT / RECEIVED<br/>(PKR)</th>
+                    <th style={{ border: "1px solid #000000", padding: "4px 4px", textAlign: "right", lineHeight: 1.15 }}>CREDIT / SETTLED<br/>(PKR)</th>
                     <th style={{ border: "1px solid #000000", padding: "4px 4px", textAlign: "right", lineHeight: 1.15 }}>BALANCE<br/>(PKR)</th>
                   </tr>
                 </thead>
@@ -507,9 +507,9 @@ export function ClientStatementPrintModal({ client, dateFrom, dateTo, statementD
                   <tr style={{ fontWeight: 700, background: "#F8FAFC" }}>
                     <td style={{ border: "1px solid #000000", padding: "4px 3px", textAlign: "center" }}>—</td>
                     <td style={{ border: "1px solid #000000", padding: "4px 3px", textAlign: "center" }}>{fmtDate(dateFrom)}</td>
-                    <td style={{ border: "1px solid #000000", padding: "4px 3px", textAlign: "center", fontFamily: "monospace" }}>OB-000</td>
+                    <td style={{ border: "1px solid #000000", padding: "4px 3px", textAlign: "center", fontFamily: "monospace" }}>{statementData.openingRef || "OB-000"}</td>
                     <td style={{ border: "1px solid #000000", padding: "4px 3px", textAlign: "center" }}>Opening B/F</td>
-                    <td style={{ border: "1px solid #000000", padding: "4px 5px" }}>Opening Balance Brought Forward</td>
+                    <td style={{ border: "1px solid #000000", padding: "4px 5px" }}>{statementData.openingLabel || "Opening Balance Brought Forward"}</td>
                     <td style={{ border: "1px solid #000000", padding: "4px 4px", textAlign: "right" }}>—</td>
                     <td style={{ border: "1px solid #000000", padding: "4px 4px", textAlign: "right" }}>—</td>
                     <td style={{ border: "1px solid #000000", padding: "4px 4px", textAlign: "right", fontWeight: 700 }}>{pkr(statementData.openingBalance)}</td>
@@ -535,9 +535,14 @@ export function ClientStatementPrintModal({ client, dateFrom, dateTo, statementD
                               Gross: {pkr(row.taxBreakdown.gross)} {row.taxBreakdown.sst > 0 ? `| SST (${row.taxBreakdown.sstRate}%): +${pkr(row.taxBreakdown.sst)}` : ""} {row.taxBreakdown.discount > 0 ? `| Disc: -${pkr(row.taxBreakdown.discount)}` : ""}
                             </div>
                           )}
-                          {row.taxBreakdown && row.taxBreakdown.kind === "receipt" && (
+                          {row.taxBreakdown && (row.taxBreakdown.kind === "receipt" || row.taxBreakdown.kind === "receipt_net") && (
                             <div style={{ fontSize: 7.5, color: "#000000", marginTop: 1, lineHeight: 1.2 }}>
-                              Gross: {pkr(row.taxBreakdown.gross)} {row.taxBreakdown.wht > 0 ? `| WHT (${row.taxBreakdown.whtRate}%): -${pkr(row.taxBreakdown.wht)}` : ""} {row.taxBreakdown.sst > 0 ? `| SST Withheld (${row.taxBreakdown.sstRate}%): -${pkr(row.taxBreakdown.sst)}` : ""} | Net Rec: {pkr(row.taxBreakdown.net)} {row.taxBreakdown.mode ? `[${row.taxBreakdown.mode}${row.taxBreakdown.instrumentNo ? ` #${row.taxBreakdown.instrumentNo}` : ""}]` : ""}
+                              Gross Settled: {pkr(row.taxBreakdown.gross)} {row.taxBreakdown.wht > 0 ? `| WHT (${row.taxBreakdown.whtRate}%): -${pkr(row.taxBreakdown.wht)}` : ""} {row.taxBreakdown.sst > 0 ? `| SST Withheld (${row.taxBreakdown.sstRate}%): -${pkr(row.taxBreakdown.sst)}` : ""} | Net Rec: {pkr(row.taxBreakdown.net)} {row.taxBreakdown.mode ? `[${row.taxBreakdown.mode}${row.taxBreakdown.instrumentNo ? ` #${row.taxBreakdown.instrumentNo}` : ""}]` : ""}
+                            </div>
+                          )}
+                          {row.taxBreakdown && row.taxBreakdown.kind === "tax_deduction" && (
+                            <div style={{ fontSize: 7.5, color: "#000000", marginTop: 1, lineHeight: 1.2 }}>
+                              {row.taxBreakdown.taxType} Withheld Against {row.taxBreakdown.parentRef} ({row.taxBreakdown.rate}%): {pkr(row.taxBreakdown.amount)}
                             </div>
                           )}
                           {row.taxBreakdown && row.taxBreakdown.kind === "direct_settlement" && (
@@ -563,7 +568,7 @@ export function ClientStatementPrintModal({ client, dateFrom, dateTo, statementD
                   <tr>
                     <td colSpan={5} style={{ border: "1px solid #000000", padding: "5px 6px", textAlign: "right", fontWeight: 700 }}>PERIOD TOTALS</td>
                     <td style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "right", fontWeight: 700 }}>{pkr(statementData.totalInvoiced)}</td>
-                    <td style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "right", fontWeight: 700 }}>{pkr(statementData.totalReceived)}</td>
+                    <td style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "right", fontWeight: 700 }}>{pkr(statementData.totalCredits !== undefined ? statementData.totalCredits : statementData.totalReceived)}</td>
                     <td style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "right", fontWeight: 700 }}>{pkr(statementData.closingBalance)}</td>
                   </tr>
                   <tr>
@@ -637,6 +642,7 @@ export default function ClientStatementView({
   useEffect(() => {
     if (selectedClientId) {
       setActiveClientId(selectedClientId);
+      setSelectedProjectId("all");
     }
   }, [selectedClientId]);
 
@@ -667,7 +673,7 @@ export default function ClientStatementView({
   // Compute transactions & opening balance from posted journal entries / transactions
   const statementData = useMemo(() => {
     if (!selectedClient) {
-      return { openingBalance: 0, rows: [], totalInvoiced: 0, totalReceived: 0, creditNotes: 0, closingBalance: 0 };
+      return { openingBalance: 0, openingRef: "OB-000", openingLabel: "Opening Balance", rows: [], totalInvoiced: 0, totalReceived: 0, totalTaxDeducted: 0, totalCredits: 0, creditNotes: 0, closingBalance: 0 };
     }
 
     const clientNameNorm = (selectedClient.name || "").toLowerCase();
@@ -687,17 +693,30 @@ export default function ClientStatementView({
       return item.projectId === selectedProjectId;
     };
 
-    // 1. Calculate Opening Balance from posted transactions BEFORE dateFrom
-    let opening = Number(selectedClient.openingBalance) || 0;
+    // 1. Calculate Opening Balance (handles both Client Opening Balance and Project-Specific Opening Balance)
+    const selectedProjObj = selectedProjectId !== "all" ? clientProjects.find(p => p.id === selectedProjectId) : null;
+    const clientOp = Number(selectedClient.openingBalance) || 0;
+    const projectsOpTotal = clientProjects.reduce((s, p) => s + (Number(p.openingBalance) || 0), 0);
 
-    // Prior Invoices
+    let opening = selectedProjectId !== "all"
+      ? (Number(selectedProjObj?.openingBalance) || 0)
+      : (clientOp + projectsOpTotal);
+
+    const openingRef = selectedProjObj ? `OB-${selectedProjObj.projectCode || "PRJ"}` : "OB-000";
+    const openingLabel = selectedProjObj
+      ? `${selectedProjObj.name} — Project Opening Balance`
+      : projectsOpTotal > 0
+      ? `Opening Balance (Client: PKR ${clientOp.toLocaleString("en-US")} + Projects: PKR ${projectsOpTotal.toLocaleString("en-US")})`
+      : "Opening Balance Brought Forward";
+
+    // Prior Invoices before dateFrom
     const priorInvoices = invoices.filter(i => isClientMatch(i) && isProjectMatch(i) && i.issueDate < dateFrom);
     priorInvoices.forEach(inv => {
       opening += Number(inv.totalAmount || inv.amount) || 0;
     });
 
-    // Prior Receipts / Vouchers / Direct Settlements
-    const priorVouchers = vouchers.filter(v => isClientMatch(v) && isProjectMatch(v) && v.date < dateFrom && (v.type === "RV" || v.type === "CV"));
+    // Prior Receipts / Vouchers / Direct Settlements before dateFrom
+    const priorVouchers = vouchers.filter(v => isClientMatch(v) && isProjectMatch(v) && v.date < dateFrom && (v.type === "RV" || v.type === "CV") && !(v.isPdc && v.pdcStatus === "Bounced"));
     priorVouchers.forEach(v => {
       opening -= Number(v.amount) || 0;
     });
@@ -738,12 +757,25 @@ export default function ClientStatementView({
       });
     });
 
-    // Add Receipts / Vouchers / Direct Settlements
+    // Add Receipts / Vouchers / Direct Settlements (splitting Receipt Amount & Tax Deduction into separate lines!)
     vouchers.filter(v => isClientMatch(v) && isProjectMatch(v) && v.date >= dateFrom && v.date <= dateTo && (v.type === "RV" || v.type === "PV" || v.type === "CV")).forEach(v => {
       const proj = projects.find(p => p.id === v.projectId);
       const isPdcBounced = v.isPdc && v.pdcStatus === "Bounced";
       const isCredit = (v.type === "RV" || v.type === "CV") && !isPdcBounced;
-      
+
+      const grossSettled = Number(v.amount) || 0;
+      const wht = Number(v.whtAmount) || 0;
+      const whtRate = Number(v.whtRate) || 0;
+      const sst = Number(v.sstAmount !== undefined ? v.sstAmount : v.sstWithheld) || 0;
+      const sstRate = Number(v.sstRate) || 0;
+      const netPaid = (v.netAmount !== undefined && v.netAmount !== null && v.netAmount !== "")
+        ? Number(v.netAmount)
+        : Math.max(0, grossSettled - wht - sst);
+
+      const modeLabel = v.via === "Cash" ? "Cash" : (v.paymentMode || (v.isPdc ? "Post-Dated Cheque" : "Bank"));
+      const instNo = v.instrumentNo || v.chequeNo;
+      const refNo = v.voucherNo || ("VCH-" + v.id.toUpperCase());
+
       let typeLabel = "Receipt";
       if (v.type === "CV") typeLabel = "Direct Settlement";
       else if (v.isPdc) typeLabel = isPdcBounced ? "Cheque Bounced" : "PDC Cheque";
@@ -751,63 +783,128 @@ export default function ClientStatementView({
 
       let defaultDesc = v.description || "Client Transaction";
       if (v.type === "CV") {
-        defaultDesc = `Direct Settlement to Vendor (${v.category || v.vendor || "Vendor"})${v.instrumentNo ? ` [${v.paymentMode || 'Inst'} #${v.instrumentNo}]` : ""}`;
+        defaultDesc = `Direct Settlement to Vendor (${v.category || v.vendor || "Vendor"})${instNo ? ` [${v.paymentMode || 'Inst'} #${instNo}]` : ""}`;
       } else if (v.isPdc) {
-        defaultDesc = isPdcBounced 
+        defaultDesc = isPdcBounced
           ? `PDC Dishonored/Bounced [Chq #${v.chequeNo || 'PDC'}] (${v.bounceReason || 'Return'})`
           : `Post-Dated Cheque In-Hand [Chq #${v.chequeNo || 'PDC'}] (Due: ${v.chequeDate || v.date})`;
       }
 
-      // Compute Receipt Tax Details
-      const netPaid = Number(v.amount) || 0;
-      const wht = Number(v.whtAmount) || 0;
-      const whtRate = Number(v.whtRate) || 0;
-      const sst = Number(v.sstWithheld) || 0;
-      const sstRate = Number(v.sstRate) || 0;
-      const grossSettled = Number(v.grossAmount) || (netPaid + wht + sst);
+      if (v.type === "RV" && !isPdcBounced && (wht > 0 || sst > 0)) {
+        // Line 1: Net Amount Received in Bank / Cash
+        rawRows.push({
+          id: `${v.id}-net`,
+          date: v.date,
+          ref: refNo,
+          type: typeLabel,
+          project: `${proj ? proj.name + " — " : ""}Amount Received (${modeLabel}${instNo ? ` #${instNo}` : ""})`,
+          debit: 0,
+          credit: netPaid,
+          status: v.isPdc ? (v.pdcStatus || "In-Hand") : (v.status || "Posted"),
+          taxBreakdown: {
+            kind: "receipt_net",
+            gross: grossSettled,
+            wht,
+            whtRate,
+            sst,
+            sstRate,
+            net: netPaid,
+            mode: modeLabel,
+            instrumentNo: instNo,
+            bank: v.bankAccount || v.bank
+          },
+          raw: v
+        });
 
-      let taxBreakdown = null;
-      if (v.type === "RV") {
-        taxBreakdown = {
-          kind: "receipt",
-          gross: grossSettled,
-          wht,
-          whtRate,
-          sst,
-          sstRate,
-          net: netPaid,
-          mode: v.paymentMode || (v.isPdc ? "Post-Dated Cheque" : "Cross Cheque / Bank"),
-          instrumentNo: v.instrumentNo || v.chequeNo,
-          bank: v.bankAccount || v.bank
-        };
-      } else if (v.type === "CV") {
-        taxBreakdown = {
-          kind: "direct_settlement",
-          amount: netPaid,
-          mode: v.paymentMode || "Direct Settlement",
-          instrumentNo: v.instrumentNo || v.chequeNo,
-          vendor: v.category || v.vendor || v.party || "Vendor"
-        };
+        // Line 2: WHT Tax Deducted at Source (separate line)
+        if (wht > 0) {
+          rawRows.push({
+            id: `${v.id}-wht`,
+            date: v.date,
+            ref: `${refNo}-WHT`,
+            type: "Tax Deduction (WHT)",
+            project: `${proj ? proj.name + " — " : ""}Income Tax Deducted at Source — WHT${whtRate ? ` (${whtRate}%)` : ""}`,
+            debit: 0,
+            credit: wht,
+            status: "Tax Withheld",
+            taxBreakdown: {
+              kind: "tax_deduction",
+              taxType: "WHT",
+              rate: whtRate,
+              amount: wht,
+              parentRef: refNo
+            },
+            raw: v
+          });
+        }
+
+        // Line 3: SRB SST Tax Deducted at Source (separate line)
+        if (sst > 0) {
+          rawRows.push({
+            id: `${v.id}-sst`,
+            date: v.date,
+            ref: `${refNo}-SST`,
+            type: "Tax Deduction (SST)",
+            project: `${proj ? proj.name + " — " : ""}Sales Tax Withheld at Source — SRB SST${sstRate ? ` (${sstRate}%)` : ""}`,
+            debit: 0,
+            credit: sst,
+            status: "Tax Withheld",
+            taxBreakdown: {
+              kind: "tax_deduction",
+              taxType: "SST",
+              rate: sstRate,
+              amount: sst,
+              parentRef: refNo
+            },
+            raw: v
+          });
+        }
+      } else {
+        let taxBreakdown = null;
+        if (v.type === "RV") {
+          taxBreakdown = {
+            kind: "receipt",
+            gross: grossSettled,
+            wht: 0,
+            whtRate: 0,
+            sst: 0,
+            sstRate: 0,
+            net: grossSettled,
+            mode: modeLabel,
+            instrumentNo: instNo,
+            bank: v.bankAccount || v.bank
+          };
+        } else if (v.type === "CV") {
+          taxBreakdown = {
+            kind: "direct_settlement",
+            amount: grossSettled,
+            mode: v.paymentMode || "Direct Settlement",
+            instrumentNo: instNo,
+            vendor: v.category || v.vendor || v.party || "Vendor"
+          };
+        }
+
+        rawRows.push({
+          id: v.id,
+          date: v.date,
+          ref: refNo,
+          type: typeLabel,
+          project: proj ? `${proj.name} (${defaultDesc})` : defaultDesc,
+          debit: isCredit ? 0 : grossSettled,
+          credit: isCredit ? grossSettled : 0,
+          status: v.isPdc ? (v.pdcStatus || "In-Hand") : (v.status || "Posted"),
+          taxBreakdown,
+          raw: v
+        });
       }
-
-      rawRows.push({
-        id: v.id,
-        date: v.date,
-        ref: v.voucherNo || ("VCH-" + v.id.toUpperCase()),
-        type: typeLabel,
-        project: proj ? proj.name : defaultDesc,
-        debit: isCredit ? 0 : Number(v.amount) || 0,
-        credit: isCredit ? Number(v.amount) || 0 : 0,
-        status: v.isPdc ? (v.pdcStatus || "In-Hand") : (v.status || "Posted"),
-        taxBreakdown,
-        raw: v
-      });
     });
 
     // Filter by Tx Type if set
     let filteredRows = rawRows;
-    if (selectedTxType !== "all") {
-      filteredRows = rawRows.filter(r => r.type.toLowerCase() === selectedTxType.toLowerCase());
+    if (selectedTxType === "invoice") {
+      filteredRows = rawRows.filter(r => r.type === "Invoice");
+    } else if (selectedTxType === "receipt") {
+      filteredRows = rawRows.filter(r => r.type === "Receipt" || r.type === "PDC Cheque" || r.type === "Direct Settlement" || r.type.startsWith("Tax Deduction"));
     }
 
     // Sort chronologically
@@ -838,19 +935,32 @@ export default function ClientStatementView({
         totalReceived += r.credit;
         if (r.taxBreakdown && r.taxBreakdown.kind === "receipt") {
           totalGrossReceived += (r.taxBreakdown.gross || r.credit);
-          totalWhtWithheld += (r.taxBreakdown.wht || 0);
-          totalSstWithheld += (r.taxBreakdown.sst || 0);
+        } else if (r.taxBreakdown && r.taxBreakdown.kind === "receipt_net") {
+          totalGrossReceived += (r.taxBreakdown.gross || r.credit);
         }
+      }
+      if (r.type === "Tax Deduction (WHT)") {
+        totalWhtWithheld += r.credit;
+      }
+      if (r.type === "Tax Deduction (SST)") {
+        totalSstWithheld += r.credit;
       }
       if (r.type === "Credit Note") creditNotes += r.credit;
       return { ...r, runningBalance: running };
     });
 
+    const totalTaxDeducted = totalWhtWithheld + totalSstWithheld;
+    const totalCredits = totalReceived + totalTaxDeducted;
+
     return {
       openingBalance: opening,
+      openingRef,
+      openingLabel,
       rows: rowsWithBalance,
       totalInvoiced,
       totalReceived,
+      totalTaxDeducted,
+      totalCredits,
       creditNotes,
       closingBalance: running,
       totalGrossInvoiced,
@@ -859,21 +969,23 @@ export default function ClientStatementView({
       totalWhtWithheld,
       totalSstWithheld
     };
-  }, [selectedClient, selectedProjectId, selectedTxType, dateFrom, dateTo, invoices, vouchers, projects]);
+  }, [selectedClient, clientProjects, selectedProjectId, selectedTxType, dateFrom, dateTo, invoices, vouchers, projects]);
 
-  // Project Summary Breakdown
+  // Project Summary Breakdown (includes Project Opening Balance!)
   const projectSummary = useMemo(() => {
     if (!selectedClient) return [];
     return clientProjects.map(p => {
+      const projOp = Number(p.openingBalance) || 0;
       const projInvoices = invoices.filter(i => i.projectId === p.id);
-      const projVouchers = vouchers.filter(v => v.projectId === p.id && v.type === "RV");
-      const invoiced = projInvoices.reduce((s, i) => s + (Number(i.totalAmount || i.amount) || 0), 0);
+      const projVouchers = vouchers.filter(v => v.projectId === p.id && (v.type === "RV" || v.type === "CV") && !(v.isPdc && v.pdcStatus === "Bounced"));
+      const invoiced = projOp + projInvoices.reduce((s, i) => s + (Number(i.totalAmount || i.amount) || 0), 0);
       const received = projVouchers.reduce((s, v) => s + (Number(v.amount) || 0), 0);
       return {
         id: p.id,
         name: p.name,
         type: p.type,
-        value: Number(p.budget || p.contractValue) || 0,
+        value: Number(p.budget || p.contractValue) || projOp || 0,
+        openingBalance: projOp,
         invoiced,
         received,
         outstanding: invoiced - received
@@ -907,7 +1019,7 @@ export default function ClientStatementView({
     return { current, days30, days60, days90, days90Plus, total: current + days30 + days60 + days90 + days90Plus };
   }, [selectedClient, invoices]);
 
-  const pkr = (val) => "PKR " + (Number(val) || 0).toLocaleString("en-PK", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  const pkr = (val) => "PKR " + (Number(val) || 0).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 
   const handleExportExcel = () => {
     if (!selectedClient) return;
@@ -925,7 +1037,7 @@ export default function ClientStatementView({
         <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr 1fr", gap: 12 }}>
           <div>
             <label className="form-label">Select Client *</label>
-            <select className="form-select" value={activeClientId} onChange={e => { setActiveClientId(e.target.value); if (onSelectClient) onSelectClient(e.target.value); }}>
+            <select className="form-select" value={activeClientId} onChange={e => { setActiveClientId(e.target.value); setSelectedProjectId("all"); if (onSelectClient) onSelectClient(e.target.value); }}>
               {clients.map(c => (
                 <option key={c.id} value={c.id}>
                   {c.clientCode || c.id} — {c.name} ({c.companyName || "No Company"})
@@ -1026,13 +1138,13 @@ export default function ClientStatementView({
               </div>
 
               <div style={{ background: "var(--bg)", padding: 12, borderRadius: 8, border: "1px solid var(--rule)" }}>
-                <div style={{ fontSize: 11, color: "var(--ink-muted)", fontWeight: 600 }}>Total Received (-)</div>
+                <div style={{ fontSize: 11, color: "var(--ink-muted)", fontWeight: 600 }}>Cash / Bank Received (-)</div>
                 <div style={{ fontSize: 15, fontWeight: 800, color: "#059669", marginTop: 4 }}>{pkr(statementData.totalReceived)}</div>
               </div>
 
               <div style={{ background: "var(--bg)", padding: 12, borderRadius: 8, border: "1px solid var(--rule)" }}>
-                <div style={{ fontSize: 11, color: "var(--ink-muted)", fontWeight: 600 }}>Credit Notes (-)</div>
-                <div style={{ fontSize: 15, fontWeight: 800, color: "#D97706", marginTop: 4 }}>{pkr(statementData.creditNotes)}</div>
+                <div style={{ fontSize: 11, color: "var(--ink-muted)", fontWeight: 600 }}>Tax Deducted (WHT/SST)</div>
+                <div style={{ fontSize: 15, fontWeight: 800, color: "#D97706", marginTop: 4 }}>{pkr(statementData.totalTaxDeducted || 0)}</div>
               </div>
 
               <div style={{ background: "rgba(2, 132, 199, 0.08)", padding: 12, borderRadius: 8, border: "1.5px solid #0284C7" }}>
@@ -1132,9 +1244,9 @@ export default function ClientStatementView({
               <tbody>
                 <tr style={{ background: "var(--bg)", fontWeight: 600 }}>
                   <td>{dateFrom}</td>
-                  <td>OB-000</td>
+                  <td><span style={{ fontFamily: "monospace", fontWeight: 700 }}>{statementData.openingRef || "OB-000"}</span></td>
                   <td>Opening Balance</td>
-                  <td>—</td>
+                  <td>{statementData.openingLabel || "—"}</td>
                   <td style={{ textAlign: "right" }}>—</td>
                   <td style={{ textAlign: "right" }}>—</td>
                   <td style={{ textAlign: "right", fontWeight: 800 }}>{pkr(statementData.openingBalance)}</td>
@@ -1154,8 +1266,8 @@ export default function ClientStatementView({
                       <td>
                         <span style={{
                           padding: "2px 8px", borderRadius: 12, fontSize: 11, fontWeight: 700,
-                          background: row.type === "Invoice" ? "rgba(2, 132, 199, 0.1)" : "rgba(5, 150, 105, 0.1)",
-                          color: row.type === "Invoice" ? "#0284C7" : "#059669"
+                          background: row.type === "Invoice" ? "rgba(2, 132, 199, 0.1)" : row.type.startsWith("Tax Deduction") ? "rgba(217, 119, 6, 0.12)" : "rgba(5, 150, 105, 0.1)",
+                          color: row.type === "Invoice" ? "#0284C7" : row.type.startsWith("Tax Deduction") ? "#B45309" : "#059669"
                         }}>
                           {row.type}
                         </span>
@@ -1184,19 +1296,19 @@ export default function ClientStatementView({
                                 </span>
                               </>
                             )}
-                            {row.taxBreakdown.kind === "receipt" && (
+                            {(row.taxBreakdown.kind === "receipt" || row.taxBreakdown.kind === "receipt_net") && (
                               <>
                                 <span style={{ fontSize: 10.5, padding: "2px 6px", borderRadius: 4, background: "rgba(100, 116, 139, 0.12)", color: "#475569", fontWeight: 600 }}>
                                   Gross Settled: {pkr(row.taxBreakdown.gross)}
                                 </span>
                                 {row.taxBreakdown.wht > 0 && (
                                   <span style={{ fontSize: 10.5, padding: "2px 6px", borderRadius: 4, background: "rgba(217, 119, 6, 0.12)", color: "#B45309", fontWeight: 700 }}>
-                                    - Less WHT ({row.taxBreakdown.whtRate}%): {pkr(row.taxBreakdown.wht)}
+                                    - WHT ({row.taxBreakdown.whtRate}%): {pkr(row.taxBreakdown.wht)} (Shown on separate line)
                                   </span>
                                 )}
                                 {row.taxBreakdown.sst > 0 && (
                                   <span style={{ fontSize: 10.5, padding: "2px 6px", borderRadius: 4, background: "rgba(139, 92, 246, 0.12)", color: "#7C3AED", fontWeight: 700 }}>
-                                    - Less SST ({row.taxBreakdown.sstRate}%): {pkr(row.taxBreakdown.sst)}
+                                    - SST ({row.taxBreakdown.sstRate}%): {pkr(row.taxBreakdown.sst)} (Shown on separate line)
                                   </span>
                                 )}
                                 <span style={{ fontSize: 10.5, padding: "2px 6px", borderRadius: 4, background: "rgba(5, 150, 105, 0.12)", color: "#059669", fontWeight: 800 }}>
@@ -1207,6 +1319,16 @@ export default function ClientStatementView({
                                     {row.taxBreakdown.mode}{row.taxBreakdown.instrumentNo ? ` #${row.taxBreakdown.instrumentNo}` : ""}
                                   </span>
                                 )}
+                              </>
+                            )}
+                            {row.taxBreakdown.kind === "tax_deduction" && (
+                              <>
+                                <span style={{ fontSize: 10.5, padding: "2px 6px", borderRadius: 4, background: "rgba(217, 119, 6, 0.14)", color: "#B45309", fontWeight: 700 }}>
+                                  {row.taxBreakdown.taxType} Withheld ({row.taxBreakdown.rate}%): {pkr(row.taxBreakdown.amount)}
+                                </span>
+                                <span style={{ fontSize: 10, padding: "2px 6px", borderRadius: 4, background: "var(--bg)", border: "1px solid var(--rule)", color: "var(--ink-muted)" }}>
+                                  Against Voucher {row.taxBreakdown.parentRef}
+                                </span>
                               </>
                             )}
                             {row.taxBreakdown.kind === "direct_settlement" && (
@@ -1225,7 +1347,7 @@ export default function ClientStatementView({
                       <td style={{ textAlign: "right", color: row.debit > 0 ? "#0284C7" : "inherit", fontWeight: row.debit > 0 ? 700 : 400 }}>
                         {row.debit > 0 ? pkr(row.debit) : "—"}
                       </td>
-                      <td style={{ textAlign: "right", color: row.credit > 0 ? "#059669" : "inherit", fontWeight: row.credit > 0 ? 700 : 400 }}>
+                      <td style={{ textAlign: "right", color: row.credit > 0 ? (row.type.startsWith("Tax Deduction") ? "#B45309" : "#059669") : "inherit", fontWeight: row.credit > 0 ? 700 : 400 }}>
                         {row.credit > 0 ? pkr(row.credit) : "—"}
                       </td>
                       <td style={{ textAlign: "right", fontWeight: 800, color: row.runningBalance > 0 ? "#0284C7" : "#059669" }}>
@@ -1239,7 +1361,7 @@ export default function ClientStatementView({
                 <tr style={{ background: "var(--table-header-bg)", fontWeight: 800 }}>
                   <td colSpan="4">Closing Outstanding Balance</td>
                   <td style={{ textAlign: "right", color: "#0284C7" }}>{pkr(statementData.totalInvoiced)}</td>
-                  <td style={{ textAlign: "right", color: "#059669" }}>{pkr(statementData.totalReceived)}</td>
+                  <td style={{ textAlign: "right", color: "#059669" }}>{pkr(statementData.totalCredits !== undefined ? statementData.totalCredits : statementData.totalReceived)}</td>
                   <td style={{ textAlign: "right", fontSize: 15, color: "#0284C7" }}>{pkr(statementData.closingBalance)}</td>
                 </tr>
               </tfoot>

@@ -23,7 +23,7 @@ export default function ProjectFinancialDashboard({
   const openingBalance = Number(project.openingBalance) || 0;
   const totalInvoiced = projectInvoices.reduce((s, i) => s + (Number(i.totalAmount || i.amount) || 0), 0);
   const totalBilled = openingBalance + totalInvoiced;
-  const totalReceived = projectReceipts.reduce((s, v) => s + (Number(v.netAmount !== undefined ? v.netAmount : v.amount) || 0), 0);
+  const totalReceived = projectReceipts.reduce((s, v) => s + (Number(v.amount) || 0), 0);
   const clientOutstanding = totalBilled - totalReceived;
 
   const totalExpense = projectExpenses.reduce((s, e) => s + (Number(e.amount) || 0), 0);
