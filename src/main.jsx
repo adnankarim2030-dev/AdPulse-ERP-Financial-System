@@ -3,6 +3,30 @@ import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import './index.css'
 
+// Prevent mouse wheel scrolling or arrow keys from silently changing focused <input type="number"> values by 1-4 rupees
+if (typeof document !== "undefined") {
+  document.addEventListener(
+    "wheel",
+    () => {
+      const active = document.activeElement;
+      if (active && active.tagName === "INPUT" && active.type === "number") {
+        active.blur();
+      }
+    },
+    { passive: true, capture: true }
+  );
+  document.addEventListener(
+    "keydown",
+    (e) => {
+      const active = document.activeElement;
+      if (active && active.tagName === "INPUT" && active.type === "number" && (e.key === "ArrowUp" || e.key === "ArrowDown")) {
+        e.preventDefault();
+      }
+    },
+    { capture: true }
+  );
+}
+
 // Force immediate cache-purge of all stale legacy local data
 const CURRENT_BUILD_VERSION = "v21_ibrahim_anjarwala_reconciled";
 try {

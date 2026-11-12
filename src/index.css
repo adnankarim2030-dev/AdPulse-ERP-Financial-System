@@ -1296,3 +1296,13 @@ tr:hover td {
     padding: 14px !important;
   }
 }
+
+/* Disable browser number input spinner arrows to prevent accidental 1-4 rupee changes */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
