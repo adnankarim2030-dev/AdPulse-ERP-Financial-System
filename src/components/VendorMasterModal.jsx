@@ -207,7 +207,12 @@ export default function VendorMasterModal({ vendor, vendors, onClose, onSave }) 
 
                 <div className="field">
                   <label className="field-label" style={{ fontWeight: 700, fontSize: 12.5, color: "#334155" }}>Opening Payable Balance (PKR)</label>
-                  <input type="number" className="input" value={formData.openingBalance} onChange={e => handleChange("openingBalance", e.target.value)} disabled={Boolean(vendor)} placeholder="0.00" style={{ padding: "9px 12px", fontSize: 13, borderRadius: 8 }} />
+                  <input type="number" className="input" value={formData.openingBalance} onChange={e => handleChange("openingBalance", e.target.value)} placeholder="0.00" style={{ padding: "9px 12px", fontSize: 13, borderRadius: 8 }} />
+                  {Number(formData.openingBalance) > 0 && (
+                    <div style={{ fontSize: 11.5, color: "#059669", fontWeight: 700, marginTop: 3 }}>
+                      PKR {Number(formData.openingBalance).toLocaleString("en-US")}
+                    </div>
+                  )}
                 </div>
 
                 <div className="field" style={{ gridColumn: "span 2" }}>
