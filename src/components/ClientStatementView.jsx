@@ -741,7 +741,8 @@ export default function ClientStatementView({
     });
 
     // Prior Receipts / Vouchers / Direct Settlements before dateFrom
-    const priorVouchers = vouchers.filter(v => isClientMatch(v) && isProjectMatch(v) && v.date < dateFrom && (v.type === "RV" || v.type === "CV") && !(v.isPdc && v.pdcStatus === "Bounced"));
+    // IMPORTANT: Unpaid / Uncleared PDC cheques (pdcStatus !== "Cleared") MUST NOT deduct from Client Balance!
+    const priorVouchers = vouchers.filter(v => isClientMatch(v) && isProjectMatch(v) && v.date < dateFrom && (v.type === "RV" || v.type === "CV") && !(v.isPdc && v.pdcStatus !== "Cleared"));
     priorVouchers.forEach(v => {
       opening -= Number(v.amount) || 0;
     });
@@ -785,8 +786,13 @@ export default function ClientStatementView({
     // Add Receipts / Vouchers / Direct Settlements (splitting Receipt Amount & Tax Deduction into separate lines!)
     vouchers.filter(v => isClientMatch(v) && isProjectMatch(v) && v.date >= dateFrom && v.date <= dateTo && (v.type === "RV" || v.type === "PV" || v.type === "CV")).forEach(v => {
       const proj = projects.find(p => p.id === v.projectId);
-      const isPdcBounced = v.isPdc && v.pdcStatus === "Bounced";
-      const isCredit = (v.type === "RV" || v.type === "CV") && !isPdcBounced;
+      const isPdcBounced = Boolean(v.isPdc && v.pdcStatus === "Bounced");
+      const isPdcCleared = Boolean(v.isPdc && v.pdcStatus === "Cleared");
+      const isPdcPending = Boolean(v.isPdc && !isPdcCleared && !isPdcBounced);
+      const isPdcUnsettled = isPdcPending || isPdcBounced;
+      // Only deduct from Client Receivable if NOT a PDC, or if the PDC has been Cleared/Paid!
+      const isSettledCredit = (v.type === "RV" || v.type === "CV") && !isPdcUnsettled;
+      const isClientDebit = v.type === "PV" && !isPdcUnsettled;
 
       const grossSettled = Number(v.amount) || 0;
       const wht = Number(v.whtAmount) || 0;
@@ -803,7 +809,7 @@ export default function ClientStatementView({
 
       let typeLabel = "Receipt";
       if (v.type === "CV") typeLabel = "Direct Settlement";
-      else if (v.isPdc) typeLabel = isPdcBounced ? "Cheque Bounced" : "PDC Cheque";
+      else if (v.isPdc) typeLabel = isPdcBounced ? "Cheque Bounced" : (isPdcCleared ? "PDC Cleared" : "PDC Pending");
       else if (v.type === "PV") typeLabel = "Payment";
 
       let defaultDesc = v.description || "Client Transaction";
@@ -811,21 +817,23 @@ export default function ClientStatementView({
         defaultDesc = `Direct Settlement to Vendor (${v.category || v.vendor || "Vendor"})${instNo ? ` [${v.paymentMode || 'Inst'} #${instNo}]` : ""}`;
       } else if (v.isPdc) {
         defaultDesc = isPdcBounced
-          ? `PDC Dishonored/Bounced [Chq #${v.chequeNo || 'PDC'}] (${v.bounceReason || 'Return'})`
-          : `Post-Dated Cheque In-Hand [Chq #${v.chequeNo || 'PDC'}] (Due: ${v.chequeDate || v.date})`;
+          ? `PDC Dishonored/Bounced [Chq #${v.chequeNo || 'PDC'}] — PKR ${grossSettled.toLocaleString("en-US")} (${v.bounceReason || 'Return'} — Not Deducted)`
+          : isPdcCleared
+          ? `Post-Dated Cheque Cleared/Paid [Chq #${v.chequeNo || 'PDC'}]${v.clearedDate ? ` (Cleared: ${v.clearedDate})` : ""}`
+          : `Post-Dated Cheque In-Hand [Chq #${v.chequeNo || 'PDC'}] (Due: ${v.chequeDate || v.date}) — PKR ${grossSettled.toLocaleString("en-US")} (Pending Clearance — Not Deducted Yet)`;
       }
 
-      if (v.type === "RV" && !isPdcBounced && (wht > 0 || sst > 0)) {
+      if (v.type === "RV" && isSettledCredit && (wht > 0 || sst > 0)) {
         // Line 1: Net Amount Received in Bank / Cash
         rawRows.push({
           id: `${v.id}-net`,
-          date: v.date,
+          date: isPdcCleared && v.clearedDate ? v.clearedDate : v.date,
           ref: refNo,
           type: typeLabel,
           project: `${proj ? proj.name + " — " : ""}Amount Received (${modeLabel}${instNo ? ` #${instNo}` : ""})`,
           debit: 0,
           credit: netPaid,
-          status: v.isPdc ? (v.pdcStatus || "In-Hand") : (v.status || "Posted"),
+          status: v.isPdc ? (v.pdcStatus || "Cleared") : (v.status || "Posted"),
           taxBreakdown: {
             kind: "receipt_net",
             gross: grossSettled,
@@ -845,7 +853,7 @@ export default function ClientStatementView({
         if (wht > 0) {
           rawRows.push({
             id: `${v.id}-wht`,
-            date: v.date,
+            date: isPdcCleared && v.clearedDate ? v.clearedDate : v.date,
             ref: `${refNo}-WHT`,
             type: "Tax Deduction (WHT)",
             project: `${proj ? proj.name + " — " : ""}Income Tax Deducted at Source — WHT${whtRate ? ` (${whtRate}%)` : ""}`,
@@ -867,7 +875,7 @@ export default function ClientStatementView({
         if (sst > 0) {
           rawRows.push({
             id: `${v.id}-sst`,
-            date: v.date,
+            date: isPdcCleared && v.clearedDate ? v.clearedDate : v.date,
             ref: `${refNo}-SST`,
             type: "Tax Deduction (SST)",
             project: `${proj ? proj.name + " — " : ""}Sales Tax Withheld at Source — SRB SST${sstRate ? ` (${sstRate}%)` : ""}`,
@@ -886,7 +894,7 @@ export default function ClientStatementView({
         }
       } else {
         let taxBreakdown = null;
-        if (v.type === "RV") {
+        if (v.type === "RV" && isSettledCredit) {
           taxBreakdown = {
             kind: "receipt",
             gross: grossSettled,
@@ -911,13 +919,15 @@ export default function ClientStatementView({
 
         rawRows.push({
           id: v.id,
-          date: v.date,
+          date: isPdcCleared && v.clearedDate ? v.clearedDate : v.date,
           ref: refNo,
           type: typeLabel,
           project: proj ? `${proj.name} (${defaultDesc})` : defaultDesc,
-          debit: isCredit ? 0 : grossSettled,
-          credit: isCredit ? grossSettled : 0,
-          status: v.isPdc ? (v.pdcStatus || "In-Hand") : (v.status || "Posted"),
+          debit: isClientDebit ? grossSettled : 0,
+          credit: isSettledCredit ? grossSettled : 0,
+          status: v.isPdc ? (isPdcPending ? "Pending Clearance" : v.pdcStatus) : (v.status || "Posted"),
+          isPdcPending,
+          pdcFaceAmount: v.isPdc ? grossSettled : 0,
           taxBreakdown,
           raw: v
         });
@@ -929,7 +939,7 @@ export default function ClientStatementView({
     if (selectedTxType === "invoice") {
       filteredRows = rawRows.filter(r => r.type === "Invoice");
     } else if (selectedTxType === "receipt") {
-      filteredRows = rawRows.filter(r => r.type === "Receipt" || r.type === "PDC Cheque" || r.type === "Direct Settlement" || r.type.startsWith("Tax Deduction"));
+      filteredRows = rawRows.filter(r => r.type === "Receipt" || r.type === "PDC Cheque" || r.type === "PDC Cleared" || r.type === "PDC Pending" || r.type === "Direct Settlement" || r.type.startsWith("Tax Deduction"));
     }
 
     // Sort chronologically
@@ -956,7 +966,7 @@ export default function ClientStatementView({
           totalSstInvoiced += (r.taxBreakdown.sst || 0);
         }
       }
-      if (r.type === "Receipt" || r.type === "PDC Cheque" || r.type === "Direct Settlement") {
+      if ((r.type === "Receipt" || r.type === "PDC Cheque" || r.type === "PDC Cleared" || r.type === "Direct Settlement") && r.credit > 0) {
         totalReceived += r.credit;
         if (r.taxBreakdown && r.taxBreakdown.kind === "receipt") {
           totalGrossReceived += (r.taxBreakdown.gross || r.credit);
@@ -1291,8 +1301,8 @@ export default function ClientStatementView({
                       <td>
                         <span style={{
                           padding: "2px 8px", borderRadius: 12, fontSize: 11, fontWeight: 700,
-                          background: row.type === "Invoice" ? "rgba(2, 132, 199, 0.1)" : row.type.startsWith("Tax Deduction") ? "rgba(217, 119, 6, 0.12)" : "rgba(5, 150, 105, 0.1)",
-                          color: row.type === "Invoice" ? "#0284C7" : row.type.startsWith("Tax Deduction") ? "#B45309" : "#059669"
+                          background: row.type === "Invoice" ? "rgba(2, 132, 199, 0.1)" : row.type === "PDC Pending" ? "rgba(124, 58, 237, 0.12)" : row.type === "Cheque Bounced" ? "rgba(220, 38, 38, 0.12)" : row.type.startsWith("Tax Deduction") ? "rgba(217, 119, 6, 0.12)" : "rgba(5, 150, 105, 0.1)",
+                          color: row.type === "Invoice" ? "#0284C7" : row.type === "PDC Pending" ? "#7C3AED" : row.type === "Cheque Bounced" ? "#DC2626" : row.type.startsWith("Tax Deduction") ? "#B45309" : "#059669"
                         }}>
                           {row.type}
                         </span>

@@ -1978,8 +1978,8 @@ export default function App() {
 
   const voucherCounters = useRef({ JV: 0, PV: 0, RV: 0, SV: 0 });
 
-  const postEntry = (date, description, lines, ref) => {
-    setJournal(j => [...j, { id: uid(), date, description, reference: ref, lines }].sort((a, b) => new Date(a.date) - new Date(b.date)));
+  const postEntry = (date, description, lines, ref, meta = {}) => {
+    setJournal(j => [...j, { id: uid(), date, description, reference: ref, lines, ...meta }].sort((a, b) => new Date(a.date) - new Date(b.date)));
   };
 
   /* derived: account balances */
@@ -2044,7 +2044,12 @@ export default function App() {
 
     const rows = [];
     let running = 0;
-    const sortedJournal = [...journal].sort((a, b) => new Date(a.date) - new Date(b.date));
+    const sortedJournal = [...journal].sort((a, b) => {
+      const aIsOb = (a.reference?.startsWith("OB-") || a.description?.toLowerCase().includes("opening balance")) ? 0 : 1;
+      const bIsOb = (b.reference?.startsWith("OB-") || b.description?.toLowerCase().includes("opening balance")) ? 0 : 1;
+      if (aIsOb !== bIsOb) return aIsOb - bIsOb;
+      return new Date(a.date || "2026-01-01") - new Date(b.date || "2026-01-01");
+    });
 
     sortedJournal.forEach(e => {
       e.lines.forEach(l => {
@@ -2215,8 +2220,8 @@ export default function App() {
     vouchers.forEach(v => {
       const pId = resolveProjId(v);
       if (pId && map[pId]) {
-        const isPdcBounced = v.isPdc && v.pdcStatus === "Bounced";
-        if ((v.type === "RV" || v.type === "CV") && !isPdcBounced) {
+        const isPdcUnsettled = Boolean(v.isPdc && v.pdcStatus !== "Cleared");
+        if ((v.type === "RV" || v.type === "CV") && !isPdcUnsettled) {
           const grossAmt = Number(v.amount) || 0;
           const wht = Number(v.whtAmount) || 0;
           const sst = Number(v.sstAmount !== undefined ? v.sstAmount : v.sstWithheld) || 0;
@@ -2224,7 +2229,7 @@ export default function App() {
           map[pId].received += grossAmt;
           map[pId].cashReceived += netAmt;
           map[pId].taxDeducted += (wht + sst);
-        } else if (v.type === "PV" && !isPdcBounced) {
+        } else if (v.type === "PV" && !isPdcUnsettled) {
           const vAmt = Number(v.amount) || Number(v.netAmount) || 0;
           map[pId].cost += vAmt;
         }
@@ -2968,10 +2973,11 @@ export default function App() {
       ];
     }
 
-    postEntry(date, projectId ? `[Project] ${description}` : description, journalLines, voucherNo);
+    const newVoucherId = uid();
+    postEntry(date, projectId ? `[Project] ${description}` : description, journalLines, voucherNo, { voucherId: newVoucherId });
     const isPdcVoucher = Boolean(isPdc || receiveMode === "pdc" || receiveMode === "PDC" || paymentMode === "Post-Dated Cheque (PDC)");
     const vRecord = {
-      id: uid(), voucherNo, type, projectId: projectId || null, date, party, description,
+      id: newVoucherId, voucherNo, type, projectId: projectId || null, date, party, description,
       amount: Number(amount),
       netAmount: netAmount !== undefined ? Number(netAmount) : Number(amount),
       clientId: clientId || null,
@@ -2991,10 +2997,11 @@ export default function App() {
     };
     setVouchers(v => [vRecord, ...v]);
 
-    // Automatically settle Client Invoice when an RV (Receipt Voucher) is created
-    if (type === "RV") {
+    // Automatically settle Client Invoice ONLY when a non-PDC RV (Cash/Bank Receipt) is created.
+    // For PDC cheques, invoice & client ledger settlement happens ONLY when the PDC is Cleared/Paid!
+    if (type === "RV" && !isPdcVoucher) {
       const clientName = (party || "").trim().toLowerCase();
-      const recAmt = Number(netAmount !== undefined ? netAmount : amount) || 0;
+      const recAmt = Number(amount !== undefined ? amount : netAmount) || 0;
       setInvoices(list => {
         let remaining = recAmt;
         return list.map(inv => {
@@ -3002,7 +3009,7 @@ export default function App() {
             const invTotal = Number(inv.totalAmount || inv.amount) || 0;
             if (remaining >= invTotal || Math.abs(remaining - invTotal) < 5) {
               remaining -= invTotal;
-              return { ...inv, paid: true, paidVia: via || (isPdcVoucher ? "PDC Cheque" : "Bank"), bankAccountId: bankAccountId || null };
+              return { ...inv, paid: true, paidVia: via || "Bank", bankAccountId: bankAccountId || null };
             }
           }
           return inv;
@@ -3219,12 +3226,29 @@ export default function App() {
   }
 
   function handleDeleteVoucher(v) {
-    if (window.confirm(`Are you sure you want to delete Voucher ${v.voucherNo || v.id} (${v.party} — ${pkr(v.amount)})?\n\nThis will also remove its associated entry from the General Ledger.`)) {
+    if (window.confirm(`Are you sure you want to delete Voucher ${v.voucherNo || v.id} (${v.party} — ${pkr(v.amount)})?\n\nThis will also remove all associated General Ledger, Bank Statement & PDC Clearance entries.`)) {
+      const vRef = v.voucherNo || v.id;
+      const shortId = v.id ? v.id.slice(0, 6) : "";
+      const refsToRemove = new Set([
+        vRef,
+        `VCH-${v.id}`,
+        `CLR-${vRef}`,
+        `BNC-${vRef}`,
+        `REV-${vRef}`,
+        shortId ? `CLR-${shortId}` : "",
+        shortId ? `BNC-${shortId}` : ""
+      ].filter(Boolean));
+
       setVouchers(list => list.filter(item => item.id !== v.id));
-      setJournal(list => list.filter(j => j.reference !== (v.voucherNo || v.id) && j.id !== v.id));
+      setJournal(list => list.filter(j => {
+        if (j.id === v.id) return false;
+        if (j.voucherId && j.voucherId === v.id) return false;
+        if (j.reference && refsToRemove.has(j.reference)) return false;
+        return true;
+      }));
       triggerSuccessPopup({
-        title: "Process Complete — Voucher Deleted!",
-        message: `Voucher ${v.voucherNo} has been deleted and removed from General Ledger.`,
+        title: "DONE — Voucher Deleted!",
+        message: `Voucher ${v.voucherNo} and all linked General Ledger / PDC Clearance entries have been permanently removed.`,
         code: v.voucherNo,
         module: "Vouchers"
       });
@@ -3233,31 +3257,41 @@ export default function App() {
 
   function clearPdcCheque(voucherId, clearanceDate = TODAY_STR, targetBankId = null) {
     const vch = vouchers.find(v => v.id === voucherId);
-    if (!vch) return;
+    if (!vch || vch.pdcStatus === "Cleared") {
+      setClearingPdcVoucher(null);
+      return;
+    }
+    setClearingPdcVoucher(null);
     const defaultBank = bankAccounts.find(b => b.accountType !== "Petty Cash" && !b.id.startsWith("bank-cash")) || bankAccounts[0];
     const tgtBank = bankAccounts.find(b => b.id === (targetBankId || vch.targetBankId || vch.bankAccountId)) || defaultBank;
     const netAmt = Number(vch.netAmount !== undefined ? vch.netAmount : vch.amount) || 0;
+    const grossAmt = Number(vch.amount !== undefined ? vch.amount : netAmt) || 0;
     const clrDate = clearanceDate || TODAY_STR;
     const isPv = vch.type === "PV";
     const chqRef = vch.chequeNo || vch.instrumentNo || vch.voucherNo;
+    const clrRef = `CLR-${vch.voucherNo || vch.id.slice(0, 6)}`;
     const memo = isPv
       ? `Issued PDC Encashed from ${tgtBank?.bankName || 'Bank'}: ${vch.party} (Chq #${chqRef})`
       : `PDC Cleared in ${tgtBank?.bankName || 'Bank'}: ${vch.party} (Chq #${chqRef})`;
 
-    // Post Double Entry:
+    // Post Double Entry idempotently (remove any prior duplicate CLR- for this voucher before inserting)
     // For PV (Issued PDC): Debit PDC Payable, Credit Bank Account
     // For RV (Received PDC): Debit Target Bank, Credit Cheques in Hand
-    if (isPv) {
-      postEntry(clrDate, memo, [
-        { account: "pdc_payable", debit: netAmt, credit: 0, memo },
-        { account: "bank", bankAccountId: tgtBank?.id, debit: 0, credit: netAmt, memo }
-      ], `CLR-${vch.voucherNo || vch.id.slice(0, 6)}`);
-    } else {
-      postEntry(clrDate, memo, [
-        { account: "bank", bankAccountId: tgtBank?.id, debit: netAmt, credit: 0, memo },
-        { account: "cheques_in_hand", debit: 0, credit: netAmt, memo }
-      ], `CLR-${vch.voucherNo || vch.id.slice(0, 6)}`);
-    }
+    const clrLines = isPv
+      ? [
+          { account: "pdc_payable", debit: netAmt, credit: 0, memo },
+          { account: "bank", bankAccountId: tgtBank?.id, debit: 0, credit: netAmt, memo }
+        ]
+      : [
+          { account: "bank", bankAccountId: tgtBank?.id, debit: netAmt, credit: 0, memo },
+          { account: "cheques_in_hand", debit: 0, credit: netAmt, memo }
+        ];
+
+    setJournal(prev => {
+      const cleaned = prev.filter(j => !(j.voucherId === vch.id && j.reference?.startsWith("CLR-")) && j.reference !== clrRef);
+      return [...cleaned, { id: uid(), date: clrDate, description: memo, reference: clrRef, lines: clrLines, voucherId: vch.id }]
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
+    });
 
     setVouchers(list => list.map(v => v.id === voucherId ? {
       ...v,
@@ -3265,6 +3299,24 @@ export default function App() {
       clearedDate: clrDate,
       clearedBankId: tgtBank?.id
     } : v));
+
+    // Now that the Client PDC Cheque is Cleared/Paid, settle matching unpaid Client Invoices
+    if (!isPv) {
+      const clientName = (vch.party || "").trim().toLowerCase();
+      setInvoices(list => {
+        let remaining = grossAmt;
+        return list.map(inv => {
+          if (!inv.paid && ((vch.clientId && inv.clientId === vch.clientId) || (inv.client && inv.client.trim().toLowerCase() === clientName))) {
+            const invTotal = Number(inv.totalAmount || inv.amount) || 0;
+            if (remaining >= invTotal || Math.abs(remaining - invTotal) < 5) {
+              remaining -= invTotal;
+              return { ...inv, paid: true, paidDate: clrDate, paidVia: "PDC Cheque (Cleared)", bankAccountId: tgtBank?.id || null };
+            }
+          }
+          return inv;
+        });
+      });
+    }
 
     logAudit({
       userId: currentUser?.id || "u-staff",
@@ -3277,20 +3329,21 @@ export default function App() {
       timestamp: new Date().toISOString()
     });
     triggerSuccessPopup({
-      title: isPv ? "Issued PDC Encashed & Posted!" : "PDC Cheque Cleared & Posted!",
-      message: `Post-Dated Cheque #${chqRef} for "${vch.party}" (${pkr(netAmt)}) has been settled in ${tgtBank?.bankName || 'Bank'}.`,
-      code: `CLR-${vch.voucherNo || chqRef}`,
+      title: isPv ? "DONE — Issued PDC Encashed & Posted!" : "DONE — PDC Cheque Cleared & Deducted!",
+      message: `Post-Dated Cheque #${chqRef} for "${vch.party}" (${pkr(netAmt)}) has been cleared in ${tgtBank?.bankName || 'Bank'} and deducted from ledger.`,
+      code: clrRef,
       module: "PDC Register"
     });
   }
 
   function bouncePdcCheque(voucherId, bounceDate = TODAY_STR, reason = "Payment Stopped / Insufficient Funds") {
     const vch = vouchers.find(v => v.id === voucherId);
-    if (!vch) return;
+    if (!vch || vch.pdcStatus === "Bounced" || vch.pdcStatus === "Cleared") return;
     const netAmt = Number(vch.netAmount !== undefined ? vch.netAmount : vch.amount) || 0;
     const bncDate = bounceDate || TODAY_STR;
     const isPv = vch.type === "PV";
     const chqRef = vch.chequeNo || vch.instrumentNo || vch.voucherNo;
+    const bncRef = `BNC-${vch.voucherNo || vch.id.slice(0, 6)}`;
     const memo = isPv
       ? `Issued PDC Returned / Cancelled: ${vch.party} (Chq #${chqRef}) - Reason: ${reason}`
       : `PDC Dishonored / Bounced: ${vch.party} (Chq #${chqRef}) - Reason: ${reason}`;
@@ -3302,12 +3355,12 @@ export default function App() {
       postEntry(bncDate, memo, [
         { account: "pdc_payable", debit: netAmt, credit: 0, memo },
         { account: "ap", debit: 0, credit: netAmt, memo }
-      ], `BNC-${vch.voucherNo || vch.id.slice(0, 6)}`);
+      ], bncRef, { voucherId: vch.id });
     } else {
       postEntry(bncDate, memo, [
         { account: "ar", debit: netAmt, credit: 0, memo },
         { account: "cheques_in_hand", debit: 0, credit: netAmt, memo }
-      ], `BNC-${vch.voucherNo || vch.id.slice(0, 6)}`);
+      ], bncRef, { voucherId: vch.id });
     }
 
     setVouchers(list => list.map(v => v.id === voucherId ? {
@@ -3330,7 +3383,7 @@ export default function App() {
     triggerSuccessPopup({
       title: "PDC Cheque Marked as Bounced / Returned",
       message: `Cheque #${chqRef} for "${vch.party}" (${pkr(netAmt)}) has been reversed in General Ledger.`,
-      code: `BNC-${vch.voucherNo || chqRef}`,
+      code: bncRef,
       module: "PDC Register"
     });
   }
@@ -3716,13 +3769,19 @@ export default function App() {
     const opBal = Number(updated.openingBalance) || 0;
     const obRef = "OB-" + updated.id.toUpperCase();
 
-    // Sync journal OB- entry for this account
+    // Sync journal OB- entry for this account — ALWAYS preserve original Opening Balance date (never bump to today!)
     setJournal(prev => {
+      const existingOb = prev.find(e => e.reference === obRef);
       const filtered = prev.filter(e => e.reference !== obRef);
       if (opBal > 0) {
+        const earliestTxDate = filtered
+          .map(e => e.date)
+          .filter(Boolean)
+          .sort()[0];
+        const preservedDate = updated.openingDate || existingOb?.date || earliestTxDate || TODAY.toISOString().slice(0, 10);
         const newObEntry = {
-          id: uid(),
-          date: TODAY.toISOString().slice(0, 10),
+          id: existingOb?.id || uid(),
+          date: preservedDate,
           reference: obRef,
           description: `Opening Balance — ${updated.bankName}`,
           lines: [
@@ -3739,7 +3798,7 @@ export default function App() {
     setEditingBankAccount(null);
     setShowBankAccountModal(false);
     triggerSuccessPopup({
-      title: "Process Complete — Account Updated!",
+      title: "DONE — Account Updated!",
       message: `${updated.bankName} details and opening balance (${pkr(opBal)}) have been saved.`,
       code: updated.accountNumber,
       module: "Cash & Bank"
@@ -3749,22 +3808,25 @@ export default function App() {
   function handleSaveAllOpeningBalances(updatedAccounts) {
     setBankAccounts(updatedAccounts);
     
-    // Sync GL for each account
+    // Sync GL for each account — ALWAYS preserve original Opening Balance date so OB stays at top of statement
     setJournal(prev => {
       let nextJournal = [...prev];
+      const earliestOverallDate = prev.map(e => e.date).filter(Boolean).sort()[0] || TODAY.toISOString().slice(0, 10);
       updatedAccounts.forEach(acc => {
         const isCash = acc.accountType === "Petty Cash" || acc.id.startsWith("bank-cash");
         const opBal = Number(acc.openingBalance) || 0;
         const obRef = "OB-" + acc.id.toUpperCase();
+        const existingOb = nextJournal.find(e => e.reference === obRef);
+        const preservedDate = acc.openingDate || existingOb?.date || earliestOverallDate;
         
         // Remove existing OB entry for this account
         nextJournal = nextJournal.filter(e => e.reference !== obRef);
         
-        // If opening balance > 0, insert fresh OB entry
+        // If opening balance > 0, insert fresh OB entry at top with preserved date
         if (opBal > 0) {
           nextJournal.unshift({
-            id: uid(),
-            date: TODAY.toISOString().slice(0, 10),
+            id: existingOb?.id || uid(),
+            date: preservedDate,
             reference: obRef,
             description: `Opening Balance — ${acc.bankName}`,
             lines: [
@@ -3777,7 +3839,7 @@ export default function App() {
       return nextJournal;
     });
     triggerSuccessPopup({
-      title: "Process Complete — Opening Balances Saved!",
+      title: "DONE — Opening Balances Saved!",
       message: "All Cash & Bank opening balances have been saved and synced with General Ledger.",
       code: "OB-SYNCED",
       module: "Cash & Bank"
@@ -6042,12 +6104,25 @@ export default function App() {
                   </thead>
                   <tbody>
                     {clients.filter(c => !clientSearchQuery || c.name.toLowerCase().includes(clientSearchQuery.toLowerCase()) || (c.companyName && c.companyName.toLowerCase().includes(clientSearchQuery.toLowerCase())) || (c.phone && c.phone.includes(clientSearchQuery))).map(c => {
-                      const clientProjectsList = projects.filter(p => p.clientId === c.id || (p.client && p.client.toLowerCase() === c.name.toLowerCase()));
+                      const cNameNorm = (c.name || "").toLowerCase().trim();
+                      const cCompNorm = (c.companyName || "").toLowerCase().trim();
+                      const clientProjectsList = projects.filter(p => p.clientId === c.id || (p.client && p.client.toLowerCase().trim() === cNameNorm));
                       const projectsOpening = clientProjectsList.reduce((s, p) => s + (Number(p.openingBalance) || 0), 0);
-                      const clientInvoices = invoices.filter(i => i.clientId === c.id || (i.client && i.client.toLowerCase() === c.name.toLowerCase()));
-                      const clientVouchers = vouchers.filter(v => v.clientId === c.id || (v.party && v.party.toLowerCase().includes(c.name.toLowerCase())));
+                      const clientInvoices = invoices.filter(i => i.clientId === c.id || (i.client && i.client.toLowerCase().trim() === cNameNorm) || (i.projectId && clientProjectsList.some(p => p.id === i.projectId)));
+                      const clientVouchers = vouchers.filter(v => {
+                        if (v.clientId === c.id || (c.clientCode && v.clientId === c.clientCode)) return true;
+                        if (v.projectId && clientProjectsList.some(p => p.id === v.projectId)) return true;
+                        const iParty = (v.party || "").toLowerCase().trim();
+                        if (iParty) {
+                          if (iParty === cNameNorm || (cCompNorm && iParty === cCompNorm)) return true;
+                          if (iParty.includes(cNameNorm) || (cCompNorm && iParty.includes(cCompNorm))) return true;
+                          if (iParty.length >= 3 && (cNameNorm.startsWith(iParty) || cNameNorm.includes(iParty))) return true;
+                        }
+                        return false;
+                      });
                       const totalInvoiced = clientInvoices.reduce((s, i) => s + (Number(i.totalAmount || i.amount) || 0), 0);
-                      const totalReceived = clientVouchers.filter(v => (v.type === "RV" || v.type === "CV") && !(v.isPdc && v.pdcStatus === "Bounced")).reduce((s, v) => s + (Number(v.amount) || 0), 0);
+                      // Unpaid / Pending PDC cheques (pdcStatus !== "Cleared") do NOT deduct from Client Outstanding!
+                      const totalReceived = clientVouchers.filter(v => (v.type === "RV" || v.type === "CV") && !(v.isPdc && v.pdcStatus !== "Cleared")).reduce((s, v) => s + (Number(v.amount) || 0), 0);
                       const outstanding = (Number(c.openingBalance) || 0) + projectsOpening + totalInvoiced - totalReceived;
 
                       return (
@@ -6169,10 +6244,20 @@ export default function App() {
                   </thead>
                   <tbody>
                     {vendors.filter(v => !vendorSearchQuery || v.name.toLowerCase().includes(vendorSearchQuery.toLowerCase()) || (v.companyName && v.companyName.toLowerCase().includes(vendorSearchQuery.toLowerCase()))).map(v => {
-                      const vendorExpenses = expenses.filter(e => e.vendorId === v.id || (e.vendor && e.vendor.toLowerCase().includes(v.name.toLowerCase())));
-                      const vendorVouchers = vouchers.filter(vo => vo.vendorId === v.id || (vo.category && vo.category.toLowerCase().includes(v.name.toLowerCase())) || (vo.vendor && vo.vendor.toLowerCase().includes(v.name.toLowerCase())) || (vo.party && vo.party.toLowerCase().includes(v.name.toLowerCase())));
+                      const vNameNorm = (v.name || "").toLowerCase().trim();
+                      const vendorExpenses = expenses.filter(e => e.vendorId === v.id || (e.vendor && e.vendor.toLowerCase().includes(vNameNorm)));
+                      const vendorVouchers = vouchers.filter(vo => {
+                        if (vo.vendorId === v.id) return true;
+                        const checkV = (val) => {
+                          if (!val) return false;
+                          const s = val.toLowerCase().trim();
+                          return s === vNameNorm || s.includes(vNameNorm) || (s.length >= 3 && vNameNorm.includes(s));
+                        };
+                        return checkV(vo.category) || checkV(vo.vendor) || checkV(vo.party);
+                      });
                       const totalExpenses = vendorExpenses.reduce((s, e) => s + (Number(e.amount) || 0), 0);
-                      const totalPayments = vendorVouchers.filter(vo => vo.type === "PV" || vo.type === "CV").reduce((s, vo) => s + (Number(vo.amount) || 0), 0);
+                      // Unpaid / Pending Issued PDC cheques (pdcStatus !== "Cleared") do NOT deduct from Vendor Payable!
+                      const totalPayments = vendorVouchers.filter(vo => (vo.type === "PV" || vo.type === "CV") && !(vo.isPdc && vo.pdcStatus !== "Cleared")).reduce((s, vo) => s + (Number(vo.amount) || 0), 0);
                       const payable = (Number(v.openingBalance) || 0) + totalExpenses - totalPayments;
 
                       return (
@@ -7430,12 +7515,12 @@ export default function App() {
                   : cashBankFilter.startsWith("bank-cash");
 
                 const sortedJournal = [...journal].sort((a, b) => {
-                  const da = new Date(a.date || "2026-01-01").getTime();
-                  const db = new Date(b.date || "2026-01-01").getTime();
-                  if (da !== db) return da - db;
                   const aIsOb = (a.reference?.startsWith("OB-") || a.description?.toLowerCase().includes("opening balance")) ? 0 : 1;
                   const bIsOb = (b.reference?.startsWith("OB-") || b.description?.toLowerCase().includes("opening balance")) ? 0 : 1;
-                  return aIsOb - bIsOb;
+                  if (aIsOb !== bIsOb) return aIsOb - bIsOb;
+                  const da = new Date(a.date || "2026-01-01").getTime();
+                  const db = new Date(b.date || "2026-01-01").getTime();
+                  return da - db;
                 });
 
                 const earliestDate = sortedJournal[0]?.date || TODAY_STR;
@@ -16848,7 +16933,7 @@ function ProjectDetailModal({ project, invoices = [], expenses = [], vouchers = 
     });
   });
 
-  const projectReceipts = vouchers.filter(v => (v.type === "RV" || v.type === "CV") && !(v.isPdc && v.pdcStatus === "Bounced"));
+  const projectReceipts = vouchers.filter(v => (v.type === "RV" || v.type === "CV") && !(v.isPdc && v.pdcStatus !== "Cleared"));
   projectReceipts.forEach(v => {
     const grossAmt = Number(v.amount) || 0;
     const wht = Number(v.whtAmount) || 0;
@@ -16926,7 +17011,7 @@ function ProjectDetailModal({ project, invoices = [], expenses = [], vouchers = 
   const ledgerTotalDebit = openingBal + rawLedgerRows.reduce((s, r) => s + r.debit, 0);
   const ledgerTotalCredit = rawLedgerRows.reduce((s, r) => s + r.credit, 0);
 
-  const projectPayVouchers = vouchers.filter(v => v.type === "PV" && !(v.isPdc && v.pdcStatus === "Bounced"));
+  const projectPayVouchers = vouchers.filter(v => v.type === "PV" && !(v.isPdc && v.pdcStatus !== "Cleared"));
   const combinedCosts = [
     ...expenses.map(e => ({ id: e.id, vendor: e.vendor, description: e.description || "—", date: e.date, paidVia: e.paidVia || "Bank", amount: Number(e.amount) || 0 })),
     ...projectPayVouchers.map(v => ({ id: v.id, vendor: v.party || "Vendor", description: `${v.voucherNo || "PV"} — ${v.description || ""}`, date: v.date, paidVia: v.paymentMode || v.via || "Bank", amount: Number(v.amount) || Number(v.netAmount) || 0 }))
@@ -19155,11 +19240,11 @@ function ProjectStatementPrintModal({ project, invoices = [], expenses = [], vou
   };
   const projInvoices = invoices.filter(isProjItem);
   const projExpenses = expenses.filter(isProjItem);
-  const projReceipts = vouchers.filter(v => isProjItem(v) && (v.type === "RV" || v.type === "CV") && !(v.isPdc && v.pdcStatus === "Bounced"));
+  const projReceipts = vouchers.filter(v => isProjItem(v) && (v.type === "RV" || v.type === "CV") && !(v.isPdc && v.pdcStatus !== "Cleared"));
   const totalBilled = openingBal + projInvoices.reduce((s, i) => s + (Number(i.totalAmount || i.amount) || 0), 0);
   const totalReceived = projReceipts.reduce((s, v) => s + (Number(v.amount) || 0), 0);
   const totalOutstanding = totalBilled - totalReceived;
-  const totalCost = projExpenses.reduce((s, e) => s + (Number(e.amount) || 0), 0) + vouchers.filter(v => isProjItem(v) && v.type === "PV" && !(v.isPdc && v.pdcStatus === "Bounced")).reduce((s, v) => s + (Number(v.amount) || Number(v.netAmount) || 0), 0);
+  const totalCost = projExpenses.reduce((s, e) => s + (Number(e.amount) || 0), 0) + vouchers.filter(v => isProjItem(v) && v.type === "PV" && !(v.isPdc && v.pdcStatus !== "Cleared")).reduce((s, v) => s + (Number(v.amount) || Number(v.netAmount) || 0), 0);
   const netMargin = totalBilled - totalCost;
 
   const rawPrintLedger = [];

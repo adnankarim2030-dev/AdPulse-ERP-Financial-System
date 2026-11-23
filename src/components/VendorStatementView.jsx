@@ -814,9 +814,9 @@ export default function VendorStatementView({
       opening += Number(exp.amount) || 0;
     });
 
-    // Prior Payments / Direct Settlements (Debits)
+    // Prior Payments / Direct Settlements (Debits) — ONLY settled/cleared PDCs deduct from Vendor Payable
     vouchers.filter(v => isVendorMatch(v) && isProjectMatch(v) && v.date < dateFrom && (v.type === "PV" || v.type === "CV")).forEach(v => {
-      if (v.isPdc && v.pdcStatus === "Bounced") return;
+      if (v.isPdc && v.pdcStatus !== "Cleared") return;
       opening -= Number(v.amount) || 0;
     });
 
@@ -848,9 +848,11 @@ export default function VendorStatementView({
     vouchers.filter(v => isVendorMatch(v) && isProjectMatch(v) && v.date >= dateFrom && v.date <= dateTo && (v.type === "PV" || v.type === "CV")).forEach(v => {
       const proj = projects.find(p => p.id === v.projectId);
       const isDirect = v.type === "CV";
-      const isPdcBounced = v.isPdc && v.pdcStatus === "Bounced";
+      const isPdcBounced = Boolean(v.isPdc && v.pdcStatus === "Bounced");
+      const isPdcCleared = Boolean(v.isPdc && v.pdcStatus === "Cleared");
+      const isPdcPending = Boolean(v.isPdc && !isPdcCleared && !isPdcBounced);
       let typeLabel = isDirect ? "Direct Settlement" : "Vendor Payment";
-      if (v.isPdc) typeLabel = isPdcBounced ? "Cheque Bounced" : "PDC Issued";
+      if (v.isPdc) typeLabel = isPdcBounced ? "Cheque Bounced" : (isPdcCleared ? "PDC Encashed" : "PDC Pending");
 
       const chqRef = v.chequeNo || v.instrumentNo || "PDC";
       const chqDue = v.chequeDate || v.instrumentDate || v.date;
@@ -859,8 +861,10 @@ export default function VendorStatementView({
         defaultDesc = `Direct Settlement by Client (${v.party || "Client"})${v.instrumentNo ? ` [${v.paymentMode || 'Inst'} #${v.instrumentNo}]` : ""}`;
       } else if (v.isPdc) {
         defaultDesc = isPdcBounced
-          ? `Issued PDC Returned / Cancelled [Chq #${chqRef}] (${v.bounceReason || "Return"})`
-          : (v.description || `Post-Dated Cheque Issued [Chq #${chqRef}] (Due: ${chqDue})`);
+          ? `Issued PDC Returned / Cancelled [Chq #${chqRef}] (${v.bounceReason || "Return"} — Not Deducted)`
+          : isPdcCleared
+          ? `${v.description || "Post-Dated Cheque Encashed"} [Chq #${chqRef}]${v.clearedDate ? ` (Cleared: ${v.clearedDate})` : ""}`
+          : `${v.description || "Post-Dated Cheque Issued"} [Chq #${chqRef}] (Due: ${chqDue}) — PKR ${(Number(v.amount) || 0).toLocaleString("en-US")} (Pending Encashment — Not Deducted Yet)`;
       } else {
         defaultDesc = v.description || `Vendor Payment${v.paymentMode ? ` [${v.paymentMode}${v.instrumentNo ? ` #${v.instrumentNo}` : ''}]` : ''}`;
       }
@@ -902,14 +906,14 @@ export default function VendorStatementView({
 
       rawRows.push({
         id: v.id,
-        date: v.date,
+        date: isPdcCleared && v.clearedDate ? v.clearedDate : v.date,
         ref: v.voucherNo || ((isDirect ? "CV-" : "PV-") + v.id.toUpperCase()),
         type: typeLabel,
         project: proj ? proj.name : defaultDesc,
-        debit: isPdcBounced ? 0 : (Number(v.amount) || 0),
+        debit: (isPdcBounced || isPdcPending) ? 0 : (Number(v.amount) || 0),
         credit: 0,
-        status: v.isPdc ? (v.pdcStatus === "In-Hand" ? "PDC Pending" : v.pdcStatus) : (v.status || "Posted"),
-        taxBreakdown,
+        status: v.isPdc ? (isPdcPending ? "PDC Pending" : v.pdcStatus) : (v.status || "Posted"),
+        taxBreakdown: (isPdcBounced || isPdcPending) ? null : taxBreakdown,
         raw: v
       });
     });
