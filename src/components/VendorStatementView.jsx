@@ -768,20 +768,42 @@ export default function VendorStatementView({
       return { openingPayable: 0, rows: [], totalExpenses: 0, totalPayments: 0, closingPayable: 0, totalGrossBilled: 0, totalGrossPaid: 0, totalCommission: 0, totalInputSst: 0, totalWhtDeducted: 0, totalNetPaid: 0 };
     }
 
-    const vendorNameNorm = (selectedVendor.name || "").toLowerCase();
+    const vendorNameNorm = (selectedVendor.name || "").toLowerCase().trim();
+    const vendorCompNorm = (selectedVendor.companyName || "").toLowerCase().trim();
+    const vendorCodeNorm = (selectedVendor.vendorCode || "").toLowerCase().trim();
+    const selectedProjObj = selectedProjectId !== "all" ? projects.find(p => p.id === selectedProjectId) : null;
 
     const isVendorMatch = (item) => {
       if (!item || !selectedVendor) return false;
-      if (item.vendorId === selectedVendor.id) return true;
-      if (item.vendor && item.vendor.toLowerCase().includes(vendorNameNorm)) return true;
-      if (item.category && item.category.toLowerCase().includes(vendorNameNorm)) return true;
-      if (item.party && item.party.toLowerCase().includes(vendorNameNorm)) return true;
+      if (item.vendorId && (item.vendorId === selectedVendor.id || item.vendorId === vendorCodeNorm)) return true;
+
+      const checkStr = (val) => {
+        if (!val) return false;
+        const s = val.toLowerCase().trim();
+        if (s === vendorNameNorm || s === vendorCompNorm) return true;
+        if (s.includes(vendorNameNorm) || (vendorCompNorm && s.includes(vendorCompNorm))) return true;
+        if (vendorNameNorm.includes(s) || (vendorCompNorm && vendorCompNorm.includes(s))) {
+          if (s.length >= 3) return true;
+        }
+        return false;
+      };
+
+      if (checkStr(item.vendor)) return true;
+      if (checkStr(item.category)) return true;
+      if (checkStr(item.party)) return true;
       return false;
     };
 
     const isProjectMatch = (item) => {
       if (selectedProjectId === "all") return true;
-      return item.projectId === selectedProjectId;
+      if (item.projectId === selectedProjectId) return true;
+      if (selectedProjObj) {
+        if (item.project && item.project.toLowerCase() === selectedProjObj.name.toLowerCase()) return true;
+        const pNameClean = selectedProjObj.name.toLowerCase().replace(/^(gfs\s+)/i, "").trim();
+        const desc = (item.description || "").toLowerCase();
+        if (pNameClean.length >= 4 && desc.includes(pNameClean)) return true;
+      }
+      return false;
     };
 
     // 1. Calculate Opening Payable prior to dateFrom

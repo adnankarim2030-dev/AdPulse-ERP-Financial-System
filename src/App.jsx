@@ -2187,33 +2187,55 @@ export default function App() {
       const opBal = Number(p.openingBalance) || 0;
       map[p.id] = { openingBalance: opBal, billed: opBal, received: 0, cashReceived: 0, taxDeducted: 0, cost: 0, paidInvoicesTotal: 0 };
     });
+
+    const resolveProjId = (item) => {
+      if (item.projectId && map[item.projectId]) return item.projectId;
+      const found = projects.find(p => {
+        if (item.project && p.name && item.project.toLowerCase() === p.name.toLowerCase()) return true;
+        const pCore = (p.name || "").toLowerCase().replace(/^(gfs\s+)/i, "").trim();
+        if (pCore.length >= 4) {
+          const desc = (item.description || "").toLowerCase();
+          const party = (item.party || "").toLowerCase();
+          if (desc.includes(pCore) || party.includes(pCore)) return true;
+        }
+        return false;
+      });
+      return found ? found.id : null;
+    };
+
     invoices.forEach(inv => {
-      if (inv.projectId && map[inv.projectId]) {
+      const pId = resolveProjId(inv);
+      if (pId && map[pId]) {
         const invAmt = Number(inv.totalAmount || inv.amount) || 0;
-        map[inv.projectId].billed += invAmt;
-        if (inv.paid) map[inv.projectId].paidInvoicesTotal += invAmt;
+        map[pId].billed += invAmt;
+        if (inv.paid) map[pId].paidInvoicesTotal += invAmt;
       }
     });
+
     vouchers.forEach(v => {
-      if (v.projectId && map[v.projectId]) {
+      const pId = resolveProjId(v);
+      if (pId && map[pId]) {
         const isPdcBounced = v.isPdc && v.pdcStatus === "Bounced";
         if ((v.type === "RV" || v.type === "CV") && !isPdcBounced) {
           const grossAmt = Number(v.amount) || 0;
           const wht = Number(v.whtAmount) || 0;
           const sst = Number(v.sstAmount !== undefined ? v.sstAmount : v.sstWithheld) || 0;
           const netAmt = (v.netAmount !== undefined && v.netAmount !== null && v.netAmount !== "") ? Number(v.netAmount) : Math.max(0, grossAmt - wht - sst);
-          map[v.projectId].received += grossAmt;
-          map[v.projectId].cashReceived += netAmt;
-          map[v.projectId].taxDeducted += (wht + sst);
+          map[pId].received += grossAmt;
+          map[pId].cashReceived += netAmt;
+          map[pId].taxDeducted += (wht + sst);
         } else if (v.type === "PV" && !isPdcBounced) {
           const vAmt = Number(v.amount) || Number(v.netAmount) || 0;
-          map[v.projectId].cost += vAmt;
+          map[pId].cost += vAmt;
         }
       }
     });
+
     expenses.forEach(exp => {
-      if (exp.projectId && map[exp.projectId]) map[exp.projectId].cost += (Number(exp.amount) || 0);
+      const pId = resolveProjId(exp);
+      if (pId && map[pId]) map[pId].cost += (Number(exp.amount) || 0);
     });
+
     Object.values(map).forEach(s => {
       if (s.received === 0 && s.paidInvoicesTotal > 0) {
         s.received = s.paidInvoicesTotal;
@@ -10232,11 +10254,22 @@ export default function App() {
         return (
           <ProjectDetailModal
             project={project}
-            invoices={invoices.filter(i => i.projectId === project.id)}
-            expenses={expenses.filter(e => e.projectId === project.id)}
-            vouchers={vouchers.filter(v => v.projectId === project.id)}
+            invoices={invoices.filter(i => i.projectId === project.id || (i.project && i.project.toLowerCase() === project.name.toLowerCase()))}
+            expenses={expenses.filter(e => e.projectId === project.id || (e.project && e.project.toLowerCase() === project.name.toLowerCase()))}
+            vouchers={vouchers.filter(v => {
+              if (v.projectId === project.id) return true;
+              if (v.project && v.project.toLowerCase() === project.name.toLowerCase()) return true;
+              const pCore = (project.name || "").toLowerCase().replace(/^(gfs\s+)/i, "").trim();
+              if (pCore.length >= 4) {
+                const desc = (v.description || "").toLowerCase();
+                const party = (v.party || "").toLowerCase();
+                if (desc.includes(pCore) || party.includes(pCore)) return true;
+              }
+              return false;
+            })}
             sites={hoardings.filter(h => h.projectId === project.id)}
             onClose={() => setSelectedProjectId(null)}
+            onEditProject={() => { setEditingProject(project); setSelectedProjectId(null); }}
             onStatusChange={status => updateProjectStatus(project.id, status)}
             onAddBilling={() => setBillingModalProject(project)}
             onAddCost={() => setCostModalProject(project)}
@@ -16793,7 +16826,7 @@ function ProjectCostModal({ project, onClose, onSubmit }) {
   );
 }
 
-function ProjectDetailModal({ project, invoices = [], expenses = [], vouchers = [], sites = [], onClose, onStatusChange, onAddBilling, onAddCost, onAddSite, onReleaseSite, onMarkPaid, onPrint, onPrintProject }) {
+function ProjectDetailModal({ project, invoices = [], expenses = [], vouchers = [], sites = [], onClose, onStatusChange, onAddBilling, onAddCost, onAddSite, onReleaseSite, onMarkPaid, onPrint, onPrintProject, onEditProject }) {
   const invoicesWithStatus = invoices.map(inv => ({
     ...inv, status: inv.paid ? "Paid" : (new Date(inv.dueDate) < TODAY ? "Overdue" : "Unpaid"),
   }));
@@ -16907,7 +16940,12 @@ function ProjectDetailModal({ project, invoices = [], expenses = [], vouchers = 
             <div className="section-title" style={{ margin: 0, fontSize: 18 }}>{project.name}</div>
             <div style={{ fontSize: 13, color: "var(--ink-muted)", marginTop: 2 }}>Client: {project.client} &middot; {fmtDate(project.startDate)} – {fmtDate(project.endDate)}</div>
           </div>
-          <div style={{ display: "flex", gap: 8 }}>
+          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            {onEditProject && (
+              <button className="btn" style={{ padding: "5px 10px", fontSize: 12.5, borderColor: "#0284C7", color: "#0284C7", background: "rgba(2, 132, 199, 0.08)" }} onClick={onEditProject}>
+                <Edit size={14} /> Edit Project &amp; Opening Bal
+              </button>
+            )}
             <button className="btn" style={{ padding: "5px 10px", fontSize: 12.5 }} onClick={onPrintProject}><Printer size={14} /> Print Statement</button>
             <button className="btn" style={{ padding: 5 }} onClick={onClose}><X size={15} /></button>
           </div>
@@ -19103,13 +19141,25 @@ function ProjectStatementPrintModal({ project, invoices = [], expenses = [], vou
   const printRef = useRef(null);
 
   const openingBal = Number(project.openingBalance) || 0;
-  const projInvoices = invoices.filter(i => i.projectId === project.id);
-  const projExpenses = expenses.filter(e => e.projectId === project.id);
-  const projReceipts = vouchers.filter(v => v.projectId === project.id && (v.type === "RV" || v.type === "CV") && !(v.isPdc && v.pdcStatus === "Bounced"));
+  const pCore = (project.name || "").toLowerCase().replace(/^(gfs\s+)/i, "").trim();
+  const isProjItem = (item) => {
+    if (!item) return false;
+    if (item.projectId === project.id) return true;
+    if (item.project && item.project.toLowerCase() === project.name.toLowerCase()) return true;
+    if (pCore.length >= 4) {
+      const desc = (item.description || "").toLowerCase();
+      const party = (item.party || "").toLowerCase();
+      if (desc.includes(pCore) || party.includes(pCore)) return true;
+    }
+    return false;
+  };
+  const projInvoices = invoices.filter(isProjItem);
+  const projExpenses = expenses.filter(isProjItem);
+  const projReceipts = vouchers.filter(v => isProjItem(v) && (v.type === "RV" || v.type === "CV") && !(v.isPdc && v.pdcStatus === "Bounced"));
   const totalBilled = openingBal + projInvoices.reduce((s, i) => s + (Number(i.totalAmount || i.amount) || 0), 0);
   const totalReceived = projReceipts.reduce((s, v) => s + (Number(v.amount) || 0), 0);
   const totalOutstanding = totalBilled - totalReceived;
-  const totalCost = projExpenses.reduce((s, e) => s + (Number(e.amount) || 0), 0) + vouchers.filter(v => v.projectId === project.id && v.type === "PV" && !(v.isPdc && v.pdcStatus === "Bounced")).reduce((s, v) => s + (Number(v.amount) || Number(v.netAmount) || 0), 0);
+  const totalCost = projExpenses.reduce((s, e) => s + (Number(e.amount) || 0), 0) + vouchers.filter(v => isProjItem(v) && v.type === "PV" && !(v.isPdc && v.pdcStatus === "Bounced")).reduce((s, v) => s + (Number(v.amount) || Number(v.netAmount) || 0), 0);
   const netMargin = totalBilled - totalCost;
 
   const rawPrintLedger = [];

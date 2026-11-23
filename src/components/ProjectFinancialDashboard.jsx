@@ -13,10 +13,23 @@ export default function ProjectFinancialDashboard({
   if (!project) return null;
 
   // Filter project transactions
-  const projectInvoices = useMemo(() => invoices.filter(i => i.projectId === project.id), [invoices, project]);
-  const projectExpenses = useMemo(() => expenses.filter(e => e.projectId === project.id), [expenses, project]);
-  const projectReceipts = useMemo(() => vouchers.filter(v => v.projectId === project.id && v.type === "RV"), [vouchers, project]);
-  const projectPayments = useMemo(() => vouchers.filter(v => v.projectId === project.id && v.type === "PV"), [vouchers, project]);
+  const pNameCore = (project.name || "").toLowerCase().replace(/^(gfs\s+)/i, "").trim();
+  const isMatchProject = (item) => {
+    if (!item) return false;
+    if (item.projectId === project.id) return true;
+    if (item.project && item.project.toLowerCase() === project.name?.toLowerCase()) return true;
+    if (pNameCore.length >= 4) {
+      const desc = (item.description || "").toLowerCase();
+      const party = (item.party || "").toLowerCase();
+      if (desc.includes(pNameCore) || party.includes(pNameCore)) return true;
+    }
+    return false;
+  };
+
+  const projectInvoices = useMemo(() => invoices.filter(isMatchProject), [invoices, project]);
+  const projectExpenses = useMemo(() => expenses.filter(isMatchProject), [expenses, project]);
+  const projectReceipts = useMemo(() => vouchers.filter(v => isMatchProject(v) && (v.type === "RV" || v.type === "CV") && !(v.isPdc && v.pdcStatus === "Bounced")), [vouchers, project]);
+  const projectPayments = useMemo(() => vouchers.filter(v => isMatchProject(v) && v.type === "PV" && !(v.isPdc && v.pdcStatus === "Bounced")), [vouchers, project]);
 
   // Financial Calculations
   const projectValue = Number(project.contractValue || project.budget) || 0;

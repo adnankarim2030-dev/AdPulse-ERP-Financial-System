@@ -676,25 +676,50 @@ export default function ClientStatementView({
       return { openingBalance: 0, openingRef: "OB-000", openingLabel: "Opening Balance", rows: [], totalInvoiced: 0, totalReceived: 0, totalTaxDeducted: 0, totalCredits: 0, creditNotes: 0, closingBalance: 0 };
     }
 
-    const clientNameNorm = (selectedClient.name || "").toLowerCase();
+    const clientNameNorm = (selectedClient.name || "").toLowerCase().trim();
+    const clientCompNorm = (selectedClient.companyName || "").toLowerCase().trim();
+    const clientCodeNorm = (selectedClient.clientCode || "").toLowerCase().trim();
+
+    // 1. Calculate Opening Balance (handles both Client Opening Balance and Project-Specific Opening Balance)
+    const selectedProjObj = selectedProjectId !== "all" ? clientProjects.find(p => p.id === selectedProjectId) : null;
 
     // Helper: is transaction related to selected client?
     const isClientMatch = (item) => {
       if (!item || !selectedClient) return false;
-      if (item.clientId === selectedClient.id) return true;
-      if (item.client && item.client.toLowerCase() === clientNameNorm) return true;
-      if (item.party && item.party.toLowerCase().includes(clientNameNorm)) return true;
+      // Direct ID or Code match
+      if (item.clientId && (item.clientId === selectedClient.id || item.clientId === clientCodeNorm)) return true;
+
+      // Project association match (if transaction is attached to a project owned by this client)
+      if (item.projectId && clientProjects.some(p => p.id === item.projectId)) return true;
+      if (item.project && clientProjects.some(p => p.name && p.name.toLowerCase() === item.project.toLowerCase())) return true;
+
+      // Client name string matching
+      const iClient = (item.client || "").toLowerCase().trim();
+      if (iClient && (iClient === clientNameNorm || iClient === clientCompNorm)) return true;
+
+      // Counterparty string matching (bidirectional so "GFS", "GFS - MTR" matches "GFS BUILDERS & DEVELOPERS" and vice-versa)
+      const iParty = (item.party || "").toLowerCase().trim();
+      if (iParty) {
+        if (iParty === clientNameNorm || iParty === clientCompNorm) return true;
+        if (iParty.includes(clientNameNorm) || (clientCompNorm && iParty.includes(clientCompNorm))) return true;
+        if (iParty.length >= 3 && (clientNameNorm.startsWith(iParty) || clientNameNorm.includes(iParty) || (clientCompNorm && clientCompNorm.includes(iParty)))) return true;
+      }
       return false;
     };
 
     // Helper: is transaction related to selected project?
     const isProjectMatch = (item) => {
       if (selectedProjectId === "all") return true;
-      return item.projectId === selectedProjectId;
+      if (item.projectId === selectedProjectId) return true;
+      if (selectedProjObj) {
+        if (item.project && item.project.toLowerCase() === selectedProjObj.name.toLowerCase()) return true;
+        const pNameClean = selectedProjObj.name.toLowerCase().replace(/^(gfs\s+)/i, "").trim();
+        const desc = (item.description || "").toLowerCase();
+        const party = (item.party || "").toLowerCase();
+        if (pNameClean.length >= 4 && (desc.includes(pNameClean) || party.includes(pNameClean))) return true;
+      }
+      return false;
     };
-
-    // 1. Calculate Opening Balance (handles both Client Opening Balance and Project-Specific Opening Balance)
-    const selectedProjObj = selectedProjectId !== "all" ? clientProjects.find(p => p.id === selectedProjectId) : null;
     const clientOp = Number(selectedClient.openingBalance) || 0;
     const projectsOpTotal = clientProjects.reduce((s, p) => s + (Number(p.openingBalance) || 0), 0);
 
