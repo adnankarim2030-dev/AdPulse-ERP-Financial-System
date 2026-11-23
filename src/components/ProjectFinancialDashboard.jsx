@@ -28,8 +28,8 @@ export default function ProjectFinancialDashboard({
 
   const projectInvoices = useMemo(() => invoices.filter(isMatchProject), [invoices, project]);
   const projectExpenses = useMemo(() => expenses.filter(isMatchProject), [expenses, project]);
-  const projectReceipts = useMemo(() => vouchers.filter(v => isMatchProject(v) && (v.type === "RV" || v.type === "CV") && !(v.isPdc && v.pdcStatus !== "Cleared")), [vouchers, project]);
-  const projectPayments = useMemo(() => vouchers.filter(v => isMatchProject(v) && v.type === "PV" && !(v.isPdc && v.pdcStatus !== "Cleared")), [vouchers, project]);
+  const projectReceipts = useMemo(() => vouchers.filter(v => isMatchProject(v) && (v.type === "RV" || v.type === "CV" || (v.type === "BV" && v.barterDirection !== "vendor")) && !(v.isPdc && v.pdcStatus !== "Cleared")), [vouchers, project]);
+  const projectPayments = useMemo(() => vouchers.filter(v => isMatchProject(v) && (v.type === "PV" || (v.type === "BV" && v.barterDirection === "vendor")) && !(v.isPdc && v.pdcStatus !== "Cleared")), [vouchers, project]);
 
   // Financial Calculations
   const projectValue = Number(project.contractValue || project.budget) || 0;

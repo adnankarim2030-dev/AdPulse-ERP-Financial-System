@@ -479,6 +479,41 @@ export function ClientStatementPrintModal({ client, dateFrom, dateTo, statementD
                 </div>
               )}
 
+              {/* 3.5. PDC CHEQUE STATUS TABLE IN PRINTOUT (IF CLIENT HAS ANY PDCs) */}
+              {statementData.pdcSummary && statementData.pdcSummary.rows.length > 0 && (
+                <div style={{ marginBottom: 10 }}>
+                  <div style={{ fontSize: 9.5, fontWeight: 800, marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.04em" }}>
+                    POST-DATED CHEQUES (PDC) STATUS — Pending: {pkr(statementData.pdcSummary.pendingTotal)} (Not Deducted) | Cleared: {pkr(statementData.pdcSummary.clearedTotal)}
+                  </div>
+                  <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 8.5, border: "1px solid #000000", tableLayout: "fixed" }}>
+                    <thead>
+                      <tr>
+                        <th style={{ width: "15%" }}>VOUCHER #</th>
+                        <th style={{ width: "14%" }}>MATURITY DATE</th>
+                        <th style={{ width: "16%" }}>CHEQUE #</th>
+                        <th style={{ width: "20%" }}>DRAWN BANK</th>
+                        <th style={{ width: "16%", textAlign: "right" }}>AMOUNT (PKR)</th>
+                        <th style={{ width: "19%" }}>STATUS</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {statementData.pdcSummary.rows.map((pdc, pIdx) => (
+                        <tr key={pIdx}>
+                          <td style={{ textAlign: "center", fontFamily: "monospace", fontWeight: 700 }}>{pdc.voucherNo}</td>
+                          <td style={{ textAlign: "center" }}>{fmtDate(pdc.maturityDate)}</td>
+                          <td style={{ textAlign: "center", fontFamily: "monospace" }}>#{pdc.chequeNo}</td>
+                          <td>{pdc.drawnBank}</td>
+                          <td style={{ textAlign: "right", fontWeight: 700 }}>{pkr(pdc.amount)}</td>
+                          <td style={{ textAlign: "center", fontWeight: 700 }}>
+                            {pdc.status === "Cleared" ? `CLEARED (${fmtDate(pdc.clearedDate)})` : pdc.status === "Bounced" ? "BOUNCED" : "IN-HAND (PENDING)"}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+
               {/* 4. TRANSACTIONS TABLE (Matches Official Invoice Table Grid) */}
               <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 10, fontSize: 9, border: "1px solid #000000", tableLayout: "fixed" }}>
                 <colgroup>
@@ -740,9 +775,9 @@ export default function ClientStatementView({
       opening += Number(inv.totalAmount || inv.amount) || 0;
     });
 
-    // Prior Receipts / Vouchers / Direct Settlements before dateFrom
+    // Prior Receipts / Vouchers / Direct Settlements / Client Barter before dateFrom
     // IMPORTANT: Unpaid / Uncleared PDC cheques (pdcStatus !== "Cleared") MUST NOT deduct from Client Balance!
-    const priorVouchers = vouchers.filter(v => isClientMatch(v) && isProjectMatch(v) && v.date < dateFrom && (v.type === "RV" || v.type === "CV") && !(v.isPdc && v.pdcStatus !== "Cleared"));
+    const priorVouchers = vouchers.filter(v => isClientMatch(v) && isProjectMatch(v) && v.date < dateFrom && (v.type === "RV" || v.type === "CV" || (v.type === "BV" && v.barterDirection !== "vendor")) && !(v.isPdc && v.pdcStatus !== "Cleared"));
     priorVouchers.forEach(v => {
       opening -= Number(v.amount) || 0;
     });
@@ -783,15 +818,16 @@ export default function ClientStatementView({
       });
     });
 
-    // Add Receipts / Vouchers / Direct Settlements (splitting Receipt Amount & Tax Deduction into separate lines!)
-    vouchers.filter(v => isClientMatch(v) && isProjectMatch(v) && v.date >= dateFrom && v.date <= dateTo && (v.type === "RV" || v.type === "PV" || v.type === "CV")).forEach(v => {
+    // Add Receipts / Vouchers / Direct Settlements / Client Barter (splitting Receipt Amount & Tax Deduction into separate lines!)
+    vouchers.filter(v => isClientMatch(v) && isProjectMatch(v) && v.date >= dateFrom && v.date <= dateTo && (v.type === "RV" || v.type === "PV" || v.type === "CV" || (v.type === "BV" && v.barterDirection !== "vendor"))).forEach(v => {
       const proj = projects.find(p => p.id === v.projectId);
+      const isBarter = v.type === "BV";
       const isPdcBounced = Boolean(v.isPdc && v.pdcStatus === "Bounced");
       const isPdcCleared = Boolean(v.isPdc && v.pdcStatus === "Cleared");
       const isPdcPending = Boolean(v.isPdc && !isPdcCleared && !isPdcBounced);
       const isPdcUnsettled = isPdcPending || isPdcBounced;
       // Only deduct from Client Receivable if NOT a PDC, or if the PDC has been Cleared/Paid!
-      const isSettledCredit = (v.type === "RV" || v.type === "CV") && !isPdcUnsettled;
+      const isSettledCredit = (v.type === "RV" || v.type === "CV" || isBarter) && !isPdcUnsettled;
       const isClientDebit = v.type === "PV" && !isPdcUnsettled;
 
       const grossSettled = Number(v.amount) || 0;
@@ -803,17 +839,20 @@ export default function ClientStatementView({
         ? Number(v.netAmount)
         : Math.max(0, grossSettled - wht - sst);
 
-      const modeLabel = v.via === "Cash" ? "Cash" : (v.paymentMode || (v.isPdc ? "Post-Dated Cheque" : "Bank"));
+      const modeLabel = isBarter ? "Barter / In-Kind" : (v.via === "Cash" ? "Cash" : (v.paymentMode || (v.isPdc ? "Post-Dated Cheque" : "Bank")));
       const instNo = v.instrumentNo || v.chequeNo;
       const refNo = v.voucherNo || ("VCH-" + v.id.toUpperCase());
 
       let typeLabel = "Receipt";
-      if (v.type === "CV") typeLabel = "Direct Settlement";
+      if (isBarter) typeLabel = "Barter Settlement";
+      else if (v.type === "CV") typeLabel = "Direct Settlement";
       else if (v.isPdc) typeLabel = isPdcBounced ? "Cheque Bounced" : (isPdcCleared ? "PDC Cleared" : "PDC Pending");
       else if (v.type === "PV") typeLabel = "Payment";
 
       let defaultDesc = v.description || "Client Transaction";
-      if (v.type === "CV") {
+      if (isBarter) {
+        defaultDesc = `Barter / In-Kind Settlement — ${v.barterItem || v.description || "Goods / Property"}`;
+      } else if (v.type === "CV") {
         defaultDesc = `Direct Settlement to Vendor (${v.category || v.vendor || "Vendor"})${instNo ? ` [${v.paymentMode || 'Inst'} #${instNo}]` : ""}`;
       } else if (v.isPdc) {
         defaultDesc = isPdcBounced
@@ -939,7 +978,7 @@ export default function ClientStatementView({
     if (selectedTxType === "invoice") {
       filteredRows = rawRows.filter(r => r.type === "Invoice");
     } else if (selectedTxType === "receipt") {
-      filteredRows = rawRows.filter(r => r.type === "Receipt" || r.type === "PDC Cheque" || r.type === "PDC Cleared" || r.type === "PDC Pending" || r.type === "Direct Settlement" || r.type.startsWith("Tax Deduction"));
+      filteredRows = rawRows.filter(r => r.type === "Receipt" || r.type === "Barter Settlement" || r.type === "PDC Cheque" || r.type === "PDC Cleared" || r.type === "PDC Pending" || r.type === "Direct Settlement" || r.type.startsWith("Tax Deduction"));
     }
 
     // Sort chronologically
@@ -949,6 +988,7 @@ export default function ClientStatementView({
     let running = opening;
     let totalInvoiced = 0;
     let totalReceived = 0;
+    let totalBarter = 0;
     let creditNotes = 0;
 
     let totalGrossInvoiced = 0;
@@ -966,8 +1006,11 @@ export default function ClientStatementView({
           totalSstInvoiced += (r.taxBreakdown.sst || 0);
         }
       }
-      if ((r.type === "Receipt" || r.type === "PDC Cheque" || r.type === "PDC Cleared" || r.type === "Direct Settlement") && r.credit > 0) {
+      if ((r.type === "Receipt" || r.type === "Barter Settlement" || r.type === "PDC Cheque" || r.type === "PDC Cleared" || r.type === "Direct Settlement") && r.credit > 0) {
         totalReceived += r.credit;
+        if (r.type === "Barter Settlement") {
+          totalBarter += r.credit;
+        }
         if (r.taxBreakdown && r.taxBreakdown.kind === "receipt") {
           totalGrossReceived += (r.taxBreakdown.gross || r.credit);
         } else if (r.taxBreakdown && r.taxBreakdown.kind === "receipt_net") {
@@ -987,6 +1030,39 @@ export default function ClientStatementView({
     const totalTaxDeducted = totalWhtWithheld + totalSstWithheld;
     const totalCredits = totalReceived + totalTaxDeducted;
 
+    // Dedicated PDC Cheque Status Register for this Client (+ selected project)
+    const pdcRows = vouchers
+      .filter(v => isClientMatch(v) && isProjectMatch(v) && v.isPdc && v.type === "RV")
+      .map(v => {
+        const proj = projects.find(p => p.id === v.projectId);
+        const status = v.pdcStatus === "Cleared" ? "Cleared" : (v.pdcStatus === "Bounced" ? "Bounced" : "In-Hand");
+        return {
+          id: v.id,
+          voucherNo: v.voucherNo || ("VCH-" + v.id.toUpperCase()),
+          issueDate: v.date || "—",
+          maturityDate: v.chequeDate || v.instrumentDate || v.date || "—",
+          clearedDate: v.clearedDate || null,
+          chequeNo: v.chequeNo || v.instrumentNo || "PDC",
+          drawnBank: v.drawnBank || "—",
+          projectName: proj ? proj.name : "General",
+          amount: Number(v.amount) || 0,
+          netAmount: Number(v.netAmount !== undefined ? v.netAmount : v.amount) || 0,
+          status,
+          bounceReason: v.bounceReason || ""
+        };
+      })
+      .sort((a, b) => new Date(a.maturityDate) - new Date(b.maturityDate));
+
+    const pdcSummary = {
+      rows: pdcRows,
+      pendingCount: pdcRows.filter(p => p.status === "In-Hand").length,
+      pendingTotal: pdcRows.filter(p => p.status === "In-Hand").reduce((s, p) => s + p.amount, 0),
+      clearedCount: pdcRows.filter(p => p.status === "Cleared").length,
+      clearedTotal: pdcRows.filter(p => p.status === "Cleared").reduce((s, p) => s + p.amount, 0),
+      bouncedCount: pdcRows.filter(p => p.status === "Bounced").length,
+      bouncedTotal: pdcRows.filter(p => p.status === "Bounced").reduce((s, p) => s + p.amount, 0)
+    };
+
     return {
       openingBalance: opening,
       openingRef,
@@ -994,6 +1070,7 @@ export default function ClientStatementView({
       rows: rowsWithBalance,
       totalInvoiced,
       totalReceived,
+      totalBarter,
       totalTaxDeducted,
       totalCredits,
       creditNotes,
@@ -1002,7 +1079,8 @@ export default function ClientStatementView({
       totalSstInvoiced,
       totalGrossReceived,
       totalWhtWithheld,
-      totalSstWithheld
+      totalSstWithheld,
+      pdcSummary
     };
   }, [selectedClient, clientProjects, selectedProjectId, selectedTxType, dateFrom, dateTo, invoices, vouchers, projects]);
 
@@ -1012,7 +1090,7 @@ export default function ClientStatementView({
     return clientProjects.map(p => {
       const projOp = Number(p.openingBalance) || 0;
       const projInvoices = invoices.filter(i => i.projectId === p.id);
-      const projVouchers = vouchers.filter(v => v.projectId === p.id && (v.type === "RV" || v.type === "CV") && !(v.isPdc && v.pdcStatus === "Bounced"));
+      const projVouchers = vouchers.filter(v => v.projectId === p.id && (v.type === "RV" || v.type === "CV" || (v.type === "BV" && v.barterDirection !== "vendor")) && !(v.isPdc && v.pdcStatus !== "Cleared"));
       const invoiced = projOp + projInvoices.reduce((s, i) => s + (Number(i.totalAmount || i.amount) || 0), 0);
       const received = projVouchers.reduce((s, v) => s + (Number(v.amount) || 0), 0);
       return {
@@ -1257,6 +1335,84 @@ export default function ClientStatementView({
             </div>
           </div>
 
+          {/* DEDICATED PDC CHEQUE STATUS MINI-LEDGER (ABOVE MAIN CLIENT LEDGER) */}
+          <div className="card" style={{ padding: 0, marginBottom: 20, borderRadius: 10, overflow: "hidden", border: "1.5px solid #C4B5FD" }}>
+            <div style={{ padding: "12px 16px", background: "linear-gradient(135deg, rgba(124, 58, 237, 0.08) 0%, rgba(124, 58, 237, 0.02) 100%)", borderBottom: "1px solid #DDD6FE", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 10 }}>
+              <div>
+                <h4 style={{ margin: 0, fontSize: 14, color: "#5B21B6", display: "flex", alignItems: "center", gap: 6 }}>
+                  📜 PDC Cheque Status Register — {selectedClient.name}
+                </h4>
+                <div style={{ fontSize: 11.5, color: "#6B7280", marginTop: 2 }}>
+                  Pending PDCs are tracked here and are <strong>NOT</strong> deducted from Client Ledger Balance until marked Cleared / Paid
+                </div>
+              </div>
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+                <span style={{ padding: "4px 10px", borderRadius: 16, fontSize: 11.5, fontWeight: 700, background: "rgba(124, 58, 237, 0.12)", color: "#6D28D9", border: "1px solid rgba(124, 58, 237, 0.3)" }}>
+                  ⏳ Pending ({statementData.pdcSummary?.pendingCount || 0}): {pkr(statementData.pdcSummary?.pendingTotal || 0)}
+                </span>
+                <span style={{ padding: "4px 10px", borderRadius: 16, fontSize: 11.5, fontWeight: 700, background: "rgba(5, 150, 105, 0.12)", color: "#047857", border: "1px solid rgba(5, 150, 105, 0.3)" }}>
+                  ✓ Cleared ({statementData.pdcSummary?.clearedCount || 0}): {pkr(statementData.pdcSummary?.clearedTotal || 0)}
+                </span>
+                {(statementData.pdcSummary?.bouncedCount || 0) > 0 && (
+                  <span style={{ padding: "4px 10px", borderRadius: 16, fontSize: 11.5, fontWeight: 700, background: "rgba(220, 38, 38, 0.12)", color: "#B91C1C", border: "1px solid rgba(220, 38, 38, 0.3)" }}>
+                    ✕ Bounced ({statementData.pdcSummary.bouncedCount}): {pkr(statementData.pdcSummary.bouncedTotal)}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {(!statementData.pdcSummary || statementData.pdcSummary.rows.length === 0) ? (
+              <div style={{ padding: "14px 16px", fontSize: 12.5, color: "var(--ink-muted)", textAlign: "center" }}>
+                No Post-Dated Cheques (PDC) recorded for this client{selectedProjectId !== "all" ? " / project" : ""}.
+              </div>
+            ) : (
+              <table className="table" style={{ margin: 0 }}>
+                <thead>
+                  <tr>
+                    <th>Voucher #</th>
+                    <th>Received Date</th>
+                    <th>Maturity / Due Date</th>
+                    <th>Cheque #</th>
+                    <th>Drawn Bank</th>
+                    <th>Project</th>
+                    <th style={{ textAlign: "right" }}>Amount (PKR)</th>
+                    <th style={{ textAlign: "center" }}>PDC Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {statementData.pdcSummary.rows.map(pdc => (
+                    <tr key={pdc.id}>
+                      <td><span style={{ fontFamily: "monospace", fontWeight: 700, color: "#6D28D9" }}>{pdc.voucherNo}</span></td>
+                      <td>{pdc.issueDate}</td>
+                      <td style={{ fontWeight: 700 }}>{pdc.maturityDate}</td>
+                      <td><span style={{ fontFamily: "monospace", fontWeight: 700 }}>#{pdc.chequeNo}</span></td>
+                      <td>{pdc.drawnBank}</td>
+                      <td>{pdc.projectName}</td>
+                      <td style={{ textAlign: "right", fontWeight: 800, color: pdc.status === "Cleared" ? "#059669" : pdc.status === "Bounced" ? "#DC2626" : "#6D28D9" }}>
+                        {pkr(pdc.amount)}
+                      </td>
+                      <td style={{ textAlign: "center" }}>
+                        {pdc.status === "Cleared" ? (
+                          <span style={{ padding: "2px 9px", borderRadius: 12, fontSize: 11, fontWeight: 700, background: "rgba(5, 150, 105, 0.12)", color: "#047857" }}>
+                            ✓ Cleared{pdc.clearedDate ? ` (${pdc.clearedDate})` : ""}
+                          </span>
+                        ) : pdc.status === "Bounced" ? (
+                          <span style={{ padding: "2px 9px", borderRadius: 12, fontSize: 11, fontWeight: 700, background: "rgba(220, 38, 38, 0.12)", color: "#B91C1C" }}>
+                            ✕ Bounced
+                          </span>
+                        ) : (
+                          <span style={{ padding: "2px 9px", borderRadius: 12, fontSize: 11, fontWeight: 700, background: "rgba(124, 58, 237, 0.12)", color: "#6D28D9" }}>
+                            ⏳ In-Hand (Not Deducted)
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+
           {/* STATEMENT TABLE */}
           <div className="card" style={{ padding: 0, marginBottom: 20, borderRadius: 10, overflow: "hidden", border: "1px solid var(--rule)" }}>
             <div style={{ padding: "12px 16px", background: "var(--table-header-bg)", borderBottom: "1px solid var(--rule)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -1301,8 +1457,8 @@ export default function ClientStatementView({
                       <td>
                         <span style={{
                           padding: "2px 8px", borderRadius: 12, fontSize: 11, fontWeight: 700,
-                          background: row.type === "Invoice" ? "rgba(2, 132, 199, 0.1)" : row.type === "PDC Pending" ? "rgba(124, 58, 237, 0.12)" : row.type === "Cheque Bounced" ? "rgba(220, 38, 38, 0.12)" : row.type.startsWith("Tax Deduction") ? "rgba(217, 119, 6, 0.12)" : "rgba(5, 150, 105, 0.1)",
-                          color: row.type === "Invoice" ? "#0284C7" : row.type === "PDC Pending" ? "#7C3AED" : row.type === "Cheque Bounced" ? "#DC2626" : row.type.startsWith("Tax Deduction") ? "#B45309" : "#059669"
+                          background: row.type === "Invoice" ? "rgba(2, 132, 199, 0.1)" : row.type === "Barter Settlement" ? "rgba(15, 118, 110, 0.14)" : row.type === "PDC Pending" ? "rgba(124, 58, 237, 0.12)" : row.type === "Cheque Bounced" ? "rgba(220, 38, 38, 0.12)" : row.type.startsWith("Tax Deduction") ? "rgba(217, 119, 6, 0.12)" : "rgba(5, 150, 105, 0.1)",
+                          color: row.type === "Invoice" ? "#0284C7" : row.type === "Barter Settlement" ? "#0F766E" : row.type === "PDC Pending" ? "#7C3AED" : row.type === "Cheque Bounced" ? "#DC2626" : row.type.startsWith("Tax Deduction") ? "#B45309" : "#059669"
                         }}>
                           {row.type}
                         </span>

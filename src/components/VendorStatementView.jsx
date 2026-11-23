@@ -814,8 +814,8 @@ export default function VendorStatementView({
       opening += Number(exp.amount) || 0;
     });
 
-    // Prior Payments / Direct Settlements (Debits) — ONLY settled/cleared PDCs deduct from Vendor Payable
-    vouchers.filter(v => isVendorMatch(v) && isProjectMatch(v) && v.date < dateFrom && (v.type === "PV" || v.type === "CV")).forEach(v => {
+    // Prior Payments / Direct Settlements / Vendor Barter (Debits) — ONLY settled/cleared PDCs deduct from Vendor Payable
+    vouchers.filter(v => isVendorMatch(v) && isProjectMatch(v) && v.date < dateFrom && (v.type === "PV" || v.type === "CV" || (v.type === "BV" && v.barterDirection === "vendor"))).forEach(v => {
       if (v.isPdc && v.pdcStatus !== "Cleared") return;
       opening -= Number(v.amount) || 0;
     });
@@ -845,19 +845,22 @@ export default function VendorStatementView({
       });
     });
 
-    vouchers.filter(v => isVendorMatch(v) && isProjectMatch(v) && v.date >= dateFrom && v.date <= dateTo && (v.type === "PV" || v.type === "CV")).forEach(v => {
+    vouchers.filter(v => isVendorMatch(v) && isProjectMatch(v) && v.date >= dateFrom && v.date <= dateTo && (v.type === "PV" || v.type === "CV" || (v.type === "BV" && v.barterDirection === "vendor"))).forEach(v => {
       const proj = projects.find(p => p.id === v.projectId);
       const isDirect = v.type === "CV";
+      const isBarter = v.type === "BV";
       const isPdcBounced = Boolean(v.isPdc && v.pdcStatus === "Bounced");
       const isPdcCleared = Boolean(v.isPdc && v.pdcStatus === "Cleared");
       const isPdcPending = Boolean(v.isPdc && !isPdcCleared && !isPdcBounced);
-      let typeLabel = isDirect ? "Direct Settlement" : "Vendor Payment";
+      let typeLabel = isBarter ? "Barter Settlement" : (isDirect ? "Direct Settlement" : "Vendor Payment");
       if (v.isPdc) typeLabel = isPdcBounced ? "Cheque Bounced" : (isPdcCleared ? "PDC Encashed" : "PDC Pending");
 
       const chqRef = v.chequeNo || v.instrumentNo || "PDC";
       const chqDue = v.chequeDate || v.instrumentDate || v.date;
       let defaultDesc = "";
-      if (isDirect) {
+      if (isBarter) {
+        defaultDesc = `Barter Settlement — ${v.barterItem || v.description || "In-Kind Goods/Services"}`;
+      } else if (isDirect) {
         defaultDesc = `Direct Settlement by Client (${v.party || "Client"})${v.instrumentNo ? ` [${v.paymentMode || 'Inst'} #${v.instrumentNo}]` : ""}`;
       } else if (v.isPdc) {
         defaultDesc = isPdcBounced

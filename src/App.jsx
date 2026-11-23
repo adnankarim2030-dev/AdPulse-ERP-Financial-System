@@ -201,8 +201,9 @@ export function getNextVoucherNo(type = "PV", vouchers = [], via = "Cash", party
   else if (type === "JV") prefix = "JV";
   else if (type === "SV") prefix = "SV";
   else if (type === "CV") prefix = "CV";
+  else if (type === "BV") prefix = "BV";
 
-  const isPartyApplicable = ["BPV", "CPV", "BRV", "CRV", "PV", "RV"].includes(prefix);
+  const isPartyApplicable = ["BPV", "CPV", "BRV", "CRV", "PV", "RV", "BV"].includes(prefix);
   const tag = isPartyApplicable ? getPartyTag(partyName) : "";
 
   let maxSeq = 0;
@@ -301,8 +302,10 @@ const ACCOUNTS = {
   ar: { code: "1130", name: "Accounts Receivable (Clients)", type: "asset", category: "Current Assets" },
   wht_receivable: { code: "1140", name: "WHT Receivable (Advance Tax)", type: "asset", category: "Current Assets" },
   cheques_in_hand: { code: "1150", name: "Cheques in Hand / PDC Receivable", type: "asset", category: "Current Assets" },
+  barter_goods: { code: "1160", name: "Barter Goods / Inventory / Vouchers", type: "asset", category: "Current Assets" },
   equipment: { code: "1210", name: "Office & Production Equipment", type: "asset", category: "Fixed Assets" },
   ooh_sites: { code: "1220", name: "OOH Billboard Structures", type: "asset", category: "Fixed Assets" },
+  barter_property: { code: "1230", name: "Barter Property / Real Estate Units", type: "asset", category: "Fixed Assets" },
   ap: { code: "2110", name: "Accounts Payable (Vendors)", type: "liability", category: "Current Liabilities" },
   srb_payable: { code: "2120", name: "SRB Sales Tax Payable", type: "liability", category: "Current Liabilities" },
   wht_payable: { code: "2130", name: "WHT Payable (Withheld from Vendors)", type: "liability", category: "Current Liabilities" },
@@ -379,6 +382,7 @@ const COA_STRUCTURE = [
 const VOUCHER_TYPES = {
   PV: "Payment Voucher",
   RV: "Receipt Voucher",
+  BV: "Barter / In-Kind Settlement",
   CTV: "Contra Transfer Voucher (Cash ↔ Bank)",
   CV: "Client-to-Vendor Direct Settlement",
   JV: "Journal Voucher",
@@ -976,6 +980,23 @@ function buildInitialJournal(invoices, expenses, vouchers) {
           { account: "ap", debit: Number(v.amount) || 0, credit: 0, memo: `AP Settlement: ${v.vendor || v.category}` },
           { account: "ar", debit: 0, credit: Number(v.amount) || 0, memo: `AR Settlement: ${v.party}` }
         ]
+      });
+    } else if (v.type === "BV") {
+      const barterAcc = v.barterAccount || (v.barterDirection === "vendor" ? "barter_goods" : "barter_property");
+      const barterAmt = Number(v.amount) || 0;
+      const isVendorBarter = v.barterDirection === "vendor";
+      entries.push({
+        id: uid(), date: v.date, reference: v.voucherNo || ("BV-" + v.id.toUpperCase()),
+        description: `Barter Settlement (${isVendorBarter ? "Vendor" : "Client"}): ${v.party} — ${v.barterItem || v.description}`,
+        lines: isVendorBarter
+          ? [
+              { account: "ap", debit: barterAmt, credit: 0, memo: `Vendor Barter Settlement: ${v.party}` },
+              { account: barterAcc, debit: 0, credit: barterAmt, memo: `Barter Asset/Goods Given: ${v.barterItem || v.description}` }
+            ]
+          : [
+              { account: barterAcc, debit: barterAmt, credit: 0, memo: `Barter Received: ${v.barterItem || v.description}` },
+              { account: "ar", debit: 0, credit: barterAmt, memo: `Client Barter Settlement: ${v.party}` }
+            ]
       });
     } else if (v.type === "CTV") {
       const srcBankId = v.sourceBankId || "bank-cash-park-tower";
@@ -2221,7 +2242,9 @@ export default function App() {
       const pId = resolveProjId(v);
       if (pId && map[pId]) {
         const isPdcUnsettled = Boolean(v.isPdc && v.pdcStatus !== "Cleared");
-        if ((v.type === "RV" || v.type === "CV") && !isPdcUnsettled) {
+        const isClientBarter = v.type === "BV" && v.barterDirection !== "vendor";
+        const isVendorBarter = v.type === "BV" && v.barterDirection === "vendor";
+        if ((v.type === "RV" || v.type === "CV" || isClientBarter) && !isPdcUnsettled) {
           const grossAmt = Number(v.amount) || 0;
           const wht = Number(v.whtAmount) || 0;
           const sst = Number(v.sstAmount !== undefined ? v.sstAmount : v.sstWithheld) || 0;
@@ -2229,7 +2252,7 @@ export default function App() {
           map[pId].received += grossAmt;
           map[pId].cashReceived += netAmt;
           map[pId].taxDeducted += (wht + sst);
-        } else if (v.type === "PV" && !isPdcUnsettled) {
+        } else if ((v.type === "PV" || isVendorBarter) && !isPdcUnsettled) {
           const vAmt = Number(v.amount) || Number(v.netAmount) || 0;
           map[pId].cost += vAmt;
         }
@@ -2871,7 +2894,8 @@ export default function App() {
       settleAR, lines,
       applyCommission, agencyCommissionRate, agencyCommissionAmount,
       applySst, sstRate, sstAmount,
-      applyWht, whtRate, whtAmount
+      applyWht, whtRate, whtAmount,
+      barterDirection, barterAccount, barterItem, splitPayment
     } = payload;
 
     const voucherNo = customVoucherNo || getNextVoucherNo(type, vouchers, via, party || vendor);
@@ -2971,6 +2995,23 @@ export default function App() {
         { account: "ap", debit: Number(amount), credit: 0 },
         { account: "ar", debit: 0, credit: Number(amount) },
       ];
+    } else if (type === "BV") {
+      // Barter / In-Kind Settlement Voucher
+      const isVendorBarter = barterDirection === "vendor";
+      const targetAcc = barterAccount || (isVendorBarter ? "barter_goods" : "barter_property");
+      const accLabel = ACCOUNTS[targetAcc]?.name || targetAcc;
+      const bAmt = Number(amount) || 0;
+      if (isVendorBarter) {
+        journalLines = [
+          { account: "ap", debit: bAmt, credit: 0, memo: `Vendor Barter Settlement (${party})` },
+          { account: targetAcc, debit: 0, credit: bAmt, memo: `Barter Given: ${barterItem || description} (${accLabel})` },
+        ];
+      } else {
+        journalLines = [
+          { account: targetAcc, debit: bAmt, credit: 0, memo: `Barter Received: ${barterItem || description} (${accLabel})` },
+          { account: "ar", debit: 0, credit: bAmt, memo: `Client Barter Settlement (${party})` },
+        ];
+      }
     }
 
     const newVoucherId = uid();
@@ -2983,19 +3024,82 @@ export default function App() {
       clientId: clientId || null,
       vendorId: vendorId || null,
       vendor: vendor || (type === "CV" ? category : null),
-      paymentMode, instrumentNo, instrumentDate, drawnBank,
-      receiveMode: isPdcVoucher ? "pdc" : (via === "Cash" ? "cash" : "bank"),
-      isPdc: isPdcVoucher,
-      pdcStatus: isPdcVoucher ? "In-Hand" : null,
+      paymentMode: type === "BV" ? `Barter (${ACCOUNTS[barterAccount || "barter_property"]?.name || "In-Kind"})` : paymentMode,
+      instrumentNo, instrumentDate, drawnBank,
+      receiveMode: type === "BV" ? "barter" : (isPdcVoucher ? "pdc" : (via === "Cash" ? "cash" : "bank")),
+      isPdc: type === "BV" ? false : isPdcVoucher,
+      pdcStatus: (type !== "BV" && isPdcVoucher) ? "In-Hand" : null,
       chequeNo: chequeNo || (isPdcVoucher ? instrumentNo : null) || null,
       chequeDate: chequeDate || (isPdcVoucher ? instrumentDate : null) || null,
       targetBankId: targetBankId || bankAccountId || null,
       category, subcategory, via, bankAccountId, sourceBankId,
       applyCommission, agencyCommissionRate, agencyCommissionAmount,
       applySst, sstRate, sstAmount,
-      applyWht, whtRate, whtAmount
+      applyWht, whtRate, whtAmount,
+      barterDirection: type === "BV" ? (barterDirection || "client") : null,
+      barterAccount: type === "BV" ? (barterAccount || (barterDirection === "vendor" ? "barter_goods" : "barter_property")) : null,
+      barterItem: type === "BV" ? (barterItem || "") : null
     };
-    setVouchers(v => [vRecord, ...v]);
+
+    // Optional Split Payment for Client Barter (e.g., 50,000 Barter + 50,000 Cash/Bank/PDC in one go!)
+    let linkedRvNo = null;
+    const extraRecords = [];
+    if (type === "BV" && barterDirection !== "vendor" && splitPayment && Number(splitPayment.amount) > 0) {
+      const spAmt = Number(splitPayment.amount) || 0;
+      const spMode = splitPayment.receiveMode || "Bank"; // "Bank" | "Cash" | "PDC"
+      const spIsPdc = spMode === "PDC";
+      const spVia = spMode === "Cash" ? "Cash" : "Bank";
+      const spVoucherNo = getNextVoucherNo("RV", [vRecord, ...vouchers], spVia, party);
+      const spId = uid();
+      const defaultBank = bankAccounts.find(b => b.accountType !== "Petty Cash" && !b.id.startsWith("bank-cash"))?.id || bankAccounts[0]?.id || null;
+      const spBankId = spIsPdc ? null : (spVia === "Cash" ? (splitPayment.cashAccountId || "bank-cash-park-tower") : (splitPayment.bankAccountId || defaultBank));
+      const spDepositAcc = spIsPdc ? "cheques_in_hand" : (spVia === "Cash" ? "cash" : "bank");
+      const spDesc = `Remaining Cash/Bank Balance against Barter Deal ${voucherNo}${barterItem ? ` (${barterItem})` : ""}${spIsPdc ? ` — PDC Chq #${splitPayment.chequeNo || "PDC"} (Due: ${splitPayment.chequeDate || date})` : ""}`;
+
+      postEntry(date, projectId ? `[Project] ${spDesc}` : spDesc, [
+        {
+          account: spDepositAcc,
+          bankAccountId: spBankId,
+          debit: spAmt,
+          credit: 0,
+          memo: spIsPdc
+            ? `PDC Cheque In-Hand (Chq #${splitPayment.chequeNo || "PDC"}, Maturity: ${splitPayment.chequeDate || date})`
+            : `Received via ${spVia} (Split Barter Deal ${voucherNo})`
+        },
+        { account: "ar", debit: 0, credit: spAmt, memo: `Client Receivable Balance Settlement (${party})` }
+      ], spVoucherNo, { voucherId: spId });
+
+      extraRecords.push({
+        id: spId,
+        voucherNo: spVoucherNo,
+        type: "RV",
+        projectId: projectId || null,
+        date,
+        party,
+        description: spDesc,
+        amount: spAmt,
+        netAmount: spAmt,
+        clientId: clientId || null,
+        vendorId: null,
+        vendor: null,
+        paymentMode: spIsPdc ? "Post-Dated Cheque (PDC)" : (spVia === "Cash" ? "Cash" : "Bank Transfer / Cheque"),
+        instrumentNo: splitPayment.chequeNo || "",
+        instrumentDate: splitPayment.chequeDate || date,
+        drawnBank: splitPayment.drawnBank || "",
+        receiveMode: spIsPdc ? "pdc" : (spVia === "Cash" ? "cash" : "bank"),
+        isPdc: spIsPdc,
+        pdcStatus: spIsPdc ? "In-Hand" : null,
+        chequeNo: spIsPdc ? (splitPayment.chequeNo || null) : null,
+        chequeDate: spIsPdc ? (splitPayment.chequeDate || date) : null,
+        targetBankId: splitPayment.bankAccountId || defaultBank,
+        via: spVia,
+        bankAccountId: spIsPdc ? (splitPayment.bankAccountId || defaultBank) : spBankId,
+        linkedBarterVoucherNo: voucherNo
+      });
+      linkedRvNo = spVoucherNo;
+    }
+
+    setVouchers(v => [...extraRecords, vRecord, ...v]);
 
     // Automatically settle Client Invoice ONLY when a non-PDC RV (Cash/Bank Receipt) is created.
     // For PDC cheques, invoice & client ledger settlement happens ONLY when the PDC is Cleared/Paid!
@@ -3020,9 +3124,11 @@ export default function App() {
     setShowVoucherForm(false);
     setEditingVoucher(null);
     triggerSuccessPopup({
-      title: `Process Complete — ${type} Voucher Saved!`,
-      message: `${type} Voucher for "${party || vendor || 'Counterparty'}" (${pkr(vRecord.netAmount)}) has been posted to General Ledger.`,
-      code: voucherNo,
+      title: type === "BV" ? "DONE — Barter Settlement Posted!" : `DONE — ${type} Voucher Saved!`,
+      message: linkedRvNo
+        ? `Barter Deal (${pkr(vRecord.amount)}) + Remaining Receipt ${linkedRvNo} (${pkr(splitPayment.amount)}) for "${party}" have been posted to General Ledger & Client Statement.`
+        : `${type} Voucher for "${party || vendor || 'Counterparty'}" (${pkr(vRecord.netAmount)}) has been posted to General Ledger.`,
+      code: linkedRvNo ? `${voucherNo} + ${linkedRvNo}` : voucherNo,
       module: "Vouchers"
     });
     return voucherNo;
@@ -3037,7 +3143,8 @@ export default function App() {
       settleAR, lines,
       applyCommission, agencyCommissionRate, agencyCommissionAmount,
       applySst, sstRate, sstAmount,
-      applyWht, whtRate, whtAmount
+      applyWht, whtRate, whtAmount,
+      barterDirection, barterAccount, barterItem, splitPayment
     } = payload;
 
     const existingVoucher = vouchers.find(v => v.id === voucherId);
@@ -3131,6 +3238,20 @@ export default function App() {
         { account: "ap", debit: Number(amount), credit: 0 },
         { account: "ar", debit: 0, credit: Number(amount) },
       ];
+    } else if (type === "BV") {
+      const isVendorBarter = barterDirection === "vendor";
+      const targetAcc = barterAccount || (isVendorBarter ? "barter_goods" : "barter_property");
+      const accLabel = ACCOUNTS[targetAcc]?.name || targetAcc;
+      const bAmt = Number(amount) || 0;
+      journalLines = isVendorBarter
+        ? [
+            { account: "ap", debit: bAmt, credit: 0, memo: `Vendor Barter Settlement (${party})` },
+            { account: targetAcc, debit: 0, credit: bAmt, memo: `Barter Given: ${barterItem || description} (${accLabel})` },
+          ]
+        : [
+            { account: targetAcc, debit: bAmt, credit: 0, memo: `Barter Received: ${barterItem || description} (${accLabel})` },
+            { account: "ar", debit: 0, credit: bAmt, memo: `Client Barter Settlement (${party})` },
+          ];
     }
 
     // Update GL Journal Entry
@@ -3191,7 +3312,10 @@ export default function App() {
           sstAmount,
           applyWht,
           whtRate,
-          whtAmount
+          whtAmount,
+          barterDirection: type === "BV" ? (barterDirection || "client") : null,
+          barterAccount: type === "BV" ? (barterAccount || (barterDirection === "vendor" ? "barter_goods" : "barter_property")) : null,
+          barterItem: type === "BV" ? (barterItem || "") : null
         };
       }
       return v;
@@ -6122,7 +6246,7 @@ export default function App() {
                       });
                       const totalInvoiced = clientInvoices.reduce((s, i) => s + (Number(i.totalAmount || i.amount) || 0), 0);
                       // Unpaid / Pending PDC cheques (pdcStatus !== "Cleared") do NOT deduct from Client Outstanding!
-                      const totalReceived = clientVouchers.filter(v => (v.type === "RV" || v.type === "CV") && !(v.isPdc && v.pdcStatus !== "Cleared")).reduce((s, v) => s + (Number(v.amount) || 0), 0);
+                      const totalReceived = clientVouchers.filter(v => (v.type === "RV" || v.type === "CV" || (v.type === "BV" && v.barterDirection !== "vendor")) && !(v.isPdc && v.pdcStatus !== "Cleared")).reduce((s, v) => s + (Number(v.amount) || 0), 0);
                       const outstanding = (Number(c.openingBalance) || 0) + projectsOpening + totalInvoiced - totalReceived;
 
                       return (
@@ -6257,7 +6381,7 @@ export default function App() {
                       });
                       const totalExpenses = vendorExpenses.reduce((s, e) => s + (Number(e.amount) || 0), 0);
                       // Unpaid / Pending Issued PDC cheques (pdcStatus !== "Cleared") do NOT deduct from Vendor Payable!
-                      const totalPayments = vendorVouchers.filter(vo => (vo.type === "PV" || vo.type === "CV") && !(vo.isPdc && vo.pdcStatus !== "Cleared")).reduce((s, vo) => s + (Number(vo.amount) || 0), 0);
+                      const totalPayments = vendorVouchers.filter(vo => (vo.type === "PV" || vo.type === "CV" || (vo.type === "BV" && vo.barterDirection === "vendor")) && !(vo.isPdc && vo.pdcStatus !== "Cleared")).reduce((s, vo) => s + (Number(vo.amount) || 0), 0);
                       const payable = (Number(v.openingBalance) || 0) + totalExpenses - totalPayments;
 
                       return (
@@ -8862,6 +8986,9 @@ export default function App() {
                 <button className="btn" style={{ background: "#059669", color: "#FFFFFF", borderColor: "#059669", fontWeight: 700 }} onClick={() => { setVoucherDefaultType("RV"); setShowVoucherForm(true); }}>
                   💰 New Receipt Voucher (RV)
                 </button>
+                <button className="btn" style={{ background: "#0F766E", color: "#FFFFFF", borderColor: "#0F766E", fontWeight: 700 }} onClick={() => { setVoucherDefaultType("BV"); setShowVoucherForm(true); }}>
+                  🤝 Barter / In-Kind Settlement (BV)
+                </button>
                 <button className="btn" style={{ background: "#0284C7", color: "#FFFFFF", borderColor: "#0284C7", fontWeight: 700 }} onClick={() => { setVoucherDefaultType("CV"); setShowVoucherForm(true); }}>
                   ⚡ Direct Client ➔ Vendor Settlement (CV)
                 </button>
@@ -8881,6 +9008,7 @@ export default function App() {
                   { key: "all", label: `All Vouchers (${vouchers.length})` },
                   { key: "PV", label: `Payments (${vouchers.filter(v => v.type === "PV").length})`, color: "#D97706" },
                   { key: "RV", label: `Receipts (${vouchers.filter(v => v.type === "RV").length})`, color: "#059669" },
+                  { key: "BV", label: `Barter Deals (${vouchers.filter(v => v.type === "BV").length})`, color: "#0F766E" },
                   { key: "CV", label: `Client ➔ Vendor (${vouchers.filter(v => v.type === "CV").length})`, color: "#0284C7" },
                   { key: "CTV", label: `Contra (${vouchers.filter(v => v.type === "CTV").length})`, color: "#64748B" },
                   { key: "PDC", label: `Post-Dated Cheques (${vouchers.filter(v => v.isPdc).length})`, color: "#7C3AED" },
@@ -8964,11 +9092,12 @@ export default function App() {
                       return filteredVouchers.map(v => {
                         const isPV = v.type === "PV";
                         const isRV = v.type === "RV";
+                        const isBV = v.type === "BV";
                         const isCV = v.type === "CV";
                         const isCTV = v.type === "CTV";
 
-                        const typeBg = isPV ? "rgba(217, 119, 6, 0.12)" : isRV ? "rgba(5, 150, 105, 0.12)" : isCV ? "rgba(2, 132, 199, 0.12)" : "rgba(100, 116, 139, 0.12)";
-                        const typeColor = isPV ? "#D97706" : isRV ? "#059669" : isCV ? "#0284C7" : "#475569";
+                        const typeBg = isPV ? "rgba(217, 119, 6, 0.12)" : isRV ? "rgba(5, 150, 105, 0.12)" : isBV ? "rgba(15, 118, 110, 0.14)" : isCV ? "rgba(2, 132, 199, 0.12)" : "rgba(100, 116, 139, 0.12)";
+                        const typeColor = isPV ? "#D97706" : isRV ? "#059669" : isBV ? "#0F766E" : isCV ? "#0284C7" : "#475569";
 
                         return (
                           <tr key={v.id}>
@@ -14760,6 +14889,17 @@ function VoucherModal({
   const [rvChequeDate, setRvChequeDate] = useState(voucherToEdit?.chequeDate || TODAY_STR);
   const [rvDrawnBank, setRvDrawnBank] = useState(voucherToEdit?.drawnBank || "");
 
+  // BV (Barter / In-Kind Settlement) State
+  const [barterDirection, setBarterDirection] = useState(voucherToEdit?.barterDirection || "client");
+  const [barterAccount, setBarterAccount] = useState(voucherToEdit?.barterAccount || "barter_property");
+  const [barterItem, setBarterItem] = useState(voucherToEdit?.barterItem || "");
+  const [enableBarterSplit, setEnableBarterSplit] = useState(false);
+  const [splitCashAmount, setSplitCashAmount] = useState("");
+  const [splitReceiveMode, setSplitReceiveMode] = useState("Bank");
+  const [splitChequeNo, setSplitChequeNo] = useState("");
+  const [splitChequeDate, setSplitChequeDate] = useState(TODAY_STR);
+  const [splitDrawnBank, setSplitDrawnBank] = useState("");
+
   const [amount, setAmount] = useState(voucherToEdit?.amount !== undefined ? voucherToEdit.amount : "");
   const [category, setCategory] = useState(voucherToEdit?.category || "Office & Administration");
   const [subcategory, setSubcategory] = useState(voucherToEdit?.subcategory || "Office Rent");
@@ -14903,9 +15043,9 @@ function VoucherModal({
   const effectiveCvClient = clientPartyMode === "custom" ? customCvClientName : cvClientName;
   const effectiveCvVendor = vendorPartyMode === "custom" ? customCvVendorName : cvVendorName;
 
-  // Project filtering for RV, CV and PV based on selected client or vendor
+  // Project filtering for RV, BV, CV and PV based on selected client or vendor
   const availableProjects = useMemo(() => {
-    if (type === "RV" && party && partyMode === "master") {
+    if ((type === "RV" || (type === "BV" && barterDirection === "client")) && party && partyMode === "master") {
       const matched = projects.filter(p => p.client && p.client.toLowerCase() === party.toLowerCase());
       if (matched.length > 0) return matched;
     }
@@ -15109,6 +15249,35 @@ function VoucherModal({
         description: autoDesc,
         amount: Number(amount),
       });
+    } else if (type === "BV") {
+      const isVendorBarter = barterDirection === "vendor";
+      const accName = ACCOUNTS[barterAccount]?.name || barterAccount;
+      const autoDesc = description || `Barter Settlement (${isVendorBarter ? "Vendor" : "Client"}) — ${barterItem || accName}`;
+      onSubmit("BV", {
+        voucherNo,
+        projectId,
+        date,
+        party: effectiveParty,
+        clientId: (!isVendorBarter && partyMode === "master") ? selectedClientId : null,
+        vendorId: (isVendorBarter && partyMode === "master") ? selectedVendorId : null,
+        description: autoDesc,
+        amount: Number(amount),
+        netAmount: Number(amount),
+        barterDirection,
+        barterAccount,
+        barterItem: barterItem.trim() || description.trim(),
+        splitPayment: (!isVendorBarter && !voucherToEdit && enableBarterSplit && Number(splitCashAmount) > 0)
+          ? {
+              amount: Number(splitCashAmount),
+              receiveMode: splitReceiveMode,
+              bankAccountId: selectedBankId,
+              cashAccountId: selectedCashAccountId,
+              chequeNo: splitChequeNo,
+              chequeDate: splitChequeDate,
+              drawnBank: splitDrawnBank
+            }
+          : null
+      });
     } else {
       onSubmit(type, {
         voucherNo,
@@ -15150,6 +15319,84 @@ function VoucherModal({
           />
         </div>
       </div>
+
+      {/* BV: BARTER DIRECTION & PARTY SELECTION */}
+      {type === "BV" && (
+        <>
+          <div className="field">
+            <label>Barter Deal Type *</label>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+              <button
+                type="button"
+                className="btn"
+                onClick={() => { setBarterDirection("client"); setParty(""); setSelectedClientId(""); setSelectedVendorId(""); }}
+                style={{
+                  justifyContent: "center", fontWeight: 700, fontSize: 12.5, padding: "8px 10px",
+                  background: barterDirection === "client" ? "rgba(15, 118, 110, 0.14)" : "#FFFFFF",
+                  borderColor: barterDirection === "client" ? "#0F766E" : "#CBD5E1",
+                  color: barterDirection === "client" ? "#0F766E" : "#475569"
+                }}
+              >
+                🤝 Client Barter (Settle Client AR)
+              </button>
+              <button
+                type="button"
+                className="btn"
+                onClick={() => { setBarterDirection("vendor"); setParty(""); setSelectedClientId(""); setSelectedVendorId(""); setEnableBarterSplit(false); }}
+                style={{
+                  justifyContent: "center", fontWeight: 700, fontSize: 12.5, padding: "8px 10px",
+                  background: barterDirection === "vendor" ? "rgba(217, 119, 6, 0.14)" : "#FFFFFF",
+                  borderColor: barterDirection === "vendor" ? "#D97706" : "#CBD5E1",
+                  color: barterDirection === "vendor" ? "#B45309" : "#475569"
+                }}
+              >
+                🔄 Vendor Barter (Settle Vendor AP)
+              </button>
+            </div>
+          </div>
+
+          <div className="field">
+            <label style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <span>{barterDirection === "vendor" ? "Vendor Master (AP Settle) *" : "Client Master (AR Settle) *"}</span>
+              {(barterDirection === "vendor" ? vendors.length > 0 : clients.length > 0) && (
+                <span style={{ fontSize: 11, color: "#0F766E", cursor: "pointer", fontWeight: 600 }} onClick={() => setPartyMode(partyMode === "master" ? "custom" : "master")}>
+                  {partyMode === "master" ? "✏️ Type Custom Name" : "📋 Choose from Master"}
+                </span>
+              )}
+            </label>
+            {partyMode === "master" ? (
+              barterDirection === "vendor" ? (
+                <select value={party} onChange={e => handleVendorSelect(e.target.value)}>
+                  <option value="">— Select Vendor from Vendor Master ({vendors.length} Registered) —</option>
+                  {vendors.map(v => (
+                    <option key={v.id} value={v.name}>
+                      {v.name} {v.companyName ? `(${v.companyName})` : ""}
+                    </option>
+                  ))}
+                  <option value="__custom__">➕ Type Custom Vendor...</option>
+                </select>
+              ) : (
+                <select value={party} onChange={e => handleClientSelect(e.target.value)}>
+                  <option value="">— Select Client from Client Master ({clients.length} Registered) —</option>
+                  {clients.map(c => (
+                    <option key={c.id} value={c.name}>
+                      {c.name} {c.companyName ? `(${c.companyName})` : ""}
+                    </option>
+                  ))}
+                  <option value="__custom__">➕ Type Custom Client...</option>
+                </select>
+              )
+            ) : (
+              <input
+                value={customPartyName}
+                onChange={e => handleCustomPartyChange(e.target.value)}
+                placeholder={barterDirection === "vendor" ? "Enter Custom Vendor Name" : "Enter Custom Client Name"}
+                autoFocus
+              />
+            )}
+          </div>
+        </>
+      )}
 
       {/* PARTY SELECTION (CLIENT / VENDOR MASTER OR CUSTOM) */}
       {type === "RV" && (
@@ -15279,7 +15526,7 @@ function VoucherModal({
         </div>
       )}
 
-      {type !== "RV" && type !== "PV" && type !== "JV" && type !== "CTV" && type !== "CV" && (
+      {type !== "RV" && type !== "PV" && type !== "JV" && type !== "CTV" && type !== "CV" && type !== "BV" && (
         <div className="field">
           <label>Party Name</label>
           <input value={party} onChange={e => setParty(e.target.value)} placeholder="Party Name" />
@@ -15761,6 +16008,157 @@ function VoucherModal({
               <>💡 <b>Cash Receipt Rule:</b> Debits <b>Petty Cash Vault</b> ({pkr(netDeposit)}){applyWht ? ` & WHT Receivable (${pkr(rvWhtVal)})` : ""}{applySst ? ` & SRB Tax Payable (${pkr(rvSstVal)})` : ""} &amp; Credits <b>{settleAR ? "Accounts Receivable" : "Direct Revenue"}</b> ({pkr(receiptGross)}). Petty cash balance increases automatically.</>
             ) : (
               <>💡 <b>Bank Receipt Rule:</b> Debits <b>{selectedBankObj?.bankName || "Selected Bank"}</b> ({pkr(netDeposit)}){applyWht ? ` & WHT Receivable (${pkr(rvWhtVal)})` : ""}{applySst ? ` & SRB Tax Payable (${pkr(rvSstVal)})` : ""} &amp; Credits <b>{settleAR ? "Accounts Receivable" : "Direct Revenue"}</b> ({pkr(receiptGross)}). Bank balance increases automatically.</>
+            )}
+          </div>
+        </>
+      )}
+
+      {/* BV SPECIFIC CONTROLS (BARTER / IN-KIND SETTLEMENT + OPTIONAL CASH/CHEQUE SPLIT) */}
+      {type === "BV" && (
+        <>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            <div className="field">
+              <label>Barter Asset / Account Category *</label>
+              <select value={barterAccount} onChange={e => setBarterAccount(e.target.value)}>
+                <option value="barter_property">🏢 Barter Property / Real Estate Units (Asset 1230)</option>
+                <option value="barter_goods">📦 Barter Goods / Inventory / Vouchers (Asset 1160)</option>
+                <option value="equipment">💻 Office &amp; Production Equipment (Fixed Asset 1210)</option>
+                <option value="ad_spend">📺 Media / Ad Space Received (COGS 5120)</option>
+                <option value="expense">🧾 Operating / Office Expense Received (5260)</option>
+                <option value="equity">👑 Owner's Equity / CEO Drawings (3110)</option>
+              </select>
+            </div>
+            <div className="field">
+              <label>Barter Value / Agreed Amount (PKR) *</label>
+              <input
+                type="number"
+                value={amount}
+                onChange={e => setAmount(e.target.value)}
+                placeholder="e.g. 50000"
+                style={{ fontWeight: 700, fontSize: 14 }}
+              />
+              {Number(amount) > 0 && (
+                <div style={{ fontSize: 11.5, color: "#0F766E", fontWeight: 700, marginTop: 2 }}>
+                  {pkr(amount)} (Non-Cash Barter Settlement)
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="field">
+            <label>Barter Item / Property / Asset Details</label>
+            <input
+              value={barterItem}
+              onChange={e => setBarterItem(e.target.value)}
+              placeholder="e.g. GFS Plot File #104 / 50 Gift Vouchers / Office AC / Vehicle"
+            />
+          </div>
+
+          {/* OPTIONAL SPLIT RECEIPT (e.g., 50,000 Barter + 50,000 Cash/Bank/PDC in One Step!) */}
+          {barterDirection === "client" && !voucherToEdit && (
+            <div className="card" style={{ padding: "12px 14px", marginBottom: 14, background: enableBarterSplit ? "rgba(5, 150, 105, 0.05)" : "#F8FAFC", border: `1.5px solid ${enableBarterSplit ? "#059669" : "#CBD5E1"}`, borderRadius: 8 }}>
+              <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontWeight: 700, fontSize: 13, color: "#0F172A", marginBottom: enableBarterSplit ? 10 : 0 }}>
+                <input
+                  type="checkbox"
+                  checked={enableBarterSplit}
+                  onChange={e => setEnableBarterSplit(e.target.checked)}
+                />
+                <span>➕ Also Receive Remaining Cash / Bank / PDC Balance in Same Deal?</span>
+              </label>
+
+              {enableBarterSplit && (
+                <div style={{ marginTop: 8 }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 10 }}>
+                    <div className="field" style={{ margin: 0 }}>
+                      <label>Remaining Cash / Cheque Amount (PKR) *</label>
+                      <input
+                        type="number"
+                        value={splitCashAmount}
+                        onChange={e => setSplitCashAmount(e.target.value)}
+                        placeholder="e.g. 50000"
+                        style={{ fontWeight: 700 }}
+                      />
+                      {Number(splitCashAmount) > 0 && (
+                        <div style={{ fontSize: 11, color: "#059669", fontWeight: 700, marginTop: 2 }}>
+                          {pkr(splitCashAmount)}
+                        </div>
+                      )}
+                    </div>
+                    <div className="field" style={{ margin: 0 }}>
+                      <label>Receive Mode *</label>
+                      <select value={splitReceiveMode} onChange={e => setSplitReceiveMode(e.target.value)}>
+                        <option value="Bank">🏛️ Bank Transfer / Current Cheque (BRV)</option>
+                        <option value="Cash">💵 Petty Cash Vault (CRV)</option>
+                        <option value="PDC">⏳ Post-Dated Cheque — PDC (Not Deducted Until Cleared)</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {splitReceiveMode === "Bank" && (
+                    <div className="field" style={{ marginBottom: 8 }}>
+                      <label>Receiving Bank Account</label>
+                      <select value={selectedBankId} onChange={e => setSelectedBankId(e.target.value)}>
+                        {realBankAccounts.map(b => (
+                          <option key={b.id} value={b.id}>{b.bankName} — {b.accountTitle} ({b.accountNumber})</option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+
+                  {splitReceiveMode === "Cash" && (
+                    <div className="field" style={{ marginBottom: 8 }}>
+                      <label>Receiving Petty Cash Vault</label>
+                      <select value={selectedCashAccountId} onChange={e => setSelectedCashAccountId(e.target.value)}>
+                        {pettyCashAccounts.map(b => (
+                          <option key={b.id} value={b.id}>{b.bankName} — {b.branch || b.accountTitle}</option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+
+                  {splitReceiveMode === "PDC" && (
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 8 }}>
+                      <div className="field" style={{ margin: 0 }}>
+                        <label>PDC Cheque # *</label>
+                        <input value={splitChequeNo} onChange={e => setSplitChequeNo(e.target.value)} placeholder="Chq # 123456" />
+                      </div>
+                      <div className="field" style={{ margin: 0 }}>
+                        <label>Maturity Date *</label>
+                        <input type="date" value={splitChequeDate} onChange={e => setSplitChequeDate(e.target.value)} />
+                      </div>
+                      <div className="field" style={{ margin: 0 }}>
+                        <label>Client Bank</label>
+                        <input value={splitDrawnBank} onChange={e => setSplitDrawnBank(e.target.value)} placeholder="e.g. Meezan Bank" />
+                      </div>
+                    </div>
+                  )}
+
+                  {(Number(amount) > 0 || Number(splitCashAmount) > 0) && (
+                    <div style={{ background: "#FFFFFF", border: "1px solid #A7F3D0", borderRadius: 6, padding: "8px 12px", fontSize: 12.5 }}>
+                      <div style={{ display: "flex", justifyContent: "space-between" }}>
+                        <span>Barter Settlement ({ACCOUNTS[barterAccount]?.name}):</span>
+                        <strong className="mono" style={{ color: "#0F766E" }}>{pkr(amount)}</strong>
+                      </div>
+                      <div style={{ display: "flex", justifyContent: "space-between", marginTop: 3 }}>
+                        <span>Remaining via {splitReceiveMode === "PDC" ? "PDC (Pending Until Paid)" : splitReceiveMode}:</span>
+                        <strong className="mono" style={{ color: splitReceiveMode === "PDC" ? "#7C3AED" : "#059669" }}>{pkr(splitCashAmount)}</strong>
+                      </div>
+                      <div style={{ display: "flex", justifyContent: "space-between", marginTop: 6, paddingTop: 6, borderTop: "1px solid #CBD5E1", fontWeight: 800, fontSize: 13.5 }}>
+                        <span>Total Deal Value:</span>
+                        <span className="mono" style={{ color: "#0F172A" }}>{pkr((Number(amount) || 0) + (Number(splitCashAmount) || 0))}</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
+          <div style={{ background: "rgba(15, 118, 110, 0.08)", border: "1px solid rgba(15, 118, 110, 0.25)", padding: "10px 14px", borderRadius: 8, fontSize: 12.5, color: "#0F766E", marginBottom: 14 }}>
+            {barterDirection === "vendor" ? (
+              <>🤝 <b>Vendor Barter Rule:</b> Debits <b>Accounts Payable ({effectiveParty || "Vendor"})</b> ({pkr(amount)}) &amp; Credits <b>{ACCOUNTS[barterAccount]?.name || barterAccount}</b> ({pkr(amount)}). Cash/Bank balance is <b>NOT</b> affected.</>
+            ) : (
+              <>🤝 <b>Client Barter Rule:</b> Debits <b>{ACCOUNTS[barterAccount]?.name || barterAccount}</b> ({pkr(amount)}) &amp; Credits <b>Accounts Receivable ({effectiveParty || "Client"})</b> ({pkr(amount)}). Client ledger deducts {pkr(amount)} immediately without inflating Cash/Bank!{enableBarterSplit && Number(splitCashAmount) > 0 ? ` Plus a separate ${splitReceiveMode === "Cash" ? "CRV" : "BRV"} voucher will be auto-posted for ${pkr(splitCashAmount)}.` : ""}</>
             )}
           </div>
         </>
@@ -16933,20 +17331,20 @@ function ProjectDetailModal({ project, invoices = [], expenses = [], vouchers = 
     });
   });
 
-  const projectReceipts = vouchers.filter(v => (v.type === "RV" || v.type === "CV") && !(v.isPdc && v.pdcStatus !== "Cleared"));
+  const projectReceipts = vouchers.filter(v => (v.type === "RV" || v.type === "CV" || (v.type === "BV" && v.barterDirection !== "vendor")) && !(v.isPdc && v.pdcStatus !== "Cleared"));
   projectReceipts.forEach(v => {
     const grossAmt = Number(v.amount) || 0;
     const wht = Number(v.whtAmount) || 0;
     const sst = Number(v.sstAmount !== undefined ? v.sstAmount : v.sstWithheld) || 0;
     const netAmt = (v.netAmount !== undefined && v.netAmount !== null && v.netAmount !== "") ? Number(v.netAmount) : Math.max(0, grossAmt - wht - sst);
-    const modeStr = v.type === "CV" ? "Direct Settlement" : (v.via === "Cash" ? "Cash" : (v.paymentMode || "Bank"));
+    const modeStr = v.type === "BV" ? "Barter / In-Kind" : v.type === "CV" ? "Direct Settlement" : (v.via === "Cash" ? "Cash" : (v.paymentMode || "Bank"));
     const refStr = v.voucherNo || ("VCH-" + v.id.toUpperCase());
     if (v.type === "RV" && (wht > 0 || sst > 0)) {
       rawLedgerRows.push({
         id: `vch-${v.id}-net`,
         date: v.date || TODAY_STR,
         ref: refStr,
-        type: v.isPdc ? "PDC Cheque" : "Receipt",
+        type: v.isPdc ? "PDC Cleared" : "Receipt",
         description: `${v.description || "Payment Received"} — Amount Received (${modeStr}${v.instrumentNo || v.chequeNo ? ` #${v.instrumentNo || v.chequeNo}` : ""})`,
         debit: 0,
         credit: netAmt
@@ -16976,10 +17374,12 @@ function ProjectDetailModal({ project, invoices = [], expenses = [], vouchers = 
     } else {
       rawLedgerRows.push({
         id: `vch-${v.id}`,
-        date: v.date || TODAY_STR,
+        date: (v.isPdc && v.clearedDate) ? v.clearedDate : (v.date || TODAY_STR),
         ref: refStr,
-        type: v.type === "CV" ? "Direct Settlement" : (v.isPdc ? "PDC Cheque" : "Receipt"),
-        description: `${v.description || "Payment Received"} (${modeStr}${v.instrumentNo || v.chequeNo ? ` #${v.instrumentNo || v.chequeNo}` : ""})`,
+        type: v.type === "BV" ? "Barter Settlement" : v.type === "CV" ? "Direct Settlement" : (v.isPdc ? "PDC Cleared" : "Receipt"),
+        description: v.type === "BV"
+          ? `Barter Settlement — ${v.barterItem || v.description || "In-Kind"} (${ACCOUNTS[v.barterAccount]?.name || "Barter Asset"})`
+          : `${v.description || "Payment Received"} (${modeStr}${v.instrumentNo || v.chequeNo ? ` #${v.instrumentNo || v.chequeNo}` : ""})`,
         debit: 0,
         credit: grossAmt
       });
@@ -19240,7 +19640,7 @@ function ProjectStatementPrintModal({ project, invoices = [], expenses = [], vou
   };
   const projInvoices = invoices.filter(isProjItem);
   const projExpenses = expenses.filter(isProjItem);
-  const projReceipts = vouchers.filter(v => isProjItem(v) && (v.type === "RV" || v.type === "CV") && !(v.isPdc && v.pdcStatus !== "Cleared"));
+  const projReceipts = vouchers.filter(v => isProjItem(v) && (v.type === "RV" || v.type === "CV" || (v.type === "BV" && v.barterDirection !== "vendor")) && !(v.isPdc && v.pdcStatus !== "Cleared"));
   const totalBilled = openingBal + projInvoices.reduce((s, i) => s + (Number(i.totalAmount || i.amount) || 0), 0);
   const totalReceived = projReceipts.reduce((s, v) => s + (Number(v.amount) || 0), 0);
   const totalOutstanding = totalBilled - totalReceived;
