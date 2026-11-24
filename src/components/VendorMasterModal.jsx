@@ -17,6 +17,7 @@ export default function VendorMasterModal({ vendor, vendors, onClose, onSave }) 
     bankAccountTitle: "",
     accountNumberIban: "",
     openingBalance: 0,
+    openingBarterBalance: 0,
     status: "Active",
     notes: ""
   });
@@ -41,6 +42,7 @@ export default function VendorMasterModal({ vendor, vendors, onClose, onSave }) 
         bankAccountTitle: vendor.bankAccountTitle || "",
         accountNumberIban: vendor.accountNumberIban || "",
         openingBalance: vendor.openingBalance || 0,
+        openingBarterBalance: vendor.openingBarterBalance || 0,
         status: vendor.status || "Active",
         notes: vendor.notes || ""
       });
@@ -74,7 +76,8 @@ export default function VendorMasterModal({ vendor, vendors, onClose, onSave }) 
       ...formData,
       name: formData.name.trim(),
       companyName: formData.companyName.trim() || formData.name.trim(),
-      openingBalance: Number(formData.openingBalance) || 0
+      openingBalance: Number(formData.openingBalance) || 0,
+      openingBarterBalance: Number(formData.openingBarterBalance) || 0
     });
     if (onClose) onClose();
   };
@@ -206,7 +209,7 @@ export default function VendorMasterModal({ vendor, vendors, onClose, onSave }) 
                 </div>
 
                 <div className="field">
-                  <label className="field-label" style={{ fontWeight: 700, fontSize: 12.5, color: "#334155" }}>Opening Payable Balance (PKR)</label>
+                  <label className="field-label" style={{ fontWeight: 700, fontSize: 12.5, color: "#334155" }}>Opening Cash Payable Balance (PKR)</label>
                   <input type="number" className="input" value={formData.openingBalance} onChange={e => handleChange("openingBalance", e.target.value)} placeholder="0.00" style={{ padding: "9px 12px", fontSize: 13, borderRadius: 8 }} />
                   {Number(formData.openingBalance) > 0 && (
                     <div style={{ fontSize: 11.5, color: "#059669", fontWeight: 700, marginTop: 3 }}>
@@ -215,7 +218,17 @@ export default function VendorMasterModal({ vendor, vendors, onClose, onSave }) 
                   )}
                 </div>
 
-                <div className="field" style={{ gridColumn: "span 2" }}>
+                <div className="field">
+                  <label className="field-label" style={{ fontWeight: 700, fontSize: 12.5, color: "#0F766E" }}>Opening Barter Payable Balance (PKR — Optional)</label>
+                  <input type="number" className="input" value={formData.openingBarterBalance} onChange={e => handleChange("openingBarterBalance", e.target.value)} placeholder="0.00" style={{ padding: "9px 12px", fontSize: 13, borderRadius: 8 }} />
+                  {Number(formData.openingBarterBalance) > 0 && (
+                    <div style={{ fontSize: 11.5, color: "#0F766E", fontWeight: 700, marginTop: 3 }}>
+                      Barter: PKR {Number(formData.openingBarterBalance).toLocaleString("en-US")}
+                    </div>
+                  )}
+                </div>
+
+                <div className="field">
                   <label className="field-label" style={{ fontWeight: 700, fontSize: 12.5, color: "#334155" }}>Vendor Status</label>
                   <select className="select" value={formData.status} onChange={e => handleChange("status", e.target.value)} style={{ padding: "9px 12px", fontSize: 13, borderRadius: 8 }}>
                     <option value="Active">Active</option>

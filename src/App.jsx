@@ -2780,8 +2780,8 @@ export default function App() {
     setPurchaseOrders(list => [po, ...list]);
     setShowPOForm(false);
     triggerSuccessPopup({
-      title: "Process Complete — PO Created!",
-      message: `Purchase Order for "${poData.vendor}" (${pkr(poData.amount)}) has been saved.`,
+      title: "DONE — Purchase Order Created!",
+      message: `Purchase Order for "${poData.vendor}" (${pkr(poData.amount)})${poData.applyBarter && Number(poData.barterAmount) > 0 ? ` — Cash: ${pkr(poData.cashAmount)} | Barter: ${pkr(poData.barterAmount)}` : ""} has been saved.`,
       code: finalPONo,
       module: "Purchase Orders"
     });
@@ -2789,10 +2789,23 @@ export default function App() {
 
   function updatePO(updated) {
     setPurchaseOrders(list => list.map(p => p.id === updated.id ? updated : p));
+    // Also keep any already-billed expense synced with updated PO barter/amount split
+    setExpenses(list => list.map(e => (e.poId === updated.id || (e.expenseNo && updated.poNumber && e.expenseNo === updated.poNumber))
+      ? {
+          ...e,
+          vendor: updated.vendor,
+          amount: Number(updated.amount) || e.amount,
+          applyBarter: Boolean(updated.applyBarter && Number(updated.barterAmount) > 0),
+          barterPercent: Number(updated.barterPercent) || 0,
+          barterAmount: Number(updated.barterAmount) || 0,
+          cashAmount: updated.cashAmount !== undefined ? Number(updated.cashAmount) : (Number(updated.amount) || e.amount)
+        }
+      : e
+    ));
     setEditingPO(null);
     triggerSuccessPopup({
-      title: "Process Complete — PO Updated!",
-      message: `Purchase Order for "${updated.vendor}" (${pkr(updated.amount)}) has been updated.`,
+      title: "DONE — Purchase Order Updated!",
+      message: `Purchase Order for "${updated.vendor}" (${pkr(updated.amount)})${updated.applyBarter && Number(updated.barterAmount) > 0 ? ` — Cash: ${pkr(updated.cashAmount)} | Barter: ${pkr(updated.barterAmount)}` : ""} has been updated.`,
       code: updated.poNumber || "PO-UPDATED",
       module: "Purchase Orders"
     });
@@ -2849,15 +2862,23 @@ export default function App() {
     if (!po) return;
     setPOStatus(id, "Billed");
     addExpense({
+      poId: po.id,
+      expenseNo: po.poNumber || `PO-${po.id.slice(0, 6).toUpperCase()}`,
       vendor: po.vendor,
+      projectId: po.projectId || null,
+      description: po.description || `Purchase Order ${po.poNumber || ""}`,
       category: "Cost of Goods/Services Sold",
-      amount: po.amount,
-      date: TODAY.toISOString().slice(0, 10),
+      amount: Number(po.amount) || 0,
+      applyBarter: Boolean(po.applyBarter && Number(po.barterAmount) > 0),
+      barterPercent: Number(po.barterPercent) || 0,
+      barterAmount: Number(po.barterAmount) || 0,
+      cashAmount: po.cashAmount !== undefined ? Number(po.cashAmount) : (Number(po.amount) || 0),
+      date: po.issueDate || TODAY.toISOString().slice(0, 10),
       status: "unpaid",
       paidVia: null
     });
     triggerSuccessPopup({
-      title: "PO Received & Converted to Bill!",
+      title: "DONE — PO Received & Converted to Bill!",
       message: `Purchase Order for "${po.vendor}" (${pkr(po.amount)}) has been billed to Accounts Payable.`,
       code: po.poNumber || "PO-BILLED",
       module: "Purchase Orders"
@@ -6401,20 +6422,65 @@ export default function App() {
                   <tbody>
                     {vendors.filter(v => !vendorSearchQuery || v.name.toLowerCase().includes(vendorSearchQuery.toLowerCase()) || (v.companyName && v.companyName.toLowerCase().includes(vendorSearchQuery.toLowerCase()))).map(v => {
                       const vNameNorm = (v.name || "").toLowerCase().trim();
-                      const vendorExpenses = expenses.filter(e => e.vendorId === v.id || (e.vendor && e.vendor.toLowerCase().includes(vNameNorm)));
-                      const vendorVouchers = vouchers.filter(vo => {
-                        if (vo.vendorId === v.id) return true;
+                      const vCompNorm = (v.companyName || "").toLowerCase().trim();
+                      const matchesVendor = (item) => {
+                        if (!item) return false;
+                        if (item.vendorId && (item.vendorId === v.id || (v.vendorCode && item.vendorId === v.vendorCode))) return true;
                         const checkV = (val) => {
                           if (!val) return false;
                           const s = val.toLowerCase().trim();
-                          return s === vNameNorm || s.includes(vNameNorm) || (s.length >= 3 && vNameNorm.includes(s));
+                          return s === vNameNorm || (vCompNorm && s === vCompNorm) || s.includes(vNameNorm) || (vCompNorm && s.includes(vCompNorm)) || (s.length >= 3 && (vNameNorm.includes(s) || (vCompNorm && vCompNorm.includes(s))));
                         };
-                        return checkV(vo.category) || checkV(vo.vendor) || checkV(vo.party);
+                        return checkV(item.vendor) || checkV(item.category) || checkV(item.party);
+                      };
+
+                      const vendorExpenses = expenses.filter(e => matchesVendor(e));
+                      // Include un-billed Purchase Orders (not cancelled & not already billed into expenses) so late vendor invoices still reflect accurately in AP & Barter
+                      const vendorUnbilledPOs = purchaseOrders.filter(po => {
+                        if (!po || po.status === "Cancelled" || !matchesVendor(po)) return false;
+                        const alreadyInExp = expenses.some(e =>
+                          (e.poId && e.poId === po.id) ||
+                          (e.expenseNo && po.poNumber && e.expenseNo === po.poNumber)
+                        );
+                        if (alreadyInExp) return false;
+                        if (po.status === "Billed") {
+                          const poAmt = Number(po.amount) || 0;
+                          const matchedLegacyExp = vendorExpenses.some(e => Math.abs((Number(e.amount) || 0) - poAmt) < 1);
+                          if (matchedLegacyExp) return false;
+                        }
+                        return true;
                       });
-                      const totalExpenses = vendorExpenses.reduce((s, e) => s + (Number(e.amount) || 0), 0);
+
+                      const vendorVouchers = vouchers.filter(vo => matchesVendor(vo));
+                      const splitItem = (item) => {
+                        const total = Number(item.amount) || 0;
+                        const barterAmt = item.applyBarter && Number(item.barterAmount) > 0
+                          ? Math.min(total, Number(item.barterAmount))
+                          : 0;
+                        const cashAmt = item.applyBarter && item.cashAmount !== undefined
+                          ? Math.max(0, Number(item.cashAmount))
+                          : Math.max(0, total - barterAmt);
+                        return { cashAmt, barterAmt };
+                      };
+
+                      const allVendorBills = [...vendorExpenses, ...vendorUnbilledPOs];
+                      const totalCashBilled = allVendorBills.reduce((s, item) => s + splitItem(item).cashAmt, 0);
+                      const totalBarterBilled = allVendorBills.reduce((s, item) => s + splitItem(item).barterAmt, 0);
+
                       // Unpaid / Pending Issued PDC cheques (pdcStatus !== "Cleared") do NOT deduct from Vendor Payable!
-                      const totalPayments = vendorVouchers.filter(vo => (vo.type === "PV" || vo.type === "CV" || (vo.type === "BV" && vo.barterDirection === "vendor")) && !(vo.isPdc && vo.pdcStatus !== "Cleared")).reduce((s, vo) => s + (Number(vo.amount) || 0), 0);
-                      const payable = (Number(v.openingBalance) || 0) + totalExpenses - totalPayments;
+                      const totalCashPaid = vendorVouchers
+                        .filter(vo => (vo.type === "PV" || vo.type === "CV") && !(vo.isPdc && vo.pdcStatus !== "Cleared"))
+                        .reduce((s, vo) => s + (Number(vo.amount) || 0), 0);
+                      const totalBarterPaid = vendorVouchers
+                        .filter(vo => vo.type === "BV" && vo.barterDirection === "vendor")
+                        .reduce((s, vo) => s + (Number(vo.amount) || 0), 0);
+
+                      const openingCash = Number(v.openingBalance) || 0;
+                      const openingBarter = Number(v.openingBarterBalance) || 0;
+                      const cashPayable = openingCash + totalCashBilled - totalCashPaid;
+                      const barterPayable = openingBarter + totalBarterBilled - totalBarterPaid;
+                      const payable = cashPayable + barterPayable;
+                      const hasBarterTrack = openingBarter !== 0 || totalBarterBilled > 0 || totalBarterPaid > 0;
 
                       return (
                         <tr key={v.id}>
@@ -6434,7 +6500,14 @@ export default function App() {
                           </td>
                           <td><span className="badge-mini">{v.paymentTerms || "Net 30"}</span></td>
                           <td style={{ textAlign: "right", fontWeight: 800, color: payable > 0 ? "#D97706" : "#059669" }}>
-                            {pkr(payable)}
+                            <div>{pkr(payable)}</div>
+                            {hasBarterTrack && (
+                              <div style={{ fontSize: 10.5, fontWeight: 700, marginTop: 2, lineHeight: 1.35 }}>
+                                <span style={{ color: "#0F766E" }}>Cash: {pkr(cashPayable)}</span>
+                                <span style={{ color: "#94A3B8" }}> · </span>
+                                <span style={{ color: "#B45309" }}>Barter: {pkr(barterPayable)}</span>
+                              </div>
+                            )}
                           </td>
                           <td>
                             <span style={{
@@ -6480,6 +6553,7 @@ export default function App() {
                 vendors={vendors}
                 projects={projects}
                 expenses={expenses}
+                purchaseOrders={purchaseOrders}
                 vouchers={vouchers}
                 journal={journal}
                 selectedVendorId={selectedVendorId}
@@ -7574,7 +7648,16 @@ export default function App() {
                               color: po.status === "Draft" ? "#475569" : po.status === "Approved" ? "#1E40AF" : po.status === "Billed" ? "#92400E" : po.status === "Paid" ? "#065F46" : "#991B1B"
                              }}>{po.status.toUpperCase()}</span>
                           </td>
-                          <td className="mono" style={{ textAlign: "right", color: "var(--rose)", fontWeight: 600 }}>{pkr(po.amount)}</td>
+                          <td className="mono" style={{ textAlign: "right", color: "var(--rose)", fontWeight: 600 }}>
+                            <div>{pkr(po.amount)}</div>
+                            {po.applyBarter && Number(po.barterAmount) > 0 && (
+                              <div style={{ fontSize: 10.5, fontWeight: 700, marginTop: 2 }}>
+                                <span style={{ color: "#0369A1" }}>Cash: {pkr(po.cashAmount !== undefined ? po.cashAmount : Math.max(0, (Number(po.amount) || 0) - (Number(po.barterAmount) || 0)))}</span>
+                                {" · "}
+                                <span style={{ color: "#0F766E" }}>Barter: {pkr(po.barterAmount)}</span>
+                              </div>
+                            )}
+                          </td>
                           <td>
                             <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
                               {po.status === "Draft" && (
@@ -10393,6 +10476,7 @@ export default function App() {
           vendors={vendors}
           projects={projects}
           expenses={expenses}
+          purchaseOrders={purchaseOrders}
           vouchers={vouchers}
           journal={journal}
           selectedVendorId={activeStatementVendorId}
@@ -12797,6 +12881,14 @@ function POModal({ initialData, projects = [], vendors = [], purchaseOrders = []
   const [description, setDescription] = useState(initialData?.description || "OOH Advertising (Billboards, Streamers, etc.)");
   const [customDescription, setCustomDescription] = useState("");
   const [amount, setAmount] = useState(initialData?.amount !== undefined ? initialData.amount : "");
+  const [applyBarter, setApplyBarter] = useState(Boolean(initialData?.applyBarter || Number(initialData?.barterAmount) > 0));
+  const [barterPercent, setBarterPercent] = useState(() => {
+    if (initialData?.barterPercent !== undefined && initialData?.barterPercent !== "") return String(initialData.barterPercent);
+    const tot = Number(initialData?.amount) || 0;
+    if (initialData?.barterAmount && tot > 0) return ((Number(initialData.barterAmount) / tot) * 100).toFixed(1);
+    return "50";
+  });
+  const [barterAmount, setBarterAmount] = useState(initialData?.barterAmount !== undefined && Number(initialData?.barterAmount) > 0 ? String(initialData.barterAmount) : "");
   const [issueDate, setIssueDate] = useState(initialData?.issueDate || TODAY_STR);
   const [expectedDate, setExpectedDate] = useState(initialData?.expectedDate || TODAY_STR);
   const [notes, setNotes] = useState(initialData?.notes || "");
@@ -13488,6 +13580,94 @@ function POModal({ initialData, projects = [], vendors = [], purchaseOrders = []
         </div>
       </div>
 
+      {/* OPTIONAL BARTER SPLIT (% OR FIXED AMOUNT) — EXACTLY LIKE CLIENT INVOICE */}
+      {(() => {
+        const poTotalNum = Number(amount) || 0;
+        const poBarterVal = applyBarter
+          ? Math.min(
+              poTotalNum,
+              Math.max(
+                0,
+                barterAmount !== "" && barterAmount !== undefined && !isNaN(Number(barterAmount))
+                  ? Number(barterAmount)
+                  : Math.round((poTotalNum * (Number(barterPercent) || 0)) / 100)
+              )
+            )
+          : 0;
+        const poCashVal = Math.max(0, poTotalNum - poBarterVal);
+        const poBarterPct = poTotalNum > 0 && poBarterVal > 0 ? Number(((poBarterVal / poTotalNum) * 100).toFixed(1)) : 0;
+        return (
+          <div style={{ marginBottom: 14, padding: "10px 12px", background: applyBarter ? "rgba(15, 118, 110, 0.08)" : "#F8FAFC", borderRadius: 8, border: applyBarter ? "1.5px solid #0F766E" : "1px solid #E2E8F0" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
+              <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 700, cursor: "pointer", userSelect: "none", color: applyBarter ? "#0F766E" : "var(--ink)" }}>
+                <input
+                  type="checkbox"
+                  checked={applyBarter}
+                  onChange={e => {
+                    const checked = e.target.checked;
+                    setApplyBarter(checked);
+                    if (checked && !barterAmount && poTotalNum > 0) {
+                      const pct = Number(barterPercent) || 50;
+                      setBarterPercent(String(pct));
+                      setBarterAmount(Math.round((poTotalNum * pct) / 100).toString());
+                    }
+                  }}
+                />
+                🤝 Apply Barter Split (% or Amount) <span style={{ fontSize: 11, fontWeight: 500, color: "#64748B" }}>(Unchecked = 100% Cash/Bank Payable)</span>
+              </label>
+              {applyBarter && (
+                <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                  <span style={{ fontSize: 12, color: "#0F766E", fontWeight: 600 }}>Barter %:</span>
+                  <input
+                    type="number"
+                    step="0.5"
+                    min="0"
+                    max="100"
+                    value={barterPercent}
+                    onChange={e => {
+                      const val = e.target.value;
+                      setBarterPercent(val);
+                      const p = parseFloat(val);
+                      if (!isNaN(p) && poTotalNum > 0) setBarterAmount(Math.round((poTotalNum * Math.min(100, Math.max(0, p))) / 100).toString());
+                      else if (!val) setBarterAmount("");
+                    }}
+                    placeholder="50"
+                    style={{ width: 68, padding: "5px 6px", fontSize: 13, fontWeight: 700, textAlign: "center", borderRadius: 6, border: "1px solid #0F766E" }}
+                  />
+                  <span style={{ fontSize: 12, color: "#64748B", fontWeight: 700 }}>OR PKR:</span>
+                  <input
+                    type="number"
+                    min="0"
+                    value={barterAmount}
+                    onChange={e => {
+                      const val = e.target.value;
+                      setBarterAmount(val);
+                      const a = parseFloat(val);
+                      if (!isNaN(a) && poTotalNum > 0) setBarterPercent(((Math.min(poTotalNum, Math.max(0, a)) / poTotalNum) * 100).toFixed(1));
+                      else if (!val) setBarterPercent("");
+                    }}
+                    placeholder={String(Math.round(poTotalNum * 0.5))}
+                    style={{ width: 120, padding: "5px 8px", fontSize: 13, fontWeight: 700, textAlign: "right", borderRadius: 6, border: "1px solid #0F766E" }}
+                  />
+                </div>
+              )}
+            </div>
+            {applyBarter && poBarterVal > 0 && (
+              <div style={{ marginTop: 8, paddingTop: 8, borderTop: "1px dashed #0F766E", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                <div style={{ background: "rgba(217, 119, 6, 0.08)", border: "1px solid rgba(217, 119, 6, 0.3)", borderRadius: 6, padding: "6px 10px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: "#B45309" }}>💵 Cash / Bank Payable ({(100 - poBarterPct).toFixed(1)}%):</span>
+                  <span className="mono" style={{ fontWeight: 800, color: "#B45309" }}>{pkr(poCashVal)}</span>
+                </div>
+                <div style={{ background: "rgba(15, 118, 110, 0.1)", border: "1px solid rgba(15, 118, 110, 0.3)", borderRadius: 6, padding: "6px 10px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: "#0F766E" }}>🤝 Barter Payable ({poBarterPct.toFixed(1)}%):</span>
+                  <span className="mono" style={{ fontWeight: 800, color: "#0F766E" }}>{pkr(poBarterVal)}</span>
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      })()}
+
       <div className="field" style={{ marginBottom: 16 }}>
         <label>Terms &amp; Instructions / Special Notes (Optional)</label>
         <textarea
@@ -13507,12 +13687,30 @@ function POModal({ initialData, projects = [], vendors = [], purchaseOrders = []
           disabled={!valid}
           onClick={() => {
             if (!valid) return;
+            const poTotalNum = Number(amount) || 0;
+            const poBarterVal = applyBarter
+              ? Math.min(
+                  poTotalNum,
+                  Math.max(
+                    0,
+                    barterAmount !== "" && barterAmount !== undefined && !isNaN(Number(barterAmount))
+                      ? Number(barterAmount)
+                      : Math.round((poTotalNum * (Number(barterPercent) || 0)) / 100)
+                  )
+                )
+              : 0;
+            const poCashVal = Math.max(0, poTotalNum - poBarterVal);
+            const poBarterPct = poTotalNum > 0 && poBarterVal > 0 ? Number(((poBarterVal / poTotalNum) * 100).toFixed(2)) : 0;
             const payload = {
               poNumber: poNumber || getNextPONo(purchaseOrders),
               vendor: effectiveVendor,
               projectId,
               description: effectiveDescription,
-              amount: Number(amount),
+              amount: poTotalNum,
+              applyBarter: Boolean(applyBarter && poBarterVal > 0),
+              barterPercent: applyBarter ? poBarterPct : 0,
+              barterAmount: applyBarter ? poBarterVal : 0,
+              cashAmount: applyBarter ? poCashVal : poTotalNum,
               issueDate,
               expectedDate,
               notes,
@@ -18468,7 +18666,7 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
             </tr>
             <tr style={{ background: "#F0F9FF" }}>
               <td colSpan={colSpanAmount} style={{ ...labelStyle, color: "#0369A1" }}>
-                CASH / BANK RECEIVABLE PORTION
+                {(isPO || isRO) ? "CASH / BANK PAYABLE PORTION" : "CASH / BANK RECEIVABLE PORTION"}
               </td>
               <td style={{ ...valStyle, color: "#0369A1", fontWeight: 800 }}>
                 {pkr(Math.max(0, finalPayable - (Number(doc.barterAmount) || 0)))}

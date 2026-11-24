@@ -29,13 +29,28 @@ function amountInWords(num) {
 function exportVendorStatementToExcel({ vendor, dateFrom, dateTo, statementData }) {
   const vName = vendor.companyName || vendor.name;
   const filename = `Vendor_Statement_${vName.replace(/[^a-zA-Z0-9]/g, "_")}_${dateFrom}_to_${dateTo}.xls`;
+  const useDual = Boolean(statementData.hasBarterActivity);
+  const totalCols = useDual ? 10 : 7;
 
-  let rowsHtml = `
+  let rowsHtml = useDual ? `
     <tr>
       <td style="border: 1px solid #CBD5E1; padding: 6px; font-family: monospace; text-align: center;">${dateFrom}</td>
       <td style="border: 1px solid #CBD5E1; padding: 6px; font-family: monospace; font-weight: bold; text-align: center;">OB-000</td>
       <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: center;">Opening Balance</td>
-      <td style="border: 1px solid #CBD5E1; padding: 6px;">—</td>
+      <td style="border: 1px solid #CBD5E1; padding: 6px;">Opening Balance Brought Forward</td>
+      <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: right;">—</td>
+      <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: right;">—</td>
+      <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: right; font-weight: bold; color: #0F766E; mso-number-format:'\\#\\,\\#\\#0';">${statementData.cashOpeningPayable || 0}</td>
+      <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: right;">—</td>
+      <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: right;">—</td>
+      <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: right; font-weight: bold; color: #B45309; mso-number-format:'\\#\\,\\#\\#0';">${statementData.barterOpeningPayable || 0}</td>
+    </tr>
+  ` : `
+    <tr>
+      <td style="border: 1px solid #CBD5E1; padding: 6px; font-family: monospace; text-align: center;">${dateFrom}</td>
+      <td style="border: 1px solid #CBD5E1; padding: 6px; font-family: monospace; font-weight: bold; text-align: center;">OB-000</td>
+      <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: center;">Opening Balance</td>
+      <td style="border: 1px solid #CBD5E1; padding: 6px;">Opening Balance Brought Forward</td>
       <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: right;">—</td>
       <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: right;">—</td>
       <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: right; font-weight: bold; mso-number-format:'\\#\\,\\#\\#0';">${statementData.openingPayable}</td>
@@ -44,11 +59,25 @@ function exportVendorStatementToExcel({ vendor, dateFrom, dateTo, statementData 
 
   statementData.rows.forEach((r, idx) => {
     const bg = idx % 2 === 0 ? "#FFFFFF" : "#F8FAFC";
-    rowsHtml += `
+    const typeColor = (r.type === "Vendor Bill" || r.type === "Purchase Order") ? "#D97706" : (r.type === "Barter Settlement" ? "#B45309" : "#059669");
+    rowsHtml += useDual ? `
       <tr style="background-color: ${bg};">
         <td style="border: 1px solid #CBD5E1; padding: 6px; font-family: monospace; text-align: center;">${r.date}</td>
         <td style="border: 1px solid #CBD5E1; padding: 6px; font-family: monospace; font-weight: bold; text-align: center;">${r.ref}</td>
-        <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: center; font-weight: bold; color: ${r.type === 'Vendor Bill' ? '#D97706' : '#059669'};">${r.type}</td>
+        <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: center; font-weight: bold; color: ${typeColor};">${r.type}</td>
+        <td style="border: 1px solid #CBD5E1; padding: 6px;">${r.project || 'General'}</td>
+        <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: right; color: #059669; mso-number-format:'\\#\\,\\#\\#0';">${r.cashDebit > 0 ? r.cashDebit : '—'}</td>
+        <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: right; color: #D97706; mso-number-format:'\\#\\,\\#\\#0';">${r.cashCredit > 0 ? r.cashCredit : '—'}</td>
+        <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: right; font-weight: bold; color: #0F766E; mso-number-format:'\\#\\,\\#\\#0';">${r.cashRunningBalance}</td>
+        <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: right; color: #059669; mso-number-format:'\\#\\,\\#\\#0';">${r.barterDebit > 0 ? r.barterDebit : '—'}</td>
+        <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: right; color: #B45309; mso-number-format:'\\#\\,\\#\\#0';">${r.barterCredit > 0 ? r.barterCredit : '—'}</td>
+        <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: right; font-weight: bold; color: #B45309; mso-number-format:'\\#\\,\\#\\#0';">${r.barterRunningBalance}</td>
+      </tr>
+    ` : `
+      <tr style="background-color: ${bg};">
+        <td style="border: 1px solid #CBD5E1; padding: 6px; font-family: monospace; text-align: center;">${r.date}</td>
+        <td style="border: 1px solid #CBD5E1; padding: 6px; font-family: monospace; font-weight: bold; text-align: center;">${r.ref}</td>
+        <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: center; font-weight: bold; color: ${typeColor};">${r.type}</td>
         <td style="border: 1px solid #CBD5E1; padding: 6px;">${r.project || 'General'}</td>
         <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: right; color: #059669; mso-number-format:'\\#\\,\\#\\#0';">${r.debit > 0 ? r.debit : '—'}</td>
         <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: right; color: #D97706; mso-number-format:'\\#\\,\\#\\#0';">${r.credit > 0 ? r.credit : '—'}</td>
@@ -82,27 +111,54 @@ function exportVendorStatementToExcel({ vendor, dateFrom, dateTo, statementData 
     <body>
       <table style="width: 100%; border-collapse: collapse;">
         <tr>
-          <td colspan="7" style="font-size: 16pt; font-weight: bold; color: #1E293B; padding-bottom: 4px;">AdPulse IMC (Private) Ltd</td>
+          <td colspan="${totalCols}" style="font-size: 16pt; font-weight: bold; color: #1E293B; padding-bottom: 4px;">AdPulse IMC (Private) Ltd</td>
         </tr>
         <tr>
-          <td colspan="7" style="font-size: 12pt; font-weight: bold; color: #D97706; padding-bottom: 12px;">VENDOR STATEMENT / ACCOUNTS PAYABLE SUB-LEDGER</td>
+          <td colspan="${totalCols}" style="font-size: 12pt; font-weight: bold; color: #D97706; padding-bottom: 12px;">VENDOR STATEMENT / ACCOUNTS PAYABLE SUB-LEDGER${useDual ? " (DUAL CASH &amp; BARTER LEDGER)" : ""}</td>
         </tr>
         <tr style="background-color: #F8FAFC;">
           <td colspan="4" style="border: 1px solid #CBD5E1; padding: 6px;"><b>Vendor:</b> ${vName} (${vendor.vendorCode || vendor.id})</td>
-          <td colspan="3" style="border: 1px solid #CBD5E1; padding: 6px;"><b>Statement Period:</b> ${dateFrom} to ${dateTo}</td>
+          <td colspan="${totalCols - 4}" style="border: 1px solid #CBD5E1; padding: 6px;"><b>Statement Period:</b> ${dateFrom} to ${dateTo}</td>
         </tr>
         <tr style="background-color: #F8FAFC;">
           <td colspan="4" style="border: 1px solid #CBD5E1; padding: 6px;"><b>Contact:</b> ${vendor.contactPerson || 'N/A'} | ${vendor.phone || 'N/A'}</td>
-          <td colspan="3" style="border: 1px solid #CBD5E1; padding: 6px;"><b>Bank:</b> ${vendor.bankName || 'N/A'} (${vendor.accountNumberIban || 'N/A'})</td>
+          <td colspan="${totalCols - 4}" style="border: 1px solid #CBD5E1; padding: 6px;"><b>Bank:</b> ${vendor.bankName || 'N/A'} (${vendor.accountNumberIban || 'N/A'})</td>
         </tr>
-        <tr><td colspan="7" style="height: 14px;"></td></tr>
+        <tr><td colspan="${totalCols}" style="height: 14px;"></td></tr>
+        ${useDual ? `
+        <tr style="background-color: #F1F5F9; font-weight: bold;">
+          <td colspan="2" style="border: 1px solid #CBD5E1; padding: 8px; text-align: center;">Opening: PKR ${statementData.openingPayable.toLocaleString()}</td>
+          <td colspan="2" style="border: 1px solid #0F766E; padding: 8px; text-align: center; background-color: #ECFDF5; color: #0F766E;">Cash Payable: PKR ${(statementData.closingCashPayable || 0).toLocaleString()}</td>
+          <td colspan="3" style="border: 1px solid #B45309; padding: 8px; text-align: center; background-color: #FFFBEB; color: #B45309;">Barter Payable: PKR ${(statementData.closingBarterPayable || 0).toLocaleString()}</td>
+          <td colspan="3" style="border: 1.5px solid #D97706; padding: 8px; text-align: center; background-color: #FEF3C7; color: #B45309;">Combined Closing Payable: PKR ${statementData.closingPayable.toLocaleString()}</td>
+        </tr>
+        ` : `
         <tr style="background-color: #F1F5F9; font-weight: bold;">
           <td colspan="2" style="border: 1px solid #CBD5E1; padding: 8px; text-align: center;">Opening Payable: PKR ${statementData.openingPayable.toLocaleString()}</td>
-          <td colspan="2" style="border: 1px solid #CBD5E1; padding: 8px; text-align: center; color: #D97706;">Total Bills (+): PKR ${statementData.totalExpenses.toLocaleString()}</td>
+          <td colspan="2" style="border: 1px solid #CBD5E1; padding: 8px; text-align: center; color: #D97706;">Total Bills / POs (+): PKR ${statementData.totalExpenses.toLocaleString()}</td>
           <td colspan="2" style="border: 1px solid #CBD5E1; padding: 8px; text-align: center; color: #059669;">Total Payments (-): PKR ${statementData.totalPayments.toLocaleString()}</td>
           <td style="border: 1.5px solid #D97706; padding: 8px; text-align: center; background-color: #FEF3C7; color: #B45309;">Closing Payable: PKR ${statementData.closingPayable.toLocaleString()}</td>
         </tr>
-        <tr><td colspan="7" style="height: 14px;"></td></tr>
+        `}
+        <tr><td colspan="${totalCols}" style="height: 14px;"></td></tr>
+        ${useDual ? `
+        <tr style="background-color: #0F172A; color: #FFFFFF; font-weight: bold; text-align: center;">
+          <th rowspan="2" style="border: 1px solid #000; padding: 8px; width: 100px;">Date</th>
+          <th rowspan="2" style="border: 1px solid #000; padding: 8px; width: 110px;">Reference</th>
+          <th rowspan="2" style="border: 1px solid #000; padding: 8px; width: 120px;">Type</th>
+          <th rowspan="2" style="border: 1px solid #000; padding: 8px; width: 210px;">Project / Particulars</th>
+          <th colspan="3" style="border: 1px solid #000; padding: 6px; background-color: #0F766E;">CASH / BANK LEDGER (PKR)</th>
+          <th colspan="3" style="border: 1px solid #000; padding: 6px; background-color: #B45309;">BARTER LEDGER (PKR)</th>
+        </tr>
+        <tr style="background-color: #1E293B; color: #FFFFFF; font-weight: bold; text-align: center;">
+          <th style="border: 1px solid #000; padding: 6px; text-align: right;">Cash Debit</th>
+          <th style="border: 1px solid #000; padding: 6px; text-align: right;">Cash Credit</th>
+          <th style="border: 1px solid #000; padding: 6px; text-align: right;">Cash Balance</th>
+          <th style="border: 1px solid #000; padding: 6px; text-align: right;">Barter Debit</th>
+          <th style="border: 1px solid #000; padding: 6px; text-align: right;">Barter Credit</th>
+          <th style="border: 1px solid #000; padding: 6px; text-align: right;">Barter Balance</th>
+        </tr>
+        ` : `
         <tr style="background-color: #0F172A; color: #FFFFFF; font-weight: bold; text-align: center;">
           <th style="border: 1px solid #000; padding: 8px; width: 110px;">Date</th>
           <th style="border: 1px solid #000; padding: 8px; width: 110px;">Reference</th>
@@ -112,16 +168,29 @@ function exportVendorStatementToExcel({ vendor, dateFrom, dateTo, statementData 
           <th style="border: 1px solid #000; padding: 8px; width: 140px; text-align: right;">Credit / Bill (PKR)</th>
           <th style="border: 1px solid #000; padding: 8px; width: 150px; text-align: right;">Payable Balance (PKR)</th>
         </tr>
+        `}
         ${rowsHtml}
+        ${useDual ? `
+        <tr style="background-color: #0F172A; color: #FFFFFF; font-weight: bold;">
+          <td colspan="4" style="border: 1px solid #000; padding: 8px;">Closing Balance Summary</td>
+          <td style="border: 1px solid #000; padding: 8px; text-align: right; color: #34D399; mso-number-format:'\\#\\,\\#\\#0';">${statementData.totalCashPayments || 0}</td>
+          <td style="border: 1px solid #000; padding: 8px; text-align: right; color: #FBBF24; mso-number-format:'\\#\\,\\#\\#0';">${statementData.totalCashBilled || 0}</td>
+          <td style="border: 1px solid #000; padding: 8px; text-align: right; color: #6EE7B7; mso-number-format:'\\#\\,\\#\\#0';">${statementData.closingCashPayable || 0}</td>
+          <td style="border: 1px solid #000; padding: 8px; text-align: right; color: #34D399; mso-number-format:'\\#\\,\\#\\#0';">${statementData.totalBarterSettled || 0}</td>
+          <td style="border: 1px solid #000; padding: 8px; text-align: right; color: #FBBF24; mso-number-format:'\\#\\,\\#\\#0';">${statementData.totalBarterBilled || 0}</td>
+          <td style="border: 1px solid #000; padding: 8px; text-align: right; color: #FDE68A; mso-number-format:'\\#\\,\\#\\#0';">${statementData.closingBarterPayable || 0}</td>
+        </tr>
+        ` : `
         <tr style="background-color: #0F172A; color: #FFFFFF; font-weight: bold;">
           <td colspan="4" style="border: 1px solid #000; padding: 8px;">Closing Balance Summary</td>
           <td style="border: 1px solid #000; padding: 8px; text-align: right; color: #34D399; mso-number-format:'\\#\\,\\#\\#0';">${statementData.totalPayments}</td>
           <td style="border: 1px solid #000; padding: 8px; text-align: right; color: #FBBF24; mso-number-format:'\\#\\,\\#\\#0';">${statementData.totalExpenses}</td>
           <td style="border: 1px solid #000; padding: 8px; text-align: right; color: #FDE68A; font-size: 12pt; mso-number-format:'\\#\\,\\#\\#0';">${statementData.closingPayable}</td>
         </tr>
-        <tr><td colspan="7" style="height: 18px;"></td></tr>
+        `}
+        <tr><td colspan="${totalCols}" style="height: 18px;"></td></tr>
         <tr>
-          <td colspan="7" style="font-size: 10pt; font-style: italic; color: #64748B;">Generated from AdPulse Financial Management System on ${new Date().toLocaleDateString()}</td>
+          <td colspan="${totalCols}" style="font-size: 10pt; font-style: italic; color: #64748B;">Generated from AdPulse Financial Management System on ${new Date().toLocaleDateString()}</td>
         </tr>
       </table>
     </body>
@@ -564,27 +633,145 @@ export function VendorStatementPrintModal({ vendor, dateFrom, dateTo, statementD
               </div>
             </div>
 
-            {/* 4 SUMMARY KPI BOXES (BLACK BORDERED MATCHING INVOICE STYLE) */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10, marginBottom: 12 }}>
-              <div style={{ background: "#F8FAFC", padding: "8px 10px", borderRadius: 4, border: "1px solid #000000", textAlign: "center" }}>
-                <div style={{ fontSize: 9.5, color: "#475569", fontWeight: 800, textTransform: "uppercase" }}>OPENING PAYABLE</div>
-                <div style={{ fontSize: 13, fontWeight: 800, color: "#0F172A", marginTop: 3 }}>{pkr(statementData.openingPayable)}</div>
+            {/* SUMMARY KPI BOXES (BLACK BORDERED MATCHING INVOICE STYLE) */}
+            {statementData.hasBarterActivity ? (
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10, marginBottom: 12 }}>
+                <div style={{ background: "#F8FAFC", padding: "8px 10px", borderRadius: 4, border: "1px solid #000000", textAlign: "center" }}>
+                  <div style={{ fontSize: 9.5, color: "#475569", fontWeight: 800, textTransform: "uppercase" }}>OPENING PAYABLE</div>
+                  <div style={{ fontSize: 13, fontWeight: 800, color: "#0F172A", marginTop: 3 }}>{pkr(statementData.openingPayable)}</div>
+                  <div style={{ fontSize: 9, color: "#64748B", marginTop: 2 }}>Cash: {pkr(statementData.cashOpeningPayable || 0)} | Barter: {pkr(statementData.barterOpeningPayable || 0)}</div>
+                </div>
+                <div style={{ background: "#ECFDF5", padding: "8px 10px", borderRadius: 4, border: "1px solid #0F766E", textAlign: "center" }}>
+                  <div style={{ fontSize: 9.5, color: "#0F766E", fontWeight: 800, textTransform: "uppercase" }}>CASH / BANK PAYABLE</div>
+                  <div style={{ fontSize: 13, fontWeight: 900, color: "#0F766E", marginTop: 3 }}>{pkr(statementData.closingCashPayable || 0)}</div>
+                  <div style={{ fontSize: 9, color: "#047857", marginTop: 2 }}>Bills: {pkr(statementData.totalCashBilled || 0)} | Paid: {pkr(statementData.totalCashPayments || 0)}</div>
+                </div>
+                <div style={{ background: "#FFFBEB", padding: "8px 10px", borderRadius: 4, border: "1px solid #B45309", textAlign: "center" }}>
+                  <div style={{ fontSize: 9.5, color: "#B45309", fontWeight: 800, textTransform: "uppercase" }}>BARTER PAYABLE</div>
+                  <div style={{ fontSize: 13, fontWeight: 900, color: "#B45309", marginTop: 3 }}>{pkr(statementData.closingBarterPayable || 0)}</div>
+                  <div style={{ fontSize: 9, color: "#92400E", marginTop: 2 }}>Barter Bills: {pkr(statementData.totalBarterBilled || 0)} | Settled: {pkr(statementData.totalBarterSettled || 0)}</div>
+                </div>
+                <div style={{ background: "#F1F5F9", padding: "8px 10px", borderRadius: 4, border: "1.5px solid #000000", textAlign: "center" }}>
+                  <div style={{ fontSize: 9.5, color: "#A81C1C", fontWeight: 800, textTransform: "uppercase" }}>COMBINED CLOSING</div>
+                  <div style={{ fontSize: 13.5, fontWeight: 900, color: "#A81C1C", marginTop: 3 }}>{pkr(statementData.closingPayable)}</div>
+                </div>
               </div>
-              <div style={{ background: "#F8FAFC", padding: "8px 10px", borderRadius: 4, border: "1px solid #000000", textAlign: "center" }}>
-                <div style={{ fontSize: 9.5, color: "#D97706", fontWeight: 800, textTransform: "uppercase" }}>TOTAL BILLS / EXP (+)</div>
-                <div style={{ fontSize: 13, fontWeight: 800, color: "#D97706", marginTop: 3 }}>{pkr(statementData.totalExpenses)}</div>
+            ) : (
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10, marginBottom: 12 }}>
+                <div style={{ background: "#F8FAFC", padding: "8px 10px", borderRadius: 4, border: "1px solid #000000", textAlign: "center" }}>
+                  <div style={{ fontSize: 9.5, color: "#475569", fontWeight: 800, textTransform: "uppercase" }}>OPENING PAYABLE</div>
+                  <div style={{ fontSize: 13, fontWeight: 800, color: "#0F172A", marginTop: 3 }}>{pkr(statementData.openingPayable)}</div>
+                </div>
+                <div style={{ background: "#F8FAFC", padding: "8px 10px", borderRadius: 4, border: "1px solid #000000", textAlign: "center" }}>
+                  <div style={{ fontSize: 9.5, color: "#D97706", fontWeight: 800, textTransform: "uppercase" }}>TOTAL BILLS / POs (+)</div>
+                  <div style={{ fontSize: 13, fontWeight: 800, color: "#D97706", marginTop: 3 }}>{pkr(statementData.totalExpenses)}</div>
+                </div>
+                <div style={{ background: "#F8FAFC", padding: "8px 10px", borderRadius: 4, border: "1px solid #000000", textAlign: "center" }}>
+                  <div style={{ fontSize: 9.5, color: "#059669", fontWeight: 800, textTransform: "uppercase" }}>TOTAL PAYMENTS (-)</div>
+                  <div style={{ fontSize: 13, fontWeight: 800, color: "#059669", marginTop: 3 }}>{pkr(statementData.totalPayments)}</div>
+                </div>
+                <div style={{ background: "#F1F5F9", padding: "8px 10px", borderRadius: 4, border: "1.5px solid #000000", textAlign: "center" }}>
+                  <div style={{ fontSize: 9.5, color: "#A81C1C", fontWeight: 800, textTransform: "uppercase" }}>CLOSING PAYABLE</div>
+                  <div style={{ fontSize: 13.5, fontWeight: 900, color: "#A81C1C", marginTop: 3 }}>{pkr(statementData.closingPayable)}</div>
+                </div>
               </div>
-              <div style={{ background: "#F8FAFC", padding: "8px 10px", borderRadius: 4, border: "1px solid #000000", textAlign: "center" }}>
-                <div style={{ fontSize: 9.5, color: "#059669", fontWeight: 800, textTransform: "uppercase" }}>TOTAL PAYMENTS (-)</div>
-                <div style={{ fontSize: 13, fontWeight: 800, color: "#059669", marginTop: 3 }}>{pkr(statementData.totalPayments)}</div>
-              </div>
-              <div style={{ background: "#F1F5F9", padding: "8px 10px", borderRadius: 4, border: "1.5px solid #000000", textAlign: "center" }}>
-                <div style={{ fontSize: 9.5, color: "#A81C1C", fontWeight: 800, textTransform: "uppercase" }}>CLOSING PAYABLE</div>
-                <div style={{ fontSize: 13.5, fontWeight: 900, color: "#A81C1C", marginTop: 3 }}>{pkr(statementData.closingPayable)}</div>
-              </div>
-            </div>
+            )}
 
             {/* TRANSACTIONS TABLE (EXACT INVOICE TABLE BORDERS & TOTALS HIERARCHY) */}
+            {statementData.hasBarterActivity ? (
+              <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 12, border: "1px solid #000000", fontSize: 9.5, boxSizing: "border-box", tableLayout: "fixed" }}>
+                <colgroup>
+                  <col style={{ width: "4%" }} />
+                  <col style={{ width: "9%" }} />
+                  <col style={{ width: "10%" }} />
+                  <col style={{ width: "9%" }} />
+                  <col style={{ width: "20%" }} />
+                  <col style={{ width: "8%" }} />
+                  <col style={{ width: "8%" }} />
+                  <col style={{ width: "8%" }} />
+                  <col style={{ width: "8%" }} />
+                  <col style={{ width: "8%" }} />
+                  <col style={{ width: "8%" }} />
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th rowSpan={2} style={thStyle}>S#</th>
+                    <th rowSpan={2} style={thStyle}>DATE</th>
+                    <th rowSpan={2} style={thStyle}>REF NO</th>
+                    <th rowSpan={2} style={thStyle}>TYPE</th>
+                    <th rowSpan={2} style={thStyle}>PARTICULARS</th>
+                    <th colSpan={3} style={{ ...thStyle, background: "#ECFDF5", color: "#0F766E" }}>CASH / BANK LEDGER (PKR)</th>
+                    <th colSpan={3} style={{ ...thStyle, background: "#FFFBEB", color: "#B45309" }}>BARTER LEDGER (PKR)</th>
+                  </tr>
+                  <tr>
+                    <th style={{ ...thStyle, background: "#F0FDF4", color: "#059669" }}>CASH DR</th>
+                    <th style={{ ...thStyle, background: "#F0FDF4", color: "#D97706" }}>CASH CR</th>
+                    <th style={{ ...thStyle, background: "#ECFDF5", color: "#0F766E" }}>CASH BAL</th>
+                    <th style={{ ...thStyle, background: "#FEFCE8", color: "#059669" }}>BART DR</th>
+                    <th style={{ ...thStyle, background: "#FEFCE8", color: "#B45309" }}>BART CR</th>
+                    <th style={{ ...thStyle, background: "#FFFBEB", color: "#B45309" }}>BART BAL</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr style={{ background: "#F8FAFC" }}>
+                    <td style={{ ...tdCenter, fontWeight: 700 }}>1</td>
+                    <td style={tdCenter}>{fmtDocDate(dateFrom)}</td>
+                    <td style={{ ...tdCenter, fontWeight: 700, fontFamily: "monospace" }}>OB-000</td>
+                    <td style={tdCenter}>Opening</td>
+                    <td style={tdLeft}>Opening Balance Brought Forward</td>
+                    <td style={tdCenter}>—</td>
+                    <td style={tdCenter}>—</td>
+                    <td style={{ ...tdRight, color: "#0F766E" }}>{pkr(statementData.cashOpeningPayable || 0)}</td>
+                    <td style={tdCenter}>—</td>
+                    <td style={tdCenter}>—</td>
+                    <td style={{ ...tdRight, color: "#B45309" }}>{pkr(statementData.barterOpeningPayable || 0)}</td>
+                  </tr>
+
+                  {statementData.rows.map((row, idx) => (
+                    <tr key={idx}>
+                      <td style={{ ...tdCenter, fontWeight: 700 }}>{idx + 2}</td>
+                      <td style={tdCenter}>{fmtDocDate(row.date)}</td>
+                      <td style={{ ...tdCenter, fontWeight: 700, fontFamily: "monospace" }}>{row.ref}</td>
+                      <td style={{ ...tdCenter, fontWeight: 700, color: (row.type === "Vendor Bill" || row.type === "Purchase Order") ? "#D97706" : (row.type === "Barter Settlement" ? "#B45309" : "#059669") }}>
+                        {row.type}
+                      </td>
+                      <td style={tdLeft}>
+                        <div style={{ fontWeight: 700 }}>{row.project}</div>
+                        {row.barterSplitMeta && (
+                          <div style={{ fontSize: 8.5, color: "#92400E", marginTop: 1 }}>
+                            Barter ({row.barterSplitMeta.percent}%): {pkr(row.barterSplitMeta.barterAmt)} | Cash: {pkr(row.barterSplitMeta.cashAmt)}
+                          </div>
+                        )}
+                      </td>
+                      <td style={{ ...tdRight, color: row.cashDebit > 0 ? "#059669" : "#64748B" }}>{row.cashDebit > 0 ? pkr(row.cashDebit) : "—"}</td>
+                      <td style={{ ...tdRight, color: row.cashCredit > 0 ? "#D97706" : "#64748B" }}>{row.cashCredit > 0 ? pkr(row.cashCredit) : "—"}</td>
+                      <td style={{ ...tdRight, color: "#0F766E" }}>{pkr(row.cashRunningBalance)}</td>
+                      <td style={{ ...tdRight, color: row.barterDebit > 0 ? "#059669" : "#64748B" }}>{row.barterDebit > 0 ? pkr(row.barterDebit) : "—"}</td>
+                      <td style={{ ...tdRight, color: row.barterCredit > 0 ? "#B45309" : "#64748B" }}>{row.barterCredit > 0 ? pkr(row.barterCredit) : "—"}</td>
+                      <td style={{ ...tdRight, color: "#B45309" }}>{pkr(row.barterRunningBalance)}</td>
+                    </tr>
+                  ))}
+
+                  <tr>
+                    <td colSpan={5} style={labelStyle}>PERIOD TOTALS (CASH vs BARTER)</td>
+                    <td style={{ ...valStyle, color: "#059669" }}>{pkr(statementData.totalCashPayments || 0)}</td>
+                    <td style={{ ...valStyle, color: "#D97706" }}>{pkr(statementData.totalCashBilled || 0)}</td>
+                    <td style={{ ...valStyle, color: "#0F766E" }}>{pkr(statementData.closingCashPayable || 0)}</td>
+                    <td style={{ ...valStyle, color: "#059669" }}>{pkr(statementData.totalBarterSettled || 0)}</td>
+                    <td style={{ ...valStyle, color: "#B45309" }}>{pkr(statementData.totalBarterBilled || 0)}</td>
+                    <td style={{ ...valStyle, color: "#B45309" }}>{pkr(statementData.closingBarterPayable || 0)}</td>
+                  </tr>
+                  <tr style={{ background: "#F1F5F9", fontWeight: 800 }}>
+                    <td colSpan={9} style={{ border: "1px solid #000000", padding: "7px 10px", fontSize: 11.5, textAlign: "right", fontWeight: 800 }}>
+                      COMBINED CLOSING PAYABLE (CASH {pkr(statementData.closingCashPayable || 0)} + BARTER {pkr(statementData.closingBarterPayable || 0)})
+                    </td>
+                    <td colSpan={2} style={{ border: "1px solid #000000", padding: "7px 8px", textAlign: "right", fontSize: 12, color: "#A81C1C", fontWeight: 900 }}>
+                      {pkr(statementData.closingPayable)}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            ) : (
             <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 12, border: "1px solid #000000", fontSize: 11, boxSizing: "border-box", tableLayout: "fixed" }}>
               <colgroup>
                 <col style={{ width: "5%" }} />
@@ -625,7 +812,7 @@ export function VendorStatementPrintModal({ vendor, dateFrom, dateTo, statementD
                     <td style={{ ...tdCenter, fontWeight: 700 }}>{idx + 2}</td>
                     <td style={tdCenter}>{fmtDocDate(row.date)}</td>
                     <td style={{ ...tdCenter, fontWeight: 700, fontFamily: "monospace", whiteSpace: "nowrap" }}>{row.ref}</td>
-                    <td style={{ ...tdCenter, fontWeight: 700, color: row.type === "Vendor Bill" ? "#D97706" : "#059669" }}>
+                    <td style={{ ...tdCenter, fontWeight: 700, color: (row.type === "Vendor Bill" || row.type === "Purchase Order") ? "#D97706" : "#059669" }}>
                       {row.type}
                     </td>
                     <td style={tdLeft}>
@@ -675,6 +862,7 @@ export function VendorStatementPrintModal({ vendor, dateFrom, dateTo, statementD
                 </tr>
               </tbody>
             </table>
+            )}
 
             {/* AMOUNT IN WORDS (EXACT INVOICE BOX) */}
             <div style={{ fontSize: 11.5, fontStyle: "italic", marginBottom: 10, background: "#F8FAFC", padding: "8px 12px", border: "1px solid #000000", borderRadius: 4 }}>
@@ -725,6 +913,7 @@ export default function VendorStatementView({
   vendors = [],
   projects = [],
   expenses = [],
+  purchaseOrders = [],
   vouchers = [],
   journal = [],
   selectedVendorId,
@@ -738,6 +927,8 @@ export default function VendorStatementView({
   const [selectedProjectId, setSelectedProjectId] = useState("all");
   const [showPrintModal, setShowPrintModal] = useState(false);
   const [showTaxBreakdown, setShowTaxBreakdown] = useState(true);
+  // Dual Cash & Barter Columns: null = auto-show whenever vendor has barter activity; user can also toggle manually
+  const [showBarterCols, setShowBarterCols] = useState(null);
 
   useEffect(() => {
     if (selectedVendorId) {
@@ -762,10 +953,17 @@ export default function VendorStatementView({
     return vendors.find(v => v.id === activeVendorId || v.vendorCode === activeVendorId) || vendors[0] || null;
   }, [vendors, activeVendorId]);
 
-  // Compute transactions & opening balance from posted entries
+  // Compute transactions & opening balance from posted entries (Dual Cash & Barter + Unbilled Purchase Orders)
   const statementData = useMemo(() => {
     if (!selectedVendor) {
-      return { openingPayable: 0, rows: [], totalExpenses: 0, totalPayments: 0, closingPayable: 0, totalGrossBilled: 0, totalGrossPaid: 0, totalCommission: 0, totalInputSst: 0, totalWhtDeducted: 0, totalNetPaid: 0 };
+      return {
+        openingPayable: 0, cashOpeningPayable: 0, barterOpeningPayable: 0,
+        rows: [], totalExpenses: 0, totalPayments: 0,
+        totalCashBilled: 0, totalBarterBilled: 0, totalCashPayments: 0, totalBarterSettled: 0,
+        closingPayable: 0, closingCashPayable: 0, closingBarterPayable: 0,
+        hasBarterActivity: false,
+        totalGrossBilled: 0, totalGrossPaid: 0, totalCommission: 0, totalInputSst: 0, totalWhtDeducted: 0, totalNetPaid: 0
+      };
     }
 
     const vendorNameNorm = (selectedVendor.name || "").toLowerCase().trim();
@@ -806,34 +1004,85 @@ export default function VendorStatementView({
       return false;
     };
 
-    // 1. Calculate Opening Payable prior to dateFrom
-    let opening = Number(selectedVendor.openingBalance) || 0;
+    const splitCashBarter = (item) => {
+      const total = Number(item.amount) || 0;
+      const barterAmt = item.applyBarter && Number(item.barterAmount) > 0
+        ? Math.min(total, Number(item.barterAmount))
+        : 0;
+      const cashAmt = item.applyBarter && item.cashAmount !== undefined
+        ? Math.max(0, Number(item.cashAmount))
+        : Math.max(0, total - barterAmt);
+      return { total, cashAmt, barterAmt };
+    };
+
+    // Un-billed Purchase Orders: include POs that are not Cancelled and not already converted into an Expense (prevents double-counting once late invoice is received & billed)
+    const vendorMatchedExpenses = expenses.filter(e => isVendorMatch(e) && isProjectMatch(e));
+    const unbilledPOs = (purchaseOrders || []).filter(po => {
+      if (!po || po.status === "Cancelled" || !isVendorMatch(po) || !isProjectMatch(po)) return false;
+      const alreadyInExp = expenses.some(e =>
+        (e.poId && e.poId === po.id) ||
+        (e.expenseNo && po.poNumber && e.expenseNo === po.poNumber)
+      );
+      if (alreadyInExp) return false;
+      if (po.status === "Billed") {
+        const poAmt = Number(po.amount) || 0;
+        const matchedLegacy = vendorMatchedExpenses.some(e => Math.abs((Number(e.amount) || 0) - poAmt) < 1);
+        if (matchedLegacy) return false;
+      }
+      return true;
+    });
+
+    // 1. Calculate Opening Payable prior to dateFrom (Cash & Barter separately)
+    let cashOpening = Number(selectedVendor.openingBalance) || 0;
+    let barterOpening = Number(selectedVendor.openingBarterBalance) || 0;
 
     // Prior Expenses (Bills/Credits)
-    expenses.filter(e => isVendorMatch(e) && isProjectMatch(e) && e.date < dateFrom).forEach(exp => {
-      opening += Number(exp.amount) || 0;
+    vendorMatchedExpenses.filter(e => e.date < dateFrom).forEach(exp => {
+      const { cashAmt, barterAmt } = splitCashBarter(exp);
+      cashOpening += cashAmt;
+      barterOpening += barterAmt;
+    });
+
+    // Prior Unbilled POs
+    unbilledPOs.filter(po => (po.issueDate || po.date || "") < dateFrom).forEach(po => {
+      const { cashAmt, barterAmt } = splitCashBarter(po);
+      cashOpening += cashAmt;
+      barterOpening += barterAmt;
     });
 
     // Prior Payments / Direct Settlements / Vendor Barter (Debits) — ONLY settled/cleared PDCs deduct from Vendor Payable
     vouchers.filter(v => isVendorMatch(v) && isProjectMatch(v) && v.date < dateFrom && (v.type === "PV" || v.type === "CV" || (v.type === "BV" && v.barterDirection === "vendor"))).forEach(v => {
       if (v.isPdc && v.pdcStatus !== "Cleared") return;
-      opening -= Number(v.amount) || 0;
+      const amt = Number(v.amount) || 0;
+      if (v.type === "BV") {
+        barterOpening -= amt;
+      } else {
+        cashOpening -= amt;
+      }
     });
+
+    const opening = cashOpening + barterOpening;
 
     // 2. Filter Statement Rows within date range
     const rawRows = [];
 
-    expenses.filter(e => isVendorMatch(e) && isProjectMatch(e) && e.date >= dateFrom && e.date <= dateTo).forEach(exp => {
+    vendorMatchedExpenses.filter(e => e.date >= dateFrom && e.date <= dateTo).forEach(exp => {
       const proj = projects.find(p => p.id === exp.projectId);
-      const gross = Number(exp.amount) || 0;
+      const { total: gross, cashAmt, barterAmt } = splitCashBarter(exp);
+      const barterPct = gross > 0 && barterAmt > 0 ? (Number(exp.barterPercent) || Math.round((barterAmt / gross) * 10000) / 100) : 0;
       rawRows.push({
         id: exp.id,
         date: exp.date,
         ref: exp.expenseNo || ("EXP-" + exp.id.toUpperCase()),
         type: "Vendor Bill",
-        project: proj ? proj.name : (exp.category || "Operating Expense"),
+        project: proj ? proj.name : (exp.description || exp.category || "Operating Expense"),
         debit: 0,
         credit: gross,
+        cashDebit: 0,
+        cashCredit: cashAmt,
+        barterDebit: 0,
+        barterCredit: barterAmt,
+        barterSplitMeta: barterAmt > 0 ? { percent: barterPct, barterAmt, cashAmt } : null,
         status: exp.status === "paid" ? "Paid" : "Unpaid AP",
         taxBreakdown: {
           kind: "bill",
@@ -842,6 +1091,37 @@ export default function VendorStatementView({
           subcategory: exp.subcategory
         },
         raw: exp
+      });
+    });
+
+    unbilledPOs.filter(po => {
+      const d = po.issueDate || po.date || new Date().toISOString().slice(0, 10);
+      return d >= dateFrom && d <= dateTo;
+    }).forEach(po => {
+      const proj = projects.find(p => p.id === po.projectId);
+      const d = po.issueDate || po.date || new Date().toISOString().slice(0, 10);
+      const { total: gross, cashAmt, barterAmt } = splitCashBarter(po);
+      const barterPct = gross > 0 && barterAmt > 0 ? (Number(po.barterPercent) || Math.round((barterAmt / gross) * 10000) / 100) : 0;
+      rawRows.push({
+        id: po.id,
+        date: d,
+        ref: po.poNumber || ("PO-" + po.id.toUpperCase()),
+        type: "Purchase Order",
+        project: (proj ? `${proj.name} — ` : "") + (po.description || "Purchase Order (Awaiting Vendor Bill)"),
+        debit: 0,
+        credit: gross,
+        cashDebit: 0,
+        cashCredit: cashAmt,
+        barterDebit: 0,
+        barterCredit: barterAmt,
+        barterSplitMeta: barterAmt > 0 ? { percent: barterPct, barterAmt, cashAmt } : null,
+        status: po.status || "Draft",
+        taxBreakdown: {
+          kind: "bill",
+          gross,
+          category: `PO (${po.status || "Draft"} — Invoice Pending)`
+        },
+        raw: po
       });
     });
 
@@ -882,7 +1162,9 @@ export default function VendorStatementView({
       const net = Number(v.netAmount !== undefined ? v.netAmount : v.amount) || 0;
 
       let taxBreakdown = null;
-      if (isDirect) {
+      if (isBarter) {
+        taxBreakdown = null;
+      } else if (isDirect) {
         taxBreakdown = {
           kind: "direct_settlement",
           amount: Number(v.amount) || 0,
@@ -907,14 +1189,19 @@ export default function VendorStatementView({
         };
       }
 
+      const settledAmt = (isPdcBounced || isPdcPending) ? 0 : (Number(v.amount) || 0);
       rawRows.push({
         id: v.id,
         date: isPdcCleared && v.clearedDate ? v.clearedDate : v.date,
-        ref: v.voucherNo || ((isDirect ? "CV-" : "PV-") + v.id.toUpperCase()),
+        ref: v.voucherNo || ((isBarter ? "BV-" : isDirect ? "CV-" : "PV-") + v.id.toUpperCase()),
         type: typeLabel,
-        project: proj ? proj.name : defaultDesc,
-        debit: (isPdcBounced || isPdcPending) ? 0 : (Number(v.amount) || 0),
+        project: proj ? (isBarter ? `${proj.name} — ${defaultDesc}` : proj.name) : defaultDesc,
+        debit: settledAmt,
         credit: 0,
+        cashDebit: isBarter ? 0 : settledAmt,
+        cashCredit: 0,
+        barterDebit: isBarter ? settledAmt : 0,
+        barterCredit: 0,
         status: v.isPdc ? (isPdcPending ? "PDC Pending" : v.pdcStatus) : (v.status || "Posted"),
         taxBreakdown: (isPdcBounced || isPdcPending) ? null : taxBreakdown,
         raw: v
@@ -923,23 +1210,36 @@ export default function VendorStatementView({
 
     rawRows.sort((a, b) => new Date(a.date) - new Date(b.date));
 
-    // Accounts Payable Sign Convention: Balance = Opening + Credits - Debits
+    // Accounts Payable Sign Convention: Balance = Opening + Credits (Bills/POs) - Debits (Payments/Barter)
     let running = opening;
+    let cashRunning = cashOpening;
+    let barterRunning = barterOpening;
     let totalExpenses = 0;
     let totalPayments = 0;
+    let totalCashBilled = 0;
+    let totalBarterBilled = 0;
+    let totalCashPayments = 0;
+    let totalBarterSettled = 0;
 
     let totalGrossBilled = 0;
     let totalGrossPaid = 0;
     let totalCommission = 0;
     let totalInputSst = 0;
     let totalWhtDeducted = 0;
+    let totalNetPaid = 0;
 
     const rowsWithBalance = rawRows.map(r => {
       running = running + r.credit - r.debit;
+      cashRunning = cashRunning + r.cashCredit - r.cashDebit;
+      barterRunning = barterRunning + r.barterCredit - r.barterDebit;
       totalExpenses += r.credit;
       totalPayments += r.debit;
+      totalCashBilled += r.cashCredit;
+      totalBarterBilled += r.barterCredit;
+      totalCashPayments += r.cashDebit;
+      totalBarterSettled += r.barterDebit;
 
-      if (r.type === "Vendor Bill") {
+      if (r.type === "Vendor Bill" || r.type === "Purchase Order") {
         totalGrossBilled += r.credit;
       }
       if (r.taxBreakdown && r.taxBreakdown.kind === "payment") {
@@ -947,29 +1247,54 @@ export default function VendorStatementView({
         totalCommission += (r.taxBreakdown.comm || 0);
         totalInputSst += (r.taxBreakdown.sst || 0);
         totalWhtDeducted += (r.taxBreakdown.wht || 0);
+        totalNetPaid += (r.taxBreakdown.net || r.debit);
       }
-      return { ...r, runningBalance: running };
+      return {
+        ...r,
+        runningBalance: running,
+        cashRunningBalance: cashRunning,
+        barterRunningBalance: barterRunning
+      };
     });
+
+    const hasBarterActivity = barterOpening !== 0 || totalBarterBilled > 0 || totalBarterSettled > 0;
 
     return {
       openingPayable: opening,
+      cashOpeningPayable: cashOpening,
+      barterOpeningPayable: barterOpening,
       rows: rowsWithBalance,
       totalExpenses,
       totalPayments,
+      totalCashBilled,
+      totalBarterBilled,
+      totalCashPayments,
+      totalBarterSettled,
       closingPayable: running,
+      closingCashPayable: cashRunning,
+      closingBarterPayable: barterRunning,
+      hasBarterActivity,
       totalGrossBilled,
       totalGrossPaid,
       totalCommission,
       totalInputSst,
-      totalWhtDeducted
+      totalWhtDeducted,
+      totalNetPaid
     };
-  }, [selectedVendor, selectedProjectId, dateFrom, dateTo, expenses, vouchers, projects]);
+  }, [selectedVendor, selectedProjectId, dateFrom, dateTo, expenses, purchaseOrders, vouchers, projects]);
+
+  const displayBarterCols = showBarterCols !== null ? showBarterCols : Boolean(statementData.hasBarterActivity);
 
   const pkr = (val) => "PKR " + (Number(val) || 0).toLocaleString("en-PK", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 
   const handleExportExcel = () => {
     if (!selectedVendor) return;
-    exportVendorStatementToExcel({ vendor: selectedVendor, dateFrom, dateTo, statementData });
+    exportVendorStatementToExcel({
+      vendor: selectedVendor,
+      dateFrom,
+      dateTo,
+      statementData: { ...statementData, hasBarterActivity: displayBarterCols }
+    });
   };
 
   const mainContent = (
@@ -1013,7 +1338,24 @@ export default function VendorStatementView({
           </div>
         </div>
 
-        <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginTop: 14, borderTop: "1px solid var(--rule)", paddingTop: 10 }}>
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginTop: 14, borderTop: "1px solid var(--rule)", paddingTop: 10, flexWrap: "wrap" }}>
+          <button
+            className="btn"
+            onClick={() => setShowBarterCols(prev => !(prev !== null ? prev : Boolean(statementData.hasBarterActivity)))}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
+              fontSize: 13,
+              background: displayBarterCols ? "rgba(180, 83, 9, 0.14)" : "var(--bg)",
+              borderColor: "#B45309",
+              color: "#B45309",
+              fontWeight: 700
+            }}
+            title="Show separate Cash / Bank and Barter ledger columns"
+          >
+            {displayBarterCols ? "🤝 Barter Columns: ON" : "🤝 Show Barter Columns"}
+          </button>
           <button
             className="btn"
             onClick={() => setShowTaxBreakdown(!showTaxBreakdown)}
@@ -1063,27 +1405,63 @@ export default function VendorStatementView({
             </div>
 
             {/* STATEMENT SUMMARY CARDS */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginTop: 20 }}>
-              <div style={{ background: "var(--bg)", padding: 14, borderRadius: 8, border: "1px solid var(--rule)" }}>
-                <div style={{ fontSize: 12, color: "var(--ink-muted)", fontWeight: 600 }}>Opening Payable</div>
-                <div style={{ fontSize: 16, fontWeight: 800, color: "#1E293B", marginTop: 4 }}>{pkr(statementData.openingPayable)}</div>
-              </div>
+            {displayBarterCols ? (
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginTop: 20 }}>
+                <div style={{ background: "var(--bg)", padding: 14, borderRadius: 8, border: "1px solid var(--rule)" }}>
+                  <div style={{ fontSize: 12, color: "var(--ink-muted)", fontWeight: 600 }}>Opening Payable</div>
+                  <div style={{ fontSize: 16, fontWeight: 800, color: "#1E293B", marginTop: 4 }}>{pkr(statementData.openingPayable)}</div>
+                  <div style={{ fontSize: 10.5, color: "var(--ink-muted)", marginTop: 4 }}>
+                    Cash: <strong style={{ color: "#0F766E" }}>{pkr(statementData.cashOpeningPayable || 0)}</strong> · Barter: <strong style={{ color: "#B45309" }}>{pkr(statementData.barterOpeningPayable || 0)}</strong>
+                  </div>
+                </div>
 
-              <div style={{ background: "var(--bg)", padding: 14, borderRadius: 8, border: "1px solid var(--rule)" }}>
-                <div style={{ fontSize: 12, color: "var(--ink-muted)", fontWeight: 600 }}>Total Bills / Expenses (+)</div>
-                <div style={{ fontSize: 16, fontWeight: 800, color: "#D97706", marginTop: 4 }}>{pkr(statementData.totalExpenses)}</div>
-              </div>
+                <div style={{ background: "rgba(15, 118, 110, 0.06)", padding: 14, borderRadius: 8, border: "1.5px solid #0F766E" }}>
+                  <div style={{ fontSize: 12, color: "#0F766E", fontWeight: 700 }}>💵 Cash / Bank Payable</div>
+                  <div style={{ fontSize: 17, fontWeight: 900, color: "#0F766E", marginTop: 4 }}>{pkr(statementData.closingCashPayable || 0)}</div>
+                  <div style={{ fontSize: 10.5, color: "#047857", marginTop: 4 }}>
+                    Bills/POs: {pkr(statementData.totalCashBilled || 0)} · Paid: {pkr(statementData.totalCashPayments || 0)}
+                  </div>
+                </div>
 
-              <div style={{ background: "var(--bg)", padding: 14, borderRadius: 8, border: "1px solid var(--rule)" }}>
-                <div style={{ fontSize: 12, color: "var(--ink-muted)", fontWeight: 600 }}>Total Payments (-)</div>
-                <div style={{ fontSize: 16, fontWeight: 800, color: "#059669", marginTop: 4 }}>{pkr(statementData.totalPayments)}</div>
-              </div>
+                <div style={{ background: "rgba(180, 83, 9, 0.07)", padding: 14, borderRadius: 8, border: "1.5px solid #B45309" }}>
+                  <div style={{ fontSize: 12, color: "#B45309", fontWeight: 700 }}>🤝 Barter Payable</div>
+                  <div style={{ fontSize: 17, fontWeight: 900, color: "#B45309", marginTop: 4 }}>{pkr(statementData.closingBarterPayable || 0)}</div>
+                  <div style={{ fontSize: 10.5, color: "#92400E", marginTop: 4 }}>
+                    Barter POs/Bills: {pkr(statementData.totalBarterBilled || 0)} · Settled: {pkr(statementData.totalBarterSettled || 0)}
+                  </div>
+                </div>
 
-              <div style={{ background: "rgba(217, 119, 6, 0.08)", padding: 14, borderRadius: 8, border: "1.5px solid #D97706" }}>
-                <div style={{ fontSize: 12, color: "#B45309", fontWeight: 700 }}>Closing Payable Balance</div>
-                <div style={{ fontSize: 17, fontWeight: 900, color: "#D97706", marginTop: 4 }}>{pkr(statementData.closingPayable)}</div>
+                <div style={{ background: "rgba(217, 119, 6, 0.08)", padding: 14, borderRadius: 8, border: "1.5px solid #D97706" }}>
+                  <div style={{ fontSize: 12, color: "#B45309", fontWeight: 700 }}>Combined Closing Payable</div>
+                  <div style={{ fontSize: 17, fontWeight: 900, color: "#D97706", marginTop: 4 }}>{pkr(statementData.closingPayable)}</div>
+                  <div style={{ fontSize: 10.5, color: "var(--ink-muted)", marginTop: 4 }}>
+                    Cash + Barter Total
+                  </div>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginTop: 20 }}>
+                <div style={{ background: "var(--bg)", padding: 14, borderRadius: 8, border: "1px solid var(--rule)" }}>
+                  <div style={{ fontSize: 12, color: "var(--ink-muted)", fontWeight: 600 }}>Opening Payable</div>
+                  <div style={{ fontSize: 16, fontWeight: 800, color: "#1E293B", marginTop: 4 }}>{pkr(statementData.openingPayable)}</div>
+                </div>
+
+                <div style={{ background: "var(--bg)", padding: 14, borderRadius: 8, border: "1px solid var(--rule)" }}>
+                  <div style={{ fontSize: 12, color: "var(--ink-muted)", fontWeight: 600 }}>Total Bills / POs (+)</div>
+                  <div style={{ fontSize: 16, fontWeight: 800, color: "#D97706", marginTop: 4 }}>{pkr(statementData.totalExpenses)}</div>
+                </div>
+
+                <div style={{ background: "var(--bg)", padding: 14, borderRadius: 8, border: "1px solid var(--rule)" }}>
+                  <div style={{ fontSize: 12, color: "var(--ink-muted)", fontWeight: 600 }}>Total Payments (-)</div>
+                  <div style={{ fontSize: 16, fontWeight: 800, color: "#059669", marginTop: 4 }}>{pkr(statementData.totalPayments)}</div>
+                </div>
+
+                <div style={{ background: "rgba(217, 119, 6, 0.08)", padding: 14, borderRadius: 8, border: "1.5px solid #D97706" }}>
+                  <div style={{ fontSize: 12, color: "#B45309", fontWeight: 700 }}>Closing Payable Balance</div>
+                  <div style={{ fontSize: 17, fontWeight: 900, color: "#D97706", marginTop: 4 }}>{pkr(statementData.closingPayable)}</div>
+                </div>
+              </div>
+            )}
 
             {/* TAX BREAKDOWN SUMMARY RIBBON */}
             {showTaxBreakdown && (
@@ -1125,127 +1503,298 @@ export default function VendorStatementView({
           {/* STATEMENT TABLE */}
           <div className="card" style={{ padding: 0, borderRadius: 10, overflow: "hidden", border: "1px solid var(--rule)" }}>
             <div style={{ padding: "12px 16px", background: "var(--table-header-bg)", borderBottom: "1px solid var(--rule)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <h4 style={{ margin: 0, fontSize: 14 }}>Accounts Payable Sub-Ledger Activity</h4>
+              <h4 style={{ margin: 0, fontSize: 14 }}>
+                Accounts Payable Sub-Ledger Activity{displayBarterCols ? " — Dual Cash & Barter Columns" : ""}
+              </h4>
               <span style={{ fontSize: 12, color: "var(--ink-muted)" }}>{statementData.rows.length} Transactions</span>
             </div>
 
+            <div style={{ overflowX: "auto" }}>
             <table className="table" style={{ margin: 0 }}>
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Reference</th>
-                  <th>Type</th>
-                  <th>Project / Expense</th>
-                  <th style={{ textAlign: "right" }}>Debit / Payment (PKR)</th>
-                  <th style={{ textAlign: "right" }}>Credit / Bill (PKR)</th>
-                  <th style={{ textAlign: "right" }}>Payable Balance (PKR)</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr style={{ background: "var(--bg)", fontWeight: 600 }}>
-                  <td>{dateFrom}</td>
-                  <td>OB-000</td>
-                  <td>Opening Balance</td>
-                  <td>—</td>
-                  <td style={{ textAlign: "right" }}>—</td>
-                  <td style={{ textAlign: "right" }}>—</td>
-                  <td style={{ textAlign: "right", fontWeight: 800 }}>{pkr(statementData.openingPayable)}</td>
-                </tr>
-
-                {statementData.rows.length === 0 ? (
-                  <tr>
-                    <td colSpan="7" style={{ textAlign: "center", padding: 30, color: "var(--ink-muted)" }}>
-                      No vendor transactions recorded within this date range.
-                    </td>
-                  </tr>
-                ) : (
-                  statementData.rows.map((row, idx) => (
-                    <tr key={idx}>
-                      <td>{row.date}</td>
-                      <td><span style={{ fontFamily: "monospace", fontWeight: 700 }}>{row.ref}</span></td>
-                      <td>
-                        <span style={{
-                          padding: "2px 8px", borderRadius: 12, fontSize: 11, fontWeight: 700,
-                          background: row.type === "Vendor Bill" ? "rgba(217, 119, 6, 0.1)" : "rgba(5, 150, 105, 0.1)",
-                          color: row.type === "Vendor Bill" ? "#D97706" : "#059669"
-                        }}>
-                          {row.type}
-                        </span>
-                      </td>
-                      <td>
-                        <div style={{ fontWeight: 600 }}>{row.project}</div>
-                        {showTaxBreakdown && row.taxBreakdown && (
-                          <div style={{ marginTop: 5, display: "flex", flexWrap: "wrap", gap: 6 }}>
-                            {row.taxBreakdown.kind === "bill" && (
-                              <span style={{ fontSize: 10.5, padding: "2px 6px", borderRadius: 4, background: "rgba(217, 119, 6, 0.12)", color: "#B45309", fontWeight: 700 }}>
-                                Gross Bill: {pkr(row.taxBreakdown.gross)} {row.taxBreakdown.category ? `[${row.taxBreakdown.category}]` : ""}
-                              </span>
-                            )}
-                            {row.taxBreakdown.kind === "payment" && (
-                              <>
-                                <span style={{ fontSize: 10.5, padding: "2px 6px", borderRadius: 4, background: "rgba(100, 116, 139, 0.12)", color: "#475569", fontWeight: 600 }}>
-                                  Gross: {pkr(row.taxBreakdown.gross)}
-                                </span>
-                                {row.taxBreakdown.comm > 0 && (
-                                  <span style={{ fontSize: 10.5, padding: "2px 6px", borderRadius: 4, background: "rgba(217, 119, 6, 0.12)", color: "#B45309", fontWeight: 700 }}>
-                                    - Comm ({row.taxBreakdown.commRate}%): {pkr(row.taxBreakdown.comm)}
-                                  </span>
-                                )}
-                                {row.taxBreakdown.sst > 0 && (
-                                  <span style={{ fontSize: 10.5, padding: "2px 6px", borderRadius: 4, background: "rgba(2, 132, 199, 0.12)", color: "#0284C7", fontWeight: 700 }}>
-                                    + Input SST ({row.taxBreakdown.sstRate}%): {pkr(row.taxBreakdown.sst)}
-                                  </span>
-                                )}
-                                {row.taxBreakdown.wht > 0 && (
-                                  <span style={{ fontSize: 10.5, padding: "2px 6px", borderRadius: 4, background: "rgba(220, 38, 38, 0.12)", color: "#DC2626", fontWeight: 700 }}>
-                                    - WHT ({row.taxBreakdown.whtRate}%): {pkr(row.taxBreakdown.wht)}
-                                  </span>
-                                )}
-                                <span style={{ fontSize: 10.5, padding: "2px 6px", borderRadius: 4, background: "rgba(5, 150, 105, 0.12)", color: "#059669", fontWeight: 800 }}>
-                                  Net Paid: {pkr(row.taxBreakdown.net)}
-                                </span>
-                                {row.taxBreakdown.mode && (
-                                  <span style={{ fontSize: 10, padding: "2px 6px", borderRadius: 4, background: "var(--bg)", border: "1px solid var(--rule)", color: "var(--ink-muted)" }}>
-                                    {row.taxBreakdown.mode}{row.taxBreakdown.instrumentNo ? ` #${row.taxBreakdown.instrumentNo}` : ""}
-                                  </span>
-                                )}
-                              </>
-                            )}
-                            {row.taxBreakdown.kind === "direct_settlement" && (
-                              <>
-                                <span style={{ fontSize: 10.5, padding: "2px 6px", borderRadius: 4, background: "rgba(217, 119, 6, 0.12)", color: "#B45309", fontWeight: 700 }}>
-                                  Direct Settled: {pkr(row.taxBreakdown.amount)}
-                                </span>
-                                <span style={{ fontSize: 10, padding: "2px 6px", borderRadius: 4, background: "var(--bg)", border: "1px solid var(--rule)", color: "var(--ink-muted)" }}>
-                                  Client: {row.taxBreakdown.client} {row.taxBreakdown.instrumentNo ? `[#${row.taxBreakdown.instrumentNo}]` : ""}
-                                </span>
-                              </>
-                            )}
-                          </div>
-                        )}
-                      </td>
-                      <td style={{ textAlign: "right", color: row.debit > 0 ? "#059669" : "inherit", fontWeight: row.debit > 0 ? 700 : 400 }}>
-                        {row.debit > 0 ? pkr(row.debit) : "—"}
-                      </td>
-                      <td style={{ textAlign: "right", color: row.credit > 0 ? "#D97706" : "inherit", fontWeight: row.credit > 0 ? 700 : 400 }}>
-                        {row.credit > 0 ? pkr(row.credit) : "—"}
-                      </td>
-                      <td style={{ textAlign: "right", fontWeight: 800, color: row.runningBalance > 0 ? "#D97706" : "#059669" }}>
-                        {pkr(row.runningBalance)}
-                      </td>
+              {displayBarterCols ? (
+                <>
+                  <thead>
+                    <tr>
+                      <th rowSpan={2} style={{ verticalAlign: "middle" }}>Date</th>
+                      <th rowSpan={2} style={{ verticalAlign: "middle" }}>Reference</th>
+                      <th rowSpan={2} style={{ verticalAlign: "middle" }}>Type</th>
+                      <th rowSpan={2} style={{ verticalAlign: "middle" }}>Project / Particulars</th>
+                      <th colSpan={3} style={{ textAlign: "center", background: "rgba(15, 118, 110, 0.12)", color: "#0F766E", borderLeft: "2px solid rgba(15, 118, 110, 0.35)" }}>
+                        💵 CASH / BANK LEDGER (PKR)
+                      </th>
+                      <th colSpan={3} style={{ textAlign: "center", background: "rgba(180, 83, 9, 0.12)", color: "#B45309", borderLeft: "2px solid rgba(180, 83, 9, 0.35)" }}>
+                        🤝 BARTER LEDGER (PKR)
+                      </th>
                     </tr>
-                  ))
-                )}
-              </tbody>
-              <tfoot>
-                <tr style={{ background: "var(--table-header-bg)", fontWeight: 800 }}>
-                  <td colSpan="4">Closing Payable Balance</td>
-                  <td style={{ textAlign: "right", color: "#059669" }}>{pkr(statementData.totalPayments)}</td>
-                  <td style={{ textAlign: "right", color: "#D97706" }}>{pkr(statementData.totalExpenses)}</td>
-                  <td style={{ textAlign: "right", fontSize: 15, color: "#D97706" }}>{pkr(statementData.closingPayable)}</td>
-                </tr>
-              </tfoot>
+                    <tr>
+                      <th style={{ textAlign: "right", background: "rgba(15, 118, 110, 0.06)", color: "#059669", borderLeft: "2px solid rgba(15, 118, 110, 0.35)", fontSize: 11 }}>Cash Debit</th>
+                      <th style={{ textAlign: "right", background: "rgba(15, 118, 110, 0.06)", color: "#D97706", fontSize: 11 }}>Cash Credit</th>
+                      <th style={{ textAlign: "right", background: "rgba(15, 118, 110, 0.09)", color: "#0F766E", fontSize: 11 }}>Cash Balance</th>
+                      <th style={{ textAlign: "right", background: "rgba(180, 83, 9, 0.06)", color: "#059669", borderLeft: "2px solid rgba(180, 83, 9, 0.35)", fontSize: 11 }}>Barter Debit</th>
+                      <th style={{ textAlign: "right", background: "rgba(180, 83, 9, 0.06)", color: "#B45309", fontSize: 11 }}>Barter Credit</th>
+                      <th style={{ textAlign: "right", background: "rgba(180, 83, 9, 0.09)", color: "#B45309", fontSize: 11 }}>Barter Balance</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr style={{ background: "var(--bg)", fontWeight: 600 }}>
+                      <td>{dateFrom}</td>
+                      <td>OB-000</td>
+                      <td>Opening Balance</td>
+                      <td>Opening Balance Brought Forward</td>
+                      <td style={{ textAlign: "right", borderLeft: "2px solid rgba(15, 118, 110, 0.25)" }}>—</td>
+                      <td style={{ textAlign: "right" }}>—</td>
+                      <td style={{ textAlign: "right", fontWeight: 800, color: "#0F766E" }}>{pkr(statementData.cashOpeningPayable || 0)}</td>
+                      <td style={{ textAlign: "right", borderLeft: "2px solid rgba(180, 83, 9, 0.25)" }}>—</td>
+                      <td style={{ textAlign: "right" }}>—</td>
+                      <td style={{ textAlign: "right", fontWeight: 800, color: "#B45309" }}>{pkr(statementData.barterOpeningPayable || 0)}</td>
+                    </tr>
+
+                    {statementData.rows.length === 0 ? (
+                      <tr>
+                        <td colSpan="10" style={{ textAlign: "center", padding: 30, color: "var(--ink-muted)" }}>
+                          No vendor transactions recorded within this date range.
+                        </td>
+                      </tr>
+                    ) : (
+                      statementData.rows.map((row, idx) => {
+                        const badgeBg = row.type === "Purchase Order"
+                          ? "rgba(2, 132, 199, 0.12)"
+                          : row.type === "Vendor Bill"
+                          ? "rgba(217, 119, 6, 0.12)"
+                          : row.type === "Barter Settlement"
+                          ? "rgba(180, 83, 9, 0.14)"
+                          : "rgba(5, 150, 105, 0.12)";
+                        const badgeColor = row.type === "Purchase Order"
+                          ? "#0284C7"
+                          : row.type === "Vendor Bill"
+                          ? "#D97706"
+                          : row.type === "Barter Settlement"
+                          ? "#B45309"
+                          : "#059669";
+                        return (
+                          <tr key={idx}>
+                            <td>{row.date}</td>
+                            <td><span style={{ fontFamily: "monospace", fontWeight: 700 }}>{row.ref}</span></td>
+                            <td>
+                              <span style={{ padding: "2px 8px", borderRadius: 12, fontSize: 11, fontWeight: 700, background: badgeBg, color: badgeColor }}>
+                                {row.type}
+                              </span>
+                            </td>
+                            <td>
+                              <div style={{ fontWeight: 600 }}>{row.project}</div>
+                              {row.barterSplitMeta && (
+                                <div style={{ marginTop: 4 }}>
+                                  <span style={{ fontSize: 10.5, padding: "2px 7px", borderRadius: 4, background: "rgba(180, 83, 9, 0.12)", color: "#B45309", fontWeight: 700 }}>
+                                    🤝 Barter ({row.barterSplitMeta.percent}%): {pkr(row.barterSplitMeta.barterAmt)} | 💵 Cash: {pkr(row.barterSplitMeta.cashAmt)}
+                                  </span>
+                                </div>
+                              )}
+                              {showTaxBreakdown && row.taxBreakdown && (
+                                <div style={{ marginTop: 5, display: "flex", flexWrap: "wrap", gap: 6 }}>
+                                  {row.taxBreakdown.kind === "bill" && (
+                                    <span style={{ fontSize: 10.5, padding: "2px 6px", borderRadius: 4, background: "rgba(217, 119, 6, 0.12)", color: "#B45309", fontWeight: 700 }}>
+                                      Gross: {pkr(row.taxBreakdown.gross)} {row.taxBreakdown.category ? `[${row.taxBreakdown.category}]` : ""}
+                                    </span>
+                                  )}
+                                  {row.taxBreakdown.kind === "payment" && (
+                                    <>
+                                      <span style={{ fontSize: 10.5, padding: "2px 6px", borderRadius: 4, background: "rgba(100, 116, 139, 0.12)", color: "#475569", fontWeight: 600 }}>
+                                        Gross: {pkr(row.taxBreakdown.gross)}
+                                      </span>
+                                      {row.taxBreakdown.comm > 0 && (
+                                        <span style={{ fontSize: 10.5, padding: "2px 6px", borderRadius: 4, background: "rgba(217, 119, 6, 0.12)", color: "#B45309", fontWeight: 700 }}>
+                                          - Comm ({row.taxBreakdown.commRate}%): {pkr(row.taxBreakdown.comm)}
+                                        </span>
+                                      )}
+                                      {row.taxBreakdown.sst > 0 && (
+                                        <span style={{ fontSize: 10.5, padding: "2px 6px", borderRadius: 4, background: "rgba(2, 132, 199, 0.12)", color: "#0284C7", fontWeight: 700 }}>
+                                          + Input SST ({row.taxBreakdown.sstRate}%): {pkr(row.taxBreakdown.sst)}
+                                        </span>
+                                      )}
+                                      {row.taxBreakdown.wht > 0 && (
+                                        <span style={{ fontSize: 10.5, padding: "2px 6px", borderRadius: 4, background: "rgba(220, 38, 38, 0.12)", color: "#DC2626", fontWeight: 700 }}>
+                                          - WHT ({row.taxBreakdown.whtRate}%): {pkr(row.taxBreakdown.wht)}
+                                        </span>
+                                      )}
+                                      <span style={{ fontSize: 10.5, padding: "2px 6px", borderRadius: 4, background: "rgba(5, 150, 105, 0.12)", color: "#059669", fontWeight: 800 }}>
+                                        Net Paid: {pkr(row.taxBreakdown.net)}
+                                      </span>
+                                      {row.taxBreakdown.mode && (
+                                        <span style={{ fontSize: 10, padding: "2px 6px", borderRadius: 4, background: "var(--bg)", border: "1px solid var(--rule)", color: "var(--ink-muted)" }}>
+                                          {row.taxBreakdown.mode}{row.taxBreakdown.instrumentNo ? ` #${row.taxBreakdown.instrumentNo}` : ""}
+                                        </span>
+                                      )}
+                                    </>
+                                  )}
+                                  {row.taxBreakdown.kind === "direct_settlement" && (
+                                    <>
+                                      <span style={{ fontSize: 10.5, padding: "2px 6px", borderRadius: 4, background: "rgba(217, 119, 6, 0.12)", color: "#B45309", fontWeight: 700 }}>
+                                        Direct Settled: {pkr(row.taxBreakdown.amount)}
+                                      </span>
+                                      <span style={{ fontSize: 10, padding: "2px 6px", borderRadius: 4, background: "var(--bg)", border: "1px solid var(--rule)", color: "var(--ink-muted)" }}>
+                                        Client: {row.taxBreakdown.client} {row.taxBreakdown.instrumentNo ? `[#${row.taxBreakdown.instrumentNo}]` : ""}
+                                      </span>
+                                    </>
+                                  )}
+                                </div>
+                              )}
+                            </td>
+                            <td style={{ textAlign: "right", borderLeft: "2px solid rgba(15, 118, 110, 0.2)", color: row.cashDebit > 0 ? "#059669" : "var(--ink-muted)", fontWeight: row.cashDebit > 0 ? 700 : 400 }}>
+                              {row.cashDebit > 0 ? pkr(row.cashDebit) : "—"}
+                            </td>
+                            <td style={{ textAlign: "right", color: row.cashCredit > 0 ? "#D97706" : "var(--ink-muted)", fontWeight: row.cashCredit > 0 ? 700 : 400 }}>
+                              {row.cashCredit > 0 ? pkr(row.cashCredit) : "—"}
+                            </td>
+                            <td style={{ textAlign: "right", fontWeight: 800, color: "#0F766E", background: "rgba(15, 118, 110, 0.03)" }}>
+                              {pkr(row.cashRunningBalance)}
+                            </td>
+                            <td style={{ textAlign: "right", borderLeft: "2px solid rgba(180, 83, 9, 0.2)", color: row.barterDebit > 0 ? "#059669" : "var(--ink-muted)", fontWeight: row.barterDebit > 0 ? 700 : 400 }}>
+                              {row.barterDebit > 0 ? pkr(row.barterDebit) : "—"}
+                            </td>
+                            <td style={{ textAlign: "right", color: row.barterCredit > 0 ? "#B45309" : "var(--ink-muted)", fontWeight: row.barterCredit > 0 ? 700 : 400 }}>
+                              {row.barterCredit > 0 ? pkr(row.barterCredit) : "—"}
+                            </td>
+                            <td style={{ textAlign: "right", fontWeight: 800, color: "#B45309", background: "rgba(180, 83, 9, 0.03)" }}>
+                              {pkr(row.barterRunningBalance)}
+                            </td>
+                          </tr>
+                        );
+                      })
+                    )}
+                  </tbody>
+                  <tfoot>
+                    <tr style={{ background: "var(--table-header-bg)", fontWeight: 800 }}>
+                      <td colSpan="4">Closing Payable Balance (Cash + Barter: {pkr(statementData.closingPayable)})</td>
+                      <td style={{ textAlign: "right", color: "#059669", borderLeft: "2px solid rgba(15, 118, 110, 0.25)" }}>{pkr(statementData.totalCashPayments || 0)}</td>
+                      <td style={{ textAlign: "right", color: "#D97706" }}>{pkr(statementData.totalCashBilled || 0)}</td>
+                      <td style={{ textAlign: "right", fontSize: 14, color: "#0F766E" }}>{pkr(statementData.closingCashPayable || 0)}</td>
+                      <td style={{ textAlign: "right", color: "#059669", borderLeft: "2px solid rgba(180, 83, 9, 0.25)" }}>{pkr(statementData.totalBarterSettled || 0)}</td>
+                      <td style={{ textAlign: "right", color: "#B45309" }}>{pkr(statementData.totalBarterBilled || 0)}</td>
+                      <td style={{ textAlign: "right", fontSize: 14, color: "#B45309" }}>{pkr(statementData.closingBarterPayable || 0)}</td>
+                    </tr>
+                  </tfoot>
+                </>
+              ) : (
+                <>
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Reference</th>
+                      <th>Type</th>
+                      <th>Project / Expense</th>
+                      <th style={{ textAlign: "right" }}>Debit / Payment (PKR)</th>
+                      <th style={{ textAlign: "right" }}>Credit / Bill (PKR)</th>
+                      <th style={{ textAlign: "right" }}>Payable Balance (PKR)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr style={{ background: "var(--bg)", fontWeight: 600 }}>
+                      <td>{dateFrom}</td>
+                      <td>OB-000</td>
+                      <td>Opening Balance</td>
+                      <td>Opening Balance Brought Forward</td>
+                      <td style={{ textAlign: "right" }}>—</td>
+                      <td style={{ textAlign: "right" }}>—</td>
+                      <td style={{ textAlign: "right", fontWeight: 800 }}>{pkr(statementData.openingPayable)}</td>
+                    </tr>
+
+                    {statementData.rows.length === 0 ? (
+                      <tr>
+                        <td colSpan="7" style={{ textAlign: "center", padding: 30, color: "var(--ink-muted)" }}>
+                          No vendor transactions recorded within this date range.
+                        </td>
+                      </tr>
+                    ) : (
+                      statementData.rows.map((row, idx) => (
+                        <tr key={idx}>
+                          <td>{row.date}</td>
+                          <td><span style={{ fontFamily: "monospace", fontWeight: 700 }}>{row.ref}</span></td>
+                          <td>
+                            <span style={{
+                              padding: "2px 8px", borderRadius: 12, fontSize: 11, fontWeight: 700,
+                              background: row.type === "Purchase Order" ? "rgba(2, 132, 199, 0.12)" : row.type === "Vendor Bill" ? "rgba(217, 119, 6, 0.1)" : "rgba(5, 150, 105, 0.1)",
+                              color: row.type === "Purchase Order" ? "#0284C7" : row.type === "Vendor Bill" ? "#D97706" : "#059669"
+                            }}>
+                              {row.type}
+                            </span>
+                          </td>
+                          <td>
+                            <div style={{ fontWeight: 600 }}>{row.project}</div>
+                            {showTaxBreakdown && row.taxBreakdown && (
+                              <div style={{ marginTop: 5, display: "flex", flexWrap: "wrap", gap: 6 }}>
+                                {row.taxBreakdown.kind === "bill" && (
+                                  <span style={{ fontSize: 10.5, padding: "2px 6px", borderRadius: 4, background: "rgba(217, 119, 6, 0.12)", color: "#B45309", fontWeight: 700 }}>
+                                    Gross Bill: {pkr(row.taxBreakdown.gross)} {row.taxBreakdown.category ? `[${row.taxBreakdown.category}]` : ""}
+                                  </span>
+                                )}
+                                {row.taxBreakdown.kind === "payment" && (
+                                  <>
+                                    <span style={{ fontSize: 10.5, padding: "2px 6px", borderRadius: 4, background: "rgba(100, 116, 139, 0.12)", color: "#475569", fontWeight: 600 }}>
+                                      Gross: {pkr(row.taxBreakdown.gross)}
+                                    </span>
+                                    {row.taxBreakdown.comm > 0 && (
+                                      <span style={{ fontSize: 10.5, padding: "2px 6px", borderRadius: 4, background: "rgba(217, 119, 6, 0.12)", color: "#B45309", fontWeight: 700 }}>
+                                        - Comm ({row.taxBreakdown.commRate}%): {pkr(row.taxBreakdown.comm)}
+                                      </span>
+                                    )}
+                                    {row.taxBreakdown.sst > 0 && (
+                                      <span style={{ fontSize: 10.5, padding: "2px 6px", borderRadius: 4, background: "rgba(2, 132, 199, 0.12)", color: "#0284C7", fontWeight: 700 }}>
+                                        + Input SST ({row.taxBreakdown.sstRate}%): {pkr(row.taxBreakdown.sst)}
+                                      </span>
+                                    )}
+                                    {row.taxBreakdown.wht > 0 && (
+                                      <span style={{ fontSize: 10.5, padding: "2px 6px", borderRadius: 4, background: "rgba(220, 38, 38, 0.12)", color: "#DC2626", fontWeight: 700 }}>
+                                        - WHT ({row.taxBreakdown.whtRate}%): {pkr(row.taxBreakdown.wht)}
+                                      </span>
+                                    )}
+                                    <span style={{ fontSize: 10.5, padding: "2px 6px", borderRadius: 4, background: "rgba(5, 150, 105, 0.12)", color: "#059669", fontWeight: 800 }}>
+                                      Net Paid: {pkr(row.taxBreakdown.net)}
+                                    </span>
+                                    {row.taxBreakdown.mode && (
+                                      <span style={{ fontSize: 10, padding: "2px 6px", borderRadius: 4, background: "var(--bg)", border: "1px solid var(--rule)", color: "var(--ink-muted)" }}>
+                                        {row.taxBreakdown.mode}{row.taxBreakdown.instrumentNo ? ` #${row.taxBreakdown.instrumentNo}` : ""}
+                                      </span>
+                                    )}
+                                  </>
+                                )}
+                                {row.taxBreakdown.kind === "direct_settlement" && (
+                                  <>
+                                    <span style={{ fontSize: 10.5, padding: "2px 6px", borderRadius: 4, background: "rgba(217, 119, 6, 0.12)", color: "#B45309", fontWeight: 700 }}>
+                                      Direct Settled: {pkr(row.taxBreakdown.amount)}
+                                    </span>
+                                    <span style={{ fontSize: 10, padding: "2px 6px", borderRadius: 4, background: "var(--bg)", border: "1px solid var(--rule)", color: "var(--ink-muted)" }}>
+                                      Client: {row.taxBreakdown.client} {row.taxBreakdown.instrumentNo ? `[#${row.taxBreakdown.instrumentNo}]` : ""}
+                                    </span>
+                                  </>
+                                )}
+                              </div>
+                            )}
+                          </td>
+                          <td style={{ textAlign: "right", color: row.debit > 0 ? "#059669" : "inherit", fontWeight: row.debit > 0 ? 700 : 400 }}>
+                            {row.debit > 0 ? pkr(row.debit) : "—"}
+                          </td>
+                          <td style={{ textAlign: "right", color: row.credit > 0 ? "#D97706" : "inherit", fontWeight: row.credit > 0 ? 700 : 400 }}>
+                            {row.credit > 0 ? pkr(row.credit) : "—"}
+                          </td>
+                          <td style={{ textAlign: "right", fontWeight: 800, color: row.runningBalance > 0 ? "#D97706" : "#059669" }}>
+                            {pkr(row.runningBalance)}
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                  <tfoot>
+                    <tr style={{ background: "var(--table-header-bg)", fontWeight: 800 }}>
+                      <td colSpan="4">Closing Payable Balance</td>
+                      <td style={{ textAlign: "right", color: "#059669" }}>{pkr(statementData.totalPayments)}</td>
+                      <td style={{ textAlign: "right", color: "#D97706" }}>{pkr(statementData.totalExpenses)}</td>
+                      <td style={{ textAlign: "right", fontSize: 15, color: "#D97706" }}>{pkr(statementData.closingPayable)}</td>
+                    </tr>
+                  </tfoot>
+                </>
+              )}
             </table>
+            </div>
           </div>
         </div>
       ) : (
@@ -1260,7 +1809,7 @@ export default function VendorStatementView({
           vendor={selectedVendor}
           dateFrom={dateFrom}
           dateTo={dateTo}
-          statementData={statementData}
+          statementData={{ ...statementData, hasBarterActivity: displayBarterCols }}
           onClose={() => setShowPrintModal(false)}
         />
       )}
