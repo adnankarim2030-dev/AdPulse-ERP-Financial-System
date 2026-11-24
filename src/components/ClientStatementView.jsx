@@ -30,6 +30,8 @@ function amountInWords(num) {
 function exportClientStatementToExcel({ client, dateFrom, dateTo, statementData }) {
   const cName = client.companyName || client.name;
   const filename = `Client_Statement_${cName.replace(/[^a-zA-Z0-9]/g, "_")}_${dateFrom}_to_${dateTo}.xls`;
+  const hasBarter = Boolean(statementData.hasBarterActivity);
+  const colCount = hasBarter ? 10 : 7;
 
   let rowsHtml = `
     <tr>
@@ -39,21 +41,37 @@ function exportClientStatementToExcel({ client, dateFrom, dateTo, statementData 
       <td style="border: 1px solid #CBD5E1; padding: 6px;">${statementData.openingLabel || "—"}</td>
       <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: right;">—</td>
       <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: right;">—</td>
-      <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: right; font-weight: bold; mso-number-format:'\\#\\,\\#\\#0';">${statementData.openingBalance}</td>
+      <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: right; font-weight: bold; mso-number-format:'\\#\\,\\#\\#0';">${statementData.cashOpening !== undefined ? statementData.cashOpening : statementData.openingBalance}</td>
+      ${hasBarter ? `
+      <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: right;">—</td>
+      <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: right;">—</td>
+      <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: right; font-weight: bold; color: #0F766E; mso-number-format:'\\#\\,\\#\\#0';">${statementData.barterOpening || 0}</td>
+      ` : ""}
     </tr>
   `;
 
   statementData.rows.forEach((r, idx) => {
     const bg = idx % 2 === 0 ? "#FFFFFF" : "#F8FAFC";
+    const cDr = r.cashDebit !== undefined ? r.cashDebit : r.debit;
+    const cCr = r.cashCredit !== undefined ? r.cashCredit : r.credit;
+    const cBal = r.cashRunningBalance !== undefined ? r.cashRunningBalance : r.runningBalance;
+    const bDr = r.barterDebit || 0;
+    const bCr = r.barterCredit || 0;
+    const bBal = r.barterRunningBalance || 0;
     rowsHtml += `
       <tr style="background-color: ${bg};">
         <td style="border: 1px solid #CBD5E1; padding: 6px; font-family: monospace; text-align: center;">${r.date}</td>
         <td style="border: 1px solid #CBD5E1; padding: 6px; font-family: monospace; font-weight: bold; text-align: center;">${r.ref}</td>
-        <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: center; font-weight: bold; color: ${r.type === 'Invoice' ? '#0284C7' : '#059669'};">${r.type}</td>
+        <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: center; font-weight: bold; color: ${r.type === 'Invoice' ? '#0284C7' : r.type === 'Barter Settlement' ? '#0F766E' : '#059669'};">${r.type}</td>
         <td style="border: 1px solid #CBD5E1; padding: 6px;">${r.project || 'General'}</td>
-        <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: right; color: #0284C7; mso-number-format:'\\#\\,\\#\\#0';">${r.debit > 0 ? r.debit : '—'}</td>
-        <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: right; color: #059669; mso-number-format:'\\#\\,\\#\\#0';">${r.credit > 0 ? r.credit : '—'}</td>
-        <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: right; font-weight: bold; color: ${r.runningBalance > 0 ? '#0284C7' : '#059669'}; mso-number-format:'\\#\\,\\#\\#0';">${r.runningBalance}</td>
+        <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: right; color: #0284C7; mso-number-format:'\\#\\,\\#\\#0';">${cDr > 0 ? cDr : '—'}</td>
+        <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: right; color: #059669; mso-number-format:'\\#\\,\\#\\#0';">${cCr > 0 ? cCr : '—'}</td>
+        <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: right; font-weight: bold; color: ${cBal > 0 ? '#0284C7' : '#059669'}; mso-number-format:'\\#\\,\\#\\#0';">${cBal}</td>
+        ${hasBarter ? `
+        <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: right; color: #0F766E; mso-number-format:'\\#\\,\\#\\#0';">${bDr > 0 ? bDr : '—'}</td>
+        <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: right; color: #059669; mso-number-format:'\\#\\,\\#\\#0';">${bCr > 0 ? bCr : '—'}</td>
+        <td style="border: 1px solid #CBD5E1; padding: 6px; text-align: right; font-weight: bold; color: #0F766E; mso-number-format:'\\#\\,\\#\\#0';">${bBal}</td>
+        ` : ""}
       </tr>
     `;
   });
@@ -83,46 +101,55 @@ function exportClientStatementToExcel({ client, dateFrom, dateTo, statementData 
     <body>
       <table style="width: 100%; border-collapse: collapse;">
         <tr>
-          <td colspan="7" style="font-size: 16pt; font-weight: bold; color: #1E293B; padding-bottom: 4px;">AdPulse IMC (Private) Ltd</td>
+          <td colspan="${colCount}" style="font-size: 16pt; font-weight: bold; color: #1E293B; padding-bottom: 4px;">AdPulse IMC (Private) Ltd</td>
         </tr>
         <tr>
-          <td colspan="7" style="font-size: 12pt; font-weight: bold; color: #0284C7; padding-bottom: 12px;">CLIENT STATEMENT / ACCOUNTS RECEIVABLE SUB-LEDGER</td>
+          <td colspan="${colCount}" style="font-size: 12pt; font-weight: bold; color: #0284C7; padding-bottom: 12px;">CLIENT STATEMENT / ACCOUNTS RECEIVABLE SUB-LEDGER${hasBarter ? " (CASH + BARTER SPLIT)" : ""}</td>
         </tr>
         <tr style="background-color: #F8FAFC;">
           <td colspan="4" style="border: 1px solid #CBD5E1; padding: 6px;"><b>Client:</b> ${cName} (${client.clientCode || client.id})</td>
-          <td colspan="3" style="border: 1px solid #CBD5E1; padding: 6px;"><b>Statement Period:</b> ${dateFrom} to ${dateTo}</td>
+          <td colspan="${colCount - 4}" style="border: 1px solid #CBD5E1; padding: 6px;"><b>Statement Period:</b> ${dateFrom} to ${dateTo}</td>
         </tr>
         <tr style="background-color: #F8FAFC;">
           <td colspan="4" style="border: 1px solid #CBD5E1; padding: 6px;"><b>Contact:</b> ${client.contactPerson || 'N/A'} | ${client.phone || 'N/A'}</td>
-          <td colspan="3" style="border: 1px solid #CBD5E1; padding: 6px;"><b>Address:</b> ${client.address || 'Karachi, Pakistan'}</td>
+          <td colspan="${colCount - 4}" style="border: 1px solid #CBD5E1; padding: 6px;"><b>Address:</b> ${client.address || 'Karachi, Pakistan'}</td>
         </tr>
-        <tr><td colspan="7" style="height: 14px;"></td></tr>
+        <tr><td colspan="${colCount}" style="height: 14px;"></td></tr>
         <tr style="background-color: #F1F5F9; font-weight: bold;">
-          <td colspan="2" style="border: 1px solid #CBD5E1; padding: 8px; text-align: center;">Opening Balance: PKR ${statementData.openingBalance.toLocaleString()}</td>
-          <td colspan="2" style="border: 1px solid #CBD5E1; padding: 8px; text-align: center; color: #0284C7;">Total Invoiced (+): PKR ${statementData.totalInvoiced.toLocaleString()}</td>
-          <td colspan="2" style="border: 1px solid #CBD5E1; padding: 8px; text-align: center; color: #059669;">Total Settled (-): PKR ${(statementData.totalCredits !== undefined ? statementData.totalCredits : statementData.totalReceived).toLocaleString()}</td>
-          <td style="border: 1.5px solid #0284C7; padding: 8px; text-align: center; background-color: #E0F2FE; color: #0369A1;">Closing Outstanding: PKR ${statementData.closingBalance.toLocaleString()}</td>
+          <td colspan="2" style="border: 1px solid #CBD5E1; padding: 8px; text-align: center;">Cash Outstanding: PKR ${(statementData.closingCashBalance !== undefined ? statementData.closingCashBalance : statementData.closingBalance).toLocaleString()}</td>
+          <td colspan="2" style="border: 1px solid #CBD5E1; padding: 8px; text-align: center; color: #0F766E;">Barter Outstanding: PKR ${(statementData.closingBarterBalance || 0).toLocaleString()}</td>
+          <td colspan="${colCount - 4}" style="border: 1.5px solid #0284C7; padding: 8px; text-align: center; background-color: #E0F2FE; color: #0369A1;">Total Combined Outstanding: PKR ${statementData.closingBalance.toLocaleString()}</td>
         </tr>
-        <tr><td colspan="7" style="height: 14px;"></td></tr>
+        <tr><td colspan="${colCount}" style="height: 14px;"></td></tr>
         <tr style="background-color: #0F172A; color: #FFFFFF; font-weight: bold; text-align: center;">
-          <th style="border: 1px solid #000; padding: 8px; width: 110px;">Date</th>
+          <th style="border: 1px solid #000; padding: 8px; width: 100px;">Date</th>
           <th style="border: 1px solid #000; padding: 8px; width: 110px;">Reference</th>
-          <th style="border: 1px solid #000; padding: 8px; width: 130px;">Type</th>
-          <th style="border: 1px solid #000; padding: 8px; width: 220px;">Project / Scope</th>
-          <th style="border: 1px solid #000; padding: 8px; width: 140px; text-align: right;">Debit / Invoiced (PKR)</th>
-          <th style="border: 1px solid #000; padding: 8px; width: 140px; text-align: right;">Credit / Received (PKR)</th>
-          <th style="border: 1px solid #000; padding: 8px; width: 150px; text-align: right;">Running Balance (PKR)</th>
+          <th style="border: 1px solid #000; padding: 8px; width: 120px;">Type</th>
+          <th style="border: 1px solid #000; padding: 8px; width: 210px;">Project / Scope</th>
+          <th style="border: 1px solid #000; padding: 8px; width: 125px; text-align: right;">Cash Debit (PKR)</th>
+          <th style="border: 1px solid #000; padding: 8px; width: 125px; text-align: right;">Cash Credit (PKR)</th>
+          <th style="border: 1px solid #000; padding: 8px; width: 135px; text-align: right;">Cash Balance (PKR)</th>
+          ${hasBarter ? `
+          <th style="border: 1px solid #000; padding: 8px; width: 125px; text-align: right; background-color: #0F766E;">Barter Debit (PKR)</th>
+          <th style="border: 1px solid #000; padding: 8px; width: 125px; text-align: right; background-color: #0F766E;">Barter Credit (PKR)</th>
+          <th style="border: 1px solid #000; padding: 8px; width: 135px; text-align: right; background-color: #0F766E;">Barter Balance (PKR)</th>
+          ` : ""}
         </tr>
         ${rowsHtml}
         <tr style="background-color: #0F172A; color: #FFFFFF; font-weight: bold;">
           <td colspan="4" style="border: 1px solid #000; padding: 8px;">Closing Balance Summary</td>
-          <td style="border: 1px solid #000; padding: 8px; text-align: right; color: #38BDF8; mso-number-format:'\\#\\,\\#\\#0';">${statementData.totalInvoiced}</td>
-          <td style="border: 1px solid #000; padding: 8px; text-align: right; color: #34D399; mso-number-format:'\\#\\,\\#\\#0';">${statementData.totalCredits !== undefined ? statementData.totalCredits : statementData.totalReceived}</td>
-          <td style="border: 1px solid #000; padding: 8px; text-align: right; color: #BAE6FD; font-size: 12pt; mso-number-format:'\\#\\,\\#\\#0';">${statementData.closingBalance}</td>
+          <td style="border: 1px solid #000; padding: 8px; text-align: right; color: #38BDF8; mso-number-format:'\\#\\,\\#\\#0';">${statementData.totalCashInvoiced !== undefined ? statementData.totalCashInvoiced : statementData.totalInvoiced}</td>
+          <td style="border: 1px solid #000; padding: 8px; text-align: right; color: #34D399; mso-number-format:'\\#\\,\\#\\#0';">${statementData.totalCashCredits !== undefined ? statementData.totalCashCredits : statementData.totalReceived}</td>
+          <td style="border: 1px solid #000; padding: 8px; text-align: right; color: #BAE6FD; font-size: 12pt; mso-number-format:'\\#\\,\\#\\#0';">${statementData.closingCashBalance !== undefined ? statementData.closingCashBalance : statementData.closingBalance}</td>
+          ${hasBarter ? `
+          <td style="border: 1px solid #000; padding: 8px; text-align: right; color: #5EEAD4; mso-number-format:'\\#\\,\\#\\#0';">${statementData.totalBarterInvoiced || 0}</td>
+          <td style="border: 1px solid #000; padding: 8px; text-align: right; color: #34D399; mso-number-format:'\\#\\,\\#\\#0';">${statementData.totalBarterSettled || 0}</td>
+          <td style="border: 1px solid #000; padding: 8px; text-align: right; color: #99F6E4; font-size: 12pt; mso-number-format:'\\#\\,\\#\\#0';">${statementData.closingBarterBalance || 0}</td>
+          ` : ""}
         </tr>
-        <tr><td colspan="7" style="height: 18px;"></td></tr>
+        <tr><td colspan="${colCount}" style="height: 18px;"></td></tr>
         <tr>
-          <td colspan="7" style="font-size: 10pt; font-style: italic; color: #64748B;">Generated from AdPulse Financial Management System on ${new Date().toLocaleDateString()}</td>
+          <td colspan="${colCount}" style="font-size: 10pt; font-style: italic; color: #64748B;">Generated from AdPulse Financial Management System on ${new Date().toLocaleDateString()}</td>
         </tr>
       </table>
     </body>
@@ -514,29 +541,44 @@ export function ClientStatementPrintModal({ client, dateFrom, dateTo, statementD
                 </div>
               )}
 
-              {/* 4. TRANSACTIONS TABLE (Matches Official Invoice Table Grid) */}
-              <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 10, fontSize: 9, border: "1px solid #000000", tableLayout: "fixed" }}>
-                <colgroup>
-                  <col style={{ width: "6%" }} />
-                  <col style={{ width: "11%" }} />
-                  <col style={{ width: "13%" }} />
-                  <col style={{ width: "12%" }} />
-                  <col style={{ width: "22%" }} />
-                  <col style={{ width: "12%" }} />
-                  <col style={{ width: "12%" }} />
-                  <col style={{ width: "12%" }} />
-                </colgroup>
+              {/* 4. TRANSACTIONS TABLE (Matches Official Invoice Table Grid — Dual Cash + Barter Columns when Barter active) */}
+              {(() => {
+                const printBarter = Boolean(statementData.hasBarterActivity);
+                return (
+              <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 10, fontSize: printBarter ? 8 : 9, border: "1px solid #000000", tableLayout: "fixed" }}>
                 <thead>
-                  <tr>
-                    <th style={{ border: "1px solid #000000", padding: "5px 3px", textAlign: "center" }}>S.NO</th>
-                    <th style={{ border: "1px solid #000000", padding: "5px 3px", textAlign: "center" }}>DATE</th>
-                    <th style={{ border: "1px solid #000000", padding: "5px 3px", textAlign: "center" }}>REF NO</th>
-                    <th style={{ border: "1px solid #000000", padding: "5px 3px", textAlign: "center" }}>TYPE</th>
-                    <th style={{ border: "1px solid #000000", padding: "5px 5px", textAlign: "left" }}>PROJECT / PARTICULARS</th>
-                    <th style={{ border: "1px solid #000000", padding: "4px 4px", textAlign: "right", lineHeight: 1.15 }}>DEBIT / INVOICED<br/>(PKR)</th>
-                    <th style={{ border: "1px solid #000000", padding: "4px 4px", textAlign: "right", lineHeight: 1.15 }}>CREDIT / SETTLED<br/>(PKR)</th>
-                    <th style={{ border: "1px solid #000000", padding: "4px 4px", textAlign: "right", lineHeight: 1.15 }}>BALANCE<br/>(PKR)</th>
-                  </tr>
+                  {printBarter ? (
+                    <>
+                      <tr>
+                        <th rowSpan={2} style={{ width: "4%", border: "1px solid #000000", padding: "4px 2px", textAlign: "center" }}>#</th>
+                        <th rowSpan={2} style={{ width: "9%", border: "1px solid #000000", padding: "4px 2px", textAlign: "center" }}>DATE</th>
+                        <th rowSpan={2} style={{ width: "10%", border: "1px solid #000000", padding: "4px 2px", textAlign: "center" }}>REF NO</th>
+                        <th rowSpan={2} style={{ width: "9%", border: "1px solid #000000", padding: "4px 2px", textAlign: "center" }}>TYPE</th>
+                        <th rowSpan={2} style={{ width: "18%", border: "1px solid #000000", padding: "4px 4px", textAlign: "left" }}>PARTICULARS</th>
+                        <th colSpan={3} style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", background: "#E0F2FE" }}>CASH / BANK LEDGER (PKR)</th>
+                        <th colSpan={3} style={{ border: "1px solid #000000", padding: "4px 2px", textAlign: "center", background: "#CCFBF1" }}>BARTER LEDGER (PKR)</th>
+                      </tr>
+                      <tr>
+                        <th style={{ width: "8.3%", border: "1px solid #000000", padding: "3px 2px", textAlign: "right" }}>CASH DR</th>
+                        <th style={{ width: "8.3%", border: "1px solid #000000", padding: "3px 2px", textAlign: "right" }}>CASH CR</th>
+                        <th style={{ width: "8.4%", border: "1px solid #000000", padding: "3px 2px", textAlign: "right" }}>CASH BAL</th>
+                        <th style={{ width: "8.3%", border: "1px solid #000000", padding: "3px 2px", textAlign: "right" }}>BARTER DR</th>
+                        <th style={{ width: "8.3%", border: "1px solid #000000", padding: "3px 2px", textAlign: "right" }}>BARTER CR</th>
+                        <th style={{ width: "8.4%", border: "1px solid #000000", padding: "3px 2px", textAlign: "right" }}>BARTER BAL</th>
+                      </tr>
+                    </>
+                  ) : (
+                    <tr>
+                      <th style={{ width: "6%", border: "1px solid #000000", padding: "5px 3px", textAlign: "center" }}>S.NO</th>
+                      <th style={{ width: "11%", border: "1px solid #000000", padding: "5px 3px", textAlign: "center" }}>DATE</th>
+                      <th style={{ width: "13%", border: "1px solid #000000", padding: "5px 3px", textAlign: "center" }}>REF NO</th>
+                      <th style={{ width: "12%", border: "1px solid #000000", padding: "5px 3px", textAlign: "center" }}>TYPE</th>
+                      <th style={{ width: "22%", border: "1px solid #000000", padding: "5px 5px", textAlign: "left" }}>PROJECT / PARTICULARS</th>
+                      <th style={{ width: "12%", border: "1px solid #000000", padding: "4px 4px", textAlign: "right", lineHeight: 1.15 }}>CASH DEBIT<br/>(PKR)</th>
+                      <th style={{ width: "12%", border: "1px solid #000000", padding: "4px 4px", textAlign: "right", lineHeight: 1.15 }}>CASH CREDIT<br/>(PKR)</th>
+                      <th style={{ width: "12%", border: "1px solid #000000", padding: "4px 4px", textAlign: "right", lineHeight: 1.15 }}>CASH BALANCE<br/>(PKR)</th>
+                    </tr>
+                  )}
                 </thead>
                 <tbody>
                   <tr style={{ fontWeight: 700, background: "#F8FAFC" }}>
@@ -547,17 +589,31 @@ export function ClientStatementPrintModal({ client, dateFrom, dateTo, statementD
                     <td style={{ border: "1px solid #000000", padding: "4px 5px" }}>{statementData.openingLabel || "Opening Balance Brought Forward"}</td>
                     <td style={{ border: "1px solid #000000", padding: "4px 4px", textAlign: "right" }}>—</td>
                     <td style={{ border: "1px solid #000000", padding: "4px 4px", textAlign: "right" }}>—</td>
-                    <td style={{ border: "1px solid #000000", padding: "4px 4px", textAlign: "right", fontWeight: 700 }}>{pkr(statementData.openingBalance)}</td>
+                    <td style={{ border: "1px solid #000000", padding: "4px 4px", textAlign: "right", fontWeight: 700 }}>{pkr(statementData.cashOpening !== undefined ? statementData.cashOpening : statementData.openingBalance)}</td>
+                    {printBarter && (
+                      <>
+                        <td style={{ border: "1px solid #000000", padding: "4px 4px", textAlign: "right" }}>—</td>
+                        <td style={{ border: "1px solid #000000", padding: "4px 4px", textAlign: "right" }}>—</td>
+                        <td style={{ border: "1px solid #000000", padding: "4px 4px", textAlign: "right", fontWeight: 700 }}>{pkr(statementData.barterOpening || 0)}</td>
+                      </>
+                    )}
                   </tr>
 
                   {statementData.rows.length === 0 ? (
                     <tr>
-                      <td colSpan={8} style={{ border: "1px solid #000000", textAlign: "center", padding: 14, color: "#000000" }}>
+                      <td colSpan={printBarter ? 11 : 8} style={{ border: "1px solid #000000", textAlign: "center", padding: 14, color: "#000000" }}>
                         No client statement transactions recorded within this date range.
                       </td>
                     </tr>
                   ) : (
-                    statementData.rows.map((row, idx) => (
+                    statementData.rows.map((row, idx) => {
+                      const cDr = row.cashDebit !== undefined ? row.cashDebit : row.debit;
+                      const cCr = row.cashCredit !== undefined ? row.cashCredit : row.credit;
+                      const cBal = row.cashRunningBalance !== undefined ? row.cashRunningBalance : row.runningBalance;
+                      const bDr = row.barterDebit || 0;
+                      const bCr = row.barterCredit || 0;
+                      const bBal = row.barterRunningBalance || 0;
+                      return (
                       <tr key={idx}>
                         <td style={{ border: "1px solid #000000", padding: "4px 3px", textAlign: "center", fontWeight: 600 }}>{idx + 1}</td>
                         <td style={{ border: "1px solid #000000", padding: "4px 3px", textAlign: "center" }}>{fmtDate(row.date)}</td>
@@ -567,7 +623,7 @@ export function ClientStatementPrintModal({ client, dateFrom, dateTo, statementD
                           <div style={{ fontWeight: 700 }}>{row.project}</div>
                           {row.taxBreakdown && row.taxBreakdown.kind === "invoice" && (
                             <div style={{ fontSize: 7.5, color: "#000000", marginTop: 1, lineHeight: 1.2 }}>
-                              Gross: {pkr(row.taxBreakdown.gross)} {row.taxBreakdown.sst > 0 ? `| SST (${row.taxBreakdown.sstRate}%): +${pkr(row.taxBreakdown.sst)}` : ""} {row.taxBreakdown.discount > 0 ? `| Disc: -${pkr(row.taxBreakdown.discount)}` : ""}
+                              Gross: {pkr(row.taxBreakdown.gross)} {row.taxBreakdown.sst > 0 ? `| SST (${row.taxBreakdown.sstRate}%): +${pkr(row.taxBreakdown.sst)}` : ""} {row.taxBreakdown.discount > 0 ? `| Disc: -${pkr(row.taxBreakdown.discount)}` : ""} {bDr > 0 ? `| Cash: ${pkr(cDr)} / Barter: ${pkr(bDr)}` : ""}
                             </div>
                           )}
                           {row.taxBreakdown && (row.taxBreakdown.kind === "receipt" || row.taxBreakdown.kind === "receipt_net") && (
@@ -586,32 +642,57 @@ export function ClientStatementPrintModal({ client, dateFrom, dateTo, statementD
                             </div>
                           )}
                         </td>
-                        <td style={{ border: "1px solid #000000", padding: "4px 4px", textAlign: "right", fontWeight: row.debit > 0 ? 700 : 400 }}>
-                          {row.debit > 0 ? pkr(row.debit) : "—"}
+                        <td style={{ border: "1px solid #000000", padding: "4px 3px", textAlign: "right", fontWeight: cDr > 0 ? 700 : 400 }}>
+                          {cDr > 0 ? pkr(cDr) : "—"}
                         </td>
-                        <td style={{ border: "1px solid #000000", padding: "4px 4px", textAlign: "right", fontWeight: row.credit > 0 ? 700 : 400 }}>
-                          {row.credit > 0 ? pkr(row.credit) : "—"}
+                        <td style={{ border: "1px solid #000000", padding: "4px 3px", textAlign: "right", fontWeight: cCr > 0 ? 700 : 400 }}>
+                          {cCr > 0 ? pkr(cCr) : "—"}
                         </td>
-                        <td style={{ border: "1px solid #000000", padding: "4px 4px", textAlign: "right", fontWeight: 700 }}>
-                          {pkr(row.runningBalance)}
+                        <td style={{ border: "1px solid #000000", padding: "4px 3px", textAlign: "right", fontWeight: 700 }}>
+                          {pkr(cBal)}
                         </td>
+                        {printBarter && (
+                          <>
+                            <td style={{ border: "1px solid #000000", padding: "4px 3px", textAlign: "right", fontWeight: bDr > 0 ? 700 : 400 }}>
+                              {bDr > 0 ? pkr(bDr) : "—"}
+                            </td>
+                            <td style={{ border: "1px solid #000000", padding: "4px 3px", textAlign: "right", fontWeight: bCr > 0 ? 700 : 400 }}>
+                              {bCr > 0 ? pkr(bCr) : "—"}
+                            </td>
+                            <td style={{ border: "1px solid #000000", padding: "4px 3px", textAlign: "right", fontWeight: 700 }}>
+                              {pkr(bBal)}
+                            </td>
+                          </>
+                        )}
                       </tr>
-                    ))
+                    );
+                    })
                   )}
 
-                  {/* SUMMARY ROWS (Matches Official Invoice Summary Table Rows) */}
+                  {/* SUMMARY ROWS */}
                   <tr>
                     <td colSpan={5} style={{ border: "1px solid #000000", padding: "5px 6px", textAlign: "right", fontWeight: 700 }}>PERIOD TOTALS</td>
-                    <td style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "right", fontWeight: 700 }}>{pkr(statementData.totalInvoiced)}</td>
-                    <td style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "right", fontWeight: 700 }}>{pkr(statementData.totalCredits !== undefined ? statementData.totalCredits : statementData.totalReceived)}</td>
-                    <td style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "right", fontWeight: 700 }}>{pkr(statementData.closingBalance)}</td>
+                    <td style={{ border: "1px solid #000000", padding: "5px 3px", textAlign: "right", fontWeight: 700 }}>{pkr(statementData.totalCashInvoiced !== undefined ? statementData.totalCashInvoiced : statementData.totalInvoiced)}</td>
+                    <td style={{ border: "1px solid #000000", padding: "5px 3px", textAlign: "right", fontWeight: 700 }}>{pkr(statementData.totalCashCredits !== undefined ? statementData.totalCashCredits : statementData.totalReceived)}</td>
+                    <td style={{ border: "1px solid #000000", padding: "5px 3px", textAlign: "right", fontWeight: 700 }}>{pkr(statementData.closingCashBalance !== undefined ? statementData.closingCashBalance : statementData.closingBalance)}</td>
+                    {printBarter && (
+                      <>
+                        <td style={{ border: "1px solid #000000", padding: "5px 3px", textAlign: "right", fontWeight: 700 }}>{pkr(statementData.totalBarterInvoiced || 0)}</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 3px", textAlign: "right", fontWeight: 700 }}>{pkr(statementData.totalBarterSettled || 0)}</td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 3px", textAlign: "right", fontWeight: 700 }}>{pkr(statementData.closingBarterBalance || 0)}</td>
+                      </>
+                    )}
                   </tr>
                   <tr>
-                    <td colSpan={7} style={{ border: "1px solid #000000", padding: "6px 6px", textAlign: "right", fontWeight: 700, fontSize: 10 }}>NET CLOSING RECEIVABLE BALANCE</td>
+                    <td colSpan={printBarter ? 10 : 7} style={{ border: "1px solid #000000", padding: "6px 6px", textAlign: "right", fontWeight: 700, fontSize: 10 }}>
+                      NET COMBINED CLOSING RECEIVABLE BALANCE {printBarter ? `(Cash: ${pkr(statementData.closingCashBalance)} + Barter: ${pkr(statementData.closingBarterBalance)})` : ""}
+                    </td>
                     <td style={{ border: "1px solid #000000", padding: "6px 4px", textAlign: "right", fontWeight: 800, fontSize: 10.5 }}>{pkr(statementData.closingBalance)}</td>
                   </tr>
                 </tbody>
               </table>
+                );
+              })()}
 
               {/* 5. AMOUNT IN WORDS & SPECIAL NOTES (Matches Official Invoice Footer Sections) */}
               <div style={{ border: "1px solid #000000", padding: "6px 10px", marginBottom: 8, fontSize: 9.5, color: "#000000" }}>
@@ -673,6 +754,7 @@ export default function ClientStatementView({
   const [selectedTxType, setSelectedTxType] = useState("all");
   const [showPrintModal, setShowPrintModal] = useState(false);
   const [showTaxBreakdown, setShowTaxBreakdown] = useState(true);
+  const [showBarterCols, setShowBarterCols] = useState(null); // null = auto (shows when client has barter), true/false = manual override
 
   useEffect(() => {
     if (selectedClientId) {
@@ -756,11 +838,13 @@ export default function ClientStatementView({
       return false;
     };
     const clientOp = Number(selectedClient.openingBalance) || 0;
+    const clientBarterOp = selectedProjectId === "all" ? (Number(selectedClient.openingBarterBalance) || 0) : 0;
     const projectsOpTotal = clientProjects.reduce((s, p) => s + (Number(p.openingBalance) || 0), 0);
 
-    let opening = selectedProjectId !== "all"
+    let cashOpening = selectedProjectId !== "all"
       ? (Number(selectedProjObj?.openingBalance) || 0)
       : (clientOp + projectsOpTotal);
+    let barterOpening = clientBarterOp;
 
     const openingRef = selectedProjObj ? `OB-${selectedProjObj.projectCode || "PRJ"}` : "OB-000";
     const openingLabel = selectedProjObj
@@ -769,23 +853,34 @@ export default function ClientStatementView({
       ? `Opening Balance (Client: PKR ${clientOp.toLocaleString("en-US")} + Projects: PKR ${projectsOpTotal.toLocaleString("en-US")})`
       : "Opening Balance Brought Forward";
 
-    // Prior Invoices before dateFrom
+    // Prior Invoices before dateFrom (split into Cash vs Barter portions)
     const priorInvoices = invoices.filter(i => isClientMatch(i) && isProjectMatch(i) && i.issueDate < dateFrom);
     priorInvoices.forEach(inv => {
-      opening += Number(inv.totalAmount || inv.amount) || 0;
+      const tot = Number(inv.totalAmount || inv.amount) || 0;
+      const bAmt = (inv.applyBarter && Number(inv.barterAmount) > 0) ? Math.min(tot, Number(inv.barterAmount)) : 0;
+      const cAmt = Math.max(0, tot - bAmt);
+      cashOpening += cAmt;
+      barterOpening += bAmt;
     });
 
     // Prior Receipts / Vouchers / Direct Settlements / Client Barter before dateFrom
     // IMPORTANT: Unpaid / Uncleared PDC cheques (pdcStatus !== "Cleared") MUST NOT deduct from Client Balance!
     const priorVouchers = vouchers.filter(v => isClientMatch(v) && isProjectMatch(v) && v.date < dateFrom && (v.type === "RV" || v.type === "CV" || (v.type === "BV" && v.barterDirection !== "vendor")) && !(v.isPdc && v.pdcStatus !== "Cleared"));
     priorVouchers.forEach(v => {
-      opening -= Number(v.amount) || 0;
+      const amt = Number(v.amount) || 0;
+      if (v.type === "BV") {
+        barterOpening -= amt;
+      } else {
+        cashOpening -= amt;
+      }
     });
+
+    const opening = cashOpening + barterOpening;
 
     // 2. Filter Statement Transactions within [dateFrom, dateTo]
     const rawRows = [];
 
-    // Add Invoices
+    // Add Invoices (split into Cash Debit + Barter Debit if Apply Barter is checked; otherwise 100% Cash Debit!)
     invoices.filter(i => isClientMatch(i) && isProjectMatch(i) && i.issueDate >= dateFrom && i.issueDate <= dateTo).forEach(inv => {
       const proj = projects.find(p => p.id === inv.projectId);
       const gross = Number(inv.subtotal || (Number(inv.totalAmount || inv.amount || 0) - Number(inv.tax || inv.salesTax || 0) + Number(inv.discount || 0))) || Number(inv.totalAmount || inv.amount) || 0;
@@ -794,6 +889,8 @@ export default function ClientStatementView({
       const sst = Number(inv.tax || inv.salesTax || inv.sstAmount) || 0;
       const sstRate = Number(inv.salesTaxRate || inv.taxRate) || (gross > 0 && sst > 0 ? Math.round((sst / gross) * 100) : 0);
       const total = Number(inv.totalAmount || inv.amount) || 0;
+      const invBarterAmt = (inv.applyBarter && Number(inv.barterAmount) > 0) ? Math.min(total, Number(inv.barterAmount)) : 0;
+      const invCashAmt = Math.max(0, total - invBarterAmt);
 
       rawRows.push({
         id: inv.id,
@@ -804,6 +901,10 @@ export default function ClientStatementView({
         project: proj ? proj.name : (inv.description || "General"),
         debit: total,
         credit: 0,
+        cashDebit: invCashAmt,
+        cashCredit: 0,
+        barterDebit: invBarterAmt,
+        barterCredit: 0,
         status: inv.paid ? "Paid" : "Outstanding",
         taxBreakdown: {
           kind: "invoice",
@@ -812,7 +913,10 @@ export default function ClientStatementView({
           comm,
           sst,
           sstRate,
-          total
+          total,
+          cashAmount: invCashAmt,
+          barterAmount: invBarterAmt,
+          barterPercent: inv.barterPercent || (total > 0 && invBarterAmt > 0 ? Number(((invBarterAmt / total) * 100).toFixed(1)) : 0)
         },
         raw: inv
       });
@@ -964,6 +1068,10 @@ export default function ClientStatementView({
           project: proj ? `${proj.name} (${defaultDesc})` : defaultDesc,
           debit: isClientDebit ? grossSettled : 0,
           credit: isSettledCredit ? grossSettled : 0,
+          cashDebit: (!isBarter && isClientDebit) ? grossSettled : 0,
+          cashCredit: (!isBarter && isSettledCredit) ? grossSettled : 0,
+          barterDebit: 0,
+          barterCredit: (isBarter && isSettledCredit) ? grossSettled : 0,
           status: v.isPdc ? (isPdcPending ? "Pending Clearance" : v.pdcStatus) : (v.status || "Posted"),
           isPdcPending,
           pdcFaceAmount: v.isPdc ? grossSettled : 0,
@@ -984,10 +1092,16 @@ export default function ClientStatementView({
     // Sort chronologically
     filteredRows.sort((a, b) => new Date(a.date) - new Date(b.date));
 
-    // Calculate Running Balance and Tax Metrics
+    // Calculate Dual Running Balances (Cash Track + Barter Track) and Tax Metrics
     let running = opening;
+    let cashRunning = cashOpening;
+    let barterRunning = barterOpening;
+
     let totalInvoiced = 0;
+    let totalCashInvoiced = 0;
+    let totalBarterInvoiced = 0;
     let totalReceived = 0;
+    let totalCashReceived = 0;
     let totalBarter = 0;
     let creditNotes = 0;
 
@@ -998,9 +1112,19 @@ export default function ClientStatementView({
     let totalSstWithheld = 0;
 
     const rowsWithBalance = filteredRows.map(r => {
-      running = running + r.debit - r.credit;
+      const cDr = r.cashDebit !== undefined ? r.cashDebit : r.debit;
+      const cCr = r.cashCredit !== undefined ? r.cashCredit : r.credit;
+      const bDr = r.barterDebit || 0;
+      const bCr = r.barterCredit || 0;
+
+      cashRunning = cashRunning + cDr - cCr;
+      barterRunning = barterRunning + bDr - bCr;
+      running = cashRunning + barterRunning;
+
       if (r.type === "Invoice") {
         totalInvoiced += r.debit;
+        totalCashInvoiced += cDr;
+        totalBarterInvoiced += bDr;
         if (r.taxBreakdown) {
           totalGrossInvoiced += (r.taxBreakdown.gross || r.debit);
           totalSstInvoiced += (r.taxBreakdown.sst || 0);
@@ -1008,8 +1132,9 @@ export default function ClientStatementView({
       }
       if ((r.type === "Receipt" || r.type === "Barter Settlement" || r.type === "PDC Cheque" || r.type === "PDC Cleared" || r.type === "Direct Settlement") && r.credit > 0) {
         totalReceived += r.credit;
+        totalCashReceived += cCr;
         if (r.type === "Barter Settlement") {
-          totalBarter += r.credit;
+          totalBarter += bCr;
         }
         if (r.taxBreakdown && r.taxBreakdown.kind === "receipt") {
           totalGrossReceived += (r.taxBreakdown.gross || r.credit);
@@ -1018,17 +1143,28 @@ export default function ClientStatementView({
         }
       }
       if (r.type === "Tax Deduction (WHT)") {
-        totalWhtWithheld += r.credit;
+        totalWhtWithheld += cCr;
       }
       if (r.type === "Tax Deduction (SST)") {
-        totalSstWithheld += r.credit;
+        totalSstWithheld += cCr;
       }
       if (r.type === "Credit Note") creditNotes += r.credit;
-      return { ...r, runningBalance: running };
+      return {
+        ...r,
+        cashDebit: cDr,
+        cashCredit: cCr,
+        cashRunningBalance: cashRunning,
+        barterDebit: bDr,
+        barterCredit: bCr,
+        barterRunningBalance: barterRunning,
+        runningBalance: running
+      };
     });
 
     const totalTaxDeducted = totalWhtWithheld + totalSstWithheld;
+    const totalCashCredits = totalCashReceived + totalTaxDeducted;
     const totalCredits = totalReceived + totalTaxDeducted;
+    const hasBarterActivity = barterOpening !== 0 || totalBarterInvoiced > 0 || totalBarter > 0;
 
     // Dedicated PDC Cheque Status Register for this Client (+ selected project)
     const pdcRows = vouchers
@@ -1065,16 +1201,26 @@ export default function ClientStatementView({
 
     return {
       openingBalance: opening,
+      cashOpening,
+      barterOpening,
       openingRef,
       openingLabel,
       rows: rowsWithBalance,
       totalInvoiced,
+      totalCashInvoiced,
+      totalBarterInvoiced,
       totalReceived,
+      totalCashReceived,
+      totalCashCredits,
       totalBarter,
+      totalBarterSettled: totalBarter,
       totalTaxDeducted,
       totalCredits,
       creditNotes,
       closingBalance: running,
+      closingCashBalance: cashRunning,
+      closingBarterBalance: barterRunning,
+      hasBarterActivity,
       totalGrossInvoiced,
       totalSstInvoiced,
       totalGrossReceived,
@@ -1133,10 +1279,11 @@ export default function ClientStatementView({
   }, [selectedClient, invoices]);
 
   const pkr = (val) => "PKR " + (Number(val) || 0).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  const displayBarterCols = showBarterCols !== null ? showBarterCols : Boolean(statementData.hasBarterActivity);
 
   const handleExportExcel = () => {
     if (!selectedClient) return;
-    exportClientStatementToExcel({ client: selectedClient, dateFrom, dateTo, statementData });
+    exportClientStatementToExcel({ client: selectedClient, dateFrom, dateTo, statementData: { ...statementData, hasBarterActivity: displayBarterCols } });
   };
 
   const mainContent = (
@@ -1189,7 +1336,23 @@ export default function ClientStatementView({
           </div>
         </div>
 
-        <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginTop: 14, borderTop: "1px solid var(--rule)", paddingTop: 10 }}>
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginTop: 14, borderTop: "1px solid var(--rule)", paddingTop: 10, flexWrap: "wrap" }}>
+          <button
+            className="btn"
+            onClick={() => setShowBarterCols(!displayBarterCols)}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
+              fontSize: 13,
+              background: displayBarterCols ? "rgba(15, 118, 110, 0.14)" : "var(--bg)",
+              borderColor: "#0F766E",
+              color: "#0F766E",
+              fontWeight: 700
+            }}
+          >
+            {displayBarterCols ? "✓ 🤝 Barter Columns: ON" : "🤝 Show Barter Columns"}
+          </button>
           <button
             className="btn"
             onClick={() => setShowTaxBreakdown(!showTaxBreakdown)}
@@ -1238,22 +1401,39 @@ export default function ClientStatementView({
               </div>
             </div>
 
-            {/* STATEMENT SUMMARY CARDS */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 10, marginTop: 20 }}>
+            {/* STATEMENT SUMMARY CARDS (SEPARATE CASH OUTSTANDING + BARTER OUTSTANDING!) */}
+            <div style={{ display: "grid", gridTemplateColumns: displayBarterCols ? "repeat(auto-fit, minmax(150px, 1fr))" : "repeat(6, 1fr)", gap: 10, marginTop: 20 }}>
               <div style={{ background: "var(--bg)", padding: 12, borderRadius: 8, border: "1px solid var(--rule)" }}>
                 <div style={{ fontSize: 11, color: "var(--ink-muted)", fontWeight: 600 }}>Opening Balance</div>
                 <div style={{ fontSize: 15, fontWeight: 800, color: "#1E293B", marginTop: 4 }}>{pkr(statementData.openingBalance)}</div>
+                {displayBarterCols && (statementData.barterOpening || 0) > 0 && (
+                  <div style={{ fontSize: 10, color: "#0F766E", fontWeight: 700, marginTop: 2 }}>
+                    Cash: {pkr(statementData.cashOpening)} | Barter: {pkr(statementData.barterOpening)}
+                  </div>
+                )}
               </div>
 
               <div style={{ background: "var(--bg)", padding: 12, borderRadius: 8, border: "1px solid var(--rule)" }}>
                 <div style={{ fontSize: 11, color: "var(--ink-muted)", fontWeight: 600 }}>Total Invoiced (+)</div>
                 <div style={{ fontSize: 15, fontWeight: 800, color: "#0284C7", marginTop: 4 }}>{pkr(statementData.totalInvoiced)}</div>
+                {displayBarterCols && (
+                  <div style={{ fontSize: 10, color: "#475569", fontWeight: 700, marginTop: 2 }}>
+                    Cash: {pkr(statementData.totalCashInvoiced)} | Barter: {pkr(statementData.totalBarterInvoiced)}
+                  </div>
+                )}
               </div>
 
               <div style={{ background: "var(--bg)", padding: 12, borderRadius: 8, border: "1px solid var(--rule)" }}>
                 <div style={{ fontSize: 11, color: "var(--ink-muted)", fontWeight: 600 }}>Cash / Bank Received (-)</div>
-                <div style={{ fontSize: 15, fontWeight: 800, color: "#059669", marginTop: 4 }}>{pkr(statementData.totalReceived)}</div>
+                <div style={{ fontSize: 15, fontWeight: 800, color: "#059669", marginTop: 4 }}>{pkr(statementData.totalCashReceived !== undefined ? statementData.totalCashReceived : statementData.totalReceived)}</div>
               </div>
+
+              {displayBarterCols && (
+                <div style={{ background: "rgba(15, 118, 110, 0.08)", padding: 12, borderRadius: 8, border: "1px solid #5EEAD4" }}>
+                  <div style={{ fontSize: 11, color: "#0F766E", fontWeight: 700 }}>🤝 Barter Settled (-)</div>
+                  <div style={{ fontSize: 15, fontWeight: 800, color: "#0F766E", marginTop: 4 }}>{pkr(statementData.totalBarterSettled || 0)}</div>
+                </div>
+              )}
 
               <div style={{ background: "var(--bg)", padding: 12, borderRadius: 8, border: "1px solid var(--rule)" }}>
                 <div style={{ fontSize: 11, color: "var(--ink-muted)", fontWeight: 600 }}>Tax Deducted (WHT/SST)</div>
@@ -1261,9 +1441,17 @@ export default function ClientStatementView({
               </div>
 
               <div style={{ background: "rgba(2, 132, 199, 0.08)", padding: 12, borderRadius: 8, border: "1.5px solid #0284C7" }}>
-                <div style={{ fontSize: 11, color: "#0369A1", fontWeight: 700 }}>Closing Outstanding</div>
-                <div style={{ fontSize: 16, fontWeight: 900, color: "#0284C7", marginTop: 4 }}>{pkr(statementData.closingBalance)}</div>
+                <div style={{ fontSize: 11, color: "#0369A1", fontWeight: 700 }}>{displayBarterCols ? "💵 Cash Outstanding" : "Closing Outstanding"}</div>
+                <div style={{ fontSize: 16, fontWeight: 900, color: "#0284C7", marginTop: 4 }}>{pkr(displayBarterCols ? statementData.closingCashBalance : statementData.closingBalance)}</div>
               </div>
+
+              {displayBarterCols && (
+                <div style={{ background: "rgba(15, 118, 110, 0.12)", padding: 12, borderRadius: 8, border: "1.5px solid #0F766E" }}>
+                  <div style={{ fontSize: 11, color: "#0F766E", fontWeight: 700 }}>🤝 Barter Outstanding</div>
+                  <div style={{ fontSize: 16, fontWeight: 900, color: "#0F766E", marginTop: 4 }}>{pkr(statementData.closingBarterBalance || 0)}</div>
+                  <div style={{ fontSize: 10, color: "#0F172A", fontWeight: 700, marginTop: 2 }}>Combined: {pkr(statementData.closingBalance)}</div>
+                </div>
+              )}
 
               <div style={{ background: agingReport.total > 0 ? "#FEF2F2" : "var(--bg)", padding: 12, borderRadius: 8, border: agingReport.total > 0 ? "1px solid #FCA5A5" : "1px solid var(--rule)" }}>
                 <div style={{ fontSize: 11, color: agingReport.total > 0 ? "#991B1B" : "var(--ink-muted)", fontWeight: 700 }}>Total Overdue</div>
@@ -1413,24 +1601,52 @@ export default function ClientStatementView({
             )}
           </div>
 
-          {/* STATEMENT TABLE */}
+          {/* STATEMENT TABLE (SEPARATE CASH COLUMNS + BARTER COLUMNS) */}
           <div className="card" style={{ padding: 0, marginBottom: 20, borderRadius: 10, overflow: "hidden", border: "1px solid var(--rule)" }}>
-            <div style={{ padding: "12px 16px", background: "var(--table-header-bg)", borderBottom: "1px solid var(--rule)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <h4 style={{ margin: 0, fontSize: 14 }}>Client Ledger Activity &amp; Running Balance</h4>
+            <div style={{ padding: "12px 16px", background: "var(--table-header-bg)", borderBottom: "1px solid var(--rule)", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
+              <h4 style={{ margin: 0, fontSize: 14 }}>
+                Client Ledger Activity &amp; Running Balance {displayBarterCols ? "— Dual Cash & Barter Columns" : ""}
+              </h4>
               <span style={{ fontSize: 12, color: "var(--ink-muted)" }}>{statementData.rows.length} Transactions</span>
             </div>
 
+            <div style={{ overflowX: "auto" }}>
             <table className="table" style={{ margin: 0 }}>
               <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Reference</th>
-                  <th>Type</th>
-                  <th>Project</th>
-                  <th style={{ textAlign: "right" }}>Debit (PKR)</th>
-                  <th style={{ textAlign: "right" }}>Credit (PKR)</th>
-                  <th style={{ textAlign: "right" }}>Balance (PKR)</th>
-                </tr>
+                {displayBarterCols ? (
+                  <>
+                    <tr>
+                      <th rowSpan={2} style={{ verticalAlign: "middle" }}>Date</th>
+                      <th rowSpan={2} style={{ verticalAlign: "middle" }}>Reference</th>
+                      <th rowSpan={2} style={{ verticalAlign: "middle" }}>Type</th>
+                      <th rowSpan={2} style={{ verticalAlign: "middle" }}>Project / Particulars</th>
+                      <th colSpan={3} style={{ textAlign: "center", background: "rgba(2, 132, 199, 0.1)", color: "#0369A1", borderLeft: "2px solid #CBD5E1" }}>
+                        💵 CASH / BANK LEDGER (PKR)
+                      </th>
+                      <th colSpan={3} style={{ textAlign: "center", background: "rgba(15, 118, 110, 0.12)", color: "#0F766E", borderLeft: "2px solid #99F6E4" }}>
+                        🤝 BARTER LEDGER (PKR)
+                      </th>
+                    </tr>
+                    <tr>
+                      <th style={{ textAlign: "right", background: "rgba(2, 132, 199, 0.05)", borderLeft: "2px solid #CBD5E1" }}>Cash Debit</th>
+                      <th style={{ textAlign: "right", background: "rgba(2, 132, 199, 0.05)" }}>Cash Credit</th>
+                      <th style={{ textAlign: "right", background: "rgba(2, 132, 199, 0.05)" }}>Cash Balance</th>
+                      <th style={{ textAlign: "right", background: "rgba(15, 118, 110, 0.06)", borderLeft: "2px solid #99F6E4", color: "#0F766E" }}>Barter Debit</th>
+                      <th style={{ textAlign: "right", background: "rgba(15, 118, 110, 0.06)", color: "#0F766E" }}>Barter Credit</th>
+                      <th style={{ textAlign: "right", background: "rgba(15, 118, 110, 0.06)", color: "#0F766E" }}>Barter Balance</th>
+                    </tr>
+                  </>
+                ) : (
+                  <tr>
+                    <th>Date</th>
+                    <th>Reference</th>
+                    <th>Type</th>
+                    <th>Project</th>
+                    <th style={{ textAlign: "right" }}>Cash Debit (PKR)</th>
+                    <th style={{ textAlign: "right" }}>Cash Credit (PKR)</th>
+                    <th style={{ textAlign: "right" }}>Cash Balance (PKR)</th>
+                  </tr>
+                )}
               </thead>
               <tbody>
                 <tr style={{ background: "var(--bg)", fontWeight: 600 }}>
@@ -1438,14 +1654,21 @@ export default function ClientStatementView({
                   <td><span style={{ fontFamily: "monospace", fontWeight: 700 }}>{statementData.openingRef || "OB-000"}</span></td>
                   <td>Opening Balance</td>
                   <td>{statementData.openingLabel || "—"}</td>
+                  <td style={{ textAlign: "right", borderLeft: displayBarterCols ? "2px solid #E2E8F0" : undefined }}>—</td>
                   <td style={{ textAlign: "right" }}>—</td>
-                  <td style={{ textAlign: "right" }}>—</td>
-                  <td style={{ textAlign: "right", fontWeight: 800 }}>{pkr(statementData.openingBalance)}</td>
+                  <td style={{ textAlign: "right", fontWeight: 800, color: "#0284C7" }}>{pkr(statementData.cashOpening !== undefined ? statementData.cashOpening : statementData.openingBalance)}</td>
+                  {displayBarterCols && (
+                    <>
+                      <td style={{ textAlign: "right", borderLeft: "2px solid #CCFBF1", background: "rgba(15, 118, 110, 0.03)" }}>—</td>
+                      <td style={{ textAlign: "right", background: "rgba(15, 118, 110, 0.03)" }}>—</td>
+                      <td style={{ textAlign: "right", fontWeight: 800, color: "#0F766E", background: "rgba(15, 118, 110, 0.03)" }}>{pkr(statementData.barterOpening || 0)}</td>
+                    </>
+                  )}
                 </tr>
 
                 {statementData.rows.length === 0 ? (
                   <tr>
-                    <td colSpan="7" style={{ textAlign: "center", padding: 30, color: "var(--ink-muted)" }}>
+                    <td colSpan={displayBarterCols ? 10 : 7} style={{ textAlign: "center", padding: 30, color: "var(--ink-muted)" }}>
                       No statement transactions recorded within this date range.
                     </td>
                   </tr>
@@ -1485,6 +1708,11 @@ export default function ClientStatementView({
                                 <span style={{ fontSize: 10.5, padding: "2px 6px", borderRadius: 4, background: "rgba(15, 23, 42, 0.08)", color: "#0F172A", fontWeight: 700 }}>
                                   Total: {pkr(row.taxBreakdown.total)}
                                 </span>
+                                {row.taxBreakdown.barterAmount > 0 && (
+                                  <span style={{ fontSize: 10.5, padding: "2px 6px", borderRadius: 4, background: "rgba(15, 118, 110, 0.14)", color: "#0F766E", fontWeight: 700 }}>
+                                    🤝 Barter ({row.taxBreakdown.barterPercent}%): {pkr(row.taxBreakdown.barterAmount)} | 💵 Cash: {pkr(row.taxBreakdown.cashAmount)}
+                                  </span>
+                                )}
                               </>
                             )}
                             {(row.taxBreakdown.kind === "receipt" || row.taxBreakdown.kind === "receipt_net") && (
@@ -1535,28 +1763,51 @@ export default function ClientStatementView({
                           </div>
                         )}
                       </td>
-                      <td style={{ textAlign: "right", color: row.debit > 0 ? "#0284C7" : "inherit", fontWeight: row.debit > 0 ? 700 : 400 }}>
-                        {row.debit > 0 ? pkr(row.debit) : "—"}
+                      <td style={{ textAlign: "right", color: row.cashDebit > 0 ? "#0284C7" : "inherit", fontWeight: row.cashDebit > 0 ? 700 : 400, borderLeft: displayBarterCols ? "2px solid #E2E8F0" : undefined }}>
+                        {row.cashDebit > 0 ? pkr(row.cashDebit) : "—"}
                       </td>
-                      <td style={{ textAlign: "right", color: row.credit > 0 ? (row.type.startsWith("Tax Deduction") ? "#B45309" : "#059669") : "inherit", fontWeight: row.credit > 0 ? 700 : 400 }}>
-                        {row.credit > 0 ? pkr(row.credit) : "—"}
+                      <td style={{ textAlign: "right", color: row.cashCredit > 0 ? (row.type.startsWith("Tax Deduction") ? "#B45309" : "#059669") : "inherit", fontWeight: row.cashCredit > 0 ? 700 : 400 }}>
+                        {row.cashCredit > 0 ? pkr(row.cashCredit) : "—"}
                       </td>
-                      <td style={{ textAlign: "right", fontWeight: 800, color: row.runningBalance > 0 ? "#0284C7" : "#059669" }}>
-                        {pkr(row.runningBalance)}
+                      <td style={{ textAlign: "right", fontWeight: 800, color: row.cashRunningBalance > 0 ? "#0284C7" : "#059669" }}>
+                        {pkr(row.cashRunningBalance)}
                       </td>
+                      {displayBarterCols && (
+                        <>
+                          <td style={{ textAlign: "right", color: row.barterDebit > 0 ? "#0F766E" : "inherit", fontWeight: row.barterDebit > 0 ? 700 : 400, borderLeft: "2px solid #CCFBF1", background: "rgba(15, 118, 110, 0.03)" }}>
+                            {row.barterDebit > 0 ? pkr(row.barterDebit) : "—"}
+                          </td>
+                          <td style={{ textAlign: "right", color: row.barterCredit > 0 ? "#059669" : "inherit", fontWeight: row.barterCredit > 0 ? 700 : 400, background: "rgba(15, 118, 110, 0.03)" }}>
+                            {row.barterCredit > 0 ? pkr(row.barterCredit) : "—"}
+                          </td>
+                          <td style={{ textAlign: "right", fontWeight: 800, color: row.barterRunningBalance > 0 ? "#0F766E" : "#059669", background: "rgba(15, 118, 110, 0.03)" }}>
+                            {pkr(row.barterRunningBalance)}
+                          </td>
+                        </>
+                      )}
                     </tr>
                   ))
                 )}
               </tbody>
               <tfoot>
                 <tr style={{ background: "var(--table-header-bg)", fontWeight: 800 }}>
-                  <td colSpan="4">Closing Outstanding Balance</td>
-                  <td style={{ textAlign: "right", color: "#0284C7" }}>{pkr(statementData.totalInvoiced)}</td>
-                  <td style={{ textAlign: "right", color: "#059669" }}>{pkr(statementData.totalCredits !== undefined ? statementData.totalCredits : statementData.totalReceived)}</td>
-                  <td style={{ textAlign: "right", fontSize: 15, color: "#0284C7" }}>{pkr(statementData.closingBalance)}</td>
+                  <td colSpan="4">
+                    Closing Outstanding Balance {displayBarterCols ? `(Combined: ${pkr(statementData.closingBalance)})` : ""}
+                  </td>
+                  <td style={{ textAlign: "right", color: "#0284C7", borderLeft: displayBarterCols ? "2px solid #CBD5E1" : undefined }}>{pkr(statementData.totalCashInvoiced !== undefined ? statementData.totalCashInvoiced : statementData.totalInvoiced)}</td>
+                  <td style={{ textAlign: "right", color: "#059669" }}>{pkr(statementData.totalCashCredits !== undefined ? statementData.totalCashCredits : statementData.totalReceived)}</td>
+                  <td style={{ textAlign: "right", fontSize: 15, color: "#0284C7" }}>{pkr(statementData.closingCashBalance !== undefined ? statementData.closingCashBalance : statementData.closingBalance)}</td>
+                  {displayBarterCols && (
+                    <>
+                      <td style={{ textAlign: "right", color: "#0F766E", borderLeft: "2px solid #99F6E4", background: "rgba(15, 118, 110, 0.08)" }}>{pkr(statementData.totalBarterInvoiced || 0)}</td>
+                      <td style={{ textAlign: "right", color: "#059669", background: "rgba(15, 118, 110, 0.08)" }}>{pkr(statementData.totalBarterSettled || 0)}</td>
+                      <td style={{ textAlign: "right", fontSize: 15, color: "#0F766E", background: "rgba(15, 118, 110, 0.08)" }}>{pkr(statementData.closingBarterBalance || 0)}</td>
+                    </>
+                  )}
                 </tr>
               </tfoot>
             </table>
+            </div>
           </div>
 
           {/* PROJECT SUMMARY TABLE */}
@@ -1606,7 +1857,7 @@ export default function ClientStatementView({
           client={selectedClient}
           dateFrom={dateFrom}
           dateTo={dateTo}
-          statementData={statementData}
+          statementData={{ ...statementData, hasBarterActivity: displayBarterCols }}
           onClose={() => setShowPrintModal(false)}
         />
       )}

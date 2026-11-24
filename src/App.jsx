@@ -2521,10 +2521,24 @@ export default function App() {
 
   function updateInvoice(updated) {
     setInvoices(list => list.map(i => i.id === updated.id ? updated : i));
+    // Keep GL entry in sync if invoice total or SST changed on edit
+    const invRef = updated.invoiceNo || updated.id;
+    const totalAmount = Number(updated.totalAmount || updated.amount) || 0;
+    const sst = (updated.applySst && updated.sstAmount) ? Number(updated.sstAmount) : 0;
+    const netRev = totalAmount - sst;
+    const updatedLines = [
+      { account: "ar", debit: totalAmount, credit: 0 },
+      { account: "revenue", debit: 0, credit: netRev },
+    ];
+    if (sst > 0) updatedLines.push({ account: "srb_payable", debit: 0, credit: sst });
+    setJournal(prev => prev.map(j => (j.reference === invRef || j.reference === `INV-${updated.id?.toUpperCase?.()}`)
+      ? { ...j, date: updated.issueDate || j.date, description: `Invoice ${invRef} - ${updated.client} (${updated.description})`, lines: updatedLines }
+      : j
+    ));
     setEditingInvoice(null);
     triggerSuccessPopup({
-      title: "Process Complete — Invoice Updated!",
-      message: `Invoice details for "${updated.client}" (${pkr(updated.totalAmount || updated.amount)}) have been updated.`,
+      title: "DONE — Invoice Updated!",
+      message: `Invoice details for "${updated.client}" (${pkr(totalAmount)})${updated.applyBarter && Number(updated.barterAmount) > 0 ? ` — Cash: ${pkr(updated.cashAmount)} | Barter: ${pkr(updated.barterAmount)}` : ""} have been saved.`,
       code: updated.invoiceNo || updated.id,
       module: "Invoices"
     });
@@ -6244,10 +6258,22 @@ export default function App() {
                         }
                         return false;
                       });
-                      const totalInvoiced = clientInvoices.reduce((s, i) => s + (Number(i.totalAmount || i.amount) || 0), 0);
+                      const totalCashInvoiced = clientInvoices.reduce((s, i) => {
+                        const tot = Number(i.totalAmount || i.amount) || 0;
+                        const bAmt = (i.applyBarter && Number(i.barterAmount) > 0) ? Math.min(tot, Number(i.barterAmount)) : 0;
+                        return s + Math.max(0, tot - bAmt);
+                      }, 0);
+                      const totalBarterInvoiced = clientInvoices.reduce((s, i) => {
+                        const tot = Number(i.totalAmount || i.amount) || 0;
+                        return s + ((i.applyBarter && Number(i.barterAmount) > 0) ? Math.min(tot, Number(i.barterAmount)) : 0);
+                      }, 0);
                       // Unpaid / Pending PDC cheques (pdcStatus !== "Cleared") do NOT deduct from Client Outstanding!
-                      const totalReceived = clientVouchers.filter(v => (v.type === "RV" || v.type === "CV" || (v.type === "BV" && v.barterDirection !== "vendor")) && !(v.isPdc && v.pdcStatus !== "Cleared")).reduce((s, v) => s + (Number(v.amount) || 0), 0);
-                      const outstanding = (Number(c.openingBalance) || 0) + projectsOpening + totalInvoiced - totalReceived;
+                      const totalCashReceived = clientVouchers.filter(v => (v.type === "RV" || v.type === "CV") && !(v.isPdc && v.pdcStatus !== "Cleared")).reduce((s, v) => s + (Number(v.amount) || 0), 0);
+                      const totalBarterReceived = clientVouchers.filter(v => v.type === "BV" && v.barterDirection !== "vendor").reduce((s, v) => s + (Number(v.amount) || 0), 0);
+                      const cashOutstanding = (Number(c.openingBalance) || 0) + projectsOpening + totalCashInvoiced - totalCashReceived;
+                      const barterOutstanding = (Number(c.openingBarterBalance) || 0) + totalBarterInvoiced - totalBarterReceived;
+                      const outstanding = cashOutstanding + barterOutstanding;
+                      const hasBarterTrack = (Number(c.openingBarterBalance) || 0) > 0 || totalBarterInvoiced > 0 || totalBarterReceived > 0;
 
                       return (
                         <tr key={c.id}>
@@ -6267,7 +6293,13 @@ export default function App() {
                           </td>
                           <td><span className="badge-mini">{c.paymentTerms || "Net 30"}</span></td>
                           <td style={{ textAlign: "right", fontWeight: 800, color: outstanding > 0 ? "#0284C7" : "#059669" }}>
-                            {pkr(outstanding)}
+                            <div>{pkr(outstanding)}</div>
+                            {hasBarterTrack && (
+                              <div style={{ fontSize: 10.5, fontWeight: 700, marginTop: 2, display: "flex", flexDirection: "column", gap: 1 }}>
+                                <span style={{ color: "#0369A1" }}>Cash: {pkr(cashOutstanding)}</span>
+                                <span style={{ color: "#0F766E" }}>Barter: {pkr(barterOutstanding)}</span>
+                              </div>
+                            )}
                           </td>
                           <td>
                             <span style={{
@@ -11182,6 +11214,14 @@ function InvoiceModal({ initialData, projects = [], clients = [], invoices = [],
   const [sstAmount, setSstAmount] = useState(initialData?.sstAmount !== undefined ? initialData.sstAmount : "");
   const [applyWht, setApplyWht] = useState(initialData?.applyWht || false);
   const [whtRate, setWhtRate] = useState(initialData?.whtRate !== undefined ? initialData.whtRate : "3");
+  const [applyBarter, setApplyBarter] = useState(Boolean(initialData?.applyBarter || Number(initialData?.barterAmount) > 0));
+  const [barterPercent, setBarterPercent] = useState(() => {
+    if (initialData?.barterPercent !== undefined && initialData?.barterPercent !== "") return String(initialData.barterPercent);
+    const tot = Number(initialData?.totalAmount || initialData?.amount) || 0;
+    if (initialData?.barterAmount && tot > 0) return ((Number(initialData.barterAmount) / tot) * 100).toFixed(1);
+    return "50";
+  });
+  const [barterAmount, setBarterAmount] = useState(initialData?.barterAmount !== undefined && Number(initialData?.barterAmount) > 0 ? String(initialData.barterAmount) : "");
   const [issueDate, setIssueDate] = useState(initialData?.issueDate || TODAY_STR);
   const [dueDate, setDueDate] = useState(initialData?.dueDate || TODAY_STR);
   const [notes, setNotes] = useState(
@@ -11529,6 +11569,42 @@ function InvoiceModal({ initialData, projects = [], clients = [], invoices = [],
   const whtRateNum = applyWht ? (Number(whtRate) || 0) : 0;
   const whtVal = applyWht ? ((grossAmountWithComm + sstVal) * whtRateNum / 100) : 0;
   const netTotalPayable = grossAmountWithComm + sstVal - whtVal;
+
+  // Barter Split Calculation (Only applied when Apply Barter Split is checked — otherwise 100% Cash!)
+  const barterVal = applyBarter
+    ? Math.min(
+        netTotalPayable,
+        Math.max(
+          0,
+          barterAmount !== "" && barterAmount !== undefined && !isNaN(Number(barterAmount))
+            ? Number(barterAmount)
+            : Math.round((netTotalPayable * (Number(barterPercent) || 0)) / 100)
+        )
+      )
+    : 0;
+  const cashPortionVal = Math.max(0, netTotalPayable - barterVal);
+  const effectiveBarterPct = netTotalPayable > 0 && barterVal > 0 ? Number(((barterVal / netTotalPayable) * 100).toFixed(2)) : 0;
+
+  const handleBarterPercentChange = (val) => {
+    setBarterPercent(val);
+    const p = parseFloat(val);
+    if (!isNaN(p) && netTotalPayable > 0) {
+      setBarterAmount(Math.round((netTotalPayable * Math.min(100, Math.max(0, p))) / 100).toString());
+    } else if (!val) {
+      setBarterAmount("");
+    }
+  };
+
+  const handleBarterAmountChange = (val) => {
+    setBarterAmount(val);
+    const a = parseFloat(val);
+    if (!isNaN(a) && netTotalPayable > 0) {
+      setBarterPercent(((Math.min(netTotalPayable, Math.max(0, a)) / netTotalPayable) * 100).toFixed(1));
+    } else if (!val) {
+      setBarterPercent("");
+    }
+  };
+
   const valid = client && description && grandTotal > 0;
 
   const handleClientChange = (selectedClient) => {
@@ -12116,7 +12192,7 @@ function InvoiceModal({ initialData, projects = [], clients = [], invoices = [],
         </div>
 
         {/* 4. APPLY WITHHOLDING TAX (WHT) */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10, padding: "8px 12px", background: applyWht ? "#FFFBEB" : "#F8FAFC", borderRadius: 6, border: applyWht ? "1px solid #FDE68A" : "1px solid #E2E8F0" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10, padding: "8px 12px", background: applyWht ? "#FFFBEB" : "#F8FAFC", borderRadius: 6, border: applyWht ? "1px solid #FDE68A" : "1px solid #E2E8F0", marginBottom: 8 }}>
           <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 700, cursor: "pointer", userSelect: "none", color: applyWht ? "#B45309" : "var(--ink)" }}>
             <input type="checkbox" checked={applyWht} onChange={e => setApplyWht(e.target.checked)} />
             Apply Withholding Tax (WHT Deduction)
@@ -12134,6 +12210,53 @@ function InvoiceModal({ initialData, projects = [], clients = [], invoices = [],
               />
               <span style={{ fontSize: 13, fontWeight: 800, color: "var(--rose)" }}>%</span>
               <span style={{ fontSize: 12.5, fontWeight: 700, color: "var(--rose)", marginLeft: 4 }}>= - {pkr(whtVal)}</span>
+            </div>
+          )}
+        </div>
+
+        {/* 5. APPLY BARTER SPLIT (% OR FIXED AMOUNT) — OPTIONAL LIKE TAX */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10, padding: "8px 12px", background: applyBarter ? "rgba(15, 118, 110, 0.08)" : "#F8FAFC", borderRadius: 6, border: applyBarter ? "1.5px solid #0F766E" : "1px solid #E2E8F0" }}>
+          <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 700, cursor: "pointer", userSelect: "none", color: applyBarter ? "#0F766E" : "var(--ink)" }}>
+            <input
+              type="checkbox"
+              checked={applyBarter}
+              onChange={e => {
+                const checked = e.target.checked;
+                setApplyBarter(checked);
+                if (checked && !barterAmount && netTotalPayable > 0) {
+                  const pct = Number(barterPercent) || 50;
+                  setBarterPercent(String(pct));
+                  setBarterAmount(Math.round((netTotalPayable * pct) / 100).toString());
+                }
+              }}
+            />
+            🤝 Apply Barter Split (% or Amount) <span style={{ fontSize: 11, fontWeight: 500, color: "#64748B" }}>(Unchecked = 100% Cash/Bank)</span>
+          </label>
+          {applyBarter && (
+            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+              <span style={{ fontSize: 12, color: "#0F766E", fontWeight: 600 }}>Barter %:</span>
+              <input
+                type="number"
+                step="0.5"
+                min="0"
+                max="100"
+                value={barterPercent}
+                onChange={e => handleBarterPercentChange(e.target.value)}
+                placeholder="50"
+                style={{ width: 68, padding: "5px 6px", fontSize: 13, fontWeight: 700, textAlign: "center", borderRadius: 6, border: "1px solid #0F766E" }}
+              />
+              <span style={{ fontSize: 12, color: "#64748B", fontWeight: 700 }}>OR PKR:</span>
+              <input
+                type="number"
+                min="0"
+                value={barterAmount}
+                onChange={e => handleBarterAmountChange(e.target.value)}
+                placeholder={String(Math.round(netTotalPayable * 0.5))}
+                style={{ width: 120, padding: "5px 8px", fontSize: 13, fontWeight: 700, textAlign: "right", borderRadius: 6, border: "1px solid #0F766E" }}
+              />
+              <span style={{ fontSize: 12, fontWeight: 700, color: "#0F766E", background: "#FFFFFF", padding: "3px 8px", borderRadius: 6, border: "1px solid #99F6E4" }}>
+                Barter: {pkr(barterVal)} | Cash: {pkr(cashPortionVal)}
+              </span>
             </div>
           )}
         </div>
@@ -12185,6 +12308,18 @@ function InvoiceModal({ initialData, projects = [], clients = [], invoices = [],
           <span style={{ color: "var(--ink)" }}>NET AMOUNT</span>
           <span className="mono" style={{ color: "#059669", fontSize: 16 }}>{pkr(netTotalPayable)}</span>
         </div>
+        {applyBarter && barterVal > 0 && (
+          <div style={{ marginTop: 8, paddingTop: 8, borderTop: "1px dashed #0F766E", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            <div style={{ background: "rgba(2, 132, 199, 0.08)", border: "1px solid rgba(2, 132, 199, 0.25)", borderRadius: 6, padding: "6px 10px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <span style={{ fontSize: 12, fontWeight: 700, color: "#0369A1" }}>💵 Cash / Bank Portion ({(100 - effectiveBarterPct).toFixed(1)}%):</span>
+              <span className="mono" style={{ fontWeight: 800, color: "#0369A1" }}>{pkr(cashPortionVal)}</span>
+            </div>
+            <div style={{ background: "rgba(15, 118, 110, 0.1)", border: "1px solid rgba(15, 118, 110, 0.3)", borderRadius: 6, padding: "6px 10px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <span style={{ fontSize: 12, fontWeight: 700, color: "#0F766E" }}>🤝 Barter Portion ({effectiveBarterPct.toFixed(1)}%):</span>
+              <span className="mono" style={{ fontWeight: 800, color: "#0F766E" }}>{pkr(barterVal)}</span>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="field" style={{ marginBottom: 14 }}>
@@ -12239,6 +12374,10 @@ function InvoiceModal({ initialData, projects = [], clients = [], invoices = [],
             applyWht,
             whtRate: Number(whtRate) || 0,
             whtAmount: whtVal,
+            applyBarter: Boolean(applyBarter && barterVal > 0),
+            barterPercent: applyBarter ? effectiveBarterPct : 0,
+            barterAmount: applyBarter ? barterVal : 0,
+            cashAmount: applyBarter ? cashPortionVal : netTotalPayable,
             totalAmount: netTotalPayable,
             netAmount: netTotalPayable,
             issueDate,
@@ -14282,7 +14421,7 @@ function ROModal({ initialData, projects = [], vendors = [], clients = [], relea
         </div>
 
         {/* 4. APPLY WITHHOLDING TAX (WHT) */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10, padding: "8px 12px", background: applyWht ? "#FFFBEB" : "#F8FAFC", borderRadius: 6, border: applyWht ? "1px solid #FDE68A" : "1px solid #E2E8F0" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10, padding: "8px 12px", background: applyWht ? "#FFFBEB" : "#F8FAFC", borderRadius: 6, border: applyWht ? "1px solid #FDE68A" : "1px solid #E2E8F0", marginBottom: 8 }}>
           <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 700, cursor: "pointer", userSelect: "none", color: applyWht ? "#B45309" : "var(--ink)" }}>
             <input type="checkbox" checked={applyWht} onChange={e => setApplyWht(e.target.checked)} />
             Apply Withholding Tax (WHT Deduction)
@@ -17967,6 +18106,7 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
     if (doc.type === "PURCHASE ORDER") return "PURCHASE ORDER (PO)";
     if (doc.type === "PV") return "PAYMENT VOUCHER (PV)";
     if (doc.type === "RV") return "RECEIPT VOUCHER (RV)";
+    if (doc.type === "BV") return "BARTER SETTLEMENT VOUCHER (BV)";
     if (doc.type === "JV") return "JOURNAL VOUCHER (JV)";
     if (doc.type === "CTV") return "CONTRA TRANSFER VOUCHER (CTV)";
     if (doc.type === "CV") return "CLIENT VENDOR SETTLEMENT (CV)";
@@ -17979,7 +18119,8 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
   });
   const isRV = doc.type === "RV" || docTitle.includes("RECEIPT") || (doc.voucherNo && String(doc.voucherNo).toUpperCase().includes("RV"));
   const isPV = doc.type === "PV" || doc.type === "EXPENSE" || docTitle.includes("PAYMENT") || (doc.voucherNo && String(doc.voucherNo).toUpperCase().includes("PV"));
-  const isCV = doc.type === "CV" || docTitle.includes("SETTLEMENT");
+  const isBV = doc.type === "BV" || docTitle.includes("BARTER") || (doc.voucherNo && String(doc.voucherNo).toUpperCase().startsWith("BV-"));
+  const isCV = !isBV && (doc.type === "CV" || docTitle.includes("SETTLEMENT"));
   const isCTV = doc.type === "CTV" || docTitle.includes("CONTRA");
   const isJV = doc.type === "JV" || docTitle.includes("JOURNAL");
   const isPO = doc.type === "PURCHASE ORDER" || docTitle.includes("PURCHASE ORDER");
@@ -18216,8 +18357,10 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
       );
     }
 
-    if (isCV || isCTV || isJV) {
-      const voucherFinalLabel = isCV
+    if (isBV || isCV || isCTV || isJV) {
+      const voucherFinalLabel = isBV
+        ? "TOTAL BARTER SETTLEMENT VALUE (IN-KIND)"
+        : isCV
         ? "NET AMOUNT SETTLED (CLIENT ➔ VENDOR)"
         : isCTV
         ? "TOTAL AMOUNT TRANSFERRED"
@@ -18313,6 +18456,26 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
             {pkr(finalPayable)}
           </td>
         </tr>
+
+        {/* 7. OPTIONAL BARTER SPLIT BREAKUP (ONLY SHOWN WHEN BARTER IS ENABLED ON INVOICE) */}
+        {doc.applyBarter && Number(doc.barterAmount) > 0 && (
+          <React.Fragment>
+            <tr style={{ background: "#F0FDFA" }}>
+              <td colSpan={colSpanAmount} style={{ ...labelStyle, color: "#0F766E" }}>
+                BARTER PORTION ({doc.barterPercent ? `${doc.barterPercent}%` : "IN-KIND SETTLEMENT"})
+              </td>
+              <td style={{ ...valStyle, color: "#0F766E", fontWeight: 800 }}>{pkr(Number(doc.barterAmount) || 0)}</td>
+            </tr>
+            <tr style={{ background: "#F0F9FF" }}>
+              <td colSpan={colSpanAmount} style={{ ...labelStyle, color: "#0369A1" }}>
+                CASH / BANK RECEIVABLE PORTION
+              </td>
+              <td style={{ ...valStyle, color: "#0369A1", fontWeight: 800 }}>
+                {pkr(Math.max(0, finalPayable - (Number(doc.barterAmount) || 0)))}
+              </td>
+            </tr>
+          </React.Fragment>
+        )}
       </React.Fragment>
     );
   };
@@ -18611,6 +18774,7 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
                   <option value="PURCHASE ORDER (PO)" style={{ background: "#1E293B", color: "#FFFFFF" }}>PURCHASE ORDER (PO)</option>
                   <option value="PAYMENT VOUCHER (PV)" style={{ background: "#1E293B", color: "#FFFFFF" }}>PAYMENT VOUCHER (PV)</option>
                   <option value="RECEIPT VOUCHER (RV)" style={{ background: "#1E293B", color: "#FFFFFF" }}>RECEIPT VOUCHER (RV)</option>
+                  <option value="BARTER SETTLEMENT VOUCHER (BV)" style={{ background: "#1E293B", color: "#FFFFFF" }}>BARTER SETTLEMENT VOUCHER (BV)</option>
                   <option value="JOURNAL VOUCHER (JV)" style={{ background: "#1E293B", color: "#FFFFFF" }}>JOURNAL VOUCHER (JV)</option>
                   <option value="EXPENSE PAYMENT VOUCHER" style={{ background: "#1E293B", color: "#FFFFFF" }}>EXPENSE PAYMENT VOUCHER</option>
                 </select>
