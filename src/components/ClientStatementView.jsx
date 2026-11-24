@@ -506,11 +506,14 @@ export function ClientStatementPrintModal({ client, dateFrom, dateTo, statementD
                 </div>
               )}
 
-              {/* 3.5. PDC CHEQUE STATUS TABLE IN PRINTOUT (IF CLIENT HAS ANY PDCs) */}
-              {statementData.pdcSummary && statementData.pdcSummary.rows.length > 0 && (
+              {/* 3.5. PDC CHEQUE STATUS TABLE IN PRINTOUT (ONLY SHOWS UN-CLEARED / PENDING PDCs; CLEARED PDCs MOVE TO MAIN LEDGER) */}
+              {(() => {
+                const unclearedPrintPdcs = (statementData.pdcSummary?.rows || []).filter(p => p.status !== "Cleared");
+                if (unclearedPrintPdcs.length === 0) return null;
+                return (
                 <div style={{ marginBottom: 10 }}>
                   <div style={{ fontSize: 9.5, fontWeight: 800, marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.04em" }}>
-                    POST-DATED CHEQUES (PDC) STATUS — Pending: {pkr(statementData.pdcSummary.pendingTotal)} (Not Deducted) | Cleared: {pkr(statementData.pdcSummary.clearedTotal)}
+                    PENDING POST-DATED CHEQUES (PDC) — In-Hand: {pkr(statementData.pdcSummary.pendingTotal)} (Not Deducted Yet)
                   </div>
                   <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 8.5, border: "1px solid #000000", tableLayout: "fixed" }}>
                     <thead>
@@ -524,7 +527,7 @@ export function ClientStatementPrintModal({ client, dateFrom, dateTo, statementD
                       </tr>
                     </thead>
                     <tbody>
-                      {statementData.pdcSummary.rows.map((pdc, pIdx) => (
+                      {unclearedPrintPdcs.map((pdc, pIdx) => (
                         <tr key={pIdx}>
                           <td style={{ textAlign: "center", fontFamily: "monospace", fontWeight: 700 }}>{pdc.voucherNo}</td>
                           <td style={{ textAlign: "center" }}>{fmtDate(pdc.maturityDate)}</td>
@@ -532,14 +535,15 @@ export function ClientStatementPrintModal({ client, dateFrom, dateTo, statementD
                           <td>{pdc.drawnBank}</td>
                           <td style={{ textAlign: "right", fontWeight: 700 }}>{pkr(pdc.amount)}</td>
                           <td style={{ textAlign: "center", fontWeight: 700 }}>
-                            {pdc.status === "Cleared" ? `CLEARED (${fmtDate(pdc.clearedDate)})` : pdc.status === "Bounced" ? "BOUNCED" : "IN-HAND (PENDING)"}
+                            {pdc.status === "Bounced" ? "BOUNCED" : "IN-HAND (PENDING)"}
                           </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 </div>
-              )}
+                );
+              })()}
 
               {/* 4. TRANSACTIONS TABLE (Matches Official Invoice Table Grid — Dual Cash + Barter Columns when Barter active) */}
               {(() => {
@@ -923,7 +927,8 @@ export default function ClientStatementView({
     });
 
     // Add Receipts / Vouchers / Direct Settlements / Client Barter (splitting Receipt Amount & Tax Deduction into separate lines!)
-    vouchers.filter(v => isClientMatch(v) && isProjectMatch(v) && v.date >= dateFrom && v.date <= dateTo && (v.type === "RV" || v.type === "PV" || v.type === "CV" || (v.type === "BV" && v.barterDirection !== "vendor"))).forEach(v => {
+    // NOTE: Un-cleared / Pending PDC cheques are shown ONLY in the dedicated top "Pending PDC Cheques" box — once Cleared, they move into the main ledger below!
+    vouchers.filter(v => isClientMatch(v) && isProjectMatch(v) && v.date >= dateFrom && v.date <= dateTo && (v.type === "RV" || v.type === "PV" || v.type === "CV" || (v.type === "BV" && v.barterDirection !== "vendor")) && !(v.isPdc && v.pdcStatus !== "Cleared")).forEach(v => {
       const proj = projects.find(p => p.id === v.projectId);
       const isBarter = v.type === "BV";
       const isPdcBounced = Boolean(v.isPdc && v.pdcStatus === "Bounced");
@@ -1523,23 +1528,24 @@ export default function ClientStatementView({
             </div>
           </div>
 
-          {/* DEDICATED PDC CHEQUE STATUS MINI-LEDGER (ABOVE MAIN CLIENT LEDGER) */}
+          {/* DEDICATED PDC CHEQUE STATUS MINI-LEDGER (ONLY SHOWS UN-CLEARED / PENDING PDCs; ONCE CLEARED, THEY APPEAR IN MAIN LEDGER BELOW) */}
+          {(() => {
+            const unclearedPdcRows = (statementData.pdcSummary?.rows || []).filter(p => p.status !== "Cleared");
+            if (unclearedPdcRows.length === 0) return null;
+            return (
           <div className="card" style={{ padding: 0, marginBottom: 20, borderRadius: 10, overflow: "hidden", border: "1.5px solid #C4B5FD" }}>
             <div style={{ padding: "12px 16px", background: "linear-gradient(135deg, rgba(124, 58, 237, 0.08) 0%, rgba(124, 58, 237, 0.02) 100%)", borderBottom: "1px solid #DDD6FE", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 10 }}>
               <div>
                 <h4 style={{ margin: 0, fontSize: 14, color: "#5B21B6", display: "flex", alignItems: "center", gap: 6 }}>
-                  📜 PDC Cheque Status Register — {selectedClient.name}
+                  📜 Pending PDC Cheques (Un-Cleared) — {selectedClient.name}
                 </h4>
                 <div style={{ fontSize: 11.5, color: "#6B7280", marginTop: 2 }}>
-                  Pending PDCs are tracked here and are <strong>NOT</strong> deducted from Client Ledger Balance until marked Cleared / Paid
+                  These un-cleared PDC cheques are <strong>NOT</strong> deducted from Client Ledger yet — once Cleared/Paid, they automatically move into the Client Ledger below
                 </div>
               </div>
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
                 <span style={{ padding: "4px 10px", borderRadius: 16, fontSize: 11.5, fontWeight: 700, background: "rgba(124, 58, 237, 0.12)", color: "#6D28D9", border: "1px solid rgba(124, 58, 237, 0.3)" }}>
                   ⏳ Pending ({statementData.pdcSummary?.pendingCount || 0}): {pkr(statementData.pdcSummary?.pendingTotal || 0)}
-                </span>
-                <span style={{ padding: "4px 10px", borderRadius: 16, fontSize: 11.5, fontWeight: 700, background: "rgba(5, 150, 105, 0.12)", color: "#047857", border: "1px solid rgba(5, 150, 105, 0.3)" }}>
-                  ✓ Cleared ({statementData.pdcSummary?.clearedCount || 0}): {pkr(statementData.pdcSummary?.clearedTotal || 0)}
                 </span>
                 {(statementData.pdcSummary?.bouncedCount || 0) > 0 && (
                   <span style={{ padding: "4px 10px", borderRadius: 16, fontSize: 11.5, fontWeight: 700, background: "rgba(220, 38, 38, 0.12)", color: "#B91C1C", border: "1px solid rgba(220, 38, 38, 0.3)" }}>
@@ -1549,57 +1555,49 @@ export default function ClientStatementView({
               </div>
             </div>
 
-            {(!statementData.pdcSummary || statementData.pdcSummary.rows.length === 0) ? (
-              <div style={{ padding: "14px 16px", fontSize: 12.5, color: "var(--ink-muted)", textAlign: "center" }}>
-                No Post-Dated Cheques (PDC) recorded for this client{selectedProjectId !== "all" ? " / project" : ""}.
-              </div>
-            ) : (
-              <table className="table" style={{ margin: 0 }}>
-                <thead>
-                  <tr>
-                    <th>Voucher #</th>
-                    <th>Received Date</th>
-                    <th>Maturity / Due Date</th>
-                    <th>Cheque #</th>
-                    <th>Drawn Bank</th>
-                    <th>Project</th>
-                    <th style={{ textAlign: "right" }}>Amount (PKR)</th>
-                    <th style={{ textAlign: "center" }}>PDC Status</th>
+            <table className="table" style={{ margin: 0 }}>
+              <thead>
+                <tr>
+                  <th>Voucher #</th>
+                  <th>Received Date</th>
+                  <th>Maturity / Due Date</th>
+                  <th>Cheque #</th>
+                  <th>Drawn Bank</th>
+                  <th>Project</th>
+                  <th style={{ textAlign: "right" }}>Amount (PKR)</th>
+                  <th style={{ textAlign: "center" }}>PDC Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {unclearedPdcRows.map(pdc => (
+                  <tr key={pdc.id}>
+                    <td><span style={{ fontFamily: "monospace", fontWeight: 700, color: "#6D28D9" }}>{pdc.voucherNo}</span></td>
+                    <td>{pdc.issueDate}</td>
+                    <td style={{ fontWeight: 700 }}>{pdc.maturityDate}</td>
+                    <td><span style={{ fontFamily: "monospace", fontWeight: 700 }}>#{pdc.chequeNo}</span></td>
+                    <td>{pdc.drawnBank}</td>
+                    <td>{pdc.projectName}</td>
+                    <td style={{ textAlign: "right", fontWeight: 800, color: pdc.status === "Bounced" ? "#DC2626" : "#6D28D9" }}>
+                      {pkr(pdc.amount)}
+                    </td>
+                    <td style={{ textAlign: "center" }}>
+                      {pdc.status === "Bounced" ? (
+                        <span style={{ padding: "2px 9px", borderRadius: 12, fontSize: 11, fontWeight: 700, background: "rgba(220, 38, 38, 0.12)", color: "#B91C1C" }}>
+                          ✕ Bounced
+                        </span>
+                      ) : (
+                        <span style={{ padding: "2px 9px", borderRadius: 12, fontSize: 11, fontWeight: 700, background: "rgba(124, 58, 237, 0.12)", color: "#6D28D9" }}>
+                          ⏳ In-Hand (Not Deducted)
+                        </span>
+                      )}
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  {statementData.pdcSummary.rows.map(pdc => (
-                    <tr key={pdc.id}>
-                      <td><span style={{ fontFamily: "monospace", fontWeight: 700, color: "#6D28D9" }}>{pdc.voucherNo}</span></td>
-                      <td>{pdc.issueDate}</td>
-                      <td style={{ fontWeight: 700 }}>{pdc.maturityDate}</td>
-                      <td><span style={{ fontFamily: "monospace", fontWeight: 700 }}>#{pdc.chequeNo}</span></td>
-                      <td>{pdc.drawnBank}</td>
-                      <td>{pdc.projectName}</td>
-                      <td style={{ textAlign: "right", fontWeight: 800, color: pdc.status === "Cleared" ? "#059669" : pdc.status === "Bounced" ? "#DC2626" : "#6D28D9" }}>
-                        {pkr(pdc.amount)}
-                      </td>
-                      <td style={{ textAlign: "center" }}>
-                        {pdc.status === "Cleared" ? (
-                          <span style={{ padding: "2px 9px", borderRadius: 12, fontSize: 11, fontWeight: 700, background: "rgba(5, 150, 105, 0.12)", color: "#047857" }}>
-                            ✓ Cleared{pdc.clearedDate ? ` (${pdc.clearedDate})` : ""}
-                          </span>
-                        ) : pdc.status === "Bounced" ? (
-                          <span style={{ padding: "2px 9px", borderRadius: 12, fontSize: 11, fontWeight: 700, background: "rgba(220, 38, 38, 0.12)", color: "#B91C1C" }}>
-                            ✕ Bounced
-                          </span>
-                        ) : (
-                          <span style={{ padding: "2px 9px", borderRadius: 12, fontSize: 11, fontWeight: 700, background: "rgba(124, 58, 237, 0.12)", color: "#6D28D9" }}>
-                            ⏳ In-Hand (Not Deducted)
-                          </span>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
+                ))}
+              </tbody>
+            </table>
           </div>
+            );
+          })()}
 
           {/* STATEMENT TABLE (SEPARATE CASH COLUMNS + BARTER COLUMNS) */}
           <div className="card" style={{ padding: 0, marginBottom: 20, borderRadius: 10, overflow: "hidden", border: "1px solid var(--rule)" }}>
