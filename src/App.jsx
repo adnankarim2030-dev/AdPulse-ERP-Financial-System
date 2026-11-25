@@ -1313,7 +1313,7 @@ export default function App() {
   const [editingRO, setEditingRO] = useState(null);
   const [govtInvoices, setGovtInvoices] = useState(() => {
     const saved = getInitialState("govtInvoices", null);
-    if (saved && Array.isArray(saved) && saved.length > 0) return saved;
+    if (Array.isArray(saved)) return saved;
     return seedGovtInvoices();
   });
   const [showGovtInvoiceModal, setShowGovtInvoiceModal] = useState(false);
