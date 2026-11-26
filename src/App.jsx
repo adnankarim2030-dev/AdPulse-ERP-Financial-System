@@ -7903,6 +7903,60 @@ export default function App() {
                   ? searchedRows[searchedRows.length - 1].runningBalance
                   : openingBroughtForward;
 
+                // Individual Vault Available Balances Breakdown (for Combined views: All Cash, All Banks, All Accounts)
+                const isCombinedCashBankView = cashBankFilter === "cash" || cashBankFilter === "banks_only" || cashBankFilter === "all";
+                const vaultBreakdown = isCombinedCashBankView
+                  ? accountBalances
+                      .filter(b => {
+                        const isCashAcc = b.accountType === "Petty Cash" || b.id.startsWith("bank-cash");
+                        if (cashBankFilter === "cash") return isCashAcc;
+                        if (cashBankFilter === "banks_only") return !isCashAcc;
+                        return true;
+                      })
+                      .map(b => {
+                        const balAsOfToDate = cashBankDateTo
+                          ? allMatchedRows
+                              .filter(r => r.bankId === b.id && (r.date || "") <= cashBankDateTo)
+                              .reduce((s, r) => s + (r.debit || 0) - (r.credit || 0), 0)
+                          : b.liveBalance;
+                        return {
+                          id: b.id,
+                          bankName: b.bankName,
+                          accountType: b.accountType,
+                          color: b.color || (b.accountType === "Petty Cash" ? "#D97706" : "var(--gold)"),
+                          balance: balAsOfToDate
+                        };
+                      })
+                  : [];
+
+                // Pending PDC Projection for selected Bank Account (or All Banks / All Accounts)
+                const matchingPendingPdcs = cashBankFilter === "cash"
+                  ? []
+                  : vouchers.filter(v => {
+                      if (!((v.type === "RV" || v.type === "PV") && v.isPdc && v.pdcStatus === "In-Hand")) return false;
+                      if (cashBankFilter === "all" || cashBankFilter === "banks_only") return true;
+                      const vBankId = v.clearedBankId || v.targetBankId || v.bankAccountId;
+                      if (vBankId && vBankId === cashBankFilter) return true;
+                      if (selectedAccountObj && v.drawnBank && selectedAccountObj.bankName) {
+                        const dbNorm = v.drawnBank.toLowerCase().trim();
+                        const bnNorm = selectedAccountObj.bankName.toLowerCase().trim();
+                        if (dbNorm === bnNorm || bnNorm.includes(dbNorm) || dbNorm.includes(bnNorm)) return true;
+                      }
+                      return false;
+                    });
+                const pendingRvTotal = matchingPendingPdcs.filter(v => v.type === "RV").reduce((s, v) => s + (Number(v.netAmount !== undefined ? v.netAmount : v.amount) || 0), 0);
+                const pendingPvTotal = matchingPendingPdcs.filter(v => v.type === "PV").reduce((s, v) => s + (Number(v.netAmount !== undefined ? v.netAmount : v.amount) || 0), 0);
+                const pdcProjection = matchingPendingPdcs.length > 0
+                  ? {
+                      pendingCount: matchingPendingPdcs.length,
+                      pendingRvCount: matchingPendingPdcs.filter(v => v.type === "RV").length,
+                      pendingPvCount: matchingPendingPdcs.filter(v => v.type === "PV").length,
+                      pendingRvTotal,
+                      pendingPvTotal,
+                      projectedBalance: periodClosingBalance + pendingRvTotal - pendingPvTotal
+                    }
+                  : null;
+
                 const ledgerRows = cashBankSortOrder === "desc" ? [...searchedRows].reverse() : searchedRows;
 
                 const applyDatePreset = (preset) => {
@@ -8171,28 +8225,30 @@ export default function App() {
                                           </span>
                                         )}
                                       </td>
-                                      <td style={{ textAlign: "center" }}>
-                                        {isPending ? (
-                                          <div style={{ display: "inline-flex", gap: 6 }}>
-                                            <button
-                                              className="btn btn-primary"
-                                              style={{ padding: "3px 8px", fontSize: 11.5, background: "#059669", borderColor: "#059669" }}
-                                              onClick={() => setClearingPdcVoucher(v)}
-                                            >
-                                              ✅ {isPv ? "Clear / Encash" : "Deposit & Clear"}
-                                            </button>
-                                            <button
-                                              className="btn"
-                                              style={{ padding: "3px 8px", fontSize: 11.5, background: "#DC2626", color: "#FFFFFF", borderColor: "#DC2626" }}
-                                              onClick={() => setBouncingPdcVoucher(v)}
-                                            >
-                                              ⚠️ Bounce
-                                            </button>
-                                          </div>
-                                        ) : (
-                                          <span style={{ fontSize: 11.5, color: "var(--ink-muted)" }}>—</span>
-                                        )}
-                                      </td>
+                                        <td style={{ textAlign: "center", whiteSpace: "nowrap" }}>
+                                          {isPending ? (
+                                            <div style={{ display: "inline-flex", gap: 4, flexWrap: "nowrap" }}>
+                                              <button
+                                                className="btn btn-primary"
+                                                style={{ padding: "3px 7px", fontSize: 11, background: "#059669", borderColor: "#059669", whiteSpace: "nowrap" }}
+                                                onClick={() => setClearingPdcVoucher(v)}
+                                                title={isPv ? "Clear / Encash Issued PDC" : "Deposit & Clear Client PDC"}
+                                              >
+                                                ✅ {isPv ? "Clear" : "Clear"}
+                                              </button>
+                                              <button
+                                                className="btn"
+                                                style={{ padding: "3px 7px", fontSize: 11, background: "#DC2626", color: "#FFFFFF", borderColor: "#DC2626", whiteSpace: "nowrap" }}
+                                                onClick={() => setBouncingPdcVoucher(v)}
+                                                title="Mark Cheque as Bounced / Dishonored"
+                                              >
+                                                ⚠️ Bounce
+                                              </button>
+                                            </div>
+                                          ) : (
+                                            <span style={{ fontSize: 11.5, color: "var(--ink-muted)" }}>—</span>
+                                          )}
+                                        </td>
                                     </tr>
                                   );
                                 })}
@@ -8363,7 +8419,9 @@ export default function App() {
                                 totalDeposits: periodDeposits,
                                 totalPayments: periodPayments,
                                 closingBalance: periodClosingBalance,
-                                rows: ledgerRows
+                                rows: ledgerRows,
+                                vaultBreakdown,
+                                pdcProjection
                               });
                             }}
                           >
@@ -8372,6 +8430,55 @@ export default function App() {
                         </div>
                       </div>
                     </div>
+
+                    {/* INDIVIDUAL VAULT AVAILABLE BALANCES HEAD (Shown whenever All Cash, All Banks, or All Combined is selected) */}
+                    {vaultBreakdown.length > 0 && (
+                      <div className="card" style={{ padding: "12px 16px", marginBottom: 16, border: "1.5px solid rgba(15, 118, 110, 0.35)", background: "linear-gradient(135deg, rgba(15, 118, 110, 0.04) 0%, rgba(2, 132, 199, 0.03) 100%)" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8, marginBottom: 10 }}>
+                          <div style={{ fontSize: 12.5, fontWeight: 800, color: "#0F766E", textTransform: "uppercase", letterSpacing: "0.3px", display: "flex", alignItems: "center", gap: 6 }}>
+                            <span>💵</span>
+                            <span>
+                              Individual Available Balances ({cashBankFilter === "cash" ? "Petty Cash Vaults" : cashBankFilter === "banks_only" ? "Bank Accounts" : "All Cash & Bank Vaults"})
+                              {cashBankDateTo ? ` — As of ${fmtDate(cashBankDateTo)}` : " — Live Current"}
+                            </span>
+                          </div>
+                          <div style={{ fontSize: 12.5, fontWeight: 800, color: "#0F172A", background: "#CCFBF1", padding: "3px 10px", borderRadius: 8, border: "1px solid rgba(15, 118, 110, 0.35)" }}>
+                            Combined Available: <span className="mono" style={{ color: "#0F766E" }}>{pkr(vaultBreakdown.reduce((s, v) => s + (Number(v.balance) || 0), 0))}</span>
+                          </div>
+                        </div>
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 10 }}>
+                          {vaultBreakdown.map(v => (
+                            <div
+                              key={v.id}
+                              onClick={() => setCashBankFilter(v.id)}
+                              title={`Click to view only ${v.bankName}`}
+                              style={{
+                                background: "var(--card-bg, #FFFFFF)",
+                                border: "1px solid var(--rule)",
+                                borderLeft: `4px solid ${v.color}`,
+                                borderRadius: 8,
+                                padding: "8px 12px",
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                                gap: 8,
+                                cursor: "pointer"
+                              }}
+                            >
+                              <div style={{ minWidth: 0 }}>
+                                <div style={{ fontSize: 12, fontWeight: 700, color: "var(--ink)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                                  {v.bankName}
+                                </div>
+                                <div style={{ fontSize: 10.5, color: "var(--ink-muted)" }}>{v.accountType}</div>
+                              </div>
+                              <div className="mono" style={{ fontSize: 13.5, fontWeight: 800, color: v.balance >= 0 ? "#059669" : "#DC2626", whiteSpace: "nowrap" }}>
+                                {pkr(v.balance)}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
 
                     {showCashBankPrintModal && (
                       <CashBankStatementPrintModal
@@ -8392,6 +8499,8 @@ export default function App() {
                         totalPayments={periodPayments}
                         closingBalance={periodClosingBalance}
                         rows={ledgerRows}
+                        vaultBreakdown={vaultBreakdown}
+                        pdcProjection={pdcProjection}
                         onClose={() => setShowCashBankPrintModal(false)}
                       />
                     )}
@@ -8451,6 +8560,44 @@ export default function App() {
                           </tbody>
                         </table>
                       </div>
+
+                      {/* BANK PROJECTED AVAILABLE BALANCE AFTER PENDING PDCs */}
+                      {pdcProjection && pdcProjection.pendingCount > 0 && (
+                        <div style={{
+                          padding: "12px 16px",
+                          borderTop: "1.5px dashed rgba(217, 119, 6, 0.45)",
+                          background: "linear-gradient(135deg, rgba(245, 158, 11, 0.06) 0%, rgba(5, 150, 105, 0.05) 100%)",
+                          display: "grid",
+                          gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))",
+                          gap: 12,
+                          alignItems: "center"
+                        }}>
+                          <div>
+                            <div style={{ fontSize: 11, color: "var(--ink-muted)", fontWeight: 700, textTransform: "uppercase" }}>Current Ledger Balance</div>
+                            <div className="mono" style={{ fontSize: 14.5, fontWeight: 800, color: "var(--ink)", marginTop: 2 }}>{pkr(periodClosingBalance)}</div>
+                          </div>
+                          {pdcProjection.pendingRvTotal > 0 && (
+                            <div>
+                              <div style={{ fontSize: 11, color: "#059669", fontWeight: 700, textTransform: "uppercase" }}>+ Pending In-Hand PDCs ({pdcProjection.pendingRvCount})</div>
+                              <div className="mono" style={{ fontSize: 14.5, fontWeight: 800, color: "#059669", marginTop: 2 }}>+ {pkr(pdcProjection.pendingRvTotal)}</div>
+                            </div>
+                          )}
+                          {pdcProjection.pendingPvTotal > 0 && (
+                            <div>
+                              <div style={{ fontSize: 11, color: "#D97706", fontWeight: 700, textTransform: "uppercase" }}>− Pending Issued PDCs ({pdcProjection.pendingPvCount})</div>
+                              <div className="mono" style={{ fontSize: 14.5, fontWeight: 800, color: "#D97706", marginTop: 2 }}>− {pkr(pdcProjection.pendingPvTotal)}</div>
+                            </div>
+                          )}
+                          <div style={{ background: pdcProjection.projectedBalance >= 0 ? "rgba(5, 150, 105, 0.1)" : "rgba(220, 38, 38, 0.1)", padding: "8px 12px", borderRadius: 8, border: `1.5px solid ${pdcProjection.projectedBalance >= 0 ? "#059669" : "#DC2626"}` }}>
+                            <div style={{ fontSize: 11, color: pdcProjection.projectedBalance >= 0 ? "#065F46" : "#991B1B", fontWeight: 800, textTransform: "uppercase" }}>
+                              Projected Available After PDCs
+                            </div>
+                            <div className="mono" style={{ fontSize: 16, fontWeight: 900, color: pdcProjection.projectedBalance >= 0 ? "#059669" : "#DC2626", marginTop: 2 }}>
+                              {pkr(pdcProjection.projectedBalance)}
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </>
                 );

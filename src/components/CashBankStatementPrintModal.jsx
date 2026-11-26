@@ -48,11 +48,52 @@ export function exportCashBankStatementToExcel({
   totalDeposits,
   totalPayments,
   closingBalance,
-  rows = []
+  rows = [],
+  vaultBreakdown = [],
+  pdcProjection = null
 }) {
   const pkr = (val) => "PKR " + (Number(val) || 0).toLocaleString("en-PK", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
   const safeName = (accountLabel || "Cash_Bank_Ledger").replace(/[^a-zA-Z0-9]/g, "_");
   const periodText = (dateFrom || dateTo) ? `${dateFrom || "Start"} to ${dateTo || "Present"}` : "All Dates (Complete Ledger)";
+
+  let vaultBreakdownHtml = "";
+  if (Array.isArray(vaultBreakdown) && vaultBreakdown.length > 0) {
+    vaultBreakdownHtml = `
+        <tr><td colspan="8" style="height:8px; border:none;"></td></tr>
+        <tr style="background:#0F766E; color:#FFFFFF; font-weight:bold;">
+          <th colspan="5" style="text-align:left; padding:6px;">INDIVIDUAL AVAILABLE BALANCES BREAKDOWN (${vaultBreakdown.length} VAULTS / ACCOUNTS)</th>
+          <th colspan="3" style="text-align:right; padding:6px;">AVAILABLE BALANCE (PKR)</th>
+        </tr>
+        ${vaultBreakdown.map(v => `
+        <tr style="background:#F0FDFA;">
+          <td colspan="5" style="padding:5px 8px; font-weight:bold; color:#0F172A;">${v.bankName}${v.accountType ? ` (${v.accountType})` : ""}</td>
+          <td colspan="3" style="padding:5px 8px; text-align:right; font-weight:bold; color:${v.balance >= 0 ? "#0F766E" : "#DC2626"}; mso-number-format:'\\#\\,\\#\\#0';">${v.balance}</td>
+        </tr>
+        `).join("")}
+        <tr style="background:#CCFBF1; font-weight:bold;">
+          <td colspan="5" style="padding:6px 8px; text-align:right; color:#115E59;">COMBINED TOTAL AVAILABLE BALANCE</td>
+          <td colspan="3" style="padding:6px 8px; text-align:right; color:#115E59; font-size:12pt; mso-number-format:'\\#\\,\\#\\#0';">${vaultBreakdown.reduce((s, v) => s + (Number(v.balance) || 0), 0)}</td>
+        </tr>
+        <tr><td colspan="8" style="height:8px; border:none;"></td></tr>
+    `;
+  }
+
+  let pdcProjectionHtml = "";
+  if (pdcProjection && pdcProjection.pendingCount > 0) {
+    pdcProjectionHtml = `
+        <tr><td colspan="8" style="height:8px; border:none;"></td></tr>
+        <tr style="background:#FEF3C7; font-weight:bold;">
+          <td colspan="5" style="padding:6px 8px; text-align:right; color:#92400E;">
+            PENDING PDCs (${pdcProjection.pendingCount} Chq${pdcProjection.pendingCount > 1 ? "s" : ""}): In-Hand (+) ${pkr(pdcProjection.pendingRvTotal)} | Issued (-) ${pkr(pdcProjection.pendingPvTotal)}
+          </td>
+          <td colspan="3" style="padding:6px 8px; text-align:right; color:#B45309; mso-number-format:'\\#\\,\\#\\#0';">${(pdcProjection.pendingRvTotal || 0) - (pdcProjection.pendingPvTotal || 0)}</td>
+        </tr>
+        <tr style="background:#ECFDF5; font-weight:bold;">
+          <td colspan="5" style="padding:7px 8px; text-align:right; color:#065F46; font-size:11.5pt;">PROJECTED AVAILABLE BALANCE AFTER PENDING PDC CLEARANCE</td>
+          <td colspan="3" style="padding:7px 8px; text-align:right; color:${pdcProjection.projectedBalance >= 0 ? "#065F46" : "#DC2626"}; font-size:12pt; mso-number-format:'\\#\\,\\#\\#0';">${pdcProjection.projectedBalance}</td>
+        </tr>
+    `;
+  }
 
   let html = `
     <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
@@ -80,6 +121,7 @@ export function exportCashBankStatementToExcel({
           <td colspan="2"><b>Total Payments (Out -):</b> ${pkr(totalPayments)}</td>
           <td colspan="2"><b>Closing Balance:</b> <b>${pkr(closingBalance)}</b></td>
         </tr>
+        ${vaultBreakdownHtml}
         <tr style="background:#F1F5F9; font-weight:bold; text-align:center;">
           <th>S.NO</th>
           <th>DATE</th>
@@ -100,9 +142,9 @@ export function exportCashBankStatementToExcel({
         <td style="text-align:center; font-family:monospace;">${r.reference || "—"}</td>
         <td>${r.bankName || "—"}</td>
         <td>${r.description || "—"}${r.memo && r.memo !== r.description ? ` (${r.memo})` : ""}</td>
-        <td style="text-align:right;">${!r.isBroughtForward && r.debit > 0 ? r.debit : 0}</td>
-        <td style="text-align:right;">${!r.isBroughtForward && r.credit > 0 ? r.credit : 0}</td>
-        <td style="text-align:right; font-weight:bold;">${r.runningBalance || 0}</td>
+        <td style="text-align:right; mso-number-format:'\\#\\,\\#\\#0';">${!r.isBroughtForward && r.debit > 0 ? r.debit : 0}</td>
+        <td style="text-align:right; mso-number-format:'\\#\\,\\#\\#0';">${!r.isBroughtForward && r.credit > 0 ? r.credit : 0}</td>
+        <td style="text-align:right; font-weight:bold; mso-number-format:'\\#\\,\\#\\#0';">${r.runningBalance || 0}</td>
       </tr>
     `;
   });
@@ -110,10 +152,11 @@ export function exportCashBankStatementToExcel({
   html += `
         <tr style="background:#F8FAFC; font-weight:bold;">
           <td colspan="5" style="text-align:right;">PERIOD TOTALS</td>
-          <td style="text-align:right;">${totalDeposits}</td>
-          <td style="text-align:right;">${totalPayments}</td>
-          <td style="text-align:right;">${closingBalance}</td>
+          <td style="text-align:right; mso-number-format:'\\#\\,\\#\\#0';">${totalDeposits}</td>
+          <td style="text-align:right; mso-number-format:'\\#\\,\\#\\#0';">${totalPayments}</td>
+          <td style="text-align:right; mso-number-format:'\\#\\,\\#\\#0';">${closingBalance}</td>
         </tr>
+        ${pdcProjectionHtml}
       </table>
     </body>
     </html>
@@ -140,6 +183,8 @@ export default function CashBankStatementPrintModal({
   totalPayments = 0,
   closingBalance = 0,
   rows = [],
+  vaultBreakdown = [],
+  pdcProjection = null,
   onClose
 }) {
   const [pageSize, setPageSize] = useState("A4");
@@ -209,7 +254,9 @@ export default function CashBankStatementPrintModal({
       totalDeposits,
       totalPayments,
       closingBalance,
-      rows
+      rows,
+      vaultBreakdown,
+      pdcProjection
     });
   };
 
@@ -471,6 +518,23 @@ export default function CashBankStatementPrintModal({
                 </div>
               </div>
 
+              {/* 3B. INDIVIDUAL AVAILABLE BALANCES BREAKDOWN (For All Cash / All Banks / Combined Statements) */}
+              {Array.isArray(vaultBreakdown) && vaultBreakdown.length > 0 && (
+                <div style={{ border: "1px solid #000000", marginBottom: 10, padding: "6px 8px", background: "#F8FAFC" }}>
+                  <div style={{ fontSize: 8.5, fontWeight: 800, textTransform: "uppercase", marginBottom: 5, letterSpacing: "0.3px", color: "#000000" }}>
+                    INDIVIDUAL AVAILABLE BALANCES BREAKDOWN ({vaultBreakdown.length} VAULTS / ACCOUNTS)
+                  </div>
+                  <div style={{ display: "grid", gridTemplateColumns: `repeat(${Math.min(vaultBreakdown.length, 4)}, 1fr)`, gap: 5 }}>
+                    {vaultBreakdown.map((v, i) => (
+                      <div key={v.id || i} style={{ border: "1px solid #000000", background: "#FFFFFF", padding: "4px 6px", textAlign: "center" }}>
+                        <div style={{ fontSize: 7.5, fontWeight: 700, color: "#000000", textTransform: "uppercase", lineHeight: 1.2 }}>{v.bankName}</div>
+                        <div style={{ fontSize: 9.5, fontWeight: 800, color: v.balance < 0 ? "#A81C1C" : "#000000", marginTop: 2 }}>{pkr(v.balance)}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* 4. TRANSACTIONS TABLE (Matches Official Invoice Table Grid) */}
               <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 10, fontSize: 9, border: "1px solid #000000", tableLayout: "fixed" }}>
                 <colgroup>
@@ -547,6 +611,26 @@ export default function CashBankStatementPrintModal({
                     <td colSpan={7} style={{ border: "1px solid #000000", padding: "6px 6px", textAlign: "right", fontWeight: 700, fontSize: 10 }}>NET CLOSING ACCOUNT BALANCE</td>
                     <td style={{ border: "1px solid #000000", padding: "6px 4px", textAlign: "right", fontWeight: 800, fontSize: 10.5 }}>{pkr(closingBalance)}</td>
                   </tr>
+                  {pdcProjection && pdcProjection.pendingCount > 0 && (
+                    <>
+                      <tr style={{ background: "#FFFBEB" }}>
+                        <td colSpan={7} style={{ border: "1px solid #000000", padding: "5px 6px", textAlign: "right", fontWeight: 700, fontSize: 9 }}>
+                          PENDING PDCs ({pdcProjection.pendingCount} Chq{pdcProjection.pendingCount > 1 ? "s" : ""}) — In-Hand (+): {pkr(pdcProjection.pendingRvTotal)} | Issued (-): {pkr(pdcProjection.pendingPvTotal)}
+                        </td>
+                        <td style={{ border: "1px solid #000000", padding: "5px 4px", textAlign: "right", fontWeight: 700, fontSize: 9.5 }}>
+                          {((pdcProjection.pendingRvTotal || 0) - (pdcProjection.pendingPvTotal || 0)) >= 0 ? "+" : "-"} {pkr(Math.abs((pdcProjection.pendingRvTotal || 0) - (pdcProjection.pendingPvTotal || 0)))}
+                        </td>
+                      </tr>
+                      <tr style={{ background: "#ECFDF5" }}>
+                        <td colSpan={7} style={{ border: "1.5px solid #000000", padding: "6px 6px", textAlign: "right", fontWeight: 800, fontSize: 10 }}>
+                          PROJECTED AVAILABLE BALANCE AFTER PENDING PDC CLEARANCE
+                        </td>
+                        <td style={{ border: "1.5px solid #000000", padding: "6px 4px", textAlign: "right", fontWeight: 900, fontSize: 10.5, color: pdcProjection.projectedBalance < 0 ? "#A81C1C" : "#065F46" }}>
+                          {pkr(pdcProjection.projectedBalance)}
+                        </td>
+                      </tr>
+                    </>
+                  )}
                 </tbody>
               </table>
 

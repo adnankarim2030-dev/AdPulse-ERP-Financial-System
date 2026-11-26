@@ -188,6 +188,21 @@ function exportVendorStatementToExcel({ vendor, dateFrom, dateTo, statementData 
           <td style="border: 1px solid #000; padding: 8px; text-align: right; color: #FDE68A; font-size: 12pt; mso-number-format:'\\#\\,\\#\\#0';">${statementData.closingPayable}</td>
         </tr>
         `}
+        ${(statementData.pendingPdcCount || 0) > 0 ? `
+        <tr><td colspan="${totalCols}" style="height: 8px;"></td></tr>
+        <tr style="background-color: #FEF3C7; font-weight: bold;">
+          <td colspan="${totalCols - 1}" style="border: 1px solid #B45309; padding: 7px 8px; text-align: right; color: #92400E;">
+            Less: Pending Issued PDC Cheques (${statementData.pendingPdcCount} Chq${statementData.pendingPdcCount > 1 ? "s" : ""} — Not Yet Deducted from Ledger)
+          </td>
+          <td style="border: 1px solid #B45309; padding: 7px 8px; text-align: right; color: #B45309; mso-number-format:'\\#\\,\\#\\#0';">-${statementData.pendingPdcTotal || 0}</td>
+        </tr>
+        <tr style="background-color: #ECFDF5; font-weight: bold;">
+          <td colspan="${totalCols - 1}" style="border: 1.5px solid #059669; padding: 8px; text-align: right; color: #065F46; font-size: 11.5pt;">
+            NET PROJECTED PAYABLE BALANCE AFTER PDC ENCASHMENT
+          </td>
+          <td style="border: 1.5px solid #059669; padding: 8px; text-align: right; color: ${(statementData.projectedPayableAfterPdc || 0) > 0 ? "#B45309" : "#059669"}; font-size: 12pt; mso-number-format:'\\#\\,\\#\\#0';">${statementData.projectedPayableAfterPdc || 0}</td>
+        </tr>
+        ` : ""}
         <tr><td colspan="${totalCols}" style="height: 18px;"></td></tr>
         <tr>
           <td colspan="${totalCols}" style="font-size: 10pt; font-style: italic; color: #64748B;">Generated from AdPulse Financial Management System on ${new Date().toLocaleDateString()}</td>
@@ -864,6 +879,29 @@ export function VendorStatementPrintModal({ vendor, dateFrom, dateTo, statementD
             </table>
             )}
 
+            {/* PDC RECONCILIATION — PROJECTED PAYABLE AFTER PENDING PDCs */}
+            {(statementData.pendingPdcCount || 0) > 0 && (
+              <div style={{ marginBottom: 10, border: "1.5px solid #000000", borderRadius: 4, overflow: "hidden" }}>
+                <div style={{ background: "#FEF3C7", padding: "5px 10px", fontSize: 10, fontWeight: 800, color: "#92400E", borderBottom: "1px solid #000000", textTransform: "uppercase" }}>
+                  POST-DATED CHEQUES (PDC) RECONCILIATION — PROJECTED PAYABLE SUMMARY
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", background: "#FFFFFF" }}>
+                  <div style={{ padding: "7px 10px", borderRight: "1px solid #000000", textAlign: "center" }}>
+                    <div style={{ fontSize: 9, fontWeight: 700, color: "#475569", textTransform: "uppercase" }}>CLOSING LEDGER PAYABLE</div>
+                    <div style={{ fontSize: 12, fontWeight: 800, color: "#0F172A", marginTop: 2 }}>{pkr(statementData.closingPayable)}</div>
+                  </div>
+                  <div style={{ padding: "7px 10px", borderRight: "1px solid #000000", textAlign: "center", background: "#FFFBEB" }}>
+                    <div style={{ fontSize: 9, fontWeight: 700, color: "#B45309", textTransform: "uppercase" }}>LESS: PENDING ISSUED PDCs ({statementData.pendingPdcCount} CHQ{statementData.pendingPdcCount > 1 ? "S" : ""})</div>
+                    <div style={{ fontSize: 12, fontWeight: 800, color: "#B45309", marginTop: 2 }}>− {pkr(statementData.pendingPdcTotal)}</div>
+                  </div>
+                  <div style={{ padding: "7px 10px", textAlign: "center", background: "#ECFDF5" }}>
+                    <div style={{ fontSize: 9, fontWeight: 800, color: "#065F46", textTransform: "uppercase" }}>NET PROJECTED PAYABLE AFTER PDC</div>
+                    <div style={{ fontSize: 12.5, fontWeight: 900, color: (statementData.projectedPayableAfterPdc || 0) > 0 ? "#A81C1C" : "#059669", marginTop: 2 }}>{pkr(statementData.projectedPayableAfterPdc)}</div>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* AMOUNT IN WORDS (EXACT INVOICE BOX) */}
             <div style={{ fontSize: 11.5, fontStyle: "italic", marginBottom: 10, background: "#F8FAFC", padding: "8px 12px", border: "1px solid #000000", borderRadius: 4 }}>
               Amount in words: <b style={{ fontStyle: "normal", color: "#000000" }}>{amountInWords(statementData.closingPayable)}</b>
@@ -1259,6 +1297,21 @@ export default function VendorStatementView({
 
     const hasBarterActivity = barterOpening !== 0 || totalBarterBilled > 0 || totalBarterSettled > 0;
 
+    // Pending Issued PDCs (Not yet deducted from Ledger Balance — tracked for Projected Net Payable After PDC)
+    const pendingVendorPdcs = vouchers.filter(v =>
+      isVendorMatch(v) &&
+      isProjectMatch(v) &&
+      v.date <= dateTo &&
+      (v.type === "PV" || v.type === "CV") &&
+      v.isPdc &&
+      v.pdcStatus !== "Cleared" &&
+      v.pdcStatus !== "Bounced"
+    );
+    const pendingPdcCount = pendingVendorPdcs.length;
+    const pendingPdcTotal = pendingVendorPdcs.reduce((s, v) => s + (Number(v.amount) || 0), 0);
+    const projectedPayableAfterPdc = running - pendingPdcTotal;
+    const projectedCashPayableAfterPdc = cashRunning - pendingPdcTotal;
+
     return {
       openingPayable: opening,
       cashOpeningPayable: cashOpening,
@@ -1274,6 +1327,10 @@ export default function VendorStatementView({
       closingCashPayable: cashRunning,
       closingBarterPayable: barterRunning,
       hasBarterActivity,
+      pendingPdcCount,
+      pendingPdcTotal,
+      projectedPayableAfterPdc,
+      projectedCashPayableAfterPdc,
       totalGrossBilled,
       totalGrossPaid,
       totalCommission,
@@ -1796,6 +1853,63 @@ export default function VendorStatementView({
             </table>
             </div>
           </div>
+
+          {/* PROJECTED NET PAYABLE AFTER PENDING PDC ENCASHMENT (Displayed below table whenever pending PDCs exist) */}
+          {(statementData.pendingPdcCount || 0) > 0 && (
+            <div
+              className="card"
+              style={{
+                marginTop: 14,
+                padding: "14px 18px",
+                borderRadius: 10,
+                border: "1.5px solid #D97706",
+                background: "linear-gradient(135deg, rgba(245, 158, 11, 0.07) 0%, rgba(5, 150, 105, 0.05) 100%)"
+              }}
+            >
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8, marginBottom: 10 }}>
+                <div style={{ fontSize: 12.5, fontWeight: 800, color: "#92400E", textTransform: "uppercase", letterSpacing: "0.3px" }}>
+                  📜 PDC Reconciliation — Projected Balance After Pending Cheque Clearance
+                </div>
+                <span style={{ fontSize: 11, fontWeight: 700, padding: "2px 9px", borderRadius: 12, background: "#FEF3C7", color: "#92400E", border: "1px solid #F59E0B" }}>
+                  ⏳ {statementData.pendingPdcCount} Pending PDC{statementData.pendingPdcCount > 1 ? "s" : ""} (Not Deducted from Ledger Yet)
+                </span>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 12, alignItems: "center" }}>
+                <div style={{ background: "var(--card-bg, #FFFFFF)", padding: "10px 14px", borderRadius: 8, border: "1px solid var(--rule)" }}>
+                  <div style={{ fontSize: 11, color: "var(--ink-muted)", fontWeight: 600 }}>Current Closing Ledger Payable</div>
+                  <div className="mono" style={{ fontSize: 16, fontWeight: 800, color: "#1E293B", marginTop: 3 }}>
+                    {pkr(statementData.closingPayable)}
+                  </div>
+                </div>
+                <div style={{ background: "rgba(245, 158, 11, 0.08)", padding: "10px 14px", borderRadius: 8, border: "1px solid rgba(217, 119, 6, 0.35)" }}>
+                  <div style={{ fontSize: 11, color: "#B45309", fontWeight: 700 }}>
+                    Less: Pending Issued PDCs ({statementData.pendingPdcCount} Chq{statementData.pendingPdcCount > 1 ? "s" : ""})
+                  </div>
+                  <div className="mono" style={{ fontSize: 16, fontWeight: 800, color: "#D97706", marginTop: 3 }}>
+                    − {pkr(statementData.pendingPdcTotal)}
+                  </div>
+                </div>
+                <div style={{
+                  background: (statementData.projectedPayableAfterPdc || 0) <= 0 ? "rgba(5, 150, 105, 0.1)" : "rgba(217, 119, 6, 0.1)",
+                  padding: "10px 14px",
+                  borderRadius: 8,
+                  border: `1.5px solid ${(statementData.projectedPayableAfterPdc || 0) <= 0 ? "#059669" : "#D97706"}`
+                }}>
+                  <div style={{ fontSize: 11, color: (statementData.projectedPayableAfterPdc || 0) <= 0 ? "#065F46" : "#92400E", fontWeight: 800, textTransform: "uppercase" }}>
+                    Net Balance After PDC Deduction
+                  </div>
+                  <div className="mono" style={{ fontSize: 18, fontWeight: 900, color: (statementData.projectedPayableAfterPdc || 0) <= 0 ? "#059669" : "#D97706", marginTop: 3 }}>
+                    {pkr(statementData.projectedPayableAfterPdc)}
+                  </div>
+                  {displayBarterCols && (
+                    <div style={{ fontSize: 10.5, color: "var(--ink-muted)", marginTop: 3 }}>
+                      Cash After PDC: <strong style={{ color: "#0F766E" }}>{pkr(statementData.projectedCashPayableAfterPdc)}</strong> · Barter: <strong style={{ color: "#B45309" }}>{pkr(statementData.closingBarterPayable || 0)}</strong>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       ) : (
         <div style={{ textAlign: "center", padding: 40, color: "var(--ink-muted)" }}>

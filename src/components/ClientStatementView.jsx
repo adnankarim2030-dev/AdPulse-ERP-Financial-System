@@ -147,6 +147,21 @@ function exportClientStatementToExcel({ client, dateFrom, dateTo, statementData 
           <td style="border: 1px solid #000; padding: 8px; text-align: right; color: #99F6E4; font-size: 12pt; mso-number-format:'\\#\\,\\#\\#0';">${statementData.closingBarterBalance || 0}</td>
           ` : ""}
         </tr>
+        ${(statementData.pdcSummary?.pendingCount || 0) > 0 ? `
+        <tr><td colspan="${colCount}" style="height: 8px;"></td></tr>
+        <tr style="background-color: #FEF3C7; font-weight: bold;">
+          <td colspan="${colCount - 1}" style="border: 1px solid #B45309; padding: 7px 8px; text-align: right; color: #92400E;">
+            Less: Pending Client PDC Cheques In-Hand (${statementData.pdcSummary.pendingCount} Chq${statementData.pdcSummary.pendingCount > 1 ? "s" : ""} — Not Yet Deducted from Ledger)
+          </td>
+          <td style="border: 1px solid #B45309; padding: 7px 8px; text-align: right; color: #B45309; mso-number-format:'\\#\\,\\#\\#0';">-${statementData.pdcSummary.pendingTotal || 0}</td>
+        </tr>
+        <tr style="background-color: #ECFDF5; font-weight: bold;">
+          <td colspan="${colCount - 1}" style="border: 1.5px solid #059669; padding: 8px; text-align: right; color: #065F46; font-size: 11.5pt;">
+            NET PROJECTED RECEIVABLE BALANCE AFTER PDC CLEARANCE
+          </td>
+          <td style="border: 1.5px solid #059669; padding: 8px; text-align: right; color: ${(statementData.closingBalance - (statementData.pdcSummary.pendingTotal || 0)) > 0 ? "#0369A1" : "#059669"}; font-size: 12pt; mso-number-format:'\\#\\,\\#\\#0';">${statementData.closingBalance - (statementData.pdcSummary.pendingTotal || 0)}</td>
+        </tr>
+        ` : ""}
         <tr><td colspan="${colCount}" style="height: 18px;"></td></tr>
         <tr>
           <td colspan="${colCount}" style="font-size: 10pt; font-style: italic; color: #64748B;">Generated from AdPulse Financial Management System on ${new Date().toLocaleDateString()}</td>
@@ -697,6 +712,29 @@ export function ClientStatementPrintModal({ client, dateFrom, dateTo, statementD
               </table>
                 );
               })()}
+
+              {/* 4B. PDC RECONCILIATION — PROJECTED RECEIVABLE AFTER PENDING PDCs */}
+              {(statementData.pdcSummary?.pendingCount || 0) > 0 && (
+                <div style={{ marginBottom: 8, border: "1.5px solid #000000", borderRadius: 2, overflow: "hidden" }}>
+                  <div style={{ background: "#FEF3C7", padding: "4px 8px", fontSize: 8.5, fontWeight: 800, color: "#92400E", borderBottom: "1px solid #000000", textTransform: "uppercase" }}>
+                    POST-DATED CHEQUES (PDC) RECONCILIATION — PROJECTED RECEIVABLE SUMMARY
+                  </div>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", background: "#FFFFFF" }}>
+                    <div style={{ padding: "5px 8px", borderRight: "1px solid #000000", textAlign: "center" }}>
+                      <div style={{ fontSize: 8, fontWeight: 700, color: "#000000", textTransform: "uppercase" }}>CLOSING LEDGER RECEIVABLE</div>
+                      <div style={{ fontSize: 10.5, fontWeight: 800, color: "#000000", marginTop: 2 }}>{pkr(statementData.closingBalance)}</div>
+                    </div>
+                    <div style={{ padding: "5px 8px", borderRight: "1px solid #000000", textAlign: "center", background: "#FFFBEB" }}>
+                      <div style={{ fontSize: 8, fontWeight: 700, color: "#92400E", textTransform: "uppercase" }}>LESS: PENDING PDCs IN-HAND ({statementData.pdcSummary.pendingCount} CHQ{statementData.pdcSummary.pendingCount > 1 ? "S" : ""})</div>
+                      <div style={{ fontSize: 10.5, fontWeight: 800, color: "#B45309", marginTop: 2 }}>− {pkr(statementData.pdcSummary.pendingTotal)}</div>
+                    </div>
+                    <div style={{ padding: "5px 8px", textAlign: "center", background: "#ECFDF5" }}>
+                      <div style={{ fontSize: 8, fontWeight: 800, color: "#065F46", textTransform: "uppercase" }}>NET PROJECTED RECEIVABLE AFTER PDC</div>
+                      <div style={{ fontSize: 11, fontWeight: 900, color: "#065F46", marginTop: 2 }}>{pkr(statementData.closingBalance - (statementData.pdcSummary.pendingTotal || 0))}</div>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* 5. AMOUNT IN WORDS & SPECIAL NOTES (Matches Official Invoice Footer Sections) */}
               <div style={{ border: "1px solid #000000", padding: "6px 10px", marginBottom: 8, fontSize: 9.5, color: "#000000" }}>
@@ -1807,6 +1845,69 @@ export default function ClientStatementView({
             </table>
             </div>
           </div>
+
+          {/* PROJECTED NET RECEIVABLE AFTER PENDING PDC CLEARANCE */}
+          {(statementData.pdcSummary?.pendingCount || 0) > 0 && (() => {
+            const pendingAmt = statementData.pdcSummary.pendingTotal || 0;
+            const projectedNet = statementData.closingBalance - pendingAmt;
+            const projectedCash = (statementData.closingCashBalance !== undefined ? statementData.closingCashBalance : statementData.closingBalance) - pendingAmt;
+            return (
+              <div
+                className="card"
+                style={{
+                  marginTop: 14,
+                  marginBottom: 16,
+                  padding: "14px 18px",
+                  borderRadius: 10,
+                  border: "1.5px solid #0284C7",
+                  background: "linear-gradient(135deg, rgba(2, 132, 199, 0.06) 0%, rgba(5, 150, 105, 0.05) 100%)"
+                }}
+              >
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8, marginBottom: 10 }}>
+                  <div style={{ fontSize: 12.5, fontWeight: 800, color: "#0369A1", textTransform: "uppercase", letterSpacing: "0.3px" }}>
+                    📜 PDC Reconciliation — Projected Receivable After Pending Cheque Clearance
+                  </div>
+                  <span style={{ fontSize: 11, fontWeight: 700, padding: "2px 9px", borderRadius: 12, background: "#FEF3C7", color: "#92400E", border: "1px solid #F59E0B" }}>
+                    ⏳ {statementData.pdcSummary.pendingCount} Pending PDC{statementData.pdcSummary.pendingCount > 1 ? "s" : ""} In-Hand (Not Deducted Yet)
+                  </span>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 12, alignItems: "center" }}>
+                  <div style={{ background: "var(--card-bg, #FFFFFF)", padding: "10px 14px", borderRadius: 8, border: "1px solid var(--rule)" }}>
+                    <div style={{ fontSize: 11, color: "var(--ink-muted)", fontWeight: 600 }}>Current Closing Ledger Receivable</div>
+                    <div className="mono" style={{ fontSize: 16, fontWeight: 800, color: "#1E293B", marginTop: 3 }}>
+                      {pkr(statementData.closingBalance)}
+                    </div>
+                  </div>
+                  <div style={{ background: "rgba(245, 158, 11, 0.08)", padding: "10px 14px", borderRadius: 8, border: "1px solid rgba(217, 119, 6, 0.35)" }}>
+                    <div style={{ fontSize: 11, color: "#B45309", fontWeight: 700 }}>
+                      Less: Pending Client PDCs ({statementData.pdcSummary.pendingCount} Chq{statementData.pdcSummary.pendingCount > 1 ? "s" : ""})
+                    </div>
+                    <div className="mono" style={{ fontSize: 16, fontWeight: 800, color: "#D97706", marginTop: 3 }}>
+                      − {pkr(pendingAmt)}
+                    </div>
+                  </div>
+                  <div style={{
+                    background: projectedNet <= 0 ? "rgba(5, 150, 105, 0.1)" : "rgba(2, 132, 199, 0.1)",
+                    padding: "10px 14px",
+                    borderRadius: 8,
+                    border: `1.5px solid ${projectedNet <= 0 ? "#059669" : "#0284C7"}`
+                  }}>
+                    <div style={{ fontSize: 11, color: projectedNet <= 0 ? "#065F46" : "#0369A1", fontWeight: 800, textTransform: "uppercase" }}>
+                      Net Balance After PDC Deduction
+                    </div>
+                    <div className="mono" style={{ fontSize: 18, fontWeight: 900, color: projectedNet <= 0 ? "#059669" : "#0284C7", marginTop: 3 }}>
+                      {pkr(projectedNet)}
+                    </div>
+                    {displayBarterCols && (
+                      <div style={{ fontSize: 10.5, color: "var(--ink-muted)", marginTop: 3 }}>
+                        Cash After PDC: <strong style={{ color: "#0284C7" }}>{pkr(projectedCash)}</strong> · Barter: <strong style={{ color: "#0F766E" }}>{pkr(statementData.closingBarterBalance || 0)}</strong>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
 
           {/* PROJECT SUMMARY TABLE */}
           {projectSummary.length > 0 && (
