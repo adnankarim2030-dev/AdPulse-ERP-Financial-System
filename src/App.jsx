@@ -1413,6 +1413,23 @@ export default function App() {
   const [cashBankSearch, setCashBankSearch] = useState("");
   const [showCashBankPrintModal, setShowCashBankPrintModal] = useState(false);
 
+  /* Global UI Text Size Scale (1.00 = Standard, 1.07 = Large Default, 1.14 = Extra Large, 1.22 = Max) */
+  const TEXT_SCALE_STEPS = [1.0, 1.07, 1.14, 1.22];
+  const [uiTextScale, setUiTextScale] = useState(() => {
+    try {
+      const saved = parseFloat(localStorage.getItem("adpulse_ui_text_scale"));
+      if (saved && saved >= 0.95 && saved <= 1.25) return saved;
+    } catch {}
+    return 1.07;
+  });
+
+  React.useEffect(() => {
+    try {
+      document.documentElement.style.setProperty("--ui-font-scale", String(uiTextScale));
+      localStorage.setItem("adpulse_ui_text_scale", String(uiTextScale));
+    } catch {}
+  }, [uiTextScale]);
+
   const [showVoucherForm, setShowVoucherForm] = useState(false);
   const [editingVoucher, setEditingVoucher] = useState(null);
   const [voucherDefaultType, setVoucherDefaultType] = useState("JV");
@@ -4866,6 +4883,69 @@ export default function App() {
                 if (targetTab === "projects" && item?.id) setSelectedProjectId(item.id);
               }}
             />
+            {/* Text Size Switcher (A- / A+) for comfortable readability */}
+            <div
+              title="Adjust System Text Font Size"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 2,
+                background: "#FFFFFF",
+                border: "1px solid #CBD5E1",
+                borderRadius: 9,
+                padding: "3px 5px",
+                boxShadow: "0 1px 4px rgba(15,23,42,0.05)"
+              }}
+            >
+              <button
+                type="button"
+                onClick={() => {
+                  const idx = TEXT_SCALE_STEPS.findIndex(s => Math.abs(s - uiTextScale) < 0.01);
+                  const nextIdx = idx > 0 ? idx - 1 : 0;
+                  setUiTextScale(TEXT_SCALE_STEPS[nextIdx]);
+                }}
+                disabled={uiTextScale <= TEXT_SCALE_STEPS[0]}
+                style={{
+                  border: "none",
+                  background: "transparent",
+                  color: uiTextScale <= TEXT_SCALE_STEPS[0] ? "#94A3B8" : "#0F172A",
+                  fontWeight: 800,
+                  fontSize: 12,
+                  padding: "3px 6px",
+                  borderRadius: 6,
+                  cursor: uiTextScale <= TEXT_SCALE_STEPS[0] ? "not-allowed" : "pointer"
+                }}
+                title="Decrease Text Size"
+              >
+                A-
+              </button>
+              <span style={{ fontSize: 11, fontWeight: 700, color: "#047857", padding: "0 3px", minWidth: 36, textAlign: "center" }}>
+                {Math.round(uiTextScale * 100)}%
+              </span>
+              <button
+                type="button"
+                onClick={() => {
+                  const idx = TEXT_SCALE_STEPS.findIndex(s => Math.abs(s - uiTextScale) < 0.01);
+                  const nextIdx = idx >= 0 && idx < TEXT_SCALE_STEPS.length - 1 ? idx + 1 : TEXT_SCALE_STEPS.length - 1;
+                  setUiTextScale(TEXT_SCALE_STEPS[nextIdx]);
+                }}
+                disabled={uiTextScale >= TEXT_SCALE_STEPS[TEXT_SCALE_STEPS.length - 1]}
+                style={{
+                  border: "none",
+                  background: "transparent",
+                  color: uiTextScale >= TEXT_SCALE_STEPS[TEXT_SCALE_STEPS.length - 1] ? "#94A3B8" : "#0F172A",
+                  fontWeight: 800,
+                  fontSize: 13,
+                  padding: "3px 6px",
+                  borderRadius: 6,
+                  cursor: uiTextScale >= TEXT_SCALE_STEPS[TEXT_SCALE_STEPS.length - 1] ? "not-allowed" : "pointer"
+                }}
+                title="Increase Text Size"
+              >
+                A+
+              </button>
+            </div>
+
             {/* Live Cloud Sync Badge & Manual Trigger */}
             <div
               onClick={() => handlePullFromCloud(false)}

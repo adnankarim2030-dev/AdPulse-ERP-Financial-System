@@ -10,8 +10,9 @@
   --rule-light: #94A3B8;
   
   --ink: #0F172A;
-  --ink-muted: #334155;
-  --ink-subtle: #475569;
+  --ink-muted: #1E293B;
+  --ink-subtle: #334155;
+  --ui-font-scale: 1.07;
   
   /* Brand & Accent Palette */
   --gold: #B8860B;
@@ -1305,4 +1306,95 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 input[type="number"] {
   -moz-appearance: textfield;
+}
+
+/* ==========================================================================
+   HIGH-VISIBILITY TYPOGRAPHY SCALE (SCREEN ONLY — PRINT & PDF PROTECTED)
+   ========================================================================== */
+html, body, #root {
+  font-size: 17px;
+}
+
+.topbar h1 {
+  font-size: 28px;
+}
+
+.topbar p {
+  font-size: 14.5px;
+  color: #334155;
+}
+
+.nav-item {
+  font-size: 16.5px !important;
+}
+
+.section-title {
+  font-size: 21.5px;
+}
+
+.field label,
+.form-label {
+  font-size: 15.5px !important;
+  font-weight: 700 !important;
+  color: #0F172A !important;
+}
+
+.field input,
+.field select,
+.field textarea,
+.form-input,
+.form-select {
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  color: #0F172A !important;
+}
+
+.table-responsive th,
+.card table:not(.print-area table) th,
+.modal:not(.statement-print-portal .modal) table:not(.print-area table) th {
+  font-size: 14.5px !important;
+}
+
+.table-responsive td,
+.card table:not(.print-area table) td,
+.modal:not(.statement-print-portal .modal) table:not(.print-area table) td {
+  font-size: 16.5px !important;
+}
+
+.ledger-row {
+  font-size: 16.5px;
+}
+
+.col-date {
+  font-size: 15px;
+}
+
+.col-amt {
+  font-size: 16.5px;
+}
+
+.badge-mini {
+  font-size: 13.5px;
+}
+
+/* Apply proportional readability zoom to main workspace & non-print dialogs */
+.content {
+  zoom: var(--ui-font-scale, 1.07);
+}
+
+.modal-backdrop:not(.statement-print-portal) .modal:not(:has(.print-area)) {
+  zoom: var(--ui-font-scale, 1.07);
+}
+
+/* Strictly protect Print Previews, PDF Exports & Physical Printouts from screen zoom */
+.statement-print-portal,
+.statement-print-portal .modal,
+.print-area {
+  zoom: 1 !important;
+}
+
+@media print {
+  html, body, #root, .content, .modal, .print-area {
+    zoom: 1 !important;
+  }
 }
