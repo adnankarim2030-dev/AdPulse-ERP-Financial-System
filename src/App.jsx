@@ -8105,7 +8105,7 @@ export default function App() {
                       </div>
                     </div>
 
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(285px, 1fr))", gap: 14, marginBottom: 20 }}>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16, marginBottom: 20 }}>
                       {accountBalances.map(b => {
                         const isSelectedCard = cashBankFilter === b.id;
                         return (
@@ -8114,7 +8114,7 @@ export default function App() {
                             className="card"
                             onClick={() => setCashBankFilter(isSelectedCard ? "all" : b.id)}
                             style={{
-                              padding: 15,
+                              padding: 18,
                               borderLeft: `4px solid ${b.color || (b.accountType === "Petty Cash" ? "#D97706" : "var(--gold)")}`,
                               border: isSelectedCard ? `2px solid ${b.color || "var(--gold)"}` : undefined,
                               borderLeftWidth: 5,
@@ -8132,64 +8132,64 @@ export default function App() {
                           >
                             <div>
                               {/* Top Bar: Type Badge & Compact Action Buttons (Zero Overlap!) */}
-                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 6, marginBottom: 8 }}>
-                                <div style={{ display: "flex", alignItems: "center", gap: 5, flexWrap: "wrap", minWidth: 0 }}>
-                                  <span className="badge-mini" style={{ background: "var(--bg)", border: "1px solid var(--rule)", fontSize: 10.5, padding: "2px 8px" }}>
+                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 6, marginBottom: 10 }}>
+                                <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap", minWidth: 0 }}>
+                                  <span className="badge-mini" style={{ background: "var(--bg)", border: "1px solid var(--rule)", fontSize: 12, fontWeight: 700, padding: "3px 10px" }}>
                                     {b.accountType}
                                   </span>
                                   {isSelectedCard && (
-                                    <span className="badge-mini" style={{ background: "#DCFCE7", color: "#166534", border: "1px solid #16A34A", fontSize: 10, fontWeight: 700, padding: "2px 7px" }}>
+                                    <span className="badge-mini" style={{ background: "#DCFCE7", color: "#166534", border: "1px solid #16A34A", fontSize: 11.5, fontWeight: 700, padding: "3px 9px" }}>
                                       ✓ Active
                                     </span>
                                   )}
                                 </div>
-                                <div style={{ display: "flex", alignItems: "center", gap: 4, flexShrink: 0 }} onClick={e => e.stopPropagation()}>
+                                <div style={{ display: "flex", alignItems: "center", gap: 5, flexShrink: 0 }} onClick={e => e.stopPropagation()}>
                                   <button
                                     className="btn"
-                                    style={{ width: 26, height: 26, padding: 0, display: "inline-flex", alignItems: "center", justifyContent: "center", borderRadius: 8 }}
+                                    style={{ width: 30, height: 30, padding: 0, display: "inline-flex", alignItems: "center", justifyContent: "center", borderRadius: 8 }}
                                     onClick={() => { setEditingBankAccount(b); setShowBankAccountModal(true); }}
                                     title="Edit Account / Opening Balance"
                                   >
-                                    <Edit size={12} />
+                                    <Edit size={14} />
                                   </button>
                                   <button
                                     className="btn"
-                                    style={{ width: 26, height: 26, padding: 0, display: "inline-flex", alignItems: "center", justifyContent: "center", borderRadius: 8, color: "var(--rose)" }}
+                                    style={{ width: 30, height: 30, padding: 0, display: "inline-flex", alignItems: "center", justifyContent: "center", borderRadius: 8, color: "var(--rose)" }}
                                     onClick={() => deleteBankAccount(b)}
                                     title="Delete Account"
                                   >
-                                    <Trash2 size={12} />
+                                    <Trash2 size={14} />
                                   </button>
                                 </div>
                               </div>
 
                               {/* Full-width Bank / Vault Title */}
-                              <div style={{ fontWeight: 700, fontSize: 14, color: "var(--ink)", display: "flex", alignItems: "center", gap: 6, marginBottom: 2, wordBreak: "break-word" }}>
+                              <div style={{ fontWeight: 800, fontSize: 17, color: "var(--ink)", display: "flex", alignItems: "center", gap: 7, marginBottom: 4, wordBreak: "break-word", lineHeight: 1.25 }}>
                                 <span style={{ flexShrink: 0 }}>{b.accountType === "Petty Cash" || b.id.startsWith("bank-cash") ? "💵" : "🏦"}</span>
                                 <span>{b.bankName}</span>
                               </div>
-                              <div style={{ fontSize: 11.5, color: "var(--ink-muted)", marginBottom: 4, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                              <div style={{ fontSize: 13.5, fontWeight: 600, color: "var(--ink-muted)", marginBottom: 4, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                                 {b.accountTitle}
                               </div>
-                              <div className="mono" style={{ fontSize: 11, color: "var(--gold)", marginBottom: 3, fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                              <div className="mono" style={{ fontSize: 13, color: "var(--gold)", marginBottom: 4, fontWeight: 700, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                                 {b.accountNumber} {b.iban && b.iban !== "N/A" ? `• ${b.iban}` : ""}
                               </div>
-                              <div style={{ fontSize: 11, color: "var(--ink-muted)", marginBottom: 10, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                              <div style={{ fontSize: 13, color: "var(--ink-muted)", marginBottom: 12, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                                 {b.branch}
                               </div>
                             </div>
 
                             <div>
-                              <div style={{ background: "rgba(0,0,0,0.02)", padding: "5px 8px", borderRadius: 6, marginBottom: 8, fontSize: 11.5, display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
-                                <span style={{ color: "var(--ink-muted)", whiteSpace: "nowrap" }}>Opening Balance:</span>
-                                <span className="mono" style={{ fontWeight: 600, color: (b.openingBalance || 0) > 0 ? "var(--ink)" : "var(--ink-muted)", whiteSpace: "nowrap" }}>
+                              <div style={{ background: "rgba(0,0,0,0.03)", padding: "7px 10px", borderRadius: 8, marginBottom: 10, fontSize: 13.5, display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
+                                <span style={{ color: "var(--ink-muted)", fontWeight: 600, whiteSpace: "nowrap" }}>Opening Balance:</span>
+                                <span className="mono" style={{ fontSize: 14, fontWeight: 700, color: (b.openingBalance || 0) > 0 ? "var(--ink)" : "var(--ink-muted)", whiteSpace: "nowrap" }}>
                                   {pkr(b.openingBalance || 0)}
                                 </span>
                               </div>
 
-                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 8, borderTop: "1px solid var(--rule)", paddingTop: 8 }}>
-                                <span style={{ fontSize: 11.5, color: "var(--ink-muted)", fontWeight: 600, whiteSpace: "nowrap" }}>Live Net Balance:</span>
-                                <span className="mono" style={{ fontSize: 15, fontWeight: 700, color: b.liveBalance >= 0 ? "var(--jade)" : "var(--rose)", whiteSpace: "nowrap" }}>
+                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 8, borderTop: "1px solid var(--rule)", paddingTop: 10 }}>
+                                <span style={{ fontSize: 14, color: "var(--ink-muted)", fontWeight: 700, whiteSpace: "nowrap" }}>Live Net Balance:</span>
+                                <span className="mono" style={{ fontSize: 18, fontWeight: 800, color: b.liveBalance >= 0 ? "var(--jade)" : "var(--rose)", whiteSpace: "nowrap" }}>
                                   {pkr(b.liveBalance)}
                                 </span>
                               </div>
@@ -8204,26 +8204,26 @@ export default function App() {
                         const pendingRvPdc = pendingPdcVchs.filter(v => v.type === "RV").reduce((s, v) => s + (Number(v.netAmount !== undefined ? v.netAmount : v.amount) || 0), 0);
                         const pendingPvPdc = pendingPdcVchs.filter(v => v.type === "PV").reduce((s, v) => s + (Number(v.netAmount !== undefined ? v.netAmount : v.amount) || 0), 0);
                         return (
-                          <div className="card" style={{ padding: 15, borderLeft: `4px solid #F59E0B`, background: pendingPdcVchs.length > 0 ? "rgba(245, 158, 11, 0.04)" : "var(--bg)", display: "flex", flexDirection: "column", justifyContent: "space-between", overflow: "hidden", minWidth: 0 }}>
+                          <div className="card" style={{ padding: 18, borderLeft: `4px solid #F59E0B`, background: pendingPdcVchs.length > 0 ? "rgba(245, 158, 11, 0.04)" : "var(--bg)", display: "flex", flexDirection: "column", justifyContent: "space-between", overflow: "hidden", minWidth: 0 }}>
                             <div>
-                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8, marginBottom: 8 }}>
+                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8, marginBottom: 10 }}>
                                 <div style={{ minWidth: 0 }}>
-                                  <div style={{ fontWeight: 700, fontSize: 14, color: "#B45309", lineHeight: 1.3 }}>📜 Post-Dated Cheques (PDC)</div>
-                                  <div style={{ fontSize: 11.5, color: "var(--ink-muted)", marginTop: 2 }}>Client In-Hand &amp; Vendor Issued PDCs</div>
+                                  <div style={{ fontWeight: 800, fontSize: 16.5, color: "#B45309", lineHeight: 1.3 }}>📜 Post-Dated Cheques (PDC)</div>
+                                  <div style={{ fontSize: 13.5, fontWeight: 500, color: "var(--ink-muted)", marginTop: 3 }}>Client In-Hand &amp; Vendor Issued PDCs</div>
                                 </div>
-                                <span className="badge-mini" style={{ background: "#FEF3C7", color: "#92400E", border: "1px solid #F59E0B", fontSize: 10.5, padding: "2px 8px", flexShrink: 0 }}>
+                                <span className="badge-mini" style={{ background: "#FEF3C7", color: "#92400E", border: "1px solid #F59E0B", fontSize: 12.5, fontWeight: 700, padding: "3px 10px", flexShrink: 0 }}>
                                   {pendingPdcVchs.length} Pending
                                 </span>
                               </div>
                             </div>
                             <div>
-                              <div style={{ fontSize: 11, color: "var(--ink-muted)", marginBottom: 8, display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: "4px 10px", background: "rgba(245, 158, 11, 0.06)", padding: "5px 8px", borderRadius: 6 }}>
-                                <span>In-Hand (RV): <strong className="mono" style={{ color: "#059669" }}>{pkr(pendingRvPdc)}</strong></span>
-                                <span>Issued (PV): <strong className="mono" style={{ color: "#D97706" }}>{pkr(pendingPvPdc)}</strong></span>
+                              <div style={{ fontSize: 13, color: "var(--ink-muted)", fontWeight: 600, marginBottom: 10, display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: "4px 10px", background: "rgba(245, 158, 11, 0.07)", padding: "7px 10px", borderRadius: 8 }}>
+                                <span>In-Hand (RV): <strong className="mono" style={{ color: "#059669", fontSize: 13.5 }}>{pkr(pendingRvPdc)}</strong></span>
+                                <span>Issued (PV): <strong className="mono" style={{ color: "#D97706", fontSize: 13.5 }}>{pkr(pendingPvPdc)}</strong></span>
                               </div>
-                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 8, borderTop: "1px solid var(--rule)", paddingTop: 8 }}>
-                                <span style={{ fontSize: 11.5, color: "var(--ink-muted)", fontWeight: 600 }}>Net Pending PDCs:</span>
-                                <span className="mono" style={{ fontSize: 15, fontWeight: 700, color: "#D97706", whiteSpace: "nowrap" }}>
+                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 8, borderTop: "1px solid var(--rule)", paddingTop: 10 }}>
+                                <span style={{ fontSize: 14, color: "var(--ink-muted)", fontWeight: 700 }}>Net Pending PDCs:</span>
+                                <span className="mono" style={{ fontSize: 18, fontWeight: 800, color: "#D97706", whiteSpace: "nowrap" }}>
                                   {pkr(pendingRvPdc + pendingPvPdc)}
                                 </span>
                               </div>
@@ -8234,15 +8234,15 @@ export default function App() {
 
                       <div
                         className="card"
-                        style={{ padding: 15, background: "var(--gold-glow)", border: "1px solid var(--gold)", cursor: "pointer", display: "flex", flexDirection: "column", justifyContent: "space-between", overflow: "hidden", minWidth: 0 }}
+                        style={{ padding: 18, background: "var(--gold-glow)", border: "1px solid var(--gold)", cursor: "pointer", display: "flex", flexDirection: "column", justifyContent: "space-between", overflow: "hidden", minWidth: 0 }}
                         onClick={() => setCashBankFilter("all")}
                         title="Click to view all Cash & Bank accounts combined"
                       >
                         <div>
-                          <div style={{ fontWeight: 700, fontSize: 14, color: "var(--gold)", marginBottom: 4 }}>Total Liquidity Position</div>
-                          <div style={{ fontSize: 11.5, color: "var(--ink-muted)", marginBottom: 12 }}>Combined Total Cash + Bank Balances</div>
+                          <div style={{ fontWeight: 800, fontSize: 17, color: "var(--gold)", marginBottom: 6 }}>Total Liquidity Position</div>
+                          <div style={{ fontSize: 14, fontWeight: 600, color: "var(--ink-muted)", marginBottom: 14 }}>Combined Total Cash + Bank Balances</div>
                         </div>
-                        <div className="mono" style={{ fontSize: 20, fontWeight: 800, color: "var(--ink)", borderTop: "1px solid rgba(184, 134, 11, 0.25)", paddingTop: 10 }}>
+                        <div className="mono" style={{ fontSize: 24, fontWeight: 900, color: "var(--ink)", borderTop: "1px solid rgba(184, 134, 11, 0.25)", paddingTop: 12 }}>
                           {pkr(totalLiquidity)}
                         </div>
                       </div>
@@ -8545,20 +8545,20 @@ export default function App() {
 
                     {/* INDIVIDUAL VAULT AVAILABLE BALANCES HEAD (Shown whenever All Cash, All Banks, or All Combined is selected) */}
                     {vaultBreakdown.length > 0 && (
-                      <div className="card" style={{ padding: "12px 16px", marginBottom: 16, border: "1.5px solid rgba(15, 118, 110, 0.35)", background: "linear-gradient(135deg, rgba(15, 118, 110, 0.04) 0%, rgba(2, 132, 199, 0.03) 100%)" }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8, marginBottom: 10 }}>
-                          <div style={{ fontSize: 12.5, fontWeight: 800, color: "#0F766E", textTransform: "uppercase", letterSpacing: "0.3px", display: "flex", alignItems: "center", gap: 6 }}>
+                      <div className="card" style={{ padding: "14px 18px", marginBottom: 16, border: "1.5px solid rgba(15, 118, 110, 0.35)", background: "linear-gradient(135deg, rgba(15, 118, 110, 0.04) 0%, rgba(2, 132, 199, 0.03) 100%)" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8, marginBottom: 12 }}>
+                          <div style={{ fontSize: 14.5, fontWeight: 800, color: "#0F766E", textTransform: "uppercase", letterSpacing: "0.3px", display: "flex", alignItems: "center", gap: 6 }}>
                             <span>💵</span>
                             <span>
                               Individual Available Balances ({cashBankFilter === "cash" ? "Petty Cash Vaults" : cashBankFilter === "banks_only" ? "Bank Accounts" : "All Cash & Bank Vaults"})
                               {cashBankDateTo ? ` — As of ${fmtDate(cashBankDateTo)}` : " — Live Current"}
                             </span>
                           </div>
-                          <div style={{ fontSize: 12.5, fontWeight: 800, color: "#0F172A", background: "#CCFBF1", padding: "3px 10px", borderRadius: 8, border: "1px solid rgba(15, 118, 110, 0.35)" }}>
+                          <div style={{ fontSize: 14.5, fontWeight: 800, color: "#0F172A", background: "#CCFBF1", padding: "4px 12px", borderRadius: 8, border: "1px solid rgba(15, 118, 110, 0.35)" }}>
                             Combined Available: <span className="mono" style={{ color: "#0F766E" }}>{pkr(vaultBreakdown.reduce((s, v) => s + (Number(v.balance) || 0), 0))}</span>
                           </div>
                         </div>
-                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 10 }}>
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 12 }}>
                           {vaultBreakdown.map(v => (
                             <div
                               key={v.id}
@@ -8569,21 +8569,21 @@ export default function App() {
                                 border: "1px solid var(--rule)",
                                 borderLeft: `4px solid ${v.color}`,
                                 borderRadius: 8,
-                                padding: "8px 12px",
+                                padding: "10px 14px",
                                 display: "flex",
                                 justifyContent: "space-between",
                                 alignItems: "center",
-                                gap: 8,
+                                gap: 10,
                                 cursor: "pointer"
                               }}
                             >
                               <div style={{ minWidth: 0 }}>
-                                <div style={{ fontSize: 12, fontWeight: 700, color: "var(--ink)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                                <div style={{ fontSize: 14.5, fontWeight: 700, color: "var(--ink)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                                   {v.bankName}
                                 </div>
-                                <div style={{ fontSize: 10.5, color: "var(--ink-muted)" }}>{v.accountType}</div>
+                                <div style={{ fontSize: 12.5, color: "var(--ink-muted)" }}>{v.accountType}</div>
                               </div>
-                              <div className="mono" style={{ fontSize: 13.5, fontWeight: 800, color: v.balance >= 0 ? "#059669" : "#DC2626", whiteSpace: "nowrap" }}>
+                              <div className="mono" style={{ fontSize: 16.5, fontWeight: 800, color: v.balance >= 0 ? "#059669" : "#DC2626", whiteSpace: "nowrap" }}>
                                 {pkr(v.balance)}
                               </div>
                             </div>
