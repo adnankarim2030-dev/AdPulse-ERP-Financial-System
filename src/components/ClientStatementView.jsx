@@ -1135,8 +1135,21 @@ export default function ClientStatementView({
       filteredRows = rawRows.filter(r => r.type === "Receipt" || r.type === "Barter Settlement" || r.type === "PDC Cheque" || r.type === "PDC Cleared" || r.type === "PDC Pending" || r.type === "Direct Settlement" || r.type.startsWith("Tax Deduction"));
     }
 
-    // Sort chronologically
-    filteredRows.sort((a, b) => new Date(a.date) - new Date(b.date));
+    // Sort chronologically; on same date, order naturally:
+    // Invoice (1) -> Receipt / Barter / Direct Settlement / Tax (2) -> Client Payment / Refund (3),
+    // and tie-break by creation order (oldest created first via uid timestamp).
+    const getClientTypeSortRank = (t) => {
+      if (t === "Invoice") return 1;
+      if (t === "Client Payment / Refund" || t === "PDC Paid (Refund)") return 3;
+      return 2;
+    };
+    filteredRows.sort((a, b) => {
+      const diff = new Date(a.date) - new Date(b.date);
+      if (diff !== 0) return diff;
+      const rankDiff = getClientTypeSortRank(a.type) - getClientTypeSortRank(b.type);
+      if (rankDiff !== 0) return rankDiff;
+      return String(a.raw?.id || a.id || "").localeCompare(String(b.raw?.id || b.id || ""));
+    });
 
     // Calculate Dual Running Balances (Cash Track + Barter Track) and Tax Metrics
     let running = opening;

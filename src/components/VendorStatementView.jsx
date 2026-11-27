@@ -1248,7 +1248,20 @@ export default function VendorStatementView({
       });
     });
 
-    rawRows.sort((a, b) => new Date(a.date) - new Date(b.date));
+    // Sort chronologically; on same date, order naturally:
+    // Purchase Order / Vendor Bill (1) -> Vendor Payment / Barter / Direct Settlement (2),
+    // and tie-break by creation order (oldest created first via uid timestamp).
+    const getVendorTypeSortRank = (t) => {
+      if (t === "Purchase Order" || t === "Vendor Bill") return 1;
+      return 2;
+    };
+    rawRows.sort((a, b) => {
+      const diff = new Date(a.date) - new Date(b.date);
+      if (diff !== 0) return diff;
+      const rankDiff = getVendorTypeSortRank(a.type) - getVendorTypeSortRank(b.type);
+      if (rankDiff !== 0) return rankDiff;
+      return String(a.raw?.id || a.id || "").localeCompare(String(b.raw?.id || b.id || ""));
+    });
 
     // Accounts Payable Sign Convention: Balance = Opening + Credits (Bills/POs) - Debits (Payments/Barter)
     let running = opening;
