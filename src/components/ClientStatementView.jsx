@@ -905,13 +905,16 @@ export default function ClientStatementView({
       barterOpening += bAmt;
     });
 
-    // Prior Receipts / Vouchers / Direct Settlements / Client Barter before dateFrom
-    // IMPORTANT: Unpaid / Uncleared PDC cheques (pdcStatus !== "Cleared") MUST NOT deduct from Client Balance!
-    const priorVouchers = vouchers.filter(v => isClientMatch(v) && isProjectMatch(v) && v.date < dateFrom && (v.type === "RV" || v.type === "CV" || (v.type === "BV" && v.barterDirection !== "vendor")) && !(v.isPdc && v.pdcStatus !== "Cleared"));
+    // Prior Receipts / Vouchers / Direct Settlements / Client Barter / Client Refund PVs before dateFrom
+    // IMPORTANT: Unpaid / Uncleared PDC cheques (pdcStatus !== "Cleared") MUST NOT affect Client Balance!
+    const isClientPvVoucher = (v) => v.type === "PV" && (v.payeeType === "client" || (Boolean(v.clientId) && !v.vendorId));
+    const priorVouchers = vouchers.filter(v => isClientMatch(v) && isProjectMatch(v) && v.date < dateFrom && (v.type === "RV" || v.type === "CV" || isClientPvVoucher(v) || (v.type === "BV" && v.barterDirection !== "vendor")) && !(v.isPdc && v.pdcStatus !== "Cleared"));
     priorVouchers.forEach(v => {
       const amt = Number(v.amount) || 0;
       if (v.type === "BV") {
         barterOpening -= amt;
+      } else if (v.type === "PV") {
+        cashOpening += amt;
       } else {
         cashOpening -= amt;
       }
@@ -964,9 +967,9 @@ export default function ClientStatementView({
       });
     });
 
-    // Add Receipts / Vouchers / Direct Settlements / Client Barter (splitting Receipt Amount & Tax Deduction into separate lines!)
+    // Add Receipts / Vouchers / Direct Settlements / Client Barter / Client Refund PVs (splitting Receipt Amount & Tax Deduction into separate lines!)
     // NOTE: Un-cleared / Pending PDC cheques are shown ONLY in the dedicated top "Pending PDC Cheques" box — once Cleared, they move into the main ledger below!
-    vouchers.filter(v => isClientMatch(v) && isProjectMatch(v) && v.date >= dateFrom && v.date <= dateTo && (v.type === "RV" || v.type === "PV" || v.type === "CV" || (v.type === "BV" && v.barterDirection !== "vendor")) && !(v.isPdc && v.pdcStatus !== "Cleared")).forEach(v => {
+    vouchers.filter(v => isClientMatch(v) && isProjectMatch(v) && v.date >= dateFrom && v.date <= dateTo && (v.type === "RV" || isClientPvVoucher(v) || v.type === "CV" || (v.type === "BV" && v.barterDirection !== "vendor")) && !(v.isPdc && v.pdcStatus !== "Cleared")).forEach(v => {
       const proj = projects.find(p => p.id === v.projectId);
       const isBarter = v.type === "BV";
       const isPdcBounced = Boolean(v.isPdc && v.pdcStatus === "Bounced");
@@ -993,8 +996,8 @@ export default function ClientStatementView({
       let typeLabel = "Receipt";
       if (isBarter) typeLabel = "Barter Settlement";
       else if (v.type === "CV") typeLabel = "Direct Settlement";
-      else if (v.isPdc) typeLabel = isPdcBounced ? "Cheque Bounced" : (isPdcCleared ? "PDC Cleared" : "PDC Pending");
-      else if (v.type === "PV") typeLabel = "Payment";
+      else if (v.isPdc) typeLabel = isPdcBounced ? "Cheque Bounced" : (isPdcCleared ? (v.type === "PV" ? "PDC Paid (Refund)" : "PDC Cleared") : "PDC Pending");
+      else if (v.type === "PV") typeLabel = "Client Payment / Refund";
 
       let defaultDesc = v.description || "Client Transaction";
       if (isBarter) {
@@ -1172,6 +1175,9 @@ export default function ClientStatementView({
           totalGrossInvoiced += (r.taxBreakdown.gross || r.debit);
           totalSstInvoiced += (r.taxBreakdown.sst || 0);
         }
+      } else if (r.debit > 0) {
+        totalInvoiced += r.debit;
+        totalCashInvoiced += cDr;
       }
       if ((r.type === "Receipt" || r.type === "Barter Settlement" || r.type === "PDC Cheque" || r.type === "PDC Cleared" || r.type === "Direct Settlement") && r.credit > 0) {
         totalReceived += r.credit;

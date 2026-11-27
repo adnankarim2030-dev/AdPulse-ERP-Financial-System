@@ -1011,6 +1011,8 @@ export default function VendorStatementView({
 
     const isVendorMatch = (item) => {
       if (!item || !selectedVendor) return false;
+      // Client Refund / Payment PVs (payeeType === "client") belong strictly to Client AR, never Vendor AP
+      if (item.type === "PV" && (item.payeeType === "client" || (item.clientId && !item.vendorId))) return false;
       if (item.vendorId && (item.vendorId === selectedVendor.id || item.vendorId === vendorCodeNorm)) return true;
 
       const checkStr = (val) => {

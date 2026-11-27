@@ -2940,7 +2940,7 @@ export default function App() {
   function createVoucher(type, payload = {}) {
     const {
       voucherNo: customVoucherNo, projectId, date, party, description, amount, netAmount,
-      clientId, vendorId, vendor, paymentMode, instrumentNo, instrumentDate, drawnBank,
+      clientId, vendorId, vendor, payeeType, paymentMode, instrumentNo, instrumentDate, drawnBank,
       receiveMode, isPdc, chequeNo, chequeDate,
       category, subcategory, accountKey, via, bankAccountId, sourceBankId, targetBankId,
       settleAR, lines,
@@ -2954,14 +2954,17 @@ export default function App() {
     let journalLines = lines;
 
     if (type === "PV") {
-      const glKey = accountKey || getGLAccountKeyForSubcategory(category, subcategory) || "expense";
+      const isClientPv = payeeType === "client" || (Boolean(clientId) && !vendorId);
+      const glKey = isClientPv ? "ar" : (accountKey || getGLAccountKeyForSubcategory(category, subcategory) || "expense");
       const isPvPdc = Boolean(isPdc || paymentMode === "Post-Dated Cheque (PDC)");
       const isCash = !isPvPdc && (via === "Cash" || paymentMode === "Petty Cash");
       const paymentAccount = isPvPdc ? "pdc_payable" : (isCash ? "cash" : "bank");
       const defaultBank = bankAccounts.find(b => b.accountType !== "Petty Cash" && !b.id.startsWith("bank-cash"))?.id || bankAccounts[0]?.id || null;
       const isSelectedCashAcc = bankAccountId && (bankAccountId.startsWith("bank-cash") || bankAccounts.find(b => b.id === bankAccountId)?.accountType === "Petty Cash");
       const bAccountId = isPvPdc ? null : (isCash ? (isSelectedCashAcc ? bankAccountId : "bank-cash-park-tower") : (bankAccountId || defaultBank));
-      const memoText = subcategory ? `${category} → ${subcategory}` : (category || "Payment");
+      const memoText = isClientPv
+        ? `Client Payment / Refund (${party || "Client"})`
+        : (subcategory ? `${category} → ${subcategory}` : (category || "Payment"));
       
       const billAmt = Number(amount) || 0;
       const commAmt = applyCommission ? (Number(agencyCommissionAmount) || 0) : 0;
@@ -2973,7 +2976,7 @@ export default function App() {
       const chqNo = chequeNo || instrumentNo;
       const chqDate = chequeDate || instrumentDate || date;
       const paidMemo = isPvPdc
-        ? `PDC Issued to Vendor (Chq #${chqNo || 'PDC'}, Maturity: ${chqDate}, Drawn: ${payingBankObj?.bankName || drawnBank || 'Bank'})`
+        ? `PDC Issued to ${isClientPv ? "Client" : "Vendor"} (Chq #${chqNo || 'PDC'}, Maturity: ${chqDate}, Drawn: ${payingBankObj?.bankName || drawnBank || 'Bank'})`
         : isCash 
         ? `Paid via ${payingBankObj?.bankName || 'Petty Cash Vault'}` 
         : `Paid via ${paymentMode || 'Bank'}${instrumentNo ? ` #${instrumentNo}` : ""} (${payingBankObj?.bankName || 'Bank'})`;
@@ -3075,6 +3078,7 @@ export default function App() {
       netAmount: netAmount !== undefined ? Number(netAmount) : Number(amount),
       clientId: clientId || null,
       vendorId: vendorId || null,
+      payeeType: type === "PV" ? (payeeType || (clientId && !vendorId ? "client" : "vendor")) : null,
       vendor: vendor || (type === "CV" ? category : null),
       paymentMode: type === "BV" ? `Barter (${ACCOUNTS[barterAccount || "barter_property"]?.name || "In-Kind"})` : paymentMode,
       instrumentNo, instrumentDate, drawnBank,
@@ -3189,7 +3193,7 @@ export default function App() {
   function updateVoucher(voucherId, type, payload = {}) {
     const {
       voucherNo: customVoucherNo, projectId, date, party, description, amount, netAmount,
-      clientId, vendorId, vendor, paymentMode, instrumentNo, instrumentDate, drawnBank,
+      clientId, vendorId, vendor, payeeType, paymentMode, instrumentNo, instrumentDate, drawnBank,
       receiveMode, isPdc, chequeNo, chequeDate,
       category, subcategory, accountKey, via, bankAccountId, sourceBankId, targetBankId,
       settleAR, lines,
@@ -3204,14 +3208,17 @@ export default function App() {
     let journalLines = lines;
 
     if (type === "PV") {
-      const glKey = accountKey || getGLAccountKeyForSubcategory(category, subcategory) || "expense";
+      const isClientPv = payeeType === "client" || (Boolean(clientId) && !vendorId);
+      const glKey = isClientPv ? "ar" : (accountKey || getGLAccountKeyForSubcategory(category, subcategory) || "expense");
       const isPvPdc = Boolean(isPdc || paymentMode === "Post-Dated Cheque (PDC)");
       const isCash = !isPvPdc && (via === "Cash" || paymentMode === "Petty Cash");
       const paymentAccount = isPvPdc ? "pdc_payable" : (isCash ? "cash" : "bank");
       const defaultBank = bankAccounts.find(b => b.accountType !== "Petty Cash" && !b.id.startsWith("bank-cash"))?.id || bankAccounts[0]?.id || null;
       const isSelectedCashAcc = bankAccountId && (bankAccountId.startsWith("bank-cash") || bankAccounts.find(b => b.id === bankAccountId)?.accountType === "Petty Cash");
       const bAccountId = isPvPdc ? null : (isCash ? (isSelectedCashAcc ? bankAccountId : "bank-cash-park-tower") : (bankAccountId || defaultBank));
-      const memoText = subcategory ? `${category} → ${subcategory}` : (category || "Payment");
+      const memoText = isClientPv
+        ? `Client Payment / Refund (${party || "Client"})`
+        : (subcategory ? `${category} → ${subcategory}` : (category || "Payment"));
       
       const billAmt = Number(amount) || 0;
       const commAmt = applyCommission ? (Number(agencyCommissionAmount) || 0) : 0;
@@ -3223,7 +3230,7 @@ export default function App() {
       const chqNo = chequeNo || instrumentNo;
       const chqDate = chequeDate || instrumentDate || date;
       const paidMemo = isPvPdc
-        ? `PDC Issued to Vendor (Chq #${chqNo || 'PDC'}, Maturity: ${chqDate}, Drawn: ${payingBankObj?.bankName || drawnBank || 'Bank'})`
+        ? `PDC Issued to ${isClientPv ? "Client" : "Vendor"} (Chq #${chqNo || 'PDC'}, Maturity: ${chqDate}, Drawn: ${payingBankObj?.bankName || drawnBank || 'Bank'})`
         : isCash 
         ? `Paid via ${payingBankObj?.bankName || 'Petty Cash Vault'}` 
         : `Paid via ${paymentMode || 'Bank'}${instrumentNo ? ` #${instrumentNo}` : ""} (${payingBankObj?.bankName || 'Bank'})`;
@@ -3340,6 +3347,7 @@ export default function App() {
           netAmount: netAmount !== undefined ? Number(netAmount) : Number(amount),
           clientId: clientId || null,
           vendorId: vendorId || null,
+          payeeType: type === "PV" ? (payeeType || (clientId && !vendorId ? "client" : "vendor")) : null,
           vendor: vendor || (type === "CV" ? category : null),
           paymentMode,
           instrumentNo,
@@ -6370,8 +6378,9 @@ export default function App() {
                       }, 0);
                       // Unpaid / Pending PDC cheques (pdcStatus !== "Cleared") do NOT deduct from Client Outstanding!
                       const totalCashReceived = clientVouchers.filter(v => (v.type === "RV" || v.type === "CV") && !(v.isPdc && v.pdcStatus !== "Cleared")).reduce((s, v) => s + (Number(v.amount) || 0), 0);
+                      const totalClientPaymentsOut = clientVouchers.filter(v => v.type === "PV" && (v.payeeType === "client" || Boolean(v.clientId)) && !(v.isPdc && v.pdcStatus !== "Cleared")).reduce((s, v) => s + (Number(v.amount) || 0), 0);
                       const totalBarterReceived = clientVouchers.filter(v => v.type === "BV" && v.barterDirection !== "vendor").reduce((s, v) => s + (Number(v.amount) || 0), 0);
-                      const cashOutstanding = (Number(c.openingBalance) || 0) + projectsOpening + totalCashInvoiced - totalCashReceived;
+                      const cashOutstanding = (Number(c.openingBalance) || 0) + projectsOpening + totalCashInvoiced + totalClientPaymentsOut - totalCashReceived;
                       const barterOutstanding = (Number(c.openingBarterBalance) || 0) + totalBarterInvoiced - totalBarterReceived;
                       const outstanding = cashOutstanding + barterOutstanding;
                       const hasBarterTrack = (Number(c.openingBarterBalance) || 0) > 0 || totalBarterInvoiced > 0 || totalBarterReceived > 0;
@@ -6548,8 +6557,9 @@ export default function App() {
                       const totalBarterBilled = allVendorBills.reduce((s, item) => s + splitItem(item).barterAmt, 0);
 
                       // Unpaid / Pending Issued PDC cheques (pdcStatus !== "Cleared") do NOT deduct from Vendor Payable!
+                      // Also exclude Client Refund/Payment PVs (payeeType === "client") so they never deduct from Vendor Payable!
                       const totalCashPaid = vendorVouchers
-                        .filter(vo => (vo.type === "PV" || vo.type === "CV") && !(vo.isPdc && vo.pdcStatus !== "Cleared"))
+                        .filter(vo => ((vo.type === "PV" && vo.payeeType !== "client" && !(vo.clientId && !vo.vendorId)) || vo.type === "CV") && !(vo.isPdc && vo.pdcStatus !== "Cleared"))
                         .reduce((s, vo) => s + (Number(vo.amount) || 0), 0);
                       const totalBarterPaid = vendorVouchers
                         .filter(vo => vo.type === "BV" && vo.barterDirection === "vendor")
@@ -15451,6 +15461,11 @@ function VoucherModal({
   const [date, setDate] = useState(voucherToEdit?.date || TODAY_STR);
   
   // Party selection state (RV & PV)
+  const [pvPayeeType, setPvPayeeType] = useState(
+    voucherToEdit?.type === "PV" && (voucherToEdit?.payeeType === "client" || (voucherToEdit?.clientId && !voucherToEdit?.vendorId))
+      ? "client"
+      : "vendor"
+  );
   const [partyMode, setPartyMode] = useState(voucherToEdit?.party ? (clients.some(c => c.name === voucherToEdit.party) || vendors.some(v => v.name === voucherToEdit.party) ? "master" : "custom") : "master");
   const [selectedClientId, setSelectedClientId] = useState(voucherToEdit?.clientId || "");
   const [selectedVendorId, setSelectedVendorId] = useState(voucherToEdit?.vendorId || "");
@@ -15641,7 +15656,7 @@ function VoucherModal({
 
   // Project filtering for RV, BV, CV and PV based on selected client or vendor
   const availableProjects = useMemo(() => {
-    if ((type === "RV" || (type === "BV" && barterDirection === "client")) && party && partyMode === "master") {
+    if ((type === "RV" || (type === "BV" && barterDirection === "client") || (type === "PV" && pvPayeeType === "client")) && party && partyMode === "master") {
       const matched = projects.filter(p => p.client && p.client.toLowerCase() === party.toLowerCase());
       if (matched.length > 0) return matched;
     }
@@ -15649,7 +15664,7 @@ function VoucherModal({
       const matched = projects.filter(p => p.client && p.client.toLowerCase() === effectiveCvClient.toLowerCase());
       if (matched.length > 0) return matched;
     }
-    if (type === "PV" && (party || selectedVendorId) && partyMode === "master") {
+    if (type === "PV" && pvPayeeType !== "client" && (party || selectedVendorId) && partyMode === "master") {
       const vendorPrjIds = new Set();
       const vName = (party || "").toLowerCase();
       (expenses || []).forEach(e => {
@@ -15763,6 +15778,7 @@ function VoucherModal({
         amount: Number(amount), sourceBankId, targetBankId
       });
     } else if (type === "PV") {
+      const isClientPv = pvPayeeType === "client";
       const isCash = pvPaymentMode === "Petty Cash";
       const isPvPdc = pvPaymentMode === "Post-Dated Cheque (PDC)";
       const instDesc = isCash
@@ -15770,15 +15786,17 @@ function VoucherModal({
         : isPvPdc
         ? `Post-Dated Cheque #${pvInstrumentNo || 'PDC'} (Maturity: ${pvInstrumentDate}, Bank: ${selectedBankObj?.bankName || 'Bank'})`
         : `${pvPaymentMode}${pvInstrumentNo ? ` #${pvInstrumentNo}` : ""}`;
-      const autoDesc = description || `Vendor Payment - ${effectiveParty} via ${instDesc}`;
+      const autoDesc = description || `${isClientPv ? "Client Payment / Refund" : "Vendor Payment"} - ${effectiveParty} via ${instDesc}`;
       onSubmit("PV", {
         voucherNo,
         projectId, date,
         party: effectiveParty,
-        vendorId: partyMode === "master" ? selectedVendorId : null,
+        payeeType: isClientPv ? "client" : "vendor",
+        clientId: (isClientPv && partyMode === "master") ? selectedClientId : null,
+        vendorId: (!isClientPv && partyMode === "master") ? selectedVendorId : null,
         description: autoDesc,
         amount: billAmount,
-        netAmount: netPayable,
+        netAmount: isClientPv ? billAmount : netPayable,
         paymentMode: pvPaymentMode,
         instrumentNo: isCash ? "" : pvInstrumentNo,
         instrumentDate: isCash ? date : pvInstrumentDate,
@@ -15787,16 +15805,18 @@ function VoucherModal({
         chequeDate: isPvPdc ? pvInstrumentDate : null,
         drawnBank: isCash ? "" : (selectedBankObj?.bankName || ""),
         targetBankId: isCash ? null : selectedBankId,
-        applyCommission,
-        agencyCommissionRate: Number(agencyCommissionRate) || 0,
-        agencyCommissionAmount: commVal,
-        applySst,
-        sstRate: Number(sstRate) || 0,
-        sstAmount: sstVal,
-        applyWht,
-        whtRate: Number(whtRate) || 0,
-        whtAmount: whtVal,
-        category, subcategory, accountKey: glKey,
+        applyCommission: isClientPv ? false : applyCommission,
+        agencyCommissionRate: isClientPv ? 0 : (Number(agencyCommissionRate) || 0),
+        agencyCommissionAmount: isClientPv ? 0 : commVal,
+        applySst: isClientPv ? false : applySst,
+        sstRate: isClientPv ? 0 : (Number(sstRate) || 0),
+        sstAmount: isClientPv ? 0 : sstVal,
+        applyWht: isClientPv ? false : applyWht,
+        whtRate: isClientPv ? 0 : (Number(whtRate) || 0),
+        whtAmount: isClientPv ? 0 : whtVal,
+        category: isClientPv ? "Client Payment / Refund" : category,
+        subcategory: isClientPv ? "Accounts Receivable Adjustment" : subcategory,
+        accountKey: isClientPv ? "ar" : glKey,
         via: isCash ? "Cash" : "Bank",
         bankAccountId: isCash ? selectedCashAccountId : selectedBankId,
       });
@@ -16027,34 +16047,80 @@ function VoucherModal({
       )}
 
       {type === "PV" && (
-        <div className="field">
-          <label style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span>Paid To (Vendor Master / Payee) *</span>
-            {vendors.length > 0 && (
-              <span style={{ fontSize: 11, color: "#D97706", cursor: "pointer", fontWeight: 600 }} onClick={() => { setPartyMode(partyMode === "master" ? "custom" : "master"); }}>
-                {partyMode === "master" ? "✏️ Type Custom Payee" : "📋 Choose from Master"}
-              </span>
+        <>
+          <div className="field">
+            <label>Payee Head Type *</label>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+              <button
+                type="button"
+                className="btn"
+                onClick={() => { setPvPayeeType("vendor"); setPartyMode("master"); setParty(""); setCustomPartyName(""); setSelectedClientId(""); setSelectedVendorId(""); }}
+                style={{
+                  justifyContent: "center", fontWeight: 700, fontSize: 12.5, padding: "8px 10px",
+                  background: pvPayeeType === "vendor" ? "rgba(217, 119, 6, 0.14)" : "#FFFFFF",
+                  borderColor: pvPayeeType === "vendor" ? "#D97706" : "#CBD5E1",
+                  color: pvPayeeType === "vendor" ? "#B45309" : "#475569"
+                }}
+              >
+                🏢 Vendor / Expense
+              </button>
+              <button
+                type="button"
+                className="btn"
+                onClick={() => { setPvPayeeType("client"); setPartyMode("master"); setParty(""); setCustomPartyName(""); setSelectedClientId(""); setSelectedVendorId(""); setApplyCommission(false); setApplySst(false); setApplyWht(false); }}
+                style={{
+                  justifyContent: "center", fontWeight: 700, fontSize: 12.5, padding: "8px 10px",
+                  background: pvPayeeType === "client" ? "rgba(2, 132, 199, 0.14)" : "#FFFFFF",
+                  borderColor: pvPayeeType === "client" ? "#0284C7" : "#CBD5E1",
+                  color: pvPayeeType === "client" ? "#0369A1" : "#475569"
+                }}
+              >
+                👤 Client (Refund / Payment)
+              </button>
+            </div>
+          </div>
+
+          <div className="field">
+            <label style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <span>{pvPayeeType === "client" ? "Paid To (Client Master — Refund / Payment) *" : "Paid To (Vendor Master / Payee) *"}</span>
+              {(pvPayeeType === "client" ? clients.length > 0 : vendors.length > 0) && (
+                <span style={{ fontSize: 11, color: pvPayeeType === "client" ? "#0284C7" : "#D97706", cursor: "pointer", fontWeight: 600 }} onClick={() => { setPartyMode(partyMode === "master" ? "custom" : "master"); }}>
+                  {partyMode === "master" ? "✏️ Type Custom Payee" : "📋 Choose from Master"}
+                </span>
+              )}
+            </label>
+            {partyMode === "master" ? (
+              pvPayeeType === "client" ? (
+                <select value={party} onChange={e => handleClientSelect(e.target.value)}>
+                  <option value="">— Select Client from Client Master ({clients.length} Registered) —</option>
+                  {clients.map(c => (
+                    <option key={c.id} value={c.name}>
+                      {c.name} {c.companyName ? `(${c.companyName})` : ""}
+                    </option>
+                  ))}
+                  <option value="__custom__">➕ Type Custom Client Name...</option>
+                </select>
+              ) : (
+                <select value={party} onChange={e => handleVendorSelect(e.target.value)}>
+                  <option value="">— Select Vendor from Vendor Master ({vendors.length} Registered) —</option>
+                  {vendors.map(v => (
+                    <option key={v.id} value={v.name}>
+                      {v.name} {v.companyName ? `(${v.companyName})` : ""}
+                    </option>
+                  ))}
+                  <option value="__custom__">➕ Type Custom Payee / Staff / Other...</option>
+                </select>
+              )
+            ) : (
+              <input
+                value={customPartyName}
+                onChange={e => handleCustomPartyChange(e.target.value)}
+                placeholder={pvPayeeType === "client" ? "Enter Custom Client Name" : "Enter Custom Payee / Staff / Vendor Name"}
+                autoFocus
+              />
             )}
-          </label>
-          {partyMode === "master" ? (
-            <select value={party} onChange={e => handleVendorSelect(e.target.value)}>
-              <option value="">— Select Vendor from Vendor Master ({vendors.length} Registered) —</option>
-              {vendors.map(v => (
-                <option key={v.id} value={v.name}>
-                  {v.name} {v.companyName ? `(${v.companyName})` : ""}
-                </option>
-              ))}
-              <option value="__custom__">➕ Type Custom Payee / Staff / Other...</option>
-            </select>
-          ) : (
-            <input
-              value={customPartyName}
-              onChange={e => handleCustomPartyChange(e.target.value)}
-              placeholder="Enter Custom Payee / Staff / Vendor Name"
-              autoFocus
-            />
-          )}
-        </div>
+          </div>
+        </>
       )}
 
       {/* CV: CLIENT AND VENDOR MASTER SELECTION */}
@@ -16149,31 +16215,42 @@ function VoucherModal({
         <input value={description} onChange={e => setDescription(e.target.value)} placeholder="e.g. Media booking retainer / Utility payment / Vendor Settlement" />
       </div>
 
-      {/* PV SPECIFIC CONTROLS (VENDOR PAYMENT WITH COMMISSION, SST, WHT) */}
+      {/* PV SPECIFIC CONTROLS (VENDOR PAYMENT WITH COMMISSION, SST, WHT OR CLIENT REFUND / PAYMENT) */}
       {type === "PV" && (
         <>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-            <div className="field">
-              <label>Expense Category</label>
-              <select value={category} onChange={e => handleCategoryChange(e.target.value)}>
-                {EXPENSE_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-              </select>
-            </div>
-            <div className="field">
-              <label>Expense Subcategory</label>
-              <select value={subcategory} onChange={e => setSubcategory(e.target.value)}>
-                {currentSubcategories.map(s => <option key={s.name} value={s.name}>{s.name}</option>)}
-              </select>
-            </div>
-          </div>
+          {pvPayeeType !== "client" ? (
+            <>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                <div className="field">
+                  <label>Expense Category</label>
+                  <select value={category} onChange={e => handleCategoryChange(e.target.value)}>
+                    {EXPENSE_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                </div>
+                <div className="field">
+                  <label>Expense Subcategory</label>
+                  <select value={subcategory} onChange={e => setSubcategory(e.target.value)}>
+                    {currentSubcategories.map(s => <option key={s.name} value={s.name}>{s.name}</option>)}
+                  </select>
+                </div>
+              </div>
 
-          <div style={{ background: "rgba(2, 132, 199, 0.08)", border: "1px solid rgba(2, 132, 199, 0.2)", padding: "8px 12px", borderRadius: 6, marginBottom: 12, fontSize: 12.5 }}>
-            Mapped GL Account: <strong style={{ color: "#0284C7" }}>{glAccountObj.code} — {glAccountObj.name}</strong>
-          </div>
+              <div style={{ background: "rgba(2, 132, 199, 0.08)", border: "1px solid rgba(2, 132, 199, 0.2)", padding: "8px 12px", borderRadius: 6, marginBottom: 12, fontSize: 12.5 }}>
+                Mapped GL Account: <strong style={{ color: "#0284C7" }}>{glAccountObj.code} — {glAccountObj.name}</strong>
+              </div>
+            </>
+          ) : (
+            <div style={{ background: "rgba(2, 132, 199, 0.1)", border: "1px solid rgba(2, 132, 199, 0.35)", padding: "9px 12px", borderRadius: 8, marginBottom: 12, fontSize: 12.5, color: "#0369A1" }}>
+              <div>Mapped GL Account: <strong>{ACCOUNTS.ar?.code || "1120"} — {ACCOUNTS.ar?.name || "Accounts Receivable"} (Client Refund / Payment)</strong></div>
+              <div style={{ fontSize: 11.5, color: "#334155", marginTop: 2 }}>
+                Posts <b>DR Accounts Receivable (Client Statement Cash Debit)</b> &amp; <b>CR Bank / Cash</b> — clears excess credit or records payment to Client without affecting P&amp;L Expenses.
+              </div>
+            </div>
+          )}
 
           <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: 10 }}>
             <div className="field">
-              <label>Vendor Bill Amount (PKR) *</label>
+              <label>{pvPayeeType === "client" ? "Client Payment / Refund Amount (PKR) *" : "Vendor Bill Amount (PKR) *"}</label>
               <input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="e.g. 20000" style={{ fontWeight: 700, fontSize: 14 }} />
               {Number(amount) > 0 && (
                 <div style={{ fontSize: 11.5, color: "#059669", fontWeight: 700, marginTop: 2 }}>
@@ -16208,7 +16285,7 @@ function VoucherModal({
           {pvPaymentMode === "Post-Dated Cheque (PDC)" ? (
             <div className="card" style={{ padding: "10px 14px", marginBottom: 12, background: "rgba(245, 158, 11, 0.08)", border: "1px solid rgba(245, 158, 11, 0.35)", borderRadius: 8 }}>
               <div style={{ fontWeight: 700, fontSize: 13, color: "#B45309", marginBottom: 8, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 6 }}>
-                <span>⏳ Post-Dated Cheque (PDC — Issued to Vendor) Details</span>
+                <span>⏳ Post-Dated Cheque (PDC — Issued to {pvPayeeType === "client" ? "Client" : "Vendor"}) Details</span>
                 <span style={{ fontSize: 11, background: "#FEF3C7", padding: "2px 6px", borderRadius: 4, color: "#92400E", fontWeight: 700 }}>
                   Liability: PDC Issued / Cheques Payable
                 </span>
@@ -16306,7 +16383,8 @@ function VoucherModal({
             </div>
           )}
 
-          {/* COMMISSION, SST, WHT CONFIGURATION SECTION */}
+          {/* COMMISSION, SST, WHT CONFIGURATION SECTION (Vendor Payments Only) */}
+          {pvPayeeType !== "client" && (
           <div className="card" style={{ padding: "12px 14px", marginBottom: 14, background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: 8 }}>
             <div style={{ fontWeight: 700, fontSize: 13, color: "#1E293B", marginBottom: 10, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <span>Tax &amp; Agency Commission Adjustments</span>
@@ -16415,6 +16493,7 @@ function VoucherModal({
               </div>
             )}
           </div>
+          )}
 
           <div style={{ background: pvPaymentMode === "Petty Cash" || pvPaymentMode === "Post-Dated Cheque (PDC)" ? "rgba(217, 119, 6, 0.08)" : "rgba(5, 150, 105, 0.08)", border: `1px solid ${pvPaymentMode === "Petty Cash" || pvPaymentMode === "Post-Dated Cheque (PDC)" ? "rgba(217, 119, 6, 0.28)" : "rgba(5, 150, 105, 0.2)"}`, padding: "10px 14px", borderRadius: 8, fontSize: 12.5, color: pvPaymentMode === "Petty Cash" || pvPaymentMode === "Post-Dated Cheque (PDC)" ? "#B45309" : "#059669", marginBottom: 14 }}>
             {pvPaymentMode === "Petty Cash" ? (
