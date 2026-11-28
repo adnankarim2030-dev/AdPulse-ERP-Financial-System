@@ -13186,6 +13186,8 @@ function POModal({ initialData, projects = [], vendors = [], purchaseOrders = []
   const [applyOverallDiscount, setApplyOverallDiscount] = useState(Boolean(initialData?.applyOverallDiscount || (!initialData?.oohSites?.length && initialData?.applyDiscount && Number(initialData?.discountAmount) > 0)));
   const [overallDiscountPct, setOverallDiscountPct] = useState(initialData?.overallDiscountPct !== undefined ? String(initialData.overallDiscountPct) : (initialData?.discountPercent ? String(initialData.discountPercent) : ""));
   const [overallDiscountAmt, setOverallDiscountAmt] = useState(initialData?.overallDiscountAmt !== undefined ? String(initialData.overallDiscountAmt) : (!initialData?.oohSites?.length && Number(initialData?.discountAmount) > 0 ? String(initialData.discountAmount) : ""));
+  // Print Discount Display Preference: false = Total Discount Only (hide per-site discount on printout), true = Show Site-Wise Discount Breakdown
+  const [showSiteDiscountOnPrint, setShowSiteDiscountOnPrint] = useState(Boolean(initialData?.showSiteDiscountOnPrint));
   const [issueDate, setIssueDate] = useState(initialData?.issueDate || TODAY_STR);
   const [expectedDate, setExpectedDate] = useState(initialData?.expectedDate || TODAY_STR);
   const [notes, setNotes] = useState(initialData?.notes || "");
@@ -13635,22 +13637,22 @@ function POModal({ initialData, projects = [], vendors = [], purchaseOrders = []
           </div>
 
           <div className="table-responsive" style={{ marginBottom: 10 }}>
-            <table style={{ width: "100%", fontSize: 12, borderCollapse: "collapse", background: "#FFFFFF", borderRadius: 6, overflow: "hidden", border: "1px solid #CBD5E1" }}>
+            <table style={{ width: "100%", fontSize: 11.5, borderCollapse: "collapse", background: "#FFFFFF", borderRadius: 6, overflow: "hidden", border: "1px solid #CBD5E1" }}>
               <thead>
                 <tr style={{ background: "#F8FAFC", borderBottom: "1px solid #CBD5E1", color: "#334155" }}>
-                  <th style={{ padding: "7px 6px", textAlign: "left", minWidth: 150 }}>Location / Area</th>
-                  <th style={{ padding: "7px 5px", textAlign: "center", width: 58 }}>W (ft)</th>
-                  <th style={{ padding: "7px 5px", textAlign: "center", width: 58 }}>H (ft)</th>
-                  <th style={{ padding: "7px 5px", textAlign: "right", width: 68, color: "#0284C7" }}>Sq. Ft.</th>
-                  <th style={{ padding: "7px 5px", textAlign: "center", width: 118 }}>From Date</th>
-                  <th style={{ padding: "7px 5px", textAlign: "center", width: 118 }}>To Date</th>
-                  <th style={{ padding: "7px 5px", textAlign: "center", width: 54 }}>Days</th>
-                  <th style={{ padding: "7px 5px", textAlign: "right", width: 92 }}>Rate/Mo</th>
-                  <th style={{ padding: "7px 6px", textAlign: "right", width: 92, color: "#334155" }}>Site Amt</th>
-                  <th style={{ padding: "7px 5px", textAlign: "center", width: 72, color: "#DC2626" }}>Disc %</th>
-                  <th style={{ padding: "7px 5px", textAlign: "right", width: 92, color: "#DC2626" }}>Disc Amt</th>
-                  <th style={{ padding: "7px 6px", textAlign: "right", width: 100, color: "#059669" }}>Net Payable</th>
-                  <th style={{ padding: "7px 4px", textAlign: "center", width: 38 }}></th>
+                  <th style={{ padding: "6px 5px", textAlign: "left", minWidth: 135 }}>Location / Area</th>
+                  <th style={{ padding: "6px 4px", textAlign: "center", width: 50 }}>W (ft)</th>
+                  <th style={{ padding: "6px 4px", textAlign: "center", width: 50 }}>H (ft)</th>
+                  <th style={{ padding: "6px 4px", textAlign: "right", width: 60, color: "#0284C7" }}>Sq. Ft.</th>
+                  <th style={{ padding: "6px 4px", textAlign: "center", width: 108 }}>From Date</th>
+                  <th style={{ padding: "6px 4px", textAlign: "center", width: 108 }}>To Date</th>
+                  <th style={{ padding: "6px 4px", textAlign: "center", width: 46 }}>Days</th>
+                  <th style={{ padding: "6px 4px", textAlign: "right", width: 84 }}>Rate/Mo</th>
+                  <th style={{ padding: "6px 5px", textAlign: "right", width: 86, color: "#334155" }}>Site Amt</th>
+                  <th style={{ padding: "6px 4px", textAlign: "center", width: 60, color: "#DC2626" }}>Disc %</th>
+                  <th style={{ padding: "6px 4px", textAlign: "right", width: 82, color: "#DC2626" }}>Disc Amt</th>
+                  <th style={{ padding: "6px 5px", textAlign: "right", width: 92, color: "#059669" }}>Net Payable</th>
+                  <th style={{ padding: "6px 3px", textAlign: "center", width: 34 }}></th>
                 </tr>
               </thead>
               <tbody>
@@ -13803,15 +13805,56 @@ function POModal({ initialData, projects = [], vendors = [], purchaseOrders = []
             </div>
           </div>
 
-          {/* SITE-WISE DISCOUNT BREAKDOWN LINE (Shows exactly which sites received a discount) */}
+          {/* SITE-WISE DISCOUNT BREAKDOWN LINE + PRINTOUT DISPLAY TOGGLE */}
           {discountedOohSites.length > 0 && (
-            <div style={{ marginTop: 8, padding: "9px 12px", borderRadius: 6, background: "#FEF2F2", border: "1px dashed #DC2626", fontSize: 12, color: "#991B1B", display: "flex", flexWrap: "wrap", alignItems: "center", gap: 6 }}>
-              <span style={{ fontWeight: 800 }}>🏷️ Discounted Sites ({discountedOohSites.length}):</span>
-              {discountedOohSites.map((ds, i) => (
-                <span key={i} style={{ background: "#FFFFFF", border: "1px solid #FCA5A5", borderRadius: 5, padding: "2px 8px", fontWeight: 700, color: "#B91C1C" }}>
-                  {ds.index}. {ds.location}: −{ds.pct}% ({pkr(ds.discAmt)}) → Net {pkr(ds.net)}
+            <div style={{ marginTop: 8, padding: "9px 12px", borderRadius: 6, background: "#FEF2F2", border: "1px dashed #DC2626", fontSize: 12, color: "#991B1B", display: "flex", flexDirection: "column", gap: 8 }}>
+              <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 6 }}>
+                <span style={{ fontWeight: 800 }}>🏷️ Discounted Sites ({discountedOohSites.length}):</span>
+                {discountedOohSites.map((ds, i) => (
+                  <span key={i} style={{ background: "#FFFFFF", border: "1px solid #FCA5A5", borderRadius: 5, padding: "2px 8px", fontWeight: 700, color: "#B91C1C" }}>
+                    {ds.index}. {ds.location}: −{ds.pct}% ({pkr(ds.discAmt)}) → Net {pkr(ds.net)}
+                  </span>
+                ))}
+              </div>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8, paddingTop: 7, borderTop: "1px dashed rgba(220, 38, 38, 0.35)" }}>
+                <span style={{ fontSize: 11.5, fontWeight: 700, color: "#7F1D1D" }}>
+                  🖨️ PO Printout Discount Style:
                 </span>
-              ))}
+                <div style={{ display: "inline-flex", gap: 6 }}>
+                  <button
+                    type="button"
+                    onClick={() => setShowSiteDiscountOnPrint(false)}
+                    style={{
+                      padding: "4px 10px",
+                      fontSize: 11.5,
+                      fontWeight: 700,
+                      borderRadius: 6,
+                      cursor: "pointer",
+                      border: !showSiteDiscountOnPrint ? "1.5px solid #059669" : "1px solid #CBD5E1",
+                      background: !showSiteDiscountOnPrint ? "#ECFDF5" : "#FFFFFF",
+                      color: !showSiteDiscountOnPrint ? "#065F46" : "#475569"
+                    }}
+                  >
+                    {!showSiteDiscountOnPrint ? "✓ " : ""}Total Discount Only (Hide Individual)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowSiteDiscountOnPrint(true)}
+                    style={{
+                      padding: "4px 10px",
+                      fontSize: 11.5,
+                      fontWeight: 700,
+                      borderRadius: 6,
+                      cursor: "pointer",
+                      border: showSiteDiscountOnPrint ? "1.5px solid #B91C1C" : "1px solid #CBD5E1",
+                      background: showSiteDiscountOnPrint ? "#FEE2E2" : "#FFFFFF",
+                      color: showSiteDiscountOnPrint ? "#991B1B" : "#475569"
+                    }}
+                  >
+                    {showSiteDiscountOnPrint ? "✓ " : ""}Show Individual Site-Wise Discount
+                  </button>
+                </div>
+              </div>
             </div>
           )}
         </div>
@@ -14246,6 +14289,7 @@ function POModal({ initialData, projects = [], vendors = [], purchaseOrders = []
               discountPercent: poDiscountPct,
               discountAmount: poDiscountNum,
               discountSitesSummary: enableOohSites ? discountedSitesSummaryText : "",
+              showSiteDiscountOnPrint: Boolean(enableOohSites && showSiteDiscountOnPrint),
               applyOverallDiscount: Boolean(!enableOohSites && applyOverallDiscount && overallDiscVal > 0),
               overallDiscountPct: !enableOohSites && applyOverallDiscount ? poDiscountPct : 0,
               overallDiscountAmt: !enableOohSites && applyOverallDiscount ? overallDiscVal : 0,
@@ -18980,6 +19024,11 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
 
   const oohCalculatedDiscount = oohSites.reduce((sum, s) => sum + (Number(s.discountAmount) || 0), 0);
   const oohHasSiteDiscounts = oohSites.some(s => Number(s.discountAmount) > 0);
+  const [printDiscountDisplay, setPrintDiscountDisplay] = useState(Boolean(doc.showSiteDiscountOnPrint) ? "site" : "total");
+  React.useEffect(() => {
+    setPrintDiscountDisplay(Boolean(doc.showSiteDiscountOnPrint) ? "site" : "total");
+  }, [doc]);
+  const showSiteDiscountCols = oohHasSiteDiscounts && printDiscountDisplay === "site";
 
   const oohCalculatedNet = oohSites.reduce((sum, s) => {
     const days = Number(s.days || s.duration) || 30;
@@ -19221,7 +19270,7 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
         {hasDiscount && !skipDiscountRow && (
           <tr>
             <td colSpan={colSpanAmount} style={{ ...labelStyle, color: "#DC2626" }}>
-              LESS: DISCOUNT {doc.discountPercent ? `(${doc.discountPercent}%)` : ""}
+              {oohHasSiteDiscounts ? "LESS: TOTAL DISCOUNT" : `LESS: DISCOUNT${doc.discountPercent ? ` (${doc.discountPercent}%)` : ""}`}
             </td>
             <td style={{ ...valStyle, color: "#DC2626" }}>- {pkr(discountVal)}</td>
           </tr>
@@ -19643,6 +19692,21 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
                 </select>
               </div>
 
+              {oohHasSiteDiscounts && (
+                <div style={{ display: "flex", alignItems: "center", gap: 6, background: "#0F172A", padding: "4px 8px", borderRadius: 8, border: "1px solid #F59E0B" }}>
+                  <span style={{ fontSize: 11, color: "#FBBF24", fontWeight: 700 }}>Discount:</span>
+                  <select
+                    value={printDiscountDisplay}
+                    onChange={e => setPrintDiscountDisplay(e.target.value)}
+                    style={{ background: "transparent", border: "none", color: "#FFF", fontSize: 12.5, fontWeight: 700, cursor: "pointer" }}
+                    title="Switch between Total Discount Only and Individual Site-Wise Discount on Printout"
+                  >
+                    <option value="total" style={{ background: "#1E293B", color: "#FFFFFF" }}>Total Only (Hide Site Disc)</option>
+                    <option value="site" style={{ background: "#1E293B", color: "#FFFFFF" }}>Site-Wise Breakdown</option>
+                  </select>
+                </div>
+              )}
+
               <button className="btn" style={{ background: "var(--rose)", color: "#fff", border: "none", padding: "6px 10px" }} onClick={onClose}><X size={15} /></button>
             </div>
           </div>
@@ -19922,8 +19986,8 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
                   })
                   .filter(x => x.dAmt > 0);
                 return (
-                  <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", fontSize: oohHasSiteDiscounts ? 10.5 : 11.5, boxSizing: "border-box", tableLayout: "fixed" }}>
-                    {oohHasSiteDiscounts ? (
+                  <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", fontSize: showSiteDiscountCols ? 10.5 : 11.5, boxSizing: "border-box", tableLayout: "fixed" }}>
+                    {showSiteDiscountCols ? (
                       <colgroup>
                         <col style={{ width: "4%" }} />
                         <col style={{ width: "18%" }} />
@@ -19960,7 +20024,7 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
                         <th style={thStyle}>TO DATE</th>
                         <th style={thStyle}>DAYS</th>
                         <th style={thStyle}>RATE/MO</th>
-                        {oohHasSiteDiscounts ? (
+                        {showSiteDiscountCols ? (
                           <>
                             <th style={thStyle}>GROSS (PKR)</th>
                             <th style={{ ...thStyle, color: "#DC2626" }}>DISCOUNT</th>
@@ -19990,7 +20054,7 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
                               <td style={tdCenter}>{site.toDate ? fmtDocDate(site.toDate) : "—"}</td>
                               <td style={{ ...tdCenter, fontWeight: 700 }}>{site.days || site.duration || 30}</td>
                               <td style={tdCenter}>{pkr(site.rate || site.pricePerMonth || 0)}</td>
-                              {oohHasSiteDiscounts ? (
+                              {showSiteDiscountCols ? (
                                 <>
                                   <td style={tdCenter}>{pkr(sGross)}</td>
                                   <td style={{ ...tdCenter, color: sDisc > 0 ? "#DC2626" : "#64748B", fontWeight: sDisc > 0 ? 700 : 400 }}>
@@ -19999,7 +20063,7 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
                                   <td style={{ ...tdCenter, fontWeight: 700 }}>{pkr(sNet)}</td>
                                 </>
                               ) : (
-                                <td style={{ ...tdCenter, fontWeight: 700 }}>{pkr(sNet)}</td>
+                                <td style={{ ...tdCenter, fontWeight: 700 }}>{pkr(oohHasSiteDiscounts ? sGross : sNet)}</td>
                               )}
                             </tr>
                           );
@@ -20017,7 +20081,7 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
                           <td style={{ ...tdCenter, fontWeight: 700 }}>{pkr(netAmt)}</td>
                         </tr>
                       )}
-                      {oohHasSiteDiscounts ? (
+                      {showSiteDiscountCols ? (
                         <>
                           <tr style={{ fontWeight: 800, background: "#F8FAFC" }}>
                             <td colSpan={3} style={{ border: "1px solid #000000", padding: "7px 8px", textAlign: "right", verticalAlign: "middle", fontSize: 10.5, fontWeight: 800, whiteSpace: "nowrap", boxSizing: "border-box" }}>
@@ -20056,10 +20120,10 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
                               TOTAL AMOUNT:
                             </td>
                             <td style={{ border: "1px solid #000000", padding: "7px 4px", textAlign: "center", verticalAlign: "middle", color: "#0F172A", fontWeight: 800, fontSize: 12, whiteSpace: "nowrap", boxSizing: "border-box" }}>
-                              {pkr(netAmt)}
+                              {pkr(oohHasSiteDiscounts ? grandTotal : netAmt)}
                             </td>
                           </tr>
-                          {renderTotals(8, true)}
+                          {renderTotals(8, true, false)}
                         </>
                       )}
                     </tbody>
