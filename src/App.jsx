@@ -7740,6 +7740,11 @@ export default function App() {
                           </td>
                           <td className="mono" style={{ textAlign: "right", color: "var(--rose)", fontWeight: 600 }}>
                             <div>{pkr(po.amount)}</div>
+                            {po.applyDiscount && Number(po.discountAmount) > 0 && (
+                              <div style={{ fontSize: 10.5, fontWeight: 700, marginTop: 2, color: "#DC2626" }} title={po.discountSitesSummary || "Discount Applied"}>
+                                Gross: {pkr(po.grossAmount || (Number(po.amount) + Number(po.discountAmount)))} · Disc: −{pkr(po.discountAmount)}
+                              </div>
+                            )}
                             {po.applyBarter && Number(po.barterAmount) > 0 && (
                               <div style={{ fontSize: 10.5, fontWeight: 700, marginTop: 2 }}>
                                 <span style={{ color: "#0369A1" }}>Cash: {pkr(po.cashAmount !== undefined ? po.cashAmount : Math.max(0, (Number(po.amount) || 0) - (Number(po.barterAmount) || 0)))}</span>
@@ -13158,6 +13163,10 @@ function POModal({ initialData, projects = [], vendors = [], purchaseOrders = []
     return "50";
   });
   const [barterAmount, setBarterAmount] = useState(initialData?.barterAmount !== undefined && Number(initialData?.barterAmount) > 0 ? String(initialData.barterAmount) : "");
+  // Overall PO Discount (for non-OOH scopes like Printing / Newspaper / Events / General)
+  const [applyOverallDiscount, setApplyOverallDiscount] = useState(Boolean(initialData?.applyOverallDiscount || (!initialData?.oohSites?.length && initialData?.applyDiscount && Number(initialData?.discountAmount) > 0)));
+  const [overallDiscountPct, setOverallDiscountPct] = useState(initialData?.overallDiscountPct !== undefined ? String(initialData.overallDiscountPct) : (initialData?.discountPercent ? String(initialData.discountPercent) : ""));
+  const [overallDiscountAmt, setOverallDiscountAmt] = useState(initialData?.overallDiscountAmt !== undefined ? String(initialData.overallDiscountAmt) : (!initialData?.oohSites?.length && Number(initialData?.discountAmount) > 0 ? String(initialData.discountAmount) : ""));
   const [issueDate, setIssueDate] = useState(initialData?.issueDate || TODAY_STR);
   const [expectedDate, setExpectedDate] = useState(initialData?.expectedDate || TODAY_STR);
   const [notes, setNotes] = useState(initialData?.notes || "");
@@ -13183,7 +13192,25 @@ function POModal({ initialData, projects = [], vendors = [], purchaseOrders = []
     (description || "").toUpperCase().includes("ACTIVATION") ||
     (initialData?.eventItems && initialData.eventItems.length > 0);
 
-  // 1. OOH Sites Multi-Location State
+  // 1. OOH Sites Multi-Location State (with individual site-wise Discount % and Discount Amount)
+  const computeOohSiteTotals = (siteObj) => {
+    const r = parseFloat(siteObj.rate) || 0;
+    const d = parseFloat(siteObj.days) || 30;
+    const gross = Math.round(((r / 30) * d) * 100) / 100;
+    let discAmt = 0;
+    if (siteObj.discountMode === "percent" && siteObj.discountPercent !== "" && siteObj.discountPercent !== undefined) {
+      const pct = Math.min(100, Math.max(0, parseFloat(siteObj.discountPercent) || 0));
+      discAmt = Math.round(((gross * pct) / 100) * 100) / 100;
+    } else if (siteObj.discountAmount !== "" && siteObj.discountAmount !== undefined) {
+      discAmt = Math.min(gross, Math.max(0, parseFloat(siteObj.discountAmount) || 0));
+    } else if (siteObj.discountPercent !== "" && siteObj.discountPercent !== undefined) {
+      const pct = Math.min(100, Math.max(0, parseFloat(siteObj.discountPercent) || 0));
+      discAmt = Math.round(((gross * pct) / 100) * 100) / 100;
+    }
+    const net = Math.max(0, Math.round((gross - discAmt) * 100) / 100);
+    return { gross, discAmt, net };
+  };
+
   const [oohSites, setOohSites] = useState(() => {
     if (initialData?.oohSites && Array.isArray(initialData.oohSites) && initialData.oohSites.length > 0) {
       return initialData.oohSites.map(s => {
@@ -13192,10 +13219,16 @@ function POModal({ initialData, projects = [], vendors = [], purchaseOrders = []
         const sqft = s.sqft || (w > 0 && h > 0 ? Math.round(w * h * 100) / 100 : 0);
         const days = s.days !== undefined ? s.days : (s.duration !== undefined ? s.duration : 30);
         const rate = s.rate !== undefined && s.rate !== "" ? s.rate : (s.pricePerMonth || "");
-        let siteAmt = s.amount;
-        if (siteAmt === undefined) {
-          siteAmt = ((parseFloat(rate) || 0) / 30) * (parseFloat(days) || 30);
-        }
+        const grossAmt = s.grossAmount !== undefined && s.grossAmount !== ""
+          ? Number(s.grossAmount)
+          : Math.round((((parseFloat(rate) || 0) / 30) * (parseFloat(days) || 30)) * 100) / 100;
+        const discAmtNum = Number(s.discountAmount) || 0;
+        const discPctVal = s.discountPercent !== undefined && s.discountPercent !== "" && Number(s.discountPercent) > 0
+          ? String(s.discountPercent)
+          : (discAmtNum > 0 && grossAmt > 0 ? String(Number(((discAmtNum / grossAmt) * 100).toFixed(2))) : "");
+        const netAmt = s.amount !== undefined
+          ? Number(s.amount)
+          : Math.max(0, Math.round((grossAmt - discAmtNum) * 100) / 100);
         return {
           location: s.location || s.name || s.area || "",
           width: s.width || (w > 0 ? w : ""),
@@ -13205,14 +13238,18 @@ function POModal({ initialData, projects = [], vendors = [], purchaseOrders = []
           toDate: s.toDate || "",
           days: days,
           rate: rate,
-          amount: siteAmt
+          grossAmount: grossAmt,
+          discountPercent: discPctVal,
+          discountAmount: discAmtNum > 0 ? String(discAmtNum) : "",
+          discountMode: s.discountMode || (discAmtNum > 0 ? "amount" : "percent"),
+          amount: netAmt
         };
       });
     }
-    return [{ location: "", width: "", height: "", sqft: 0, fromDate: "", toDate: "", days: 30, rate: "", amount: 0 }];
+    return [{ location: "", width: "", height: "", sqft: 0, fromDate: "", toDate: "", days: 30, rate: "", grossAmount: 0, discountPercent: "", discountAmount: "", discountMode: "percent", amount: 0 }];
   });
 
-  const addOohSite = () => setOohSites([...oohSites, { location: "", width: "", height: "", sqft: 0, fromDate: "", toDate: "", days: 30, rate: "", amount: 0 }]);
+  const addOohSite = () => setOohSites([...oohSites, { location: "", width: "", height: "", sqft: 0, fromDate: "", toDate: "", days: 30, rate: "", grossAmount: 0, discountPercent: "", discountAmount: "", discountMode: "percent", amount: 0 }]);
 
   const updateOohSite = (index, field, value) => {
     const updated = [...oohSites];
@@ -13232,37 +13269,89 @@ function POModal({ initialData, projects = [], vendors = [], purchaseOrders = []
 
     const w = parseFloat(item.width) || 0;
     const h = parseFloat(item.height) || 0;
-    const sqft = Math.round(w * h * 100) / 100;
-    item.sqft = sqft;
+    item.sqft = Math.round(w * h * 100) / 100;
 
     const r = parseFloat(item.rate) || 0;
     const d = parseFloat(item.days) || 30;
-    item.amount = (r / 30) * d;
+    const gross = Math.round(((r / 30) * d) * 100) / 100;
+    item.grossAmount = gross;
+
+    if (field === "discountPercent") {
+      item.discountMode = "percent";
+      if (value === "" || value === null) {
+        item.discountPercent = "";
+        item.discountAmount = "";
+      } else {
+        const pct = Math.min(100, Math.max(0, parseFloat(value) || 0));
+        const dAmt = Math.round(((gross * pct) / 100) * 100) / 100;
+        item.discountAmount = dAmt > 0 ? String(dAmt) : "";
+      }
+    } else if (field === "discountAmount") {
+      item.discountMode = "amount";
+      if (value === "" || value === null) {
+        item.discountAmount = "";
+        item.discountPercent = "";
+      } else {
+        const dAmt = Math.min(gross, Math.max(0, parseFloat(value) || 0));
+        const pct = gross > 0 ? Number(((dAmt / gross) * 100).toFixed(2)) : 0;
+        item.discountPercent = pct > 0 ? String(pct) : "";
+      }
+    } else {
+      if (item.discountMode === "percent" && item.discountPercent !== "") {
+        const pct = Math.min(100, Math.max(0, parseFloat(item.discountPercent) || 0));
+        const dAmt = Math.round(((gross * pct) / 100) * 100) / 100;
+        item.discountAmount = dAmt > 0 ? String(dAmt) : "";
+      } else if (item.discountAmount !== "") {
+        const dAmt = Math.min(gross, Math.max(0, parseFloat(item.discountAmount) || 0));
+        item.discountAmount = dAmt > 0 ? String(dAmt) : "";
+        const pct = gross > 0 ? Number(((dAmt / gross) * 100).toFixed(2)) : 0;
+        item.discountPercent = pct > 0 ? String(pct) : "";
+      }
+    }
+
+    const finalDisc = Math.min(gross, Math.max(0, parseFloat(item.discountAmount) || 0));
+    item.amount = Math.max(0, Math.round((gross - finalDisc) * 100) / 100);
 
     updated[index] = item;
     setOohSites(updated);
 
     if (enableOohSites) {
-      const calcTotal = updated.reduce((sum, site) => {
-        const amt = site.amount !== undefined ? site.amount : ((parseFloat(site.rate) || 0) / 30 * (parseFloat(site.days) || 30));
-        return sum + amt;
-      }, 0);
-      if (calcTotal > 0) setAmount(calcTotal.toFixed(2));
+      const calcTotal = updated.reduce((sum, site) => sum + computeOohSiteTotals(site).net, 0);
+      setAmount(calcTotal > 0 ? String(Math.round(calcTotal * 100) / 100) : "0");
     }
   };
 
   const removeOohSite = (index) => {
     const updated = oohSites.filter((_, i) => i !== index);
-    const finalSites = updated.length > 0 ? updated : [{ location: "", width: "", height: "", sqft: 0, fromDate: "", toDate: "", days: 30, rate: "", amount: 0 }];
+    const finalSites = updated.length > 0 ? updated : [{ location: "", width: "", height: "", sqft: 0, fromDate: "", toDate: "", days: 30, rate: "", grossAmount: 0, discountPercent: "", discountAmount: "", discountMode: "percent", amount: 0 }];
     setOohSites(finalSites);
     if (enableOohSites) {
-      const calcTotal = finalSites.reduce((sum, site) => sum + (site.amount !== undefined ? site.amount : ((parseFloat(site.rate) || 0) / 30 * (parseFloat(site.days) || 30))), 0);
-      if (calcTotal > 0) setAmount(calcTotal.toFixed(2));
+      const calcTotal = finalSites.reduce((sum, site) => sum + computeOohSiteTotals(site).net, 0);
+      setAmount(calcTotal > 0 ? String(Math.round(calcTotal * 100) / 100) : "0");
     }
   };
 
   const totalOohSqft = oohSites.reduce((sum, item) => sum + (Number(item.sqft) || 0), 0);
-  const totalOohAmount = oohSites.reduce((sum, item) => sum + (item.amount !== undefined ? Number(item.amount) : ((parseFloat(item.rate) || 0) / 30 * (parseFloat(item.days) || 30))), 0);
+  const totalOohGrossAmount = oohSites.reduce((sum, item) => sum + computeOohSiteTotals(item).gross, 0);
+  const totalOohDiscountAmount = oohSites.reduce((sum, item) => sum + computeOohSiteTotals(item).discAmt, 0);
+  const totalOohAmount = oohSites.reduce((sum, item) => sum + computeOohSiteTotals(item).net, 0);
+  const discountedOohSites = oohSites
+    .map((site, idx) => {
+      const { gross, discAmt, net } = computeOohSiteTotals(site);
+      const pct = gross > 0 && discAmt > 0 ? Number(((discAmt / gross) * 100).toFixed(2)) : 0;
+      return {
+        index: idx + 1,
+        location: (site.location || "").trim() || `Site #${idx + 1}`,
+        gross,
+        discAmt,
+        pct,
+        net
+      };
+    })
+    .filter(s => s.discAmt > 0);
+  const discountedSitesSummaryText = discountedOohSites
+    .map(s => `${s.location} (-${s.pct}% / ${pkr(s.discAmt)})`)
+    .join(", ");
 
   // 2. Printing & Installation State
   const [printingItems, setPrintingItems] = useState(() => {
@@ -13530,121 +13619,182 @@ function POModal({ initialData, projects = [], vendors = [], purchaseOrders = []
             <table style={{ width: "100%", fontSize: 12, borderCollapse: "collapse", background: "#FFFFFF", borderRadius: 6, overflow: "hidden", border: "1px solid #CBD5E1" }}>
               <thead>
                 <tr style={{ background: "#F8FAFC", borderBottom: "1px solid #CBD5E1", color: "#334155" }}>
-                  <th style={{ padding: "7px 8px", textAlign: "left", width: "18%" }}>Location / Area</th>
-                  <th style={{ padding: "7px 8px", textAlign: "center", width: "7%" }}>Width (ft)</th>
-                  <th style={{ padding: "7px 8px", textAlign: "center", width: "7%" }}>Height (ft)</th>
-                  <th style={{ padding: "7px 8px", textAlign: "right", width: "9%", color: "#0284C7" }}>Sq. Ft.</th>
-                  <th style={{ padding: "7px 8px", textAlign: "center", width: "12%" }}>From Date</th>
-                  <th style={{ padding: "7px 8px", textAlign: "center", width: "12%" }}>To Date</th>
-                  <th style={{ padding: "7px 8px", textAlign: "center", width: "7%" }}>Days</th>
-                  <th style={{ padding: "7px 8px", textAlign: "right", width: "12%" }}>Rate/Month</th>
-                  <th style={{ padding: "7px 8px", textAlign: "right", width: "12%", color: "#059669" }}>Payable Amt</th>
-                  <th style={{ padding: "7px 4px", textAlign: "center", width: "4%" }}></th>
+                  <th style={{ padding: "7px 6px", textAlign: "left", minWidth: 150 }}>Location / Area</th>
+                  <th style={{ padding: "7px 5px", textAlign: "center", width: 58 }}>W (ft)</th>
+                  <th style={{ padding: "7px 5px", textAlign: "center", width: 58 }}>H (ft)</th>
+                  <th style={{ padding: "7px 5px", textAlign: "right", width: 68, color: "#0284C7" }}>Sq. Ft.</th>
+                  <th style={{ padding: "7px 5px", textAlign: "center", width: 118 }}>From Date</th>
+                  <th style={{ padding: "7px 5px", textAlign: "center", width: 118 }}>To Date</th>
+                  <th style={{ padding: "7px 5px", textAlign: "center", width: 54 }}>Days</th>
+                  <th style={{ padding: "7px 5px", textAlign: "right", width: 92 }}>Rate/Mo</th>
+                  <th style={{ padding: "7px 6px", textAlign: "right", width: 92, color: "#334155" }}>Site Amt</th>
+                  <th style={{ padding: "7px 5px", textAlign: "center", width: 72, color: "#DC2626" }}>Disc %</th>
+                  <th style={{ padding: "7px 5px", textAlign: "right", width: 92, color: "#DC2626" }}>Disc Amt</th>
+                  <th style={{ padding: "7px 6px", textAlign: "right", width: 100, color: "#059669" }}>Net Payable</th>
+                  <th style={{ padding: "7px 4px", textAlign: "center", width: 38 }}></th>
                 </tr>
               </thead>
               <tbody>
-                {oohSites.map((site, idx) => (
-                  <tr key={idx} style={{ borderBottom: "1px solid #F1F5F9" }}>
-                    <td style={{ padding: "6px 8px" }}>
+                {oohSites.map((site, idx) => {
+                  const { gross: siteGross, discAmt: siteDisc, net: siteNet } = computeOohSiteTotals(site);
+                  return (
+                  <tr key={idx} style={{ borderBottom: "1px solid #F1F5F9", background: siteDisc > 0 ? "rgba(254, 242, 242, 0.35)" : undefined }}>
+                    <td style={{ padding: "6px 6px" }}>
                       <input
-                        style={{ width: "100%", padding: "8px", fontSize: 12.5, borderRadius: 6, border: "1px solid #94A3B8" }}
+                        style={{ width: "100%", padding: "7px 8px", fontSize: 12.5, borderRadius: 6, border: "1px solid #94A3B8" }}
                         value={site.location}
                         onChange={e => updateOohSite(idx, "location", e.target.value)}
                         placeholder="e.g. Shahrah-e-Faisal FTC"
                       />
                     </td>
-                    <td style={{ padding: "6px 8px" }}>
+                    <td style={{ padding: "6px 4px" }}>
                       <input
                         type="number"
-                        style={{ width: "100%", padding: "8px", fontSize: 12.5, textAlign: "center", borderRadius: 6, border: "1px solid #94A3B8" }}
+                        style={{ width: "100%", padding: "7px 4px", fontSize: 12.5, textAlign: "center", borderRadius: 6, border: "1px solid #94A3B8" }}
                         value={site.width}
                         onChange={e => updateOohSite(idx, "width", e.target.value)}
                         placeholder="W"
                       />
                     </td>
-                    <td style={{ padding: "6px 8px" }}>
+                    <td style={{ padding: "6px 4px" }}>
                       <input
                         type="number"
-                        style={{ width: "100%", padding: "8px", fontSize: 12.5, textAlign: "center", borderRadius: 6, border: "1px solid #94A3B8" }}
+                        style={{ width: "100%", padding: "7px 4px", fontSize: 12.5, textAlign: "center", borderRadius: 6, border: "1px solid #94A3B8" }}
                         value={site.height}
                         onChange={e => updateOohSite(idx, "height", e.target.value)}
                         placeholder="H"
                       />
                     </td>
-                    <td style={{ padding: "6px 8px", textAlign: "right" }}>
+                    <td style={{ padding: "6px 4px", textAlign: "right" }}>
                       <input
                         type="text"
                         readOnly
                         disabled
-                        style={{ width: "100%", padding: "8px", fontSize: 12.5, borderRadius: 6, border: "1px solid #E2E8F0", background: "#F1F5F9", textAlign: "right", fontWeight: 700, color: "#0284C7" }}
-                        value={(Number(site.sqft) || 0).toFixed(2)}
+                        style={{ width: "100%", padding: "7px 4px", fontSize: 12, borderRadius: 6, border: "1px solid #E2E8F0", background: "#F1F5F9", textAlign: "right", fontWeight: 700, color: "#0284C7" }}
+                        value={(Number(site.sqft) || 0).toFixed(1)}
                       />
                     </td>
-                    <td style={{ padding: "6px 8px" }}>
+                    <td style={{ padding: "6px 4px" }}>
                       <input
                         type="date"
-                        style={{ width: "100%", padding: "8px", fontSize: 12, borderRadius: 6, border: "1px solid #94A3B8" }}
+                        style={{ width: "100%", padding: "7px 4px", fontSize: 11.5, borderRadius: 6, border: "1px solid #94A3B8" }}
                         value={site.fromDate}
                         onChange={e => updateOohSite(idx, "fromDate", e.target.value)}
                       />
                     </td>
-                    <td style={{ padding: "6px 8px" }}>
+                    <td style={{ padding: "6px 4px" }}>
                       <input
                         type="date"
-                        style={{ width: "100%", padding: "8px", fontSize: 12, borderRadius: 6, border: "1px solid #94A3B8" }}
+                        style={{ width: "100%", padding: "7px 4px", fontSize: 11.5, borderRadius: 6, border: "1px solid #94A3B8" }}
                         value={site.toDate}
                         onChange={e => updateOohSite(idx, "toDate", e.target.value)}
                       />
                     </td>
-                    <td style={{ padding: "6px 8px" }}>
+                    <td style={{ padding: "6px 4px" }}>
                       <input
                         type="number"
                         min="1"
-                        style={{ width: "100%", padding: "8px", fontSize: 12.5, textAlign: "center", borderRadius: 6, border: "1px solid #94A3B8" }}
+                        style={{ width: "100%", padding: "7px 4px", fontSize: 12.5, textAlign: "center", borderRadius: 6, border: "1px solid #94A3B8" }}
                         value={site.days}
                         onChange={e => updateOohSite(idx, "days", e.target.value)}
                         placeholder="30"
                       />
                     </td>
-                    <td style={{ padding: "6px 8px" }}>
+                    <td style={{ padding: "6px 4px" }}>
                       <input
                         type="number"
-                        style={{ width: "100%", padding: "8px", fontSize: 12.5, textAlign: "right", borderRadius: 6, border: "1px solid #94A3B8" }}
+                        style={{ width: "100%", padding: "7px 6px", fontSize: 12.5, textAlign: "right", borderRadius: 6, border: "1px solid #94A3B8" }}
                         value={site.rate}
                         onChange={e => updateOohSite(idx, "rate", e.target.value)}
                         placeholder="0"
                       />
                     </td>
-                    <td style={{ padding: "6px 8px", textAlign: "right", fontWeight: 700, color: "#059669", verticalAlign: "middle" }}>
-                      {pkr(site.amount !== undefined ? site.amount : ((parseFloat(site.rate) || 0) / 30 * (parseFloat(site.days) || 30)))}
+                    <td className="mono" style={{ padding: "6px 6px", textAlign: "right", fontWeight: 600, color: "#475569", verticalAlign: "middle", whiteSpace: "nowrap" }}>
+                      {pkr(siteGross)}
+                    </td>
+                    <td style={{ padding: "6px 4px" }}>
+                      <input
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="0.5"
+                        style={{ width: "100%", padding: "7px 5px", fontSize: 12.5, textAlign: "center", borderRadius: 6, border: siteDisc > 0 ? "1.5px solid #DC2626" : "1px solid #CBD5E1", color: "#DC2626", fontWeight: 700, background: siteDisc > 0 ? "#FEF2F2" : "#FFFFFF" }}
+                        value={site.discountPercent ?? ""}
+                        onChange={e => updateOohSite(idx, "discountPercent", e.target.value)}
+                        placeholder="0%"
+                        title="Site Discount (%)"
+                      />
+                    </td>
+                    <td style={{ padding: "6px 4px" }}>
+                      <input
+                        type="number"
+                        min="0"
+                        style={{ width: "100%", padding: "7px 6px", fontSize: 12.5, textAlign: "right", borderRadius: 6, border: siteDisc > 0 ? "1.5px solid #DC2626" : "1px solid #CBD5E1", color: "#DC2626", fontWeight: 700, background: siteDisc > 0 ? "#FEF2F2" : "#FFFFFF" }}
+                        value={site.discountAmount ?? ""}
+                        onChange={e => updateOohSite(idx, "discountAmount", e.target.value)}
+                        placeholder="0"
+                        title="Site Discount Amount (PKR)"
+                      />
+                    </td>
+                    <td className="mono" style={{ padding: "6px 6px", textAlign: "right", fontWeight: 800, color: "#059669", verticalAlign: "middle", whiteSpace: "nowrap" }}>
+                      {pkr(siteNet)}
                     </td>
                     <td style={{ padding: "6px 4px", textAlign: "center" }}>
                       {oohSites.length > 1 && (
-                        <button className="btn" type="button" style={{ padding: "6px 8px", background: "#FEF2F2", color: "#DC2626", borderColor: "#FCA5A5" }} onClick={() => removeOohSite(idx)}>
+                        <button className="btn" type="button" style={{ padding: "5px 7px", background: "#FEF2F2", color: "#DC2626", borderColor: "#FCA5A5" }} onClick={() => removeOohSite(idx)}>
                           <Trash2 size={14} />
                         </button>
                       )}
                     </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           </div>
 
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "#FFFFFF", padding: "10px 14px", borderRadius: 6, border: "1px solid #CBD5E1" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 10, background: "#FFFFFF", padding: "10px 14px", borderRadius: 6, border: "1px solid #CBD5E1" }}>
             <div>
-              <span style={{ fontSize: 12, color: "var(--ink-muted)" }}>Total Campaign Sq. Ft.: </span>
-              <span className="mono" style={{ fontWeight: 800, fontSize: 13, color: "#0284C7" }}>
+              <span style={{ fontSize: 12.5, color: "var(--ink-muted)" }}>Total Campaign Sq. Ft.: </span>
+              <span className="mono" style={{ fontWeight: 800, fontSize: 13.5, color: "#0284C7" }}>
                 {totalOohSqft.toFixed(2)} Sq. Ft.
               </span>
             </div>
-            <div>
-              <span style={{ fontSize: 12, color: "var(--ink-muted)" }}>Total PO Amount: </span>
-              <span className="mono" style={{ fontWeight: 800, fontSize: 15, color: "#059669" }}>
-                {pkr(totalOohAmount)}
-              </span>
+            <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
+              {totalOohDiscountAmount > 0 && (
+                <>
+                  <div>
+                    <span style={{ fontSize: 12, color: "var(--ink-muted)" }}>Gross PO: </span>
+                    <span className="mono" style={{ fontWeight: 700, fontSize: 13.5, color: "#475569" }}>{pkr(totalOohGrossAmount)}</span>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: 12, color: "#DC2626", fontWeight: 700 }}>Total Discount: </span>
+                    <span className="mono" style={{ fontWeight: 800, fontSize: 13.5, color: "#DC2626" }}>− {pkr(totalOohDiscountAmount)}</span>
+                  </div>
+                </>
+              )}
+              <div>
+                <span style={{ fontSize: 12.5, color: "var(--ink-muted)", fontWeight: 700 }}>
+                  {totalOohDiscountAmount > 0 ? "Net PO Amount (After Discount): " : "Total PO Amount: "}
+                </span>
+                <span className="mono" style={{ fontWeight: 800, fontSize: 16, color: "#059669" }}>
+                  {pkr(totalOohAmount)}
+                </span>
+              </div>
             </div>
           </div>
+
+          {/* SITE-WISE DISCOUNT BREAKDOWN LINE (Shows exactly which sites received a discount) */}
+          {discountedOohSites.length > 0 && (
+            <div style={{ marginTop: 8, padding: "9px 12px", borderRadius: 6, background: "#FEF2F2", border: "1px dashed #DC2626", fontSize: 12, color: "#991B1B", display: "flex", flexWrap: "wrap", alignItems: "center", gap: 6 }}>
+              <span style={{ fontWeight: 800 }}>🏷️ Discounted Sites ({discountedOohSites.length}):</span>
+              {discountedOohSites.map((ds, i) => (
+                <span key={i} style={{ background: "#FFFFFF", border: "1px solid #FCA5A5", borderRadius: 5, padding: "2px 8px", fontWeight: 700, color: "#B91C1C" }}>
+                  {ds.index}. {ds.location}: −{ds.pct}% ({pkr(ds.discAmt)}) → Net {pkr(ds.net)}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
@@ -13823,35 +13973,108 @@ function POModal({ initialData, projects = [], vendors = [], purchaseOrders = []
       )}
 
       {/* BOTTOM SECTION: AMOUNT, ISSUE DATE, EXPECTED DELIVERY */}
-      <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr 1fr", gap: 12, marginBottom: 14 }}>
-        <div className="field" style={{ margin: 0 }}>
-          <label style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span>Total PO Amount (PKR) *</span>
-            {(enableOohSites || enablePrintingItems || enableNewspaperItems || enableEventItems) && (
-              <span style={{ fontSize: 10.5, color: "#0284C7", fontWeight: 700 }}>AUTO-CALCULATED</span>
+      {(() => {
+        const rawBasePoAmt = Number(amount) || 0;
+        const overallDiscVal = (!enableOohSites && applyOverallDiscount)
+          ? Math.min(rawBasePoAmt, Math.max(0, overallDiscountAmt !== "" ? Number(overallDiscountAmt) : Math.round((rawBasePoAmt * (Number(overallDiscountPct) || 0)) / 100)))
+          : 0;
+        const finalPoNetAmt = enableOohSites ? rawBasePoAmt : Math.max(0, rawBasePoAmt - overallDiscVal);
+        return (
+          <>
+            <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr 1fr", gap: 12, marginBottom: 14 }}>
+              <div className="field" style={{ margin: 0 }}>
+                <label style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span>{enableOohSites && totalOohDiscountAmount > 0 ? "Net Total PO Amount (After Discount) *" : "Total PO Amount (PKR) *"}</span>
+                  {(enableOohSites || enablePrintingItems || enableNewspaperItems || enableEventItems) && (
+                    <span style={{ fontSize: 10.5, color: "#0284C7", fontWeight: 700 }}>AUTO-CALCULATED</span>
+                  )}
+                </label>
+                <input
+                  type="number"
+                  value={amount}
+                  onChange={e => setAmount(e.target.value)}
+                  placeholder="0"
+                  style={{ fontWeight: 700, fontSize: 14, color: "#059669" }}
+                />
+                {enableOohSites && totalOohDiscountAmount > 0 && (
+                  <div style={{ fontSize: 11.5, color: "#DC2626", fontWeight: 700, marginTop: 3 }}>
+                    Gross: {pkr(totalOohGrossAmount)} − Site Discounts: {pkr(totalOohDiscountAmount)} = Net: {pkr(rawBasePoAmt)}
+                  </div>
+                )}
+              </div>
+              <div className="field" style={{ margin: 0 }}>
+                <label>Issue Date</label>
+                <input type="date" value={issueDate} onChange={e => setIssueDate(e.target.value)} />
+              </div>
+              <div className="field" style={{ margin: 0 }}>
+                <label>Expected Delivery</label>
+                <input type="date" value={expectedDate} onChange={e => setExpectedDate(e.target.value)} />
+              </div>
+            </div>
+
+            {/* OPTIONAL OVERALL PO DISCOUNT (For Non-OOH Scopes like Printing / Newspaper / Events / General) */}
+            {!enableOohSites && (
+              <div style={{ marginBottom: 14, padding: "10px 12px", background: applyOverallDiscount ? "rgba(220, 38, 38, 0.06)" : "#F8FAFC", borderRadius: 8, border: applyOverallDiscount ? "1.5px solid #DC2626" : "1px solid #E2E8F0" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
+                  <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 700, cursor: "pointer", userSelect: "none", color: applyOverallDiscount ? "#B91C1C" : "var(--ink)" }}>
+                    <input
+                      type="checkbox"
+                      checked={applyOverallDiscount}
+                      onChange={e => setApplyOverallDiscount(e.target.checked)}
+                    />
+                    🏷️ Apply PO Discount (% or Amount)
+                  </label>
+                  {applyOverallDiscount && (
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                      <span style={{ fontSize: 12, color: "#B91C1C", fontWeight: 600 }}>Disc %:</span>
+                      <input
+                        type="number"
+                        step="0.5"
+                        min="0"
+                        max="100"
+                        value={overallDiscountPct}
+                        onChange={e => {
+                          const val = e.target.value;
+                          setOverallDiscountPct(val);
+                          const p = parseFloat(val);
+                          if (!isNaN(p) && rawBasePoAmt > 0) setOverallDiscountAmt(String(Math.round((rawBasePoAmt * Math.min(100, Math.max(0, p))) / 100)));
+                          else if (!val) setOverallDiscountAmt("");
+                        }}
+                        placeholder="0%"
+                        style={{ width: 68, padding: "5px 6px", fontSize: 13, fontWeight: 700, textAlign: "center", borderRadius: 6, border: "1px solid #DC2626", color: "#DC2626" }}
+                      />
+                      <span style={{ fontSize: 12, color: "#64748B", fontWeight: 700 }}>OR PKR:</span>
+                      <input
+                        type="number"
+                        min="0"
+                        value={overallDiscountAmt}
+                        onChange={e => {
+                          const val = e.target.value;
+                          setOverallDiscountAmt(val);
+                          const a = parseFloat(val);
+                          if (!isNaN(a) && rawBasePoAmt > 0) setOverallDiscountPct(((Math.min(rawBasePoAmt, Math.max(0, a)) / rawBasePoAmt) * 100).toFixed(2));
+                          else if (!val) setOverallDiscountPct("");
+                        }}
+                        placeholder="0"
+                        style={{ width: 115, padding: "5px 8px", fontSize: 13, fontWeight: 700, textAlign: "right", borderRadius: 6, border: "1px solid #DC2626", color: "#DC2626" }}
+                      />
+                      <span style={{ fontSize: 12.5, fontWeight: 800, color: "#059669" }}>Net PO: {pkr(finalPoNetAmt)}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
             )}
-          </label>
-          <input
-            type="number"
-            value={amount}
-            onChange={e => setAmount(e.target.value)}
-            placeholder="0"
-            style={{ fontWeight: 700, fontSize: 14, color: "#059669" }}
-          />
-        </div>
-        <div className="field" style={{ margin: 0 }}>
-          <label>Issue Date</label>
-          <input type="date" value={issueDate} onChange={e => setIssueDate(e.target.value)} />
-        </div>
-        <div className="field" style={{ margin: 0 }}>
-          <label>Expected Delivery</label>
-          <input type="date" value={expectedDate} onChange={e => setExpectedDate(e.target.value)} />
-        </div>
-      </div>
+          </>
+        );
+      })()}
 
       {/* OPTIONAL BARTER SPLIT (% OR FIXED AMOUNT) — EXACTLY LIKE CLIENT INVOICE */}
       {(() => {
-        const poTotalNum = Number(amount) || 0;
+        const rawBasePoAmt = Number(amount) || 0;
+        const overallDiscVal = (!enableOohSites && applyOverallDiscount)
+          ? Math.min(rawBasePoAmt, Math.max(0, overallDiscountAmt !== "" ? Number(overallDiscountAmt) : Math.round((rawBasePoAmt * (Number(overallDiscountPct) || 0)) / 100)))
+          : 0;
+        const poTotalNum = enableOohSites ? rawBasePoAmt : Math.max(0, rawBasePoAmt - overallDiscVal);
         const poBarterVal = applyBarter
           ? Math.min(
               poTotalNum,
@@ -13956,7 +14179,17 @@ function POModal({ initialData, projects = [], vendors = [], purchaseOrders = []
           disabled={!valid}
           onClick={() => {
             if (!valid) return;
-            const poTotalNum = Number(amount) || 0;
+            const rawBasePoAmt = Number(amount) || 0;
+            const overallDiscVal = (!enableOohSites && applyOverallDiscount)
+              ? Math.min(rawBasePoAmt, Math.max(0, overallDiscountAmt !== "" ? Number(overallDiscountAmt) : Math.round((rawBasePoAmt * (Number(overallDiscountPct) || 0)) / 100)))
+              : 0;
+            const poTotalNum = enableOohSites ? rawBasePoAmt : Math.max(0, rawBasePoAmt - overallDiscVal);
+            const poGrossNum = enableOohSites
+              ? (totalOohGrossAmount > 0 ? totalOohGrossAmount : poTotalNum)
+              : rawBasePoAmt;
+            const poDiscountNum = enableOohSites ? totalOohDiscountAmount : overallDiscVal;
+            const poDiscountPct = poGrossNum > 0 && poDiscountNum > 0 ? Number(((poDiscountNum / poGrossNum) * 100).toFixed(2)) : 0;
+
             const poBarterVal = applyBarter
               ? Math.min(
                   poTotalNum,
@@ -13970,11 +14203,33 @@ function POModal({ initialData, projects = [], vendors = [], purchaseOrders = []
               : 0;
             const poCashVal = Math.max(0, poTotalNum - poBarterVal);
             const poBarterPct = poTotalNum > 0 && poBarterVal > 0 ? Number(((poBarterVal / poTotalNum) * 100).toFixed(2)) : 0;
+            const normalizedOohSites = enableOohSites
+              ? oohSites.map(s => {
+                  const { gross, discAmt, net } = computeOohSiteTotals(s);
+                  const pct = gross > 0 && discAmt > 0 ? Number(((discAmt / gross) * 100).toFixed(2)) : 0;
+                  return {
+                    ...s,
+                    grossAmount: gross,
+                    discountPercent: pct,
+                    discountAmount: discAmt,
+                    amount: net
+                  };
+                })
+              : [];
+
             const payload = {
               poNumber: poNumber || getNextPONo(purchaseOrders),
               vendor: effectiveVendor,
               projectId,
               description: effectiveDescription,
+              grossAmount: poGrossNum,
+              applyDiscount: poDiscountNum > 0,
+              discountPercent: poDiscountPct,
+              discountAmount: poDiscountNum,
+              discountSitesSummary: enableOohSites ? discountedSitesSummaryText : "",
+              applyOverallDiscount: Boolean(!enableOohSites && applyOverallDiscount && overallDiscVal > 0),
+              overallDiscountPct: !enableOohSites && applyOverallDiscount ? poDiscountPct : 0,
+              overallDiscountAmt: !enableOohSites && applyOverallDiscount ? overallDiscVal : 0,
               amount: poTotalNum,
               applyBarter: Boolean(applyBarter && poBarterVal > 0),
               barterPercent: applyBarter ? poBarterPct : 0,
@@ -13983,7 +14238,7 @@ function POModal({ initialData, projects = [], vendors = [], purchaseOrders = []
               issueDate,
               expectedDate,
               notes,
-              oohSites: enableOohSites ? oohSites : [],
+              oohSites: normalizedOohSites,
               printingItems: enablePrintingItems ? printingItems : [],
               newspaperItems: enableNewspaperItems ? newspaperItems : [],
               eventItems: enableEventItems ? eventItems : [],
@@ -18697,23 +18952,33 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
     return sum + (Number(s.sqft) || (w * h));
   }, 0);
 
+  const oohCalculatedGross = oohSites.reduce((sum, s) => {
+    const days = Number(s.days || s.duration) || 30;
+    const rate = Number(s.rate !== undefined && s.rate !== "" ? s.rate : s.pricePerMonth) || 0;
+    const g = s.grossAmount !== undefined && s.grossAmount !== "" ? Number(s.grossAmount) : ((rate / 30) * days);
+    return sum + g;
+  }, 0);
+
+  const oohCalculatedDiscount = oohSites.reduce((sum, s) => sum + (Number(s.discountAmount) || 0), 0);
+  const oohHasSiteDiscounts = oohSites.some(s => Number(s.discountAmount) > 0);
+
   const oohCalculatedNet = oohSites.reduce((sum, s) => {
     const days = Number(s.days || s.duration) || 30;
     const rate = Number(s.rate !== undefined && s.rate !== "" ? s.rate : s.pricePerMonth) || 0;
     return sum + (s.amount !== undefined && s.amount !== "" ? Number(s.amount) : ((rate / 30) * days));
   }, 0);
 
-  const rawBaseAmt = (template === "OOH" || oohSites.length > 0) && oohCalculatedNet > 0
-    ? oohCalculatedNet
+  const rawBaseAmt = (template === "OOH" || oohSites.length > 0) && oohCalculatedGross > 0
+    ? (oohHasSiteDiscounts ? oohCalculatedGross : oohCalculatedNet)
     : (Number(doc.grossAmount) || Number(doc.amount) || 0);
 
   // Checkbox Flags & Breakdown Hierarchy (Matching Invoice & Voucher Configuration)
-  const hasDiscount = Boolean(doc.applyDiscount && Number(doc.discountAmount) > 0);
-  const discountVal = hasDiscount ? Number(doc.discountAmount) : 0;
+  const hasDiscount = Boolean((doc.applyDiscount && Number(doc.discountAmount) > 0) || oohHasSiteDiscounts);
+  const discountVal = hasDiscount ? (Number(doc.discountAmount) > 0 ? Number(doc.discountAmount) : oohCalculatedDiscount) : 0;
 
   const grandTotal = doc.grossAmount !== undefined && Number(doc.grossAmount) > 0
     ? Number(doc.grossAmount)
-    : (hasDiscount ? (Number(doc.amount) || rawBaseAmt) + discountVal : rawBaseAmt);
+    : (oohHasSiteDiscounts ? oohCalculatedGross : (hasDiscount ? (Number(doc.amount) || rawBaseAmt) + discountVal : rawBaseAmt));
 
   const totalAmountAfterDiscount = grandTotal - discountVal;
 
@@ -19627,47 +19892,99 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
               }
 
               if (template === "OOH" || (doc.oohSites && doc.oohSites.length > 0)) {
+                const discountedSiteLines = (doc.oohSites || [])
+                  .map((s, idx) => {
+                    const dAmt = Number(s.discountAmount) || 0;
+                    const gAmt = s.grossAmount !== undefined && s.grossAmount !== ""
+                      ? Number(s.grossAmount)
+                      : (((Number(s.rate || s.pricePerMonth) || 0) / 30) * (Number(s.days || s.duration) || 30));
+                    const dPct = Number(s.discountPercent) || (gAmt > 0 && dAmt > 0 ? Number(((dAmt / gAmt) * 100).toFixed(2)) : 0);
+                    return { idx: idx + 1, name: s.location || s.name || `Site #${idx + 1}`, dAmt, dPct };
+                  })
+                  .filter(x => x.dAmt > 0);
                 return (
-                  <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", fontSize: 11.5, boxSizing: "border-box", tableLayout: "fixed" }}>
-                    <colgroup>
-                      <col style={{ width: "4%" }} />
-                      <col style={{ width: "21%" }} />
-                      <col style={{ width: "10%" }} />
-                      <col style={{ width: "11%" }} />
-                      <col style={{ width: "11%" }} />
-                      <col style={{ width: "11%" }} />
-                      <col style={{ width: "6%" }} />
-                      <col style={{ width: "13%" }} />
-                      <col style={{ width: "13%" }} />
-                    </colgroup>
+                  <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14, border: "1px solid #000000", fontSize: oohHasSiteDiscounts ? 10.5 : 11.5, boxSizing: "border-box", tableLayout: "fixed" }}>
+                    {oohHasSiteDiscounts ? (
+                      <colgroup>
+                        <col style={{ width: "4%" }} />
+                        <col style={{ width: "18%" }} />
+                        <col style={{ width: "8%" }} />
+                        <col style={{ width: "8%" }} />
+                        <col style={{ width: "9%" }} />
+                        <col style={{ width: "9%" }} />
+                        <col style={{ width: "5%" }} />
+                        <col style={{ width: "10%" }} />
+                        <col style={{ width: "10%" }} />
+                        <col style={{ width: "9%" }} />
+                        <col style={{ width: "10%" }} />
+                      </colgroup>
+                    ) : (
+                      <colgroup>
+                        <col style={{ width: "4%" }} />
+                        <col style={{ width: "21%" }} />
+                        <col style={{ width: "10%" }} />
+                        <col style={{ width: "11%" }} />
+                        <col style={{ width: "11%" }} />
+                        <col style={{ width: "11%" }} />
+                        <col style={{ width: "6%" }} />
+                        <col style={{ width: "13%" }} />
+                        <col style={{ width: "13%" }} />
+                      </colgroup>
+                    )}
                     <thead>
                       <tr>
                         <th style={thStyle}>#</th>
                         <th style={thStyle}>LOCATION / AREA</th>
-                        <th style={thStyle}>SIZE (W x H)</th>
-                        <th style={thStyle}>TOTAL SQ. FT.</th>
+                        <th style={thStyle}>SIZE</th>
+                        <th style={thStyle}>SQ. FT.</th>
                         <th style={thStyle}>FROM DATE</th>
                         <th style={thStyle}>TO DATE</th>
                         <th style={thStyle}>DAYS</th>
-                        <th style={thStyle}>MONTHLY RATE</th>
-                        <th style={thStyle}>AMOUNT (PKR)</th>
+                        <th style={thStyle}>RATE/MO</th>
+                        {oohHasSiteDiscounts ? (
+                          <>
+                            <th style={thStyle}>GROSS (PKR)</th>
+                            <th style={{ ...thStyle, color: "#DC2626" }}>DISCOUNT</th>
+                            <th style={thStyle}>NET (PKR)</th>
+                          </>
+                        ) : (
+                          <th style={thStyle}>AMOUNT (PKR)</th>
+                        )}
                       </tr>
                     </thead>
                     <tbody>
                       {doc.oohSites && doc.oohSites.length > 0 ? (
-                        doc.oohSites.map((site, idx) => (
-                          <tr key={idx} style={{ minHeight: 34 }}>
-                            <td style={{ ...tdCenter, fontWeight: 700 }}>{idx + 1}</td>
-                            <td style={tdLeft}>{site.location || site.name || `OOH Site #${idx + 1}`}</td>
-                            <td style={tdCenter}>{site.width && site.height ? `${site.width}x${site.height}` : (site.size || "10x20")}</td>
-                            <td style={{ ...tdCenter, fontWeight: 700, color: "#0284C7" }}>{Number(site.sqft || (site.width && site.height ? site.width * site.height : 200)).toLocaleString("en-US")}</td>
-                            <td style={tdCenter}>{site.fromDate ? fmtDocDate(site.fromDate) : "—"}</td>
-                            <td style={tdCenter}>{site.toDate ? fmtDocDate(site.toDate) : "—"}</td>
-                            <td style={{ ...tdCenter, fontWeight: 700 }}>{site.days || site.duration || 30}</td>
-                            <td style={tdCenter}>{pkr(site.rate || site.pricePerMonth || 0)}</td>
-                            <td style={{ ...tdCenter, fontWeight: 700 }}>{pkr(site.amount !== undefined ? site.amount : (((Number(site.rate || site.pricePerMonth) || 0) / 30) * (Number(site.days || site.duration) || 30)))}</td>
-                          </tr>
-                        ))
+                        doc.oohSites.map((site, idx) => {
+                          const sGross = site.grossAmount !== undefined && site.grossAmount !== ""
+                            ? Number(site.grossAmount)
+                            : (((Number(site.rate || site.pricePerMonth) || 0) / 30) * (Number(site.days || site.duration) || 30));
+                          const sDisc = Number(site.discountAmount) || 0;
+                          const sPct = Number(site.discountPercent) || (sGross > 0 && sDisc > 0 ? Number(((sDisc / sGross) * 100).toFixed(2)) : 0);
+                          const sNet = site.amount !== undefined ? Number(site.amount) : Math.max(0, sGross - sDisc);
+                          return (
+                            <tr key={idx} style={{ minHeight: 34 }}>
+                              <td style={{ ...tdCenter, fontWeight: 700 }}>{idx + 1}</td>
+                              <td style={tdLeft}>{site.location || site.name || `OOH Site #${idx + 1}`}</td>
+                              <td style={tdCenter}>{site.width && site.height ? `${site.width}x${site.height}` : (site.size || "10x20")}</td>
+                              <td style={{ ...tdCenter, fontWeight: 700, color: "#0284C7" }}>{Number(site.sqft || (site.width && site.height ? site.width * site.height : 200)).toLocaleString("en-US")}</td>
+                              <td style={tdCenter}>{site.fromDate ? fmtDocDate(site.fromDate) : "—"}</td>
+                              <td style={tdCenter}>{site.toDate ? fmtDocDate(site.toDate) : "—"}</td>
+                              <td style={{ ...tdCenter, fontWeight: 700 }}>{site.days || site.duration || 30}</td>
+                              <td style={tdCenter}>{pkr(site.rate || site.pricePerMonth || 0)}</td>
+                              {oohHasSiteDiscounts ? (
+                                <>
+                                  <td style={tdCenter}>{pkr(sGross)}</td>
+                                  <td style={{ ...tdCenter, color: sDisc > 0 ? "#DC2626" : "#64748B", fontWeight: sDisc > 0 ? 700 : 400 }}>
+                                    {sDisc > 0 ? `-${pkr(sDisc)}${sPct > 0 ? ` (${sPct}%)` : ""}` : "—"}
+                                  </td>
+                                  <td style={{ ...tdCenter, fontWeight: 700 }}>{pkr(sNet)}</td>
+                                </>
+                              ) : (
+                                <td style={{ ...tdCenter, fontWeight: 700 }}>{pkr(sNet)}</td>
+                              )}
+                            </tr>
+                          );
+                        })
                       ) : (
                         <tr style={{ minHeight: 34 }}>
                           <td style={{ ...tdCenter, fontWeight: 700 }}>1</td>
@@ -19681,21 +19998,51 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
                           <td style={{ ...tdCenter, fontWeight: 700 }}>{pkr(netAmt)}</td>
                         </tr>
                       )}
-                      <tr style={{ fontWeight: 800, background: "#F8FAFC" }}>
-                        <td colSpan={3} style={{ border: "1px solid #000000", padding: "7px 8px", textAlign: "right", verticalAlign: "middle", fontSize: 11.5, fontWeight: 800, whiteSpace: "nowrap", boxSizing: "border-box" }}>
-                          TOTAL CAMPAIGN SQ.FT:
-                        </td>
-                        <td style={{ border: "1px solid #000000", padding: "7px 4px", textAlign: "center", verticalAlign: "middle", fontWeight: 800, fontSize: 12, color: "#0284C7", whiteSpace: "nowrap", boxSizing: "border-box" }}>
-                          {oohCalculatedSqft > 0 ? oohCalculatedSqft.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 1 }) : (doc.oohSites && doc.oohSites.length > 0 ? doc.oohSites.reduce((s, i) => s + (Number(i.sqft) || 0), 0).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 1 }) : "200")}
-                        </td>
-                        <td colSpan={4} style={{ border: "1px solid #000000", padding: "7px 8px", textAlign: "right", verticalAlign: "middle", fontSize: 11.5, fontWeight: 800, color: "#334155", whiteSpace: "nowrap", boxSizing: "border-box" }}>
-                          TOTAL AMOUNT:
-                        </td>
-                        <td style={{ border: "1px solid #000000", padding: "7px 4px", textAlign: "center", verticalAlign: "middle", color: "#0F172A", fontWeight: 800, fontSize: 12, whiteSpace: "nowrap", boxSizing: "border-box" }}>
-                          {pkr(netAmt)}
-                        </td>
-                      </tr>
-                      {renderTotals(8, true)}
+                      {oohHasSiteDiscounts ? (
+                        <>
+                          <tr style={{ fontWeight: 800, background: "#F8FAFC" }}>
+                            <td colSpan={3} style={{ border: "1px solid #000000", padding: "7px 8px", textAlign: "right", verticalAlign: "middle", fontSize: 10.5, fontWeight: 800, whiteSpace: "nowrap", boxSizing: "border-box" }}>
+                              TOTAL SQ.FT:
+                            </td>
+                            <td style={{ border: "1px solid #000000", padding: "7px 4px", textAlign: "center", verticalAlign: "middle", fontWeight: 800, fontSize: 11, color: "#0284C7", whiteSpace: "nowrap", boxSizing: "border-box" }}>
+                              {oohCalculatedSqft > 0 ? oohCalculatedSqft.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 1 }) : "0"}
+                            </td>
+                            <td colSpan={4} style={{ border: "1px solid #000000", padding: "7px 8px", textAlign: "right", verticalAlign: "middle", fontSize: 10.5, fontWeight: 800, color: "#334155", whiteSpace: "nowrap", boxSizing: "border-box" }}>
+                              SUBTOTALS (GROSS / DISC / NET):
+                            </td>
+                            <td style={{ border: "1px solid #000000", padding: "7px 4px", textAlign: "center", verticalAlign: "middle", fontWeight: 800, fontSize: 11 }}>{pkr(grandTotal)}</td>
+                            <td style={{ border: "1px solid #000000", padding: "7px 4px", textAlign: "center", verticalAlign: "middle", fontWeight: 800, fontSize: 11, color: "#DC2626" }}>-{pkr(discountVal)}</td>
+                            <td style={{ border: "1px solid #000000", padding: "7px 4px", textAlign: "center", verticalAlign: "middle", fontWeight: 800, fontSize: 11 }}>{pkr(totalAmountAfterDiscount)}</td>
+                          </tr>
+                          {discountedSiteLines.length > 0 && (
+                            <tr style={{ background: "#FEF2F2" }}>
+                              <td colSpan={11} style={{ border: "1px solid #000000", padding: "6px 10px", fontSize: 10, color: "#991B1B", textAlign: "left" }}>
+                                <b>SITE-WISE DISCOUNT DETAILS:</b>{" "}
+                                {discountedSiteLines.map(x => `${x.idx}) ${x.name} (-${x.dPct}% / ${pkr(x.dAmt)})`).join("  |  ")}
+                              </td>
+                            </tr>
+                          )}
+                          {renderTotals(10, true)}
+                        </>
+                      ) : (
+                        <>
+                          <tr style={{ fontWeight: 800, background: "#F8FAFC" }}>
+                            <td colSpan={3} style={{ border: "1px solid #000000", padding: "7px 8px", textAlign: "right", verticalAlign: "middle", fontSize: 11.5, fontWeight: 800, whiteSpace: "nowrap", boxSizing: "border-box" }}>
+                              TOTAL CAMPAIGN SQ.FT:
+                            </td>
+                            <td style={{ border: "1px solid #000000", padding: "7px 4px", textAlign: "center", verticalAlign: "middle", fontWeight: 800, fontSize: 12, color: "#0284C7", whiteSpace: "nowrap", boxSizing: "border-box" }}>
+                              {oohCalculatedSqft > 0 ? oohCalculatedSqft.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 1 }) : (doc.oohSites && doc.oohSites.length > 0 ? doc.oohSites.reduce((s, i) => s + (Number(i.sqft) || 0), 0).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 1 }) : "200")}
+                            </td>
+                            <td colSpan={4} style={{ border: "1px solid #000000", padding: "7px 8px", textAlign: "right", verticalAlign: "middle", fontSize: 11.5, fontWeight: 800, color: "#334155", whiteSpace: "nowrap", boxSizing: "border-box" }}>
+                              TOTAL AMOUNT:
+                            </td>
+                            <td style={{ border: "1px solid #000000", padding: "7px 4px", textAlign: "center", verticalAlign: "middle", color: "#0F172A", fontWeight: 800, fontSize: 12, whiteSpace: "nowrap", boxSizing: "border-box" }}>
+                              {pkr(netAmt)}
+                            </td>
+                          </tr>
+                          {renderTotals(8, true)}
+                        </>
+                      )}
                     </tbody>
                   </table>
                 );
