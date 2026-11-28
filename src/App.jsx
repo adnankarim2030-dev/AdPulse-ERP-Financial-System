@@ -2874,6 +2874,27 @@ export default function App() {
     setPurchaseOrders(list => list.map(p => p.id === id ? { ...p, status: newStatus } : p));
   }
 
+  function deletePO(id) {
+    const target = purchaseOrders.find(p => p.id === id);
+    if (!target) return;
+    const poRef = target.poNumber || `PO-${target.id.slice(0, 6).toUpperCase()}`;
+    if (!window.confirm(`Are you sure you want to delete Purchase Order ${poRef} (${target.vendor || "Vendor"})?`)) return;
+    setPurchaseOrders(list => list.filter(p => p.id !== id));
+    // Also clean up any linked Expense & Journal entries created from this PO so AP & GL stay 100% clean
+    setExpenses(list => list.filter(e => !(e.poId === id || (e.expenseNo && target.poNumber && e.expenseNo === target.poNumber))));
+    setJournal(list => list.filter(j => {
+      const ref = j.reference || "";
+      if (target.poNumber && (ref === target.poNumber || ref === `PMT-${target.poNumber}` || ref === `EXP-${target.poNumber}`)) return false;
+      return true;
+    }));
+    triggerSuccessPopup({
+      title: "Purchase Order Deleted!",
+      message: `Purchase Order ${poRef} for "${target.vendor || "Vendor"}" has been removed.`,
+      code: poRef,
+      module: "Purchase Orders"
+    });
+  }
+
   function receiveAndBillPO(id) {
     const po = purchaseOrders.find(p => p.id === id);
     if (!po) return;
@@ -7754,7 +7775,7 @@ export default function App() {
                             )}
                           </td>
                           <td>
-                            <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                            <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "nowrap" }}>
                               {po.status === "Draft" && (
                                 <>
                                   <button className="btn" style={{ padding: "4px 8px", fontSize: 12 }} onClick={() => setPOStatus(po.id, "Approved")}>Approve</button>
@@ -7764,17 +7785,15 @@ export default function App() {
                               {po.status === "Approved" && (
                                 <button className="btn btn-primary" style={{ padding: "4px 8px", fontSize: 12 }} onClick={() => receiveAndBillPO(po.id)}>Receive & Bill</button>
                               )}
-                              {po.status === "Billed" && (
-                                <button className="btn btn-primary" style={{ padding: "4px 8px", fontSize: 12, background: "#059669", border: "none" }} onClick={() => setPayingPOId(po.id)}><Landmark size={13} style={{ marginRight: 4 }} /> Pay</button>
-                              )}
-                              <button className="btn" title="Print Purchase Order" style={{ padding: "4px 6px", fontSize: 12 }} onClick={() => setPrintDoc({ ...po, voucherNo: po.poNumber || `PO-${po.id.slice(0,6).toUpperCase()}`, type: "PURCHASE ORDER", date: po.issueDate, party: po.vendor, client: po.vendor, serviceCategory: po.description })}>
+                              <button className="btn" title="Print Purchase Order" style={{ padding: "4px 7px", fontSize: 12 }} onClick={() => setPrintDoc({ ...po, voucherNo: po.poNumber || `PO-${po.id.slice(0,6).toUpperCase()}`, type: "PURCHASE ORDER", date: po.issueDate, party: po.vendor, client: po.vendor, serviceCategory: po.description })}>
                                 <Printer size={13} />
                               </button>
-                              {po.status !== "Paid" && (
-                                <button className="btn" title="Edit Purchase Order" style={{ padding: "4px 6px", fontSize: 12 }} onClick={() => setEditingPO(po)}>
-                                  <Edit size={13} />
-                                </button>
-                              )}
+                              <button className="btn" title="Edit Purchase Order" style={{ padding: "4px 7px", fontSize: 12 }} onClick={() => setEditingPO(po)}>
+                                <Edit size={13} />
+                              </button>
+                              <button className="btn" title="Delete Purchase Order" style={{ padding: "4px 7px", fontSize: 12, background: "#DC2626", borderColor: "#DC2626", color: "#FFFFFF" }} onClick={() => deletePO(po.id)}>
+                                <Trash2 size={13} />
+                              </button>
                             </div>
                           </td>
                         </tr>
@@ -19048,7 +19067,7 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
     }
   };
 
-  const renderTotals = (colSpanAmount, hasSubtotalRow = false) => {
+  const renderTotals = (colSpanAmount, hasSubtotalRow = false, skipDiscountRow = false) => {
     const labelStyle = { border: "1px solid #000000", padding: "7px 12px", fontWeight: 800, textAlign: "right", verticalAlign: "middle", boxSizing: "border-box", fontSize: 11.5, whiteSpace: "nowrap" };
     const valStyle = { border: "1px solid #000000", padding: "7px 6px", textAlign: "center", verticalAlign: "middle", fontWeight: 800, boxSizing: "border-box", fontSize: 12, whiteSpace: "nowrap" };
 
@@ -19198,8 +19217,8 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
           </tr>
         )}
 
-        {/* 2. DISCOUNT (if checked) */}
-        {hasDiscount && (
+        {/* 2. DISCOUNT (if checked and not already shown in site-wise table columns) */}
+        {hasDiscount && !skipDiscountRow && (
           <tr>
             <td colSpan={colSpanAmount} style={{ ...labelStyle, color: "#DC2626" }}>
               LESS: DISCOUNT {doc.discountPercent ? `(${doc.discountPercent}%)` : ""}
@@ -20022,7 +20041,7 @@ function PrintPreviewModal({ doc: incomingDoc, onClose }) {
                               </td>
                             </tr>
                           )}
-                          {renderTotals(10, true)}
+                          {renderTotals(10, true, true)}
                         </>
                       ) : (
                         <>
